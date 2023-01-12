@@ -1,0 +1,835 @@
+body {
+	margin: 0;
+}
+
+#pdf {
+	color: #595d6e;
+	font-family: sans-serif;
+	margin: 1cm;
+
+	.pdf-head {
+		table-layout: fixed;
+		width: 100%;
+
+		td {
+			width: 50%;
+			vertical-align: top;
+		}
+
+		.logo {
+			margin-bottom: 16px;
+			width: 150px;
+
+			img {
+				display: block;
+				height: auto;
+				width: 100%;
+			}
+		}
+
+		.info {
+			font-size: 14px;
+			text-transform: uppercase;
+
+			.business-name {
+				font-weight: bold;
+				margin-bottom: 8px;
+				text-transform: uppercase;
+			}
+
+			.address {
+				font-size: 12px;
+
+				p {
+					margin: 0;
+				}
+			}
+		}
+
+		.voucher-data {
+			border: 1px solid #595d6e;
+			font-size: 16px;
+			font-weight: bold;
+			margin-left: auto;
+			padding: 16px 32px;
+			text-align: center;
+			width: 50%;
+
+			p {
+				margin: 0;
+				white-space: nowrap;
+			}
+
+			.ruc {
+				margin-bottom: 8px;
+			}
+
+			.voucher-type {
+				font-size: 14px;
+				margin-bottom: 4px;
+			}
+
+			.voucher-number {
+				letter-spacing: 1px;
+			}
+
+			.referral-guide-title {
+				font-size: 12px;
+				font-weight: bold;
+				margin-top: 16px;
+				margin-bottom: 4px;
+			}
+
+			.referral-guide-number {
+				font-size: 12px;
+				font-weight: bold;
+				letter-spacing: 1px;
+			}
+		}
+	}
+
+	.pdf-subhead {
+		border-top: 1px solid #ebedf2;
+		margin-top: 32px;
+		table-layout: fixed;
+		width: 100%;
+
+		tr {
+			td {
+				&:last-child {
+					.subhead-item {
+						margin-right: 0;
+					}
+				}
+			}
+		}
+
+		.subhead-item {
+			margin: 32px 16px 0 0;
+
+			.subhead-title {
+				color: #595d6e;
+				font-size: 11px;
+				font-weight: bold;
+				margin-bottom: 8px;
+				text-transform: uppercase;
+			}
+
+			.subhead-text {
+				font-size: 14px;
+				color: #74788d;
+			}
+		}
+	}
+
+	.pdf-items {
+		margin-top: 48px;
+		width: 100%;
+
+		thead {
+			tr {
+				td {
+					border-bottom: 1px solid #ebedf2;
+					color: #595d6e;
+					font-size: 11px;
+					font-weight: bold;
+					padding: 8px;
+					text-transform: uppercase;
+
+					&:first-child {
+						padding-left: 0;
+					}
+
+					&:last-child {
+						padding-right: 0;
+					}
+
+					&:nth-child(2) {
+						text-align: center;
+						width: 50px;
+					}
+
+					&:nth-child(3),
+					&:nth-child(4),
+					&:nth-child(5) {
+						text-align: right;
+						width: 90px;
+					}
+				}
+			}
+		}
+
+		tbody {
+			tr {
+				td {
+					color: #74788d;
+					font-size: 13px;
+					padding: 8px;
+
+					&:first-child {
+						padding-left: 0;
+					}
+
+					&:last-child {
+						padding-right: 0;
+					}
+
+					&:nth-child(2) {
+						text-align: center;
+						width: 50px;
+					}
+
+					&:nth-child(3),
+					&:nth-child(4),
+					&:nth-child(5) {
+						text-align: right;
+						width: 90px;
+					}
+				}
+
+				&:first-child {
+					td {
+						padding-top: 16px;
+					}
+				}
+			}
+		}
+	}
+
+	.pdf-items-footer {
+		border-top: 1px solid #ebedf2;
+		margin-top: 32px;
+		table-layout: fixed;
+		width: 100%;
+
+		& > tbody {
+			tr {
+				td {
+					vertical-align: top;
+				}
+			}
+		}
+
+		.pdf-total-text {
+			width: 100%;
+
+			tr {
+				td {
+					.total-text-item {
+						margin: 32px 0 0 0;
+
+						.total-text-title {
+							color: #595d6e;
+							font-size: 11px;
+							font-weight: bold;
+							margin-bottom: 8px;
+							text-transform: uppercase;
+						}
+
+						.total-text-text {
+							font-size: 14px;
+							color: #74788d;
+						}
+					}
+				}
+			}
+		}
+
+		.pdf-totals {
+			tr {
+				td {
+					font-size: 13px;
+					padding: 8px;
+
+					&:first-child {
+						color: #595d6e;
+						font-weight: bold;
+					}
+
+					&:nth-child(2) {
+						text-align: right;
+						width: 40px;
+					}
+
+					&:last-child {
+						color: #74788d;
+						text-align: right;
+						width: 90px;
+					}
+				}
+
+				&:first-child {
+					td {
+						padding-top: 32px;
+					}
+				}
+			}
+		}
+	}
+}
+
+@page {
+	margin: 0;
+}
+
+.inventory-pdf {
+	color: #595d6e;
+	font-family: sans-serif;
+	margin: 4cm 2cm 4cm;
+
+	header {
+		height: 3cm;
+		left: 2cm;
+		position: fixed;
+		right: 2cm;
+		top: 2cm;
+
+		.pdf-head {
+			table-layout: fixed;
+			width: 100%;
+
+			tbody {
+				tr {
+					td {
+						font-size: 14px;
+						padding: 8px;
+						vertical-align: middle;
+						width: 50%;
+					}
+				}
+			}
+		}
+	}
+
+	footer {
+		bottom: 6cm;
+		left: 2cm;
+		margin: 0;
+		right: 2cm;
+		position: fixed;
+
+		.pdf-items-footer {
+			border-top: none;
+			height: 4cm;
+			margin-top: 32px;
+			table-layout: fixed;
+			width: 100%;
+
+			tbody {
+				tr {
+					td {
+						font-size: 14px;
+						font-weight: bold;
+						padding: 0px;
+						vertical-align: bottom;
+						width: 5%;
+
+						&:nth-child(3) {
+							width: 10%;
+						}
+
+						&:nth-child(2),
+						&:nth-child(4) {
+							width: 30%;
+						}
+
+						.firma {
+							border-top: 1px solid #E4E6EB;
+							padding: 8px;
+							text-align: center;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	main {
+		// height: 20cm;
+		// max-height: 20cm;
+		padding: 0;
+		page-break-inside: auto;
+		position: relative;
+
+		.pdf-items {
+			border: 1px solid #E4E6EB;
+			border-collapse: collapse;
+			color: #595d6e;
+			font-size: 11px;
+			margin: 0;
+			padding: 8px;
+			text-transform: uppercase;
+			width: 100%;
+
+			thead {
+				tr {
+					td {
+						border: 1px solid #E4E6EB;
+						font-size: 8px;
+						font-weight: bold;
+						padding: 8px!important;
+						text-align: center;
+
+						&:first-child {
+							width: 5%;
+						}
+
+						&:nth-child(2) {
+							width: 9%;
+						}
+
+						&:nth-child(3) {
+							text-align: left;
+							width: 30%;
+						}
+
+						&:nth-child(4) {
+							width: 5%;
+						}
+
+						&:nth-child(5) {
+							width: 5%;
+						}
+
+						&:nth-child(6) {
+							width: 10%;
+						}
+
+						&:nth-child(7) {
+							width: 10%;
+						}
+
+						&:last-child {
+							width: 26%;
+						}
+					}
+				}
+			}
+
+			tbody {
+				tr {
+					// page-break-inside: auto;
+
+					td {
+						border: 1px solid #E4E6EB;
+						color: #74788d;
+						font-size: 10px;
+						padding: 8px!important;
+
+						&:first-child {
+							text-align: right;
+						}
+
+						&:nth-child(2) {
+							text-align: center;
+						}
+
+						&:nth-child(3) {
+							text-align: left;
+						}
+
+						&:nth-child(4) {
+							text-align: center;
+						}
+
+						&:nth-child(5) {
+							text-align: right;
+						}
+
+						&:nth-child(6) {
+							text-align: center;
+						}
+
+						&:nth-child(7) {
+							text-align: center;
+						}
+
+						&:last-child {
+							text-align: left;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+.pdf-body {
+	color: #595d6e;
+	font-family: sans-serif;
+	margin: 7cm 2cm 4cm;
+
+	header {
+		// height: 3cm;
+		left: 2cm;
+		position: fixed;
+		right: 2cm;
+		top: 2cm;
+
+		.pdf-head {
+			table-layout: fixed;
+			width: 100%;
+
+			tbody {
+				tr {
+					td {
+						font-size: 12px;
+						padding: 4px;
+						vertical-align: middle;
+						width: 50%;
+
+						&.pdf-head-title {
+							border-top: 1px solid #595d6e;
+							font-size: 14px;
+							font-weight: bold;
+							padding: 16px 8px 8px;
+							text-align: center;
+							text-transform: uppercase;
+						}
+					}
+				}
+			}
+
+			.pdf-subhead {
+				&:last-child {
+					table {
+						td {
+							text-align: right;
+						}
+					}
+				}
+
+				table {
+					table-layout: fixed;
+					width: 100%;
+
+					tr {
+						td {
+							padding: 2px;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	main {
+		display: block;
+		padding: 0;
+		page-break-inside: auto;
+		position: relative;
+		width: 100%;
+		
+		.pdf-items {
+			border: 1px solid #E4E6EB;
+			border-collapse: collapse;
+			color: #595d6e;
+			margin: 0;
+			padding: 8px;
+			text-transform: uppercase;
+			width: 100%;
+
+			thead {
+				tr {
+					td {
+						border: 1px solid #E4E6EB;
+						font-size: 8px;
+						font-weight: bold;
+						padding: 8px!important;
+						text-align: center;
+					}
+				}
+			}
+
+			tbody {
+				tr {
+					td {
+						border: 1px solid #E4E6EB;
+						color: #74788d;
+						font-size: 10px;
+						padding: 8px!important;
+					}
+				}
+			}
+
+			tfoot {
+				tr {
+					td {
+						border: 1px solid #E4E6EB;
+						font-size: 10px;
+						font-weight: bold;
+						padding: 8px!important;
+						text-align: center;
+					}
+				}
+			}
+		}
+	}
+
+	footer {
+		bottom: 6cm;
+		left: 2cm;
+		margin: 0;
+		right: 2cm;
+		position: fixed;
+
+		.pdf-items-footer {
+			border-top: none;
+			height: 4cm;
+			margin-top: 32px;
+			table-layout: fixed;
+			width: 100%;
+
+			tbody {
+				tr {
+					td {
+						font-size: 12px;
+						font-weight: bold;
+						padding: 0px;
+						vertical-align: bottom;
+						width: 5%;
+
+						&:nth-child(3) {
+							width: 10%;
+						}
+
+						&:nth-child(2),
+						&:nth-child(4) {
+							width: 30%;
+						}
+
+						.firma {
+							border-top: 1px solid #E4E6EB;
+							padding: 8px;
+							text-align: center;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+.warehouse-part-pdf {
+	main {
+		.pdf-items {
+			tbody {
+				tr {
+					td {
+						&:first-child {
+							text-align: center;
+							width: .75cm;
+						}
+
+						&:nth-child(2) {
+							text-align: center;
+							width: 1cm;
+						}
+
+						&:nth-child(3) {
+							text-align: left;
+							width: auto;
+						}
+
+						&:nth-child(4) {
+							text-align: right;
+							width: 2cm;
+						}
+
+						&:nth-child(5) {
+							text-align: right;
+							width: 2cm;
+						}
+
+						&:nth-child(6) {
+							text-align: right;
+							width: 2cm;
+						}
+					}
+				}
+			}
+
+			tfoot {
+				tr {
+					td {
+						&:nth-child(4),
+						&:nth-child(5),
+						&:nth-child(6) {
+							text-align: right;
+							width: 2cm;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+#guia-remision {
+	color: #000;
+	font-size: 8px;
+	font-family: monospace;
+	margin: 2.8cm 0.78cm 2.54cm;
+	position: relative;
+	z-index: 1;
+
+	// &:before {
+	// 	background-image: url(../guia.jpg);
+	// 	background-size: 560px 560px;
+	// 	background-repeat: no-repeat;
+	// 	height: 100%;
+	// 	left: 0;
+	// 	position: fixed;
+	// 	top: 0;
+	// 	width: 100%;
+	// 	z-index: -1;
+	// }
+
+	table {
+		// border-collapse: collapse;
+	// 	table-layout: auto;
+	}
+}
+
+#price-list-pdf {
+	color: #595d6e;
+	font-family: sans-serif;
+	margin: 3cm 2cm 4cm;
+
+	header {
+		height: 2cm;
+		left: 2cm;
+		position: fixed;
+		right: 2cm;
+		top: 2cm;
+
+		.pdf-head {
+			table-layout: fixed;
+			width: 100%;
+
+			tbody {
+				tr {
+					td {
+						font-size: 14px;
+						padding: 8px;
+						vertical-align: middle;
+						width: 100%;
+					}
+				}
+			}
+		}
+	}
+
+	main {
+		padding: 0;
+		page-break-inside: auto;
+		position: relative;
+
+		.pdf-items {
+			border: 1px solid #E4E6EB;
+			border-collapse: collapse;
+			color: #595d6e;
+			font-size: 11px;
+			margin: 0;
+			padding: 8px;
+			text-transform: uppercase;
+			width: 100%;
+
+			thead {
+				tr {
+					td {
+						border: 1px solid #E4E6EB;
+						font-size: 8px;
+						font-weight: bold;
+						padding: 8px!important;
+						text-align: center;
+
+						// &:first-child {
+						// 	width: 5%;
+						// }
+
+						// &:nth-child(2) {
+						// 	width: 9%;
+						// }
+
+						// &:nth-child(3) {
+						// 	width: 30%;
+						// }
+
+						// &:nth-child(4) {
+						// 	width: 5%;
+						// }
+
+						// &:nth-child(5) {
+						// 	width: 5%;
+						// }
+
+						// &:nth-child(6) {
+						// 	width: 10%;
+						// }
+
+						// &:nth-child(7) {
+						// 	width: 10%;
+						// }
+
+						// &:last-child {
+						// 	width: 26%;
+						// }
+					}
+				}
+			}
+
+			tbody {
+				tr {
+					td {
+						border: 1px solid #E4E6EB;
+						color: #74788d;
+						font-size: 10px;
+						padding: 8px!important;
+					}
+				}
+			}
+
+			tr {
+				td {
+					&:first-child {
+						text-align: left;
+					}
+
+					&:nth-child(2) {
+						text-align: center;
+					}
+
+					&:nth-child(3) {
+						text-align: center;
+					}
+
+					&:nth-child(4) {
+						text-align: left;
+					}
+
+					&:nth-child(5) {
+						text-align: center;
+					}
+
+					&:nth-child(6) {
+						text-align: left;
+					}
+
+					&:nth-child(7) {
+						text-align: right;
+					}
+
+					&:nth-child(8) {
+						text-align: center;
+						width: 1.5cm;
+					}
+
+					&:last-child {
+						text-align: center;
+					}
+				}
+			}
+		}
+	}
+}

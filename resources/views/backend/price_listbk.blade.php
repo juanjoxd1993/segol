@@ -1,0 +1,23 @@
+@extends('backend.templates.app')
+
+@section('title', 'Facturación')
+@section('subtitle', 'Lista de Precios')
+
+@section('content')
+	<price-list-form
+		:companies = "{{ $companies }}"
+		:articles = "{{ $articles }}"
+		:url = "'{{ route('dashboard.voucher.price_list.validate_form') }}'"
+	></price-list-form>
+	
+	<price-list-table
+		:url = "'{{ route('dashboard.voucher.price_list.list') }}'"
+	></price-list-table>
+
+	<price-list-modal
+		:url = "'{{ route('dashboard.voucher.price_list.store') }}'"
+		:url_get_min_effective_date = "'{{ route('dashboard.voucher.price_list.get_min_effective_date') }}'"
+	></price-list-modal>
+
+	<loading></loading>
+@endsection
