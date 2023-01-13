@@ -281,13 +281,6 @@
                                    <label class="form-control-label">Mail:</label>
                                    <select class="form-control" name="manager_mail" id="manager_mail" v-model="model.manager_mail" @focus="$parent.clearErrorMsg($event)">
                                     <option disabled value="">Seleccionar</option>
-                                            <option value="anthonyvalencia@puntodedistribucion.com">anthonyvalencia@puntodedistribucion.com</option>
-                                            <option value="mauriciodiaz@puntodedistribucion.com">mauriciodiaz@puntodedistribucion.com</option>
-                                            <option value="p.velaochaga@puntodedistribucion.com">p.velaochaga@puntodedistribucion.com</option>
-                                            <option value="yleon@puntodedistribucion.com">yleon@puntodedistribucion.com</option>
-                                            <option value="ccoronado@puntodedistribucion.com">ccoronado@puntodedistribucion.com</option>
-                                            <option value="ocasachagua@puntodedistribucion.com">ocasachagua@puntodedistribucion.com</option>
-                                            <option value="massiel.alor@puntodedistribucion.com">massiel.alor@puntodedistribucion.com</option>
                                      </select>
                                        <div id="manager_mail-error" class="error invalid-feedback"></div>
                                       </div>

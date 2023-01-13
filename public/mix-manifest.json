@@ -3,5 +3,6 @@
     "/backend/css/custom.css": "/backend/css/custom.css",
     "/backend/css/pdf.css": "/backend/css/pdf.css",
     "/backend/css/main.css": "/backend/css/main.css",
-    "/backend/js/main.js": "/backend/js/main.js"
+    "/backend/js/main.js": "/backend/js/main.js",
+    "/favicon.ico": "/favicon.ico"
 }

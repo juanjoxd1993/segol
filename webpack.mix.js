@@ -48,3 +48,4 @@ mix.options({ processCssUrls: false })
 mix.copyDirectory('resources/assets/backend/img', 'public/backend/img');
 mix.copyDirectory('resources/assets/backend/fonts', 'public/backend/fonts');
 mix.copyDirectory('resources/assets/backend/media', 'public/backend/media');
+mix.copy('resources/assets/backend/img/favicon.ico', 'public/favicon.ico');

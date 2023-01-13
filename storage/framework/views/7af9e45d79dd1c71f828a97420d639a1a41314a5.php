@@ -3,7 +3,7 @@
 	<!-- begin::Head -->
 	<head>
 		<meta charset="utf-8" />
-		<title>Punto de Distribución</title>
+		<title><?php echo e(env('APP_NAME')); ?></title>
 		<meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, shrink-to-fit=no">

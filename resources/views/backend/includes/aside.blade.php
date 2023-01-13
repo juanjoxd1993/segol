@@ -5,7 +5,7 @@
 	<div class="kt-aside__brand kt-grid__item " id="kt_aside_brand">
 		<div class="kt-aside__brand-logo">
 			<a href="{{ route('login') }}">
-				<img alt="Logo" src="{{ asset('backend/img/logo-dashboard-2.png') }}" />
+				<img alt="Logo" src="{{ asset('backend/img/logo-dashboard-2.png') }}" style="width: 15em;" />
 			</a>
 		</div>
 		<div class="kt-aside__brand-tools">

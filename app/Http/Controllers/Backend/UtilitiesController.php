@@ -999,12 +999,12 @@ class UtilitiesController extends Controller
 				$response[] = $response_obj;
 
 				if ( $obj->document_voucher_type != '03' ) {
-					Mail::to('enviofacturacion@puntodedistribucion.com')->queue(new VoucherMail($obj));
+					Mail::to(env('BILLING_ADDRESS_DESTINATION_EMAIL'))->queue(new VoucherMail($obj));
 
 					if ( $obj->client_email ) {
-						Mail::to($obj->client_email)->cc('enviofacturacion@puntodedistribucion.com')->queue(new VoucherMail($obj));
+						Mail::to($obj->client_email)->cc(env('BILLING_ADDRESS_DESTINATION_EMAIL'))->queue(new VoucherMail($obj));
 					} else {
-						Mail::to('enviofacturacion@puntodedistribucion.com')->queue(new VoucherMail($obj));
+						Mail::to(env('BILLING_ADDRESS_DESTINATION_EMAIL'))->queue(new VoucherMail($obj));
 					}
 				}
 

@@ -536,12 +536,12 @@ class VoucherReportOseController extends Controller
 
     public function send_mail(object $obj) {
         if ( $this->env == 'local' ) {
-            Mail::to('gabriel@codea.pe')->queue(new VoucherMail($obj));
+            Mail::to(env('DEV_TESTING_DESTINATION_EMAIL'))->queue(new VoucherMail($obj));
         } elseif ( $this->env == 'production' ) {
             if ( $obj->document_voucher_type != '03' && $obj->client_email ) {
-                Mail::to($obj->client_email)->cc('enviofacturacion@puntodedistribucion.com')->queue(new VoucherMail($obj));
+                Mail::to($obj->client_email)->cc(env('BILLING_ADDRESS_DESTINATION_EMAIL'))->queue(new VoucherMail($obj));
             } else {
-                Mail::to('enviofacturacion@puntodedistribucion.com')->queue(new VoucherMail($obj));
+                Mail::to(env('BILLING_ADDRESS_DESTINATION_EMAIL'))->queue(new VoucherMail($obj));
             }
         }
 

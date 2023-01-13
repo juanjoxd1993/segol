@@ -3,12 +3,12 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, shrink-to-fit=no">
-		<title>Punto de Distribución</title>
+		<title>PetroAmérica</title>
 	</head>
 	<body class="mail">
 		<div class="body" style="background-color:#f2f3f8;padding:30px 15px;">
 			<div class="content" style="max-width:600px;padding:30px;background-color:#FFF;margin:0 auto;font-family:Arial,sans-serif;">
-				<img src="http://puntodedistribucion.com/backend/img/logo-pdf.png" alt="" style="display:block;width:150px;height:auto;margin:0 0 0 auto;">
+				<img src="{{ assewt('backend/img/logo-pdf.png') }}" alt="" style="display:block;width:150px;height:auto;margin:0 0 0 auto;">
 				<h3>Estimado Cliente Sr(es). <b>{{ $mail_info->client_name }}</b></h3>
 				@if ( $mail_info->voucher_type_type == 'RC' )
 					<p style="margin:0 0 20px;font-size:15px;">Se realizó envío de Resumen de la empresa {{ $mail_info->company_name }} RC-{{ $mail_info->summary_date }} ticket: {{ $mail_info->summary_ticket }} por {{ $mail_info->ids_count }} documentos</p>

@@ -1259,14 +1259,14 @@ class VoucherController extends Controller
 
     public function send_mail(object $obj, $routes, $mail_info) {
         if ( $this->env == 'local' ) {
-            Mail::to('gabriel@codea.pe')->queue(new VoucherMail($obj, $routes, $mail_info));
+            Mail::to(env('DEV_TESTING_DESTINATION_EMAIL'))->queue(new VoucherMail($obj, $routes, $mail_info));
         } elseif ( $this->env == 'production' ) {
             if ( $obj->voucher_type_type == 'RC' ) {
-				Mail::to('enviofacturacion@puntodedistribucion.com')->queue(new VoucherMail($obj, $routes, $mail_info));
+				Mail::to(env('BILLING_ADDRESS_DESTINATION_EMAIL'))->queue(new VoucherMail($obj, $routes, $mail_info));
 			} elseif ( $obj->voucher_type_type != '03' && $obj->client_email ) {
-                Mail::to($obj->client_email)->cc('enviofacturacion@puntodedistribucion.com')->queue(new VoucherMail($obj, $routes, $mail_info))->cc('juan.olivas@puntodedistribucion.com')->queue(new VoucherMail($obj, $routes, $mail_info));
+                Mail::to($obj->client_email)->cc(env('BILLING_ADDRESS_DESTINATION_EMAIL'))->queue(new VoucherMail($obj, $routes, $mail_info))->queue(new VoucherMail($obj, $routes, $mail_info));
             } else {
-                Mail::to('enviofacturacion@puntodedistribucion.com')->queue(new VoucherMail($obj, $routes, $mail_info));
+                Mail::to(env('BILLING_ADDRESS_DESTINATION_EMAIL'))->queue(new VoucherMail($obj, $routes, $mail_info));
             }
         }
 

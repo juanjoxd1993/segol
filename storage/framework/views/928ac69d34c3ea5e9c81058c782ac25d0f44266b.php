@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, shrink-to-fit=no">
-		<title>Punto de Distribución</title>
+		<title>PetroAmérica</title>
 	</head>
 	<body class="mail">
 		<div class="body" style="background-color:#f2f3f8;padding:30px 15px;">

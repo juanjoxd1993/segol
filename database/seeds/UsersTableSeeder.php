@@ -13,7 +13,7 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         // User::create([
-        // 	'name' => 'Punto de Distribución',
+        // 	'name' => 'PetroAmérica',
         //     'user' => 'admin',
         // 	'password' => Hash::make("ADMIN$2020!"),
         // ]);

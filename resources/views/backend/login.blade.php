@@ -3,7 +3,7 @@
 	<!-- begin::Head -->
 	<head>
 		<meta charset="utf-8" />
-		<title>Punto de Distribución</title>
+		<title>{{ env('APP_NAME') }}</title>
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
@@ -23,7 +23,7 @@
 		<!--begin::Global Theme Styles -->
 		<link href="{{ asset('backend/css/main.css') }}" rel="stylesheet" type="text/css" />
 		<!--end::Global Theme Styles -->
-		<link rel="icon" href="{{ asset('frontend/img/favicon.png') }}">
+		<link rel="icon" href="{{ asset('backend/img/favicon.png') }}">
 	</head>
 	<!-- end::Head -->
 
