@@ -17,7 +17,7 @@ $kt-media-breakpoints: (
 )!default;
 */
 .kt-aside {
-  background-color: #1e1e2d; }
+  background-color: #6087b8; }
   .kt-aside .ps > .ps__rail-x {
     background: transparent; }
     .kt-aside .ps > .ps__rail-x:hover, .kt-aside .ps > .ps__rail-x:focus {
@@ -66,7 +66,7 @@ $kt-media-breakpoints: (
         color: #5d78ff; }
 
 .kt-aside-menu {
-  background-color: #1e1e2d ; }
+  background-color: #6087b8 ; }
   .kt-aside-menu .kt-menu__nav > .kt-menu__item > .kt-menu__heading .kt-menu__link-text,
   .kt-aside-menu .kt-menu__nav > .kt-menu__item > .kt-menu__link .kt-menu__link-text {
     color: #a2a3b7 ; }
@@ -212,7 +212,7 @@ $kt-media-breakpoints: (
       .kt-aside-menu .kt-menu__nav > .kt-menu__item:not(.kt-menu__item--parent):not(.kt-menu__item--open):not(.kt-menu__item--here):not(.kt-menu__item--active):hover > .kt-menu__link .kt-menu__ver-arrow {
         color: #ffffff ; }
   .kt-aside-menu .kt-menu__nav > .kt-menu__item > .kt-menu__arrow {
-    color: #1e1e2d; }
+    color: #6087b8; }
   .kt-aside-menu .kt-menu__nav > .kt-menu__section .kt-menu__section-text {
     color: #4c4e6f ; }
   .kt-aside-menu .kt-menu__nav > .kt-menu__section .kt-menu__section-icon {
