@@ -44,3 +44,7 @@ mix.options({ processCssUrls: false })
    	], 'public/backend/js/main.js')
    .js('resources/assets/backend/js/app.js',
        'public/backend/js/app.js');
+
+mix.copyDirectory('resources/assets/backend/img', 'public/backend/img');
+mix.copyDirectory('resources/assets/backend/fonts', 'public/backend/fonts');
+mix.copyDirectory('resources/assets/backend/media', 'public/backend/media');
