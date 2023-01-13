@@ -37,8 +37,8 @@
 			<!-- begin:: Header Mobile -->
 			<div id="kt_header_mobile" class="kt-header-mobile  kt-header-mobile--fixed ">
 				<div class="kt-header-mobile__logo">
-					<a href="index.html">
-						<img alt="Logo" src="{{ asset('backend/img/logo-dashboard.png') }}" />
+					<a href="{{ route('dashboard.voucher.send_ose') }}">
+						<img alt="Logo" src="{{ asset('backend/img/logo-dashboard.png') }}" style="width: 13em;" />
 					</a>
 				</div>
 				<div class="kt-header-mobile__toolbar">
