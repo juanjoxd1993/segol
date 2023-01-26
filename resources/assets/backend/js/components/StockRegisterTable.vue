@@ -381,6 +381,7 @@
                     article.igv = accounting.unformat(article.igv).toFixed(4);
                     article.total = accounting.unformat(article.total).toFixed(4);
                     article.perception = accounting.unformat(article.perception).toFixed(4);
+                    article.business_type = article.business_type;
                 });
 
                 if ( this.article_list != '' && this.article_list != [] ) {

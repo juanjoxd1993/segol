@@ -26,7 +26,7 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo Movimiento:</label>
-                            <select class="form-control" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control" name="movement_type_id" id="movement_type_id" v-on:change="manageMovementTypeChange" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
                                 <option v-for="movement_type in movementTypes" :value="movement_type.id" v-bind:key="movement_type.id">{{ movement_type.name }}</option>
                             </select>
@@ -53,17 +53,16 @@
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-3 d-none">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
-                            <select class="form-control" name="company_id" id="company_id" v-model="model.company_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{ company.name }}</option>
+                            <select value="1" class="form-control" name="company_id" id="company_id" v-model="model.company_id" @focus="$parent.clearErrorMsg($event)">
+                                <option value="1" selected>PUNTO DE DISTRIBUCION S.A.C.</option>
                             </select>
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-3 d-none" id="currencyGroup">
                         <div class="form-group">
                             <label class="form-control-label">Tipo de moneda:</label>
                             <select class="form-control" name="currency" id="currency" v-model="model.currency" @focus="$parent.clearErrorMsg($event)">
@@ -101,7 +100,7 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo:</label>
-                            <select class="form-control" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
+                            <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
                                 <option value="">Seleccionar</option>
                                 <option v-for="warehouse_account_type in warehouseAccountTypes" :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{ warehouse_account_type.name }}</option>
                             </select>
@@ -259,7 +258,7 @@
                     company_id: '',
                     currency: 1,
                     since_date: this.current_date,
-                    warehouse_account_type_id: '',
+                    warehouse_account_type_id: '3',
                     warehouse_account_id: '',
                     referral_guide_series: '',
                     referral_guide_number: '',
@@ -297,6 +296,10 @@
         },
         mounted() {
             this.newSelect2();
+
+            setTimeout(function() {
+                $('#company_id').val($('#company_id').children(':first').val());
+            }, 500);
         },
         watch: {
             
@@ -414,6 +417,24 @@
                     });
                 });
             },
+            manageMovementTypeChange: function (obj) {
+                let movementType = obj.target;
+                let movementClass = $('#movement_class_id');
+                $('#currencyGroup').addClass('d-none');
+                $('#currency').val(null);
+                $('#warehouse_type_id').removeClass('readonly');
+
+                if (movementType.value == 2) { // Compra
+                    $('#currencyGroup').removeClass('d-none');
+                    $('#currency').val($('#currency').children(':first').val());
+                } else if (movementClass.val() == 2 && movementType.value == 6) { // Transferencia entre almacenes
+                    setTimeout(function() {
+                        $('#warehouse_type_id').val('1'); // Generales
+                    }, 100);
+                    $('#warehouse_type_id').addClass('readonly');
+                } else {
+                }
+            }
         }
     };
 </script>

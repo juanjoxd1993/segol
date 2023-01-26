@@ -33,10 +33,10 @@ class StockRegisterController extends Controller
 		$warehouse_types = WarehouseType::select('id', 'name')->get();
 		$companies = Company::select('id', 'name')->get();
 		$currencies = Currency::select('id', 'name', 'symbol')->get();
-		// $current_date = date('d-m-Y');
+		$current_date = date('d-m-Y');
 		$date = CarbonImmutable::now()->startOfDay();
 		$current_date = $date->startOfDay()->toAtomString();
-		// $min_datetime = $date->startOfDay()->toAtomString();
+		$min_datetime = $date->startOfDay()->toAtomString();
 		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
@@ -234,7 +234,7 @@ class StockRegisterController extends Controller
 
 		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
 			->where('articles.id', $article_id)
-			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name')
+			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'articles.business_type')
 			->first();
 		
 		$article->item_number = ++$item_number;
@@ -307,8 +307,10 @@ class StockRegisterController extends Controller
 				->where('id', $warehouse_account_id)
 				->first();
 			
-			$account->business_name = $account->first_name . ' ' . $account->last_name;
-			$account->document_number = '';
+			if ($account) {
+				$account->business_name = $account->first_name . ' ' . $account->last_name;
+				$account->document_number = '';
+			}
 		}
 
 		$movement_type = MoventType::find($movement_type_id);
@@ -322,8 +324,8 @@ class StockRegisterController extends Controller
 		$movement->movement_number = $movement_number;
 		$movement->warehouse_account_type_id = $warehouse_account_type_id;
 		$movement->account_id = $warehouse_account_id;
-		$movement->account_document_number = $account->document_number;
-		$movement->account_name = $account->business_name;
+		$movement->account_document_number = $account ? $account->document_number : '';
+		$movement->account_name = $account ? $account->business_name : '';
 		$movement->referral_guide_series = $referral_guide_series;
 		$movement->referral_guide_number = $referral_guide_number;
 		$movement->referral_warehouse_document_type_id = $referral_warehouse_document_type_id;

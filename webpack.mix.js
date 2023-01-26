@@ -36,6 +36,9 @@ mix.options({ processCssUrls: false })
          'resources/assets/backend/css/aside/dark.css',
          'resources/assets/backend/css/login-v6.default.min.css',
    	], 'public/backend/css/main.css')
+   .styles([
+      'resources/assets/backend/css/app.css'
+      ], 'public/backend/css/app.css')
    .scripts([
          'resources/assets/backend/js/vendors.bundle.js',
          'resources/assets/backend/js/scripts.bundle.js',

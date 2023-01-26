@@ -27,6 +27,8 @@
 		<!--end::Global Theme Styles -->
 
 		<link rel="icon" href="{{ asset('backend/img/favicon.png') }}">
+
+		<link href="{{ asset('backend/css/app.css') }}" rel="stylesheet" type="text/css" />
 	</head>
 	<!-- end::Head -->
 

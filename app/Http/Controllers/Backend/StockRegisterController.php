@@ -33,10 +33,10 @@ class StockRegisterController extends Controller
 		$warehouse_types = WarehouseType::select('id', 'name')->get();
 		$companies = Company::select('id', 'name')->get();
 		$currencies = Currency::select('id', 'name', 'symbol')->get();
-		// $current_date = date('d-m-Y');
+		$current_date = date('d-m-Y');
 		$date = CarbonImmutable::now()->startOfDay();
 		$current_date = $date->startOfDay()->toAtomString();
-		// $min_datetime = $date->startOfDay()->toAtomString();
+		$min_datetime = $date->startOfDay()->toAtomString();
 		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
@@ -44,8 +44,27 @@ class StockRegisterController extends Controller
 			->where('description', 'IGV')
 			->where('state', 1)
 			->first();
+		$hide_movement_class = false;
+		$hide_movement_type = false;
+		$is_production_register = false;
 
-		return view('backend.stock_register')->with(compact('movement_classes', 'movement_types', 'movement_stock_types', 'warehouse_types', 'companies', 'currencies', 'current_date', 'min_datetime', 'max_datetime', 'warehouse_account_types', 'warehouse_document_types', 'igv'));
+		return view('backend.stock_register')->with(compact(
+			'movement_classes',
+			'movement_types',
+			'movement_stock_types',
+			'warehouse_types',
+			'companies',
+			'currencies',
+			'current_date',
+			'min_datetime',
+			'max_datetime',
+			'warehouse_account_types',
+			'warehouse_document_types',
+			'igv',
+			'hide_movement_class',
+			'hide_movement_type',
+			'is_production_register'
+		));
 	}
 
 	public function getAccounts() {
@@ -173,7 +192,7 @@ class StockRegisterController extends Controller
 		}
 
 		// Obtener artículos
-		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged')
+		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged', 'business_type')
 			->where('warehouse_type_id', $warehouse_type_id)
 			->orderBy('code', 'asc')
 			->get();
@@ -234,7 +253,7 @@ class StockRegisterController extends Controller
 
 		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
 			->where('articles.id', $article_id)
-			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name')
+			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'business_type')
 			->first();
 		
 		$article->item_number = ++$item_number;
@@ -348,6 +367,24 @@ class StockRegisterController extends Controller
 			$article = Article::where('warehouse_type_id', $movement->warehouse_type_id)
 				->where('id', $item['id'])
 				->firstOrFail();
+
+			$relatedArticles = Article::where('warehouse_type_id', 1)
+				->where('business_type', $item['business_type'])
+				->get();
+
+			$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 4)
+				->where('business_type', $item['business_type'])
+				->get();
+
+			foreach ($relatedArticles as $relatedArticle) {
+				$relatedArticle->stock_good -= $item['digit_amount'];
+				$relatedArticle->save();
+			}
+
+			foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
+				$relatedArticle->stock_good += $item['digit_amount'];
+				$relatedArticle->save();
+			}
 
 			$digit_amount = str_replace(',', '', $item['digit_amount']);
 			$converted_amount = str_replace(',', '', $item['converted_amount']);

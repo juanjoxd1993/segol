@@ -83,14 +83,7 @@
 									<span class="kt-menu__link-text">Envío OSE</span>
 								</a>
 							</li>
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.voucher.reportOse' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.voucher.reportOse')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Consulta Envío OSE</span>
-								</a>
-							</li>
+						
 							
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.voucher.register_document_charge' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.voucher.register_document_charge')); ?>" class="kt-menu__link ">
@@ -125,14 +118,7 @@
 									<span class="kt-menu__link-text">Liquidaciones Final</span>
 								</a>
 							</li>
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.voucher.liquidations' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.voucher.liquidations')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Facturación entre Empresas</span>
-								</a>
-							</li>
+							
 					 </ul>
 				 </div>
 			 </li>
@@ -162,14 +148,7 @@
 									<span class="kt-menu__link-text">Reportes</span>
 								</span>
 							</li>
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.checking_account_report' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.checking_account_report')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Cuentas Corrientes Clientes</span>
-								</a>
-							</li>
+							
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.kardex' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.report.kardex')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -194,14 +173,7 @@
 									<span class="kt-menu__link-text">Liquidaciones Resumido</span>
 								</a>
 							</li>
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.stock_seek_register' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.stock_seek_register')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Reporte de Guías Prueba</span>
-								</a>
-							</li>
+							
 
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.stock_final' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.report.stock_final')); ?>" class="kt-menu__link ">
@@ -246,14 +218,6 @@
 							</li>
 
 							
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.liquidations_sales' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.liquidations_sales')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Venta Comercial</span>
-								</a>
-							</li>
 
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.liquidations_channel' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.report.liquidations_channel')); ?>" class="kt-menu__link ">
@@ -263,6 +227,7 @@
 									<span class="kt-menu__link-text">Venta Canales</span>
 								</a>
 							</li>
+
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.liquidations_channel_total' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.report.liquidations_channel_total')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">

@@ -366,6 +366,19 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/retorno-guias/listar', 'GuidesReturnController@list')->name('dashboard.operations.guides_return.list');
 	Route::post('/operaciones/retorno-guias/actualizar', 'GuidesReturnController@update')->name('dashboard.operations.guides_return.update');
 
+	/** Operaciones > Registro de producción */
+
+	Route::get('/logistica/registro-produccion', 'ProductionController@index')->name('dashboard.logistics.production_register');
+	Route::post('/logistica/registro-produccion/validar-formulario', 'ProductionController@validateForm')->name('dashboard.logistics.production_register.validate_form');
+	Route::post('/logistica/registro-produccion/listar', 'ProductionController@list')->name('dashboard.logistics.production_register.list');
+	Route::post('/logistica/registro-produccion/listar-cuentas', 'ProductionController@getAccounts')->name('dashboard.logistics.production_register.get_accounts');
+	Route::post('/logistica/registro-produccion/listar-articulos', 'ProductionController@getArticles')->name('dashboard.logistics.production_register.get_articles');
+	Route::post('/logistica/registro-produccion/obtener-percepcion', 'ProductionController@getPerceptionPercentage')->name('dashboard.logistics.production_register.get_perception_percentage');
+	Route::post('/logistica/registro-produccion/obtener-tasas', 'ProductionController@getArticleRates')->name('dashboard.logistics.production_register.get_article_rates');
+	Route::post('/logistica/registro-produccion/obtener-articulo', 'ProductionController@getArticle')->name('dashboard.logistics.production_register.get_article');
+	Route::post('/logistica/registro-produccion/guardar', 'ProductionController@store')->name('dashboard.logistics.production_register.store');
+
+
 	 /** Comercial > Estado de Guías */
 	 Route::get('/comercial/estado-guias', 'GuidesCommercialReportController@index')->name('dashboard.commercial.guides_commercial');
 	 Route::post('/comercial/estado-guias/validar-formulario', 'GuidesCommercialReportController@validateForm')->name('dashboard.commercial.guides_commercial.validate_form');

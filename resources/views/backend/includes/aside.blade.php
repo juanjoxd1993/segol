@@ -412,6 +412,14 @@
 									<span class="kt-menu__link-text">Retorno de Guías de Remisión</span>
 								</a>
 							</li>
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.logistics.production_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.logistics.production_register') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Registro de Producción</span>
+								</a>
+							</li>
 			            </ul>
 					</div>
 				</li>

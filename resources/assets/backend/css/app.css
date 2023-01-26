@@ -1,0 +1,5 @@
+.readonly {
+	pointer-events: none;
+    cursor: pointer;
+    background-color: #f5f3f3;
+}
