@@ -33,10 +33,10 @@ class StockGlpRegisterController extends Controller
 		$warehouse_types = WarehouseType::select('id', 'name')->get();
 		$companies = Company::select('id', 'name')->get();
 		$currencies = Currency::select('id', 'name', 'symbol')->get();
-		// $current_date = date('d-m-Y');
+		$current_date = date('d-m-Y');
 		$date = CarbonImmutable::now()->startOfDay();
 		$current_date = $date->startOfDay()->toAtomString();
-		// $min_datetime = $date->startOfDay()->toAtomString();
+		$min_datetime = $date->startOfDay()->toAtomString();
 		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();

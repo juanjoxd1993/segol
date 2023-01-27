@@ -28,7 +28,7 @@
                             <label class="form-control-label">Tipo Movimiento:</label>
                             <select class="form-control" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                            <option value="30">Abastecimiento Marleny</option>
+                                            <option value="30">Abastecimiento Punto Gas</option>
                                             <option value="31">Abastecimiento Operaciones</option>
                                             
                             </select>
