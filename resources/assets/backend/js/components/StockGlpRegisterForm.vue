@@ -53,8 +53,9 @@
                                <option disabled value="">Seleccionar</option>
                                             <option value="8">PLUSPETROL</option>
                                             <option value="9">PLUS-ZETA</option>
-                                            <option value="10">PETROPERU</option>
-                                            <option value="11">SOLGAS</option>
+                                            <option value="10">NUMAY </option>
+                                            <option value="11">UMMA</option>
+                                            <option value="12">NUMAY PISCO</option>
                             </select>
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
