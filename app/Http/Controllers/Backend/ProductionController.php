@@ -369,23 +369,23 @@ class ProductionController extends Controller
 			$article = Article::where('id', $item['id'])
 				->firstOrFail();
 
-			$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 4)
-				->where('business_type', $item['business_type'])
-				->where('warehouse_type_id', 7)
+			$relatedArticlesForIcreaseUnits = Article
+				::where('business_type', $item['business_type'])
+				->where('warehouse_type_id', 6)
 				->get();
 
-			$relatedArticlesForDescUnits = Article::where('warehouse_type_id', 4)
-				->where('business_type', $item['business_type'])
+			$relatedArticlesForDescUnits = Article
+				::where('business_type', $item['business_type'])
 				->where('warehouse_type_id', 4)
 				->get();
 
 			foreach ($relatedArticlesForDescUnits as $relatedArticle) {
-				$relatedArticle->stock_repair -= $item['digit_amount'];
+				$relatedArticle->stock_repair += $item['digit_amount'];
 				$relatedArticle->save();
 			}
 
 			foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
-				$relatedArticle->stock_good += $item['digit_amount'];
+				$relatedArticle->stock_good -= $item['digit_amount'];
 				$relatedArticle->save();
 			}
 

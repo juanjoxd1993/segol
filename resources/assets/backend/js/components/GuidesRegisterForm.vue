@@ -93,7 +93,6 @@
                                 value-zone="America/Lima"
 								zone="America/Lima"
                                 class="form-control"
-                                :min-datetime="this.current_date"
                                 :max-datetime="this.max_datetime"
                                  
                                 @focus="$parent.clearErrorMsg($event)">

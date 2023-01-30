@@ -386,6 +386,8 @@
                     article.igv = accounting.unformat(article.igv).toFixed(4);
                     article.total = accounting.unformat(article.total).toFixed(4);
                     article.perception = accounting.unformat(article.perception).toFixed(4);
+                    article.business_type = article.business_type;
+                    article.convertion = article.convertion;
                 });
 
                 if ( this.article_list != '' && this.article_list != [] ) {
@@ -393,6 +395,8 @@
                     axios.post(this.url, {
                         model: this.model,
                         article_list: this.article_list,
+                    }, {
+                        responseType: 'blob',
                     }).then(response => {
                         EventBus.$emit('loading', false);
                         console.log(response);
@@ -420,6 +424,13 @@
                             type: "success",
                             heightAuto: false,
                         });
+
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', 'guia-remision-'+Date.now()+'.pdf');
+                        document.body.appendChild(link);
+                        link.click();
 
                         this.$nextTick(function() {
                             EventBus.$emit('reset_stock_register');

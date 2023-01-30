@@ -94,7 +94,7 @@
                             <div id="since_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-3 d-none">
                         <div class="form-group">
                             <label class="form-control-label">Tipo:</label>
                             <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
