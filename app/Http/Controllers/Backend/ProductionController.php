@@ -61,7 +61,7 @@ class ProductionController extends Controller
 				'max_datetime',
 				'warehouse_account_types',
 				'warehouse_document_types',
-				'igv',
+				'igv'
 			)
 		);
 	}

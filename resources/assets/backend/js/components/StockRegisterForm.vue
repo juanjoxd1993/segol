@@ -57,7 +57,7 @@
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
                             <select value="1" class="form-control" name="company_id" id="company_id" v-model="model.company_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="1" selected>PUNTO DE DISTRIBUCION S.A.C.</option>
+                                <option value="1" selected>PUNTO GAS S.A.C.</option>
                             </select>
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -80,7 +80,7 @@
                     </div> -->
 					<div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Fecha Final:</label>
+                            <label class="form-control-label">Fecha de Emisión:</label>
                             <datetime
                                 v-model="model.since_date"
                                 placeholder="Selecciona una Fecha"
@@ -115,14 +115,14 @@
                             <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" v-if="model.movement_class_id == 1">
                         <div class="form-group">
                             <label class="form-control-label">Serie de Guía de Remisión:</label>
                             <input type="text" class="form-control" name="referral_guide_series" id="referral_guide_series" v-model="model.referral_guide_series" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_guide_series-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" v-if="model.movement_class_id == 1">
                         <div class="form-group">
                             <label class="form-control-label">Número de Guía de Remisión:</label>
                             <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="model.referral_guide_number" @focus="$parent.clearErrorMsg($event)">
@@ -153,13 +153,7 @@
                             <div id="referral_voucher_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Número de SCOP:</label>
-                            <input type="text" class="form-control" name="scop_number" id="scop_number" v-model="model.scop_number" @focus="$parent.clearErrorMsg($event)">
-                            <div id="scop_number-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
+                   
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Placa:</label>
@@ -254,7 +248,7 @@
                     movement_type_id: '',
                     movement_stock_type_id: '',
                     warehouse_type_id: '',
-                    company_id: '',
+                    company_id: '1',
                     currency: 1,
                     since_date: this.current_date,
                     warehouse_account_type_id: '3',
@@ -264,7 +258,7 @@
                     referral_warehouse_document_type_id: '',
                     referral_serie_number: '',
                     referral_voucher_number: '',
-                    scop_number: '',
+                //    scop_number: '',
                     license_plate: '',
                 },
             }
@@ -285,7 +279,7 @@
                 this.model.referral_warehouse_document_type_id = '';
                 this.model.referral_serie_number = '';
                 this.model.referral_voucher_number = '';
-                this.model.scop_number = '';
+             //   this.model.scop_number = '';
                 this.model.license_plate = '';
 
                 $('.kt-form').find('input').prop('disabled', false);

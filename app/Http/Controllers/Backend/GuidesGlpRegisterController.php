@@ -45,7 +45,7 @@ class GuidesGlpRegisterController extends Controller
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
 		$client_routes= ClientRoute::select('id','name')->get();
-		$vehicles= Vehicle::select('id','plate','transportist_id')->get();
+		$vehicles= Vehicle::select('id','plate')->get();
 		$guide_series= GuidesSerie::select('id','num_serie','correlative')->get();
 
 
@@ -280,9 +280,9 @@ class GuidesGlpRegisterController extends Controller
 		} else {
 			$article->converted_amount = number_format($quantity, 4, '.', ',');
 		}
-
+        
 		$article->currency = $currency->name;
-		$article->currency_id = $currency_id;
+	    $article->currency_id = $currency_id;
 		$article->price = number_format($price, 4, '.', ',');
 		$article->sale_value = number_format($sale_value, 4, '.', ',');
 		$article->inaccurate_value = number_format($inaccurate_value, 4, '.', ',');
@@ -357,10 +357,7 @@ class GuidesGlpRegisterController extends Controller
 
 		$movement_type = MoventType::find($movement_type_id);
 
-	//	$transportist= Vehicle:: select('plate','transportist_id')
-	//	->where('plate',$license_plate)
-	//	->first ();
-		
+	
 
 
 
@@ -392,13 +389,15 @@ class GuidesGlpRegisterController extends Controller
 		$movement->created_at = date('Y-m-d', strtotime($since_date));
 		$movement->created_at_user = Auth::user()->user;
 		$movement->updated_at_user = Auth::user()->user;
+        if ($currency_id ==1 ){
+		$movement->tc = 1;
+		}else{
 		$movement->tc = $tc;
+		}
 		$movement->soles = $movement->total*$movement->tc;
 		$movement->origin= array_sum(array_column($articles, 'group_id'));
 		$movement->cost_glp=$movement->soles/array_sum(array_column($articles, 'converted_amount'));
-	//	$movement->traslate_date = date('Y-m-d', strtotime($traslate_date));
-	//	$movement->route_id = $route_id;
-	//	$movement->transportist_id = $transportist->transportist_id;
+
 		$movement->save();
 
 		foreach ($articles as $item) {
