@@ -102,8 +102,7 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo:</label>
-                            <select class="form-control" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
-                                <option value="">Seleccionar</option>
+                            <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
                                 <option v-for="warehouse_account_type in warehouseAccountTypes" :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{ warehouse_account_type.name }}</option>
                             </select>
                             <div id="warehouse_account_type_id-error" class="error invalid-feedback"></div>
@@ -275,7 +274,7 @@
                 default: ''
             },
             tc: {
-                type: Array,
+                type: String,
                 default: ''
             },
             current_date: {
@@ -339,7 +338,7 @@
                     tc:'',
              //    traslate_date: this.min_datetime,
                     since_date: this.current_date,
-                    warehouse_account_type_id: '',
+                    warehouse_account_type_id: '2',
                     warehouse_account_id: '',
                     referral_guide_series: '',
                     referral_guide_number: '',
@@ -363,7 +362,7 @@
                 this.model.company_id = '';
             //    this.model.traslate_date = this.traslate_date;
                 this.model.since_date = this.current_date;
-                this.model.warehouse_account_type_id = '';
+                this.model.warehouse_account_type_id = '2';
                 this.model.warehouse_account_id = 2;
                 this.model.referral_guide_series = '';
                 this.model.referral_guide_number = '';
@@ -382,6 +381,8 @@
         },
         mounted() {
             this.newSelect2();
+
+            this.warehouse_account_types.filter(wat => wat.id === 2);
         },
         watch: {
             

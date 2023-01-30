@@ -42,7 +42,7 @@ class GuidesGlpRegisterController extends Controller
 		$current_date = $date->startOfDay()->toAtomString();
 		$min_datetime = $date->startOfDay()->toAtomString();
 		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
-		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
+		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->where('id', 2)->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
 		$client_routes= ClientRoute::select('id','name')->get();
 		$vehicles= Vehicle::select('id','plate')->get();
