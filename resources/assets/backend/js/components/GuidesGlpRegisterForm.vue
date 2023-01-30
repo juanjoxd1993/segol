@@ -42,8 +42,9 @@
                                <option disabled value="">Seleccionar</option>
                                             <option value="8">PLUSPETROL</option>
                                             <option value="9">PLUS-ZETA</option>
-                                            <option value="10">PETROPERU</option>
-                                            <option value="11">SOLGAS</option>
+                                            <option value="10">NUMAY LIMA</option>
+                                            <option value="11">UNNA</option>
+                                             <option value="11">NUMAY PISCO</option>
                             </select>
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -101,15 +102,14 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo:</label>
-                            <select class="form-control" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
-                                
-                               
-                                            <option value="2">Proveedor</option>
-                           
+                            <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
+                                <option value="">Seleccionar</option>
+                                <option v-for="warehouse_account_type in warehouseAccountTypes" :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{ warehouse_account_type.name }}</option>
                             </select>
                             <div id="warehouse_account_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Proveedor:</label>
@@ -145,7 +145,7 @@
                         </div>
                     </div> 
 
-                    <div class="col-lg-3" >
+                    <div class="col-lg-3" v-if="this.model.currency >= 2 && this.model.currency <= 4" >
                          <div class="form-group">
                             <label class="form-control-label">Tipo Cambio:</label>
                             <input type="text" class="form-control" name="tc" id="tc" placeholder="0" v-model="model.tc" @focus="$parent.clearErrorMsg($event)">

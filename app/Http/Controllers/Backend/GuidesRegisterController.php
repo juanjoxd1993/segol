@@ -46,7 +46,7 @@ class GuidesRegisterController extends Controller
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
 		$client_routes= ClientRoute::select('id','name')->get();
-		$vehicles= Vehicle::select('id','plate','transportist_id')->get();
+		$vehicles= Vehicle::select('id','plate')->get();
 		$guide_series= GuidesSerie::select('id','num_serie','correlative')->get();
 
 
@@ -330,9 +330,6 @@ class GuidesRegisterController extends Controller
 
 		$movement_type = MoventType::find($movement_type_id);
 
-		$transportist= Vehicle:: select('plate','transportist_id')
-		->where('plate',$license_plate)
-		->first ();
 		
 
 
@@ -364,7 +361,7 @@ class GuidesRegisterController extends Controller
 		$movement->traslate_date = date('Y-m-d', strtotime($traslate_date));
 		$movement->fac_date = date('Y-m-d', strtotime($traslate_date));
 		$movement->route_id = $route_id;
-		$movement->transportist_id = $transportist->transportist_id;
+	
 		$movement->save();
 
 		foreach ($articles as $item) {

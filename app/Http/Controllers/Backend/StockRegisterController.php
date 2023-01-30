@@ -128,7 +128,7 @@ class StockRegisterController extends Controller
 			'referral_warehouse_document_type_id.required_if'	=> 'Debe seleccionar un Tipo de Referencia.',
 			'referral_serie_number.required_if'					=> 'Debe digitar la Serie de Referencia.',
 			'referral_voucher_number.required_if'				=> 'Debe digitar el Número de Referencia.',
-			'scop_number.required_if'							=> 'Debe digitar el Número de SCOP.',
+		//	'scop_number.required_if'							=> 'Debe digitar el Número de SCOP.',
 			'license_plate.required_if'							=> 'Debe digitar el Número de Placa.',
 		];
 
@@ -144,7 +144,7 @@ class StockRegisterController extends Controller
 			'referral_warehouse_document_type_id'	=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
 			'referral_serie_number'					=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
 			'referral_voucher_number'				=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
-			'scop_number'							=> 'required_if:movement_type_id,1,12,13,14,15,16',
+		//	'scop_number'							=> 'required_if:movement_type_id,1,12,13,14,15,16',
 			'license_plate'							=> 'required_if:movement_type_id,11,12,13,14,19,20',
 		];
 
@@ -169,7 +169,7 @@ class StockRegisterController extends Controller
 		$referral_warehouse_document_type_id = request('referral_warehouse_document_type_id');
 		$referral_serie_number = request('referral_serie_number');
 		$referral_voucher_number = request('referral_voucher_number');
-		$scop_number = request('scop_number');
+	//	$scop_number = request('scop_number');
 		$license_plate = request('license_plate');
 
 		$model = request()->all();
@@ -301,7 +301,7 @@ class StockRegisterController extends Controller
 		$referral_warehouse_document_type_id = request('model.referral_warehouse_document_type_id');
 		$referral_serie_number = request('model.referral_serie_number');
 		$referral_voucher_number = request('model.referral_voucher_number');
-		$scop_number = request('model.scop_number');
+	//	$scop_number = request('model.scop_number');
 		$license_plate = request('model.license_plate');
 		$articles = request('article_list');
 
@@ -348,7 +348,7 @@ class StockRegisterController extends Controller
 		$movement->referral_warehouse_document_type_id = $referral_warehouse_document_type_id;
 		$movement->referral_serie_number = $referral_serie_number;
 		$movement->referral_voucher_number = $referral_voucher_number;
-		$movement->scop_number = $scop_number;
+	//	$movement->scop_number = $scop_number;
 		$movement->license_plate = $license_plate;
 		$movement->currency_id = $currency_id;
 		$movement->taxed_operation = array_sum(array_column($articles, 'sale_value'));
