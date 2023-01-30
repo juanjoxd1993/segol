@@ -364,7 +364,7 @@
             //    this.model.traslate_date = this.traslate_date;
                 this.model.since_date = this.current_date;
                 this.model.warehouse_account_type_id = '';
-                this.model.warehouse_account_id = '';
+                this.model.warehouse_account_id = 2;
                 this.model.referral_guide_series = '';
                 this.model.referral_guide_number = '';
                  this.model.referral_warehouse_document_type_id = '';
