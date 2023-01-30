@@ -52,9 +52,9 @@
                             <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
                                <option disabled value="">Seleccionar</option>
                                             <option value="8">PLUSPETROL</option>
-                                            <option value="9">PLUS-ZETA</option>
-                                            <option value="10">NUMAY</option>
-                                            <option value="11">NUNNA</option>
+                                            <option value="9">PLUS-CALLAO</option>
+                                            <option value="10">NUMAY LIMA</option>
+                                            <option value="11">UNNA</option>
                                              <option value="12">NUMAY PISCO</option>
                             </select>
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
@@ -203,7 +203,7 @@
                          <label class="form-control-label">Mezcla:</label>
                             <select class="form-control" name="mezcla" id="mezcla" v-model="model.mezcla" @focus="$parent.clearErrorMsg($event)">
                                <option disabled value="">Seleccionar</option>
-                                            <option value="60/40">55/35</option>
+                                            <option value="60/40">65/35</option>
                                             <option value="60/40">60/40</option>
                                             <option value="70/30">70/30</option>
                                                                                        
