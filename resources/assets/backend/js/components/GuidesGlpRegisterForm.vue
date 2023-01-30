@@ -102,7 +102,7 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo:</label>
-                            <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
+                            <select class="form-control" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
                                 <option value="">Seleccionar</option>
                                 <option v-for="warehouse_account_type in warehouseAccountTypes" :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{ warehouse_account_type.name }}</option>
                             </select>
