@@ -192,13 +192,13 @@ class StockRegisterController extends Controller
 		}
 
 		// Obtener artículos
-		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged', 'business_type')
+		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged', 'business_type','subgroup_id')
 			->where('warehouse_type_id', $warehouse_type_id)
 			->orderBy('code', 'asc')
 			->get();
 		
 		$articles->map(function($item, $index) {
-			$item->sale_unit_id = $item->sale_unit['name'];
+			$item->subgroup_id = $item->subgroup['name'];
 			$item->warehouse_unit_id = $item->warehouse_unit['name'];
 		});
 
@@ -253,7 +253,7 @@ class StockRegisterController extends Controller
 
 		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
 			->where('articles.id', $article_id)
-			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'business_type')
+			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'business_type','subgroup_id')
 			->first();
 		
 		$article->item_number = ++$item_number;
@@ -291,7 +291,7 @@ class StockRegisterController extends Controller
 		$movement_type_id = request('model.movement_type_id');
 		$movement_stock_type_id = request('model.movement_stock_type_id');
 		$warehouse_type_id = request('model.warehouse_type_id');
-		$company_id = request('model.company_id');
+		$company_id = 1;
 		$currency_id = request('model.currency');
 		$since_date = request('model.since_date');
 		$warehouse_account_type_id = request('model.warehouse_account_type_id');
