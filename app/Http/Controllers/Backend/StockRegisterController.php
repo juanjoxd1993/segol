@@ -368,23 +368,7 @@ class StockRegisterController extends Controller
 				->where('id', $item['id'])
 				->firstOrFail();
 
-			$relatedArticles = Article::where('warehouse_type_id', 1)
-				->where('business_type', $item['business_type'])
-				->get();
-
-			$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 4)
-				->where('business_type', $item['business_type'])
-				->get();
-
-			foreach ($relatedArticles as $relatedArticle) {
-				$relatedArticle->stock_good -= $item['digit_amount'];
-				$relatedArticle->save();
-			}
-
-			foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
-				$relatedArticle->stock_good += $item['digit_amount'];
-				$relatedArticle->save();
-			}
+		
 
 			$digit_amount = str_replace(',', '', $item['digit_amount']);
 			$converted_amount = str_replace(',', '', $item['converted_amount']);
