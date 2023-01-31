@@ -29,6 +29,7 @@
 			<td style="font-weight:bold;">#</td>
 			<td style="font-weight:bold;">Código</td>
 			<td style="font-weight:bold;">Descripción</td>
+			<td style="font-weight:bold;">Subgrupo</td>
 			<td style="font-weight:bold;">Unidad de Medida</td>
 			<td style="font-weight:bold;"># de Empaque</td>
 			<td style="font-weight:bold;">Unidad de Medida Almacén</td>
@@ -40,7 +41,6 @@
 			<td style="font-weight:bold;">Valor</td>
 			<td style="font-weight:bold;">Familia / Marca</td>
 			<td style="font-weight:bold;">Grupo</td>
-			<td style="font-weight:bold;">Subgrupo</td>
 			<td style="font-weight:bold;">Ubicación</td>
 		</tr>
 		@foreach ($elements as $element)
@@ -48,6 +48,7 @@
 			<td>{{ $loop->iteration }}</td>
 			<td>{{ $element->article_code }}</td>
 			<td>{{ $element->article_name }}</td>
+			<td>{{ $element->subgroup_name }}</td>
 			<td>{{ $element->sale_unit_name }}</td>
 			<td>{{ $element->package_sale }}</td>
 			<td>{{ $element->warehouse_unit_name }}</td>
@@ -59,7 +60,6 @@
 			<td>{{ $element->article_price }}</td>
 			<td>{{ $element->family_name }}</td>
 			<td>{{ $element->group_name }}</td>
-			<td>{{ $element->subgroup_name }}</td>
 			<td>{{ $element->ubication }}</td>
 		</tr>
 		@endforeach
