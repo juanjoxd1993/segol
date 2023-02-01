@@ -12,5 +12,3 @@ yarn-error.log
 /.vscode
 /.phpintel
 storage/logs/*.log
-storage/framework/sessions/
-storage/framework/views/
