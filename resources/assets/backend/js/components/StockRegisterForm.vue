@@ -16,7 +16,7 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Ingreso/Salida:</label>
-                            <select class="form-control" name="movement_class_id" id="movement_class_id" v-model="model.movement_class_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control" name="movement_class_id" id="movement_class_id" v-model="model.movement_class_id" @focus="$parent.clearErrorMsg($event)" v-on:change="manageWarehouseType">
                                 <option value="">Seleccionar</option>
                                 <option v-for="movement_class in movement_classes" :value="movement_class.id" v-bind:key="movement_class.id">{{ movement_class.name }}</option>
                             </select>
@@ -27,7 +27,7 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo Movimiento:</label>
-                            <select class="form-control" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)" v-on:change="manageWarehouseType">
                                 <option  value="">Seleccionar</option>
                                 <option v-for="movement_type in movement_types" :value="movement_type.id" v-bind:key="movement_type.id">{{ movement_type.name }}</option>              
                             </select>
@@ -425,7 +425,16 @@
                     });
                 });
             },
-          
+            manageWarehouseType: function() {
+                $('#warehouse_type_id').removeClass('readonly');
+
+                if ($('#movement_class_id').val() == 2 && $('#movement_type_id').val() == 6) {
+                    setTimeout(function() {
+                        $('#warehouse_type_id').val('4');
+                        $('#warehouse_type_id').addClass('readonly');
+                    }, 100);
+                }
+            }
         }
     };
 </script>

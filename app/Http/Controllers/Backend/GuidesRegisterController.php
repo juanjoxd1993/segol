@@ -311,6 +311,8 @@ class GuidesRegisterController extends Controller
 		
 		$movement_number = ( $movement_number ? $movement_number + 1 : 1 );
 
+		$account = null;
+
 		if ( $warehouse_account_type_id == 1 ) {
 			$account = Client::select('business_name', 'document_number')
 				->where('id', $warehouse_account_id)
@@ -324,7 +326,7 @@ class GuidesRegisterController extends Controller
 				->where('id', $warehouse_account_id)
 				->first();
 			
-			$account->business_name = $account->first_name . ' ' . $account->last_name;
+			$account->business_name = $account ? ($account->first_name . ' ' . $account->last_name) : '';
 			$account->document_number = '';
 		}
 
@@ -342,8 +344,8 @@ class GuidesRegisterController extends Controller
 		$movement->movement_number = $movement_number;
 		$movement->warehouse_account_type_id = $warehouse_account_type_id;
 		$movement->account_id = $warehouse_account_id;
-		$movement->account_document_number = $account->document_number;
-		$movement->account_name = $account->business_name;
+		$movement->account_document_number = $account ? $account->document_number : '';
+		$movement->account_name = $account ? $account->business_name : '';
 		$movement->referral_guide_series = $referral_guide_series;
 		$movement->referral_guide_number = $referral_guide_number;
 		$movement->scop_number = $scop_number;
@@ -354,7 +356,7 @@ class GuidesRegisterController extends Controller
 		$movement->igv = array_sum(array_column($articles, 'igv'));
 		$movement->total = array_sum(array_column($articles, 'total'));
 		$movement->total_perception = array_sum(array_column($articles, 'perception'));
-		$movement->action_type_id = ( $movement_type ? $movement_type->action_type_id : '' );
+		$movement->action_type_id = ( $movement_type ? $movement_type->action_type_id : null );
 		$movement->created_at = date('Y-m-d', strtotime($since_date));
 		$movement->created_at_user = Auth::user()->user;
 		$movement->updated_at_user = Auth::user()->user;
@@ -364,21 +366,65 @@ class GuidesRegisterController extends Controller
 	
 		$movement->save();
 
+		$movement2 = new WarehouseMovement();
+		$movement2->company_id = $company_id;
+		$movement2->warehouse_type_id = 6;
+		$movement2->movement_class_id = 2;
+		$movement2->movement_type_id = 21;
+		$movement2->movement_number = $movement_number;
+		$movement2->warehouse_account_type_id = $warehouse_account_type_id;
+		$movement2->account_id = $warehouse_account_id;
+		$movement2->account_document_number = $account ? $account->document_number : '';
+		$movement2->account_name = $account ? $account->business_name : '';
+		$movement2->referral_guide_series = $referral_guide_series;
+		$movement2->referral_guide_number = $referral_guide_number;
+		$movement2->scop_number = $scop_number;
+		$movement2->license_plate = $license_plate;
+		$movement2->taxed_operation = array_sum(array_column($articles, 'sale_value'));
+		$movement2->unaffected_operation = array_sum(array_column($articles, 'inaccurate_value'));
+		$movement2->exonerated_operation = 0;
+		$movement2->igv = array_sum(array_column($articles, 'igv'));
+		$movement2->total = array_sum(array_column($articles, 'total'));
+		$movement2->total_perception = array_sum(array_column($articles, 'perception'));
+		$movement2->action_type_id = ( $movement_type ? $movement_type->action_type_id : null );
+		$movement2->created_at = date('Y-m-d', strtotime($since_date));
+		$movement2->created_at_user = Auth::user()->user;
+		$movement2->updated_at_user = Auth::user()->user;
+		$movement2->traslate_date = date('Y-m-d', strtotime($traslate_date));
+		$movement2->fac_date = date('Y-m-d', strtotime($traslate_date));
+		$movement2->route_id = $route_id;
+	
+		$movement2->save();
+
 		foreach ($articles as $item) {
 			$article = Article::where('warehouse_type_id', $movement->warehouse_type_id)
 				->where('id', $item['id'])
 				->firstOrFail();
 
+			if ($article->movement_type_id == 11) {
+				$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 6)
+					->where('business_type', $item['business_type'])
+					->where('convertion', $item['convertion'])
+					->get();
 
-			$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 6)
-				->where('business_type', $item['business_type'])
-				->where('convertion', $item['convertion'])
-				->get();
+				foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
+					$relatedArticle->stock_repair -= $item['digit_amount'];
+					$relatedArticle->stock_damaged += $item['digit_amount'];
+					$relatedArticle->save();
+				}
+			}
 
-			foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
-				$relatedArticle->stock_repair -= $item['digit_amount'];
-				$relatedArticle->stock_return += $item['digit_amount'];
-				$relatedArticle->save();
+			if ($article->movement_type_id == 12) {
+				$relatedArticles2 = Article::where('warehouse_type_id', 6)
+					->where('business_type', $item['business_type'])
+					->where('convertion', $item['convertion'])
+					->get();
+
+				foreach ($relatedArticles2 as $relatedArticle) {
+					$relatedArticle->stock_repair -= $item['digit_amount'];
+					$relatedArticle->stock_good += $item['digit_amount'];
+					$relatedArticle->save();
+				}
 			}
 
 			$digit_amount = str_replace(',', '', $item['digit_amount']);
@@ -448,6 +494,35 @@ class GuidesRegisterController extends Controller
 			}
 
 			$movementDetail->save();
+
+			if ($article->movement_type_id == 12) {
+				$movementDetail2 = new WarehouseMovementDetail();
+				$movementDetail2->warehouse_movement_id = $movement2->id;
+				$movementDetail2->item_number = $item['item_number'];
+				$movementDetail2->article_code = $item['id'];
+				$movementDetail2->digit_amount = $digit_amount;
+				$movementDetail2->converted_amount = $converted_amount;
+				$movementDetail2->old_stock_good = $article->stock_good;
+				$movementDetail2->old_stock_repair = $article->stock_repair;
+				$movementDetail2->old_stock_return = $article->stock_return;
+				$movementDetail2->old_stock_damaged = $article->stock_damaged;
+				$movementDetail2->new_stock_good = $article->stock_good;
+				$movementDetail2->new_stock_repair = $article->stock_repair;
+				$movementDetail2->new_stock_return = $article->stock_return;
+				$movementDetail2->new_stock_damaged = $article->stock_damaged;
+				$movementDetail2->price = $price;
+				$movementDetail2->sale_value = $sale_value;
+				$movementDetail2->exonerated_value = 0;
+				$movementDetail2->inaccurate_value = $inaccurate_value;
+				$movementDetail2->igv = $igv;
+				$movementDetail2->total = $total;
+				$movementDetail2->igv_perception = $igv_perception;
+				$movementDetail2->igv_percentage = $item['igv_percentage'];
+				$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
+				$movementDetail2->created_at_user = Auth::user()->user;
+				$movementDetail2->updated_at_user = Auth::user()->user;
+				$movementDetail2->save();
+			}
 
 			$article->edit = 1;
 			$article->save();
