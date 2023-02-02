@@ -84,7 +84,7 @@ class TerminalsReportController extends Controller
 		'traslate_date',
 		'scop_number', 'license_plate', 'state')
 		
-        ->whereIn('warehouse_type_id',[8,9,10,11])
+        ->whereIn('warehouse_type_id',[8,9,10,11,12])
         ->where('movement_class_id', 2)
         ->whereIn('movement_type_id', [30,31])
 		
