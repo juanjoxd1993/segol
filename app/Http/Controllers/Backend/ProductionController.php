@@ -489,7 +489,7 @@ class ProductionController extends Controller
 			}
 
 			foreach ($relatedArticlesForDescUnitsWithConvertion as $relatedArticle) {
-				$relatedArticle->stock_good -= $item['digit_amount'] * $item['convertion'];
+				$relatedArticle->stock_good -= $item['digit_amount'] * $article->convertion;
 				$relatedArticle->save();
 			}
 
