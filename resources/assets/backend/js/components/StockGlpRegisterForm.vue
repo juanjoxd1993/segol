@@ -52,10 +52,10 @@
                             <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
                                <option disabled value="">Seleccionar</option>
                                             <option value="8">PLUSPETROL</option>
-                                            <option value="9">PLUS-ZETA</option>
-                                            <option value="10">NUMAY </option>
-                                            <option value="11">UMMA</option>
-                                            <option value="12">NUMAY PISCO</option>
+                                            <option value="9">PLUS-CALLAO</option>
+                                            <option value="10">NUMAY LIMA</option>
+                                            <option value="11">UNNA</option>
+                                             <option value="12">NUMAY PISCO</option>
                             </select>
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -87,14 +87,12 @@
                             <div id="since_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                     <div class="col-lg-3">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Trabajador:</label>
-                            <select class="form-control" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
-                                
-                               
-                                            <option value="3">Trabajador</option>
-                           
+                            <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
+                                <option value="">Seleccionar</option>
+                                <option v-for="warehouse_account_type in warehouseAccountTypes" :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{ warehouse_account_type.name }}</option>
                             </select>
                             <div id="warehouse_account_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -146,7 +144,7 @@
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Placa:</label>
+                            <label class="form-control-label">Cisterna:</label>
                             <input type="text" class="form-control" name="license_plate" id="license_plate" v-model="model.license_plate" @focus="$parent.clearErrorMsg($event)">
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
@@ -165,6 +163,10 @@
                          <label class="form-control-label">Costo Mes:</label>
                             <select class="form-control" name="price_mes" id="price_mes" v-model="model.price_mes" @focus="$parent.clearErrorMsg($event)">
                                <option disabled value="">Seleccionar</option>
+                                            <option value="01">ENERO</option>
+                                            <option value="02">FEBRERO</option>
+                                            <option value="03">MARZO</option>    
+                                            <option value="04">ABRIL</option> 
                                             <option value="05">MAYO</option>
                                             <option value="06">JUNIO</option>
                                             <option value="07">JULIO</option>    
@@ -201,6 +203,7 @@
                          <label class="form-control-label">Mezcla:</label>
                             <select class="form-control" name="mezcla" id="mezcla" v-model="model.mezcla" @focus="$parent.clearErrorMsg($event)">
                                <option disabled value="">Seleccionar</option>
+                                            <option value="60/40">65/35</option>
                                             <option value="60/40">60/40</option>
                                             <option value="70/30">70/30</option>
                                                                                        
@@ -212,7 +215,7 @@
 
                       <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Isla:</label>
+                            <label class="form-control-label">Gravedad:</label>
                             <input type="text" class="form-control" name="isla" id="isla" v-model="model.isla" @focus="$parent.clearErrorMsg($event)">
                             <div id="isla-error" class="error invalid-feedback"></div>
                         </div>
@@ -306,11 +309,11 @@
                     movement_type_id: '',
                     movement_stock_type_id: '',
                     warehouse_type_id: '',
-                    company_id: '',
+                    company_id: '1',
                  //   currency: 1,
                     traslate_date: this.min_datetime,
                     since_date: this.current_date,
-                    warehouse_account_type_id: '',
+                    warehouse_account_type_id: '3',
                     warehouse_account_id: '',
                     referral_guide_series: '',
                     referral_guide_number: '',

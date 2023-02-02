@@ -128,7 +128,7 @@ class StockRegisterController extends Controller
 			'referral_warehouse_document_type_id.required_if'	=> 'Debe seleccionar un Tipo de Referencia.',
 			'referral_serie_number.required_if'					=> 'Debe digitar la Serie de Referencia.',
 			'referral_voucher_number.required_if'				=> 'Debe digitar el Número de Referencia.',
-			'scop_number.required_if'							=> 'Debe digitar el Número de SCOP.',
+		//	'scop_number.required_if'							=> 'Debe digitar el Número de SCOP.',
 			'license_plate.required_if'							=> 'Debe digitar el Número de Placa.',
 		];
 
@@ -144,7 +144,7 @@ class StockRegisterController extends Controller
 			'referral_warehouse_document_type_id'	=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
 			'referral_serie_number'					=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
 			'referral_voucher_number'				=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
-			'scop_number'							=> 'required_if:movement_type_id,1,12,13,14,15,16',
+		//	'scop_number'							=> 'required_if:movement_type_id,1,12,13,14,15,16',
 			'license_plate'							=> 'required_if:movement_type_id,11,12,13,14,19,20',
 		];
 
@@ -169,7 +169,7 @@ class StockRegisterController extends Controller
 		$referral_warehouse_document_type_id = request('referral_warehouse_document_type_id');
 		$referral_serie_number = request('referral_serie_number');
 		$referral_voucher_number = request('referral_voucher_number');
-		$scop_number = request('scop_number');
+	//	$scop_number = request('scop_number');
 		$license_plate = request('license_plate');
 
 		$model = request()->all();
@@ -192,13 +192,13 @@ class StockRegisterController extends Controller
 		}
 
 		// Obtener artículos
-		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged', 'business_type')
+		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged', 'business_type','subgroup_id')
 			->where('warehouse_type_id', $warehouse_type_id)
 			->orderBy('code', 'asc')
 			->get();
 		
 		$articles->map(function($item, $index) {
-			$item->sale_unit_id = $item->sale_unit['name'];
+			$item->subgroup_id = $item->subgroup['name'];
 			$item->warehouse_unit_id = $item->warehouse_unit['name'];
 		});
 
@@ -253,7 +253,7 @@ class StockRegisterController extends Controller
 
 		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
 			->where('articles.id', $article_id)
-			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'business_type')
+			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'business_type','subgroup_id')
 			->first();
 		
 		$article->item_number = ++$item_number;
@@ -291,7 +291,7 @@ class StockRegisterController extends Controller
 		$movement_type_id = request('model.movement_type_id');
 		$movement_stock_type_id = request('model.movement_stock_type_id');
 		$warehouse_type_id = request('model.warehouse_type_id');
-		$company_id = request('model.company_id');
+		$company_id = 1;
 		$currency_id = request('model.currency');
 		$since_date = request('model.since_date');
 		$warehouse_account_type_id = request('model.warehouse_account_type_id');
@@ -301,7 +301,7 @@ class StockRegisterController extends Controller
 		$referral_warehouse_document_type_id = request('model.referral_warehouse_document_type_id');
 		$referral_serie_number = request('model.referral_serie_number');
 		$referral_voucher_number = request('model.referral_voucher_number');
-		$scop_number = request('model.scop_number');
+	//	$scop_number = request('model.scop_number');
 		$license_plate = request('model.license_plate');
 		$articles = request('article_list');
 
@@ -348,7 +348,7 @@ class StockRegisterController extends Controller
 		$movement->referral_warehouse_document_type_id = $referral_warehouse_document_type_id;
 		$movement->referral_serie_number = $referral_serie_number;
 		$movement->referral_voucher_number = $referral_voucher_number;
-		$movement->scop_number = $scop_number;
+	//	$movement->scop_number = $scop_number;
 		$movement->license_plate = $license_plate;
 		$movement->currency_id = $currency_id;
 		$movement->taxed_operation = array_sum(array_column($articles, 'sale_value'));
@@ -368,23 +368,7 @@ class StockRegisterController extends Controller
 				->where('id', $item['id'])
 				->firstOrFail();
 
-			$relatedArticles = Article::where('warehouse_type_id', 1)
-				->where('business_type', $item['business_type'])
-				->get();
-
-			$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 4)
-				->where('business_type', $item['business_type'])
-				->get();
-
-			foreach ($relatedArticles as $relatedArticle) {
-				$relatedArticle->stock_good -= $item['digit_amount'];
-				$relatedArticle->save();
-			}
-
-			foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
-				$relatedArticle->stock_good += $item['digit_amount'];
-				$relatedArticle->save();
-			}
+		
 
 			$digit_amount = str_replace(',', '', $item['digit_amount']);
 			$converted_amount = str_replace(',', '', $item['converted_amount']);

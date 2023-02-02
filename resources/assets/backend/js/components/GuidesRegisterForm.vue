@@ -28,13 +28,13 @@
                             <label class="form-control-label">Tipo Movimiento:</label>
                             <select class="form-control" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                            <option value="6">Punto a Cordia</option>
                                             <option value="11">Pre-Venta</option>
                                             <option value="12">Venta Planta</option>
                             </select>
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    
                    <!--   <div class="col-lg-3" v-if="model.movement_type_id == 21">
                         <div class="form-group">
                             <label class="form-control-label">Tipo de Stock:</label>
@@ -93,7 +93,6 @@
                                 value-zone="America/Lima"
 								zone="America/Lima"
                                 class="form-control"
-                                :min-datetime="this.current_date"
                                 :max-datetime="this.max_datetime"
                                  
                                 @focus="$parent.clearErrorMsg($event)">

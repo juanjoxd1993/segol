@@ -26,6 +26,7 @@ use App\Vehicle;
 use Auth;
 use Carbon\CarbonImmutable;
 use PDF;
+use DB;
 
 class GuidesRegisterController extends Controller
 {
@@ -36,16 +37,16 @@ class GuidesRegisterController extends Controller
 		$warehouse_types = WarehouseType::select('id', 'name')->get();
 		$companies = Company::select('id', 'name')->get();
 		$currencies = Currency::select('id', 'name', 'symbol')->get();
-		// $current_date = date('d-m-Y');
+		$current_date = date('d-m-Y');
 		$date = CarbonImmutable::now()->startOfDay();
 		$current_date = $date->startOfDay()->modify("-2 day")->toAtomString();
-		// $min_datetime = $date->startOfDay()->toAtomString();
+		$min_datetime = $date->startOfDay()->toAtomString();
 
 		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
 		$client_routes= ClientRoute::select('id','name')->get();
-		$vehicles= Vehicle::select('id','plate','transportist_id')->get();
+		$vehicles= Vehicle::select('id','plate')->get();
 		$guide_series= GuidesSerie::select('id','num_serie','correlative')->get();
 
 
@@ -243,7 +244,7 @@ class GuidesRegisterController extends Controller
 		
 		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
 			->where('articles.id', $article_id)
-			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name')
+			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'business_type', 'convertion')
 			->first();
 		
 		$article->item_number = ++$item_number;
@@ -310,6 +311,8 @@ class GuidesRegisterController extends Controller
 		
 		$movement_number = ( $movement_number ? $movement_number + 1 : 1 );
 
+		$account = null;
+
 		if ( $warehouse_account_type_id == 1 ) {
 			$account = Client::select('business_name', 'document_number')
 				->where('id', $warehouse_account_id)
@@ -323,15 +326,12 @@ class GuidesRegisterController extends Controller
 				->where('id', $warehouse_account_id)
 				->first();
 			
-			$account->business_name = $account->first_name . ' ' . $account->last_name;
+			$account->business_name = $account ? ($account->first_name . ' ' . $account->last_name) : '';
 			$account->document_number = '';
 		}
 
 		$movement_type = MoventType::find($movement_type_id);
 
-		$transportist= Vehicle:: select('plate','transportist_id')
-		->where('plate',$license_plate)
-		->first ();
 		
 
 
@@ -344,8 +344,8 @@ class GuidesRegisterController extends Controller
 		$movement->movement_number = $movement_number;
 		$movement->warehouse_account_type_id = $warehouse_account_type_id;
 		$movement->account_id = $warehouse_account_id;
-		$movement->account_document_number = $account->document_number;
-		$movement->account_name = $account->business_name;
+		$movement->account_document_number = $account ? $account->document_number : '';
+		$movement->account_name = $account ? $account->business_name : '';
 		$movement->referral_guide_series = $referral_guide_series;
 		$movement->referral_guide_number = $referral_guide_number;
 		$movement->scop_number = $scop_number;
@@ -356,20 +356,76 @@ class GuidesRegisterController extends Controller
 		$movement->igv = array_sum(array_column($articles, 'igv'));
 		$movement->total = array_sum(array_column($articles, 'total'));
 		$movement->total_perception = array_sum(array_column($articles, 'perception'));
-		$movement->action_type_id = ( $movement_type ? $movement_type->action_type_id : '' );
+		$movement->action_type_id = ( $movement_type ? $movement_type->action_type_id : null );
 		$movement->created_at = date('Y-m-d', strtotime($since_date));
 		$movement->created_at_user = Auth::user()->user;
 		$movement->updated_at_user = Auth::user()->user;
 		$movement->traslate_date = date('Y-m-d', strtotime($traslate_date));
 		$movement->fac_date = date('Y-m-d', strtotime($traslate_date));
 		$movement->route_id = $route_id;
-		$movement->transportist_id = $transportist->transportist_id;
+	
 		$movement->save();
+
+		$movement2 = new WarehouseMovement();
+		$movement2->company_id = $company_id;
+		$movement2->warehouse_type_id = 6;
+		$movement2->movement_class_id = 2;
+		$movement2->movement_type_id = 21;
+		$movement2->movement_number = $movement_number;
+		$movement2->warehouse_account_type_id = $warehouse_account_type_id;
+		$movement2->account_id = $warehouse_account_id;
+		$movement2->account_document_number = $account ? $account->document_number : '';
+		$movement2->account_name = $account ? $account->business_name : '';
+		$movement2->referral_guide_series = $referral_guide_series;
+		$movement2->referral_guide_number = $referral_guide_number;
+		$movement2->scop_number = $scop_number;
+		$movement2->license_plate = $license_plate;
+		$movement2->taxed_operation = array_sum(array_column($articles, 'sale_value'));
+		$movement2->unaffected_operation = array_sum(array_column($articles, 'inaccurate_value'));
+		$movement2->exonerated_operation = 0;
+		$movement2->igv = array_sum(array_column($articles, 'igv'));
+		$movement2->total = array_sum(array_column($articles, 'total'));
+		$movement2->total_perception = array_sum(array_column($articles, 'perception'));
+		$movement2->action_type_id = ( $movement_type ? $movement_type->action_type_id : null );
+		$movement2->created_at = date('Y-m-d', strtotime($since_date));
+		$movement2->created_at_user = Auth::user()->user;
+		$movement2->updated_at_user = Auth::user()->user;
+		$movement2->traslate_date = date('Y-m-d', strtotime($traslate_date));
+		$movement2->fac_date = date('Y-m-d', strtotime($traslate_date));
+		$movement2->route_id = $route_id;
+	
+		$movement2->save();
 
 		foreach ($articles as $item) {
 			$article = Article::where('warehouse_type_id', $movement->warehouse_type_id)
 				->where('id', $item['id'])
 				->firstOrFail();
+
+			if ($article->movement_type_id == 11) {
+				$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 6)
+					->where('business_type', $item['business_type'])
+					->where('convertion', $item['convertion'])
+					->get();
+
+				foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
+					$relatedArticle->stock_repair -= $item['digit_amount'];
+					$relatedArticle->stock_damaged += $item['digit_amount'];
+					$relatedArticle->save();
+				}
+			}
+
+			if ($article->movement_type_id == 12) {
+				$relatedArticles2 = Article::where('warehouse_type_id', 6)
+					->where('business_type', $item['business_type'])
+					->where('convertion', $item['convertion'])
+					->get();
+
+				foreach ($relatedArticles2 as $relatedArticle) {
+					$relatedArticle->stock_repair -= $item['digit_amount'];
+					$relatedArticle->stock_good += $item['digit_amount'];
+					$relatedArticle->save();
+				}
+			}
 
 			$digit_amount = str_replace(',', '', $item['digit_amount']);
 			$converted_amount = str_replace(',', '', $item['converted_amount']);
@@ -439,10 +495,95 @@ class GuidesRegisterController extends Controller
 
 			$movementDetail->save();
 
+			if ($article->movement_type_id == 12) {
+				$movementDetail2 = new WarehouseMovementDetail();
+				$movementDetail2->warehouse_movement_id = $movement2->id;
+				$movementDetail2->item_number = $item['item_number'];
+				$movementDetail2->article_code = $item['id'];
+				$movementDetail2->digit_amount = $digit_amount;
+				$movementDetail2->converted_amount = $converted_amount;
+				$movementDetail2->old_stock_good = $article->stock_good;
+				$movementDetail2->old_stock_repair = $article->stock_repair;
+				$movementDetail2->old_stock_return = $article->stock_return;
+				$movementDetail2->old_stock_damaged = $article->stock_damaged;
+				$movementDetail2->new_stock_good = $article->stock_good;
+				$movementDetail2->new_stock_repair = $article->stock_repair;
+				$movementDetail2->new_stock_return = $article->stock_return;
+				$movementDetail2->new_stock_damaged = $article->stock_damaged;
+				$movementDetail2->price = $price;
+				$movementDetail2->sale_value = $sale_value;
+				$movementDetail2->exonerated_value = 0;
+				$movementDetail2->inaccurate_value = $inaccurate_value;
+				$movementDetail2->igv = $igv;
+				$movementDetail2->total = $total;
+				$movementDetail2->igv_perception = $igv_perception;
+				$movementDetail2->igv_percentage = $item['igv_percentage'];
+				$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
+				$movementDetail2->created_at_user = Auth::user()->user;
+				$movementDetail2->updated_at_user = Auth::user()->user;
+				$movementDetail2->save();
+			}
+
 			$article->edit = 1;
 			$article->save();
 		}
 
-		return $articles;
+		return $this->generatePdf($movement);
+	}
+
+	public function generatePdf($warehouseMovement)
+	{
+		$warehouse_movement = WarehouseMovement::leftjoin('company_addresses', function($join) {
+				$join->on('warehouse_movements.company_id', '=', 'company_addresses.company_id')
+					->where('company_addresses.type', '=', 2);
+			})
+            ->leftjoin('employees', 'warehouse_movements.account_id', '=', 'employees.id')
+			->select('warehouse_movements.id', 'warehouse_movements.company_id', 'company_addresses.address as company_address', 'company_addresses.district as company_district', 'company_addresses.province as company_province', 'company_addresses.department as company_department', 'warehouse_type_id', 'movement_class_id', 'movement_type_id', 'movement_number', 'warehouse_account_type_id', 'account_id', 'account_document_number', 'account_name', 'referral_guide_series', 'referral_guide_number', 'scop_number', 'license_plate', 'total', 'warehouse_movements.created_at','warehouse_movements.traslate_date', 'employees.license as employee_license')
+			->where('warehouse_movements.id', $warehouseMovement->id)
+			->first();
+
+        $elements = WarehouseMovementDetail::select('warehouse_movement_details.id', 'item_number', 'article_code', 'converted_amount', 'price', 'warehouse_movement_details.total', 'warehouse_movements.id')
+            ->join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
+            ->where('warehouse_movement_id', $warehouse_movement->id)
+            ->where('company_id', $warehouse_movement->company_id)
+            ->where('warehouse_type_id', $warehouse_movement->warehouse_type_id)
+            ->get();
+
+		$packaging = WarehouseMovementDetail::join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
+			->join('articles', 'articles.id', '=', 'warehouse_movement_details.article_code')
+			->join('classifications', 'classifications.id', '=', 'articles.subgroup_id')
+			->where('warehouse_movement_id', $warehouse_movement->id)
+			->where('company_id', $warehouse_movement->company_id)
+			->where('warehouse_movements.warehouse_type_id', $warehouse_movement->warehouse_type_id)
+			->where('articles.subgroup_id', '>=', 55)
+			->where('articles.subgroup_id', '<=', 58)
+			->select('warehouse_movement_details.id', 'item_number', 'article_code', 'converted_amount', 'price', 'warehouse_movement_details.total', 'articles.subgroup_id', 'classifications.name as classification_name', DB::Raw('SUM(converted_amount) as total_converted_amount'))
+			->groupBy('articles.subgroup_id')
+			->get();
+
+		$packaging->map(function ($item, $index) {
+			$item->total_converted_amount = number_format($item->total_converted_amount, 0, '.', ',');
+		});
+
+
+		$packaging = WarehouseMovementDetail::join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
+			->join('articles', 'articles.id', '=', 'warehouse_movement_details.article_code')
+			->join('classifications', 'classifications.id', '=', 'articles.subgroup_id')
+			->where('warehouse_movement_id', $warehouse_movement->id)
+			->where('company_id', $warehouse_movement->company_id)
+			->where('warehouse_movements.warehouse_type_id', $warehouse_movement->warehouse_type_id)
+			->where('articles.subgroup_id', '>=', 55)
+			->where('articles.subgroup_id', '<=', 58)
+			->select('warehouse_movement_details.id', 'item_number', 'article_code', 'converted_amount', 'price', 'warehouse_movement_details.total', 'articles.subgroup_id', 'classifications.name as classification_name', DB::Raw('SUM(converted_amount) as total_converted_amount'))
+			->groupBy('articles.subgroup_id')
+			->get();
+
+		$packaging->map(function ($item, $index) {
+			$item->total_converted_amount = number_format($item->total_converted_amount, 0, '.', ',');
+		});
+
+		$pdf = PDF::loadView('backend.pdf.referral_guide2', compact('warehouse_movement', 'elements', 'packaging'));
+
+	    return $pdf->download('guia-remision-'.$warehouse_movement->movement_class_name.'-'.$warehouse_movement->movement_type_name.'-N'.$warehouse_movement->movement_number.'.pdf');
 	}
 }

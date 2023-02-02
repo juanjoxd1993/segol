@@ -292,22 +292,7 @@
 									<span class="kt-menu__link-text">Relación de Documentos Emitidos</span>
 								</a>
 							</li>
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.sales-register' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.sales-register')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Registro de Ventas</span>
-								</a>
-							</li>
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.sales-report' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.sales-report')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Reporte de Ventas</span>
-								</a>
-							</li>
+						
 							
 						</ul>
 					</div>
@@ -343,14 +328,7 @@
 									<span class="kt-menu__link-text">Registro Movimiento de Existencias</span>
 								</a>
 							</li>
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.logistics.stock_register_beta' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.logistics.stock_register_beta')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Registro de Guías Prueba</span>
-								</a>
-							</li>
+						
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.logistics.inventories' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.logistics.inventories')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -432,6 +410,14 @@
 										<span></span>
 									</i>
 									<span class="kt-menu__link-text">Retorno de Guías de Remisión</span>
+								</a>
+							</li>
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.logistics.production_register' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.logistics.production_register')); ?>" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Registro de Producción</span>
 								</a>
 							</li>
 			            </ul>
@@ -687,14 +673,7 @@
 							</li>
 
 
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.transportist_register' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.transportist_register')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Reporte de Guias de Transportistas</span>
-								</a>
-							</li>
+							
 
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.sales_volume' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.report.sales_volume')); ?>" class="kt-menu__link ">
@@ -705,14 +684,7 @@
 								</a>
 							</li>
 
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.cordia_volume' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.cordia_volume')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Volumen de Boletas Cordia</span>
-								</a>
-							</li>
+						
 
 
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.facturations_sales_volume' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
@@ -825,15 +797,7 @@
 							</li>
 
 
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.cost_glp_register' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.cost_glp_register')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Registro de Costo GLP</span>
-								</a>
-							</li>
-
+						
 
 
 							

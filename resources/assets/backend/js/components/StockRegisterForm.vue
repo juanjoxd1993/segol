@@ -16,19 +16,20 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Ingreso/Salida:</label>
-                            <select class="form-control" name="movement_class_id" id="movement_class_id" v-model="model.movement_class_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control" name="movement_class_id" id="movement_class_id" v-model="model.movement_class_id" @focus="$parent.clearErrorMsg($event)" v-on:change="manageWarehouseType">
                                 <option value="">Seleccionar</option>
                                 <option v-for="movement_class in movement_classes" :value="movement_class.id" v-bind:key="movement_class.id">{{ movement_class.name }}</option>
                             </select>
                             <div id="movement_class_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                 
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo Movimiento:</label>
-                            <select class="form-control" name="movement_type_id" id="movement_type_id" v-on:change="manageMovementTypeChange" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="movement_type in movementTypes" :value="movement_type.id" v-bind:key="movement_type.id">{{ movement_type.name }}</option>
+                            <select class="form-control" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)" v-on:change="manageWarehouseType">
+                                <option  value="">Seleccionar</option>
+                                <option v-for="movement_type in movement_types" :value="movement_type.id" v-bind:key="movement_type.id">{{ movement_type.name }}</option>              
                             </select>
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -57,7 +58,7 @@
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
                             <select value="1" class="form-control" name="company_id" id="company_id" v-model="model.company_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="1" selected>PUNTO DE DISTRIBUCION S.A.C.</option>
+                                <option value="1" selected>PUNTO GAS S.A.C.</option>
                             </select>
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -78,9 +79,9 @@
                             <div id="since_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div> -->
-					<div class="col-lg-3">
+                    <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Fecha Final:</label>
+                            <label class="form-control-label">Fecha de Emisión:</label>
                             <datetime
                                 v-model="model.since_date"
                                 placeholder="Selecciona una Fecha"
@@ -96,16 +97,18 @@
                             <div id="since_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo:</label>
-                            <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
+                            <select class="form-control" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" >
                                 <option value="">Seleccionar</option>
                                 <option v-for="warehouse_account_type in warehouseAccountTypes" :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{ warehouse_account_type.name }}</option>
                             </select>
                             <div id="warehouse_account_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Nombre o Razón Social:</label>
@@ -115,20 +118,27 @@
                             <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+
+                   
+
+                    <div class="col-lg-3" v-if="model.movement_class_id == 1">
                         <div class="form-group">
                             <label class="form-control-label">Serie de Guía de Remisión:</label>
                             <input type="text" class="form-control" name="referral_guide_series" id="referral_guide_series" v-model="model.referral_guide_series" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_guide_series-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" v-if="model.movement_class_id == 1">
                         <div class="form-group">
                             <label class="form-control-label">Número de Guía de Remisión:</label>
                             <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="model.referral_guide_number" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
+
+                   
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo Referencia:</label>
@@ -153,13 +163,8 @@
                             <div id="referral_voucher_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Número de SCOP:</label>
-                            <input type="text" class="form-control" name="scop_number" id="scop_number" v-model="model.scop_number" @focus="$parent.clearErrorMsg($event)">
-                            <div id="scop_number-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
+
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Placa:</label>
@@ -167,6 +172,10 @@
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    
+                    
+                   
+                    
                 </div>
             </div>
             <div class="kt-portlet__foot">
@@ -254,17 +263,17 @@
                     movement_type_id: '',
                     movement_stock_type_id: '',
                     warehouse_type_id: '',
-                    company_id: '',
+                    company_id: '1',
                     currency: 1,
                     since_date: this.current_date,
-                    warehouse_account_type_id: '3',
+                    warehouse_account_type_id: '',
                     warehouse_account_id: '',
                     referral_guide_series: '',
                     referral_guide_number: '',
                     referral_warehouse_document_type_id: '',
                     referral_serie_number: '',
                     referral_voucher_number: '',
-                    scop_number: '',
+                //    scop_number: '',
                     license_plate: '',
                 },
             }
@@ -285,7 +294,7 @@
                 this.model.referral_warehouse_document_type_id = '';
                 this.model.referral_serie_number = '';
                 this.model.referral_voucher_number = '';
-                this.model.scop_number = '';
+             //   this.model.scop_number = '';
                 this.model.license_plate = '';
 
                 $('.kt-form').find('input').prop('disabled', false);
@@ -310,7 +319,7 @@
                 }
             },
             warehouseAccountTypes: function() {
-                if ( this.model.movement_type_id == 1 || this.model.movement_type_id == 2 || this.model.movement_type_id == 15 ) {
+                if ( this.model.movement_type_id == 1 || this.model.movement_type_id == 2 ) {
                     return this.warehouse_account_types.filter(wat => wat.id === 2);
                 } else if ( this.model.movement_type_id == 12 || this.model.movement_type_id == 13 || this.model.movement_type_id == 14 || this.model.movement_type_id == 16 ) {
                     return this.warehouse_account_types.filter(wat => wat.id === 1);
@@ -416,22 +425,14 @@
                     });
                 });
             },
-            manageMovementTypeChange: function (obj) {
-                let movementType = obj.target;
-                let movementClass = $('#movement_class_id');
-                $('#currencyGroup').addClass('d-none');
-                $('#currency').val(null);
+            manageWarehouseType: function() {
                 $('#warehouse_type_id').removeClass('readonly');
 
-                if (movementType.value == 2) { // Compra
-                    $('#currencyGroup').removeClass('d-none');
-                    $('#currency').val($('#currency').children(':first').val());
-                } else if (movementClass.val() == 2 && movementType.value == 6) { // Transferencia entre almacenes
+                if ($('#movement_class_id').val() == 2 && $('#movement_type_id').val() == 6) {
                     setTimeout(function() {
-                        $('#warehouse_type_id').val('1'); // Generales
+                        $('#warehouse_type_id').val('4');
+                        $('#warehouse_type_id').addClass('readonly');
                     }, 100);
-                    $('#warehouse_type_id').addClass('readonly');
-                } else {
                 }
             }
         }
