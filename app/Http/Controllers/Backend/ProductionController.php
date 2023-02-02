@@ -468,7 +468,7 @@ class ProductionController extends Controller
 				->get();
 
 			$relatedArticlesForDescUnits = Article
-				::where('seal', $item['seal'])
+				::where('seal', $article->seal)
 				->where('warehouse_type_id', 4)
 				->get();
 
