@@ -426,12 +426,9 @@
                 });
             },
             manageWarehouseType: function() {
-                $('#warehouse_type_id').removeClass('readonly');
-
                 if ($('#movement_class_id').val() == 2 && $('#movement_type_id').val() == 6) {
                     setTimeout(function() {
                         $('#warehouse_type_id').val('4');
-                        $('#warehouse_type_id').addClass('readonly');
                     }, 100);
                 }
             }

@@ -350,7 +350,7 @@ class StockRegisterController extends Controller
 
 		$movement2 = new WarehouseMovement();
 		$movement2->company_id = $company_id;
-		$movement2->warehouse_type_id = $warehouse_type_id;
+		$movement2->warehouse_type_id = 1;
 		$movement2->movement_class_id = 2;
 		$movement2->movement_type_id = 6;
 		$movement2->movement_stock_type_id = $movement_stock_type_id;
@@ -415,29 +415,6 @@ class StockRegisterController extends Controller
 				->where('id', $item['id'])
 				->firstOrFail();
 
-			if ($movement_class_id == 2 && $movement_type_id == 6 && $warehouse_type_id == 4) {
-				$relatedArticles = Article::where('warehouse_type_id', 1)->get();
-
-				foreach ($relatedArticles as $relatedArticle) {
-					$relatedArticle->stock_good -= $item['digit_amount'];
-					$relatedArticle->save();
-				}
-			}
-
-			$relatedArticles2 = Article::where('warehouse_type_id', 1)->where('code', $article->code)->get();
-
-			foreach ($relatedArticles2 as $relatedArticle) {
-				$relatedArticle->stock_good -= $item['digit_amount'];
-				$relatedArticle->save();
-			}
-
-			$relatedArticles3 = Article::where('warehouse_type_id', 4)->where('code', $article->code)->get();
-
-			foreach ($relatedArticles3 as $relatedArticle) {
-				$relatedArticle->stock_good += $item['digit_amount'];
-				$relatedArticle->save();
-			}
-
 			$digit_amount = str_replace(',', '', $item['digit_amount']);
 			$converted_amount = str_replace(',', '', $item['converted_amount']);
 			$price = str_replace(',', '', $item['price']);
@@ -446,6 +423,85 @@ class StockRegisterController extends Controller
 			$igv = str_replace(',', '', $item['igv']);
 			$total = str_replace(',', '', $item['total']);
 			$igv_perception = str_replace(',', '', $item['perception']);
+
+			if ($movement_class_id == 2 && $movement_type_id == 6 && $warehouse_type_id == 4) {
+				$relatedArticles = Article::where('warehouse_type_id', 1)->get();
+
+				foreach ($relatedArticles as $relatedArticle) {
+					$relatedArticle->stock_good -= $item['digit_amount'];
+					$relatedArticle->save();
+				}
+
+				$relatedArticles2 = Article::where('warehouse_type_id', 1)->where('code', $article->code)->get();
+
+				foreach ($relatedArticles2 as $relatedArticle) {
+					$relatedArticle->stock_good -= $item['digit_amount'];
+					$relatedArticle->save();
+
+					$movementDetail2 = new WarehouseMovementDetail();
+					$movementDetail2->warehouse_movement_id = $movement2->id;
+					$movementDetail2->item_number = $item['item_number'];
+					$movementDetail2->article_code = $relatedArticle->id;
+					$movementDetail2->digit_amount = $digit_amount;
+					$movementDetail2->converted_amount = $converted_amount;
+					$movementDetail2->old_stock_good = $relatedArticle->stock_good;
+					$movementDetail2->old_stock_repair = $relatedArticle->stock_repair;
+					$movementDetail2->old_stock_return = $relatedArticle->stock_return;
+					$movementDetail2->old_stock_damaged = $relatedArticle->stock_damaged;
+					$movementDetail2->new_stock_good = $relatedArticle->stock_good;
+					$movementDetail2->new_stock_repair = $relatedArticle->stock_repair;
+					$movementDetail2->new_stock_return = $relatedArticle->stock_return;
+					$movementDetail2->new_stock_damaged = $relatedArticle->stock_damaged;
+					$movementDetail2->currency_id = $item['currency_id'];
+					$movementDetail2->price = $price;
+					$movementDetail2->sale_value = $sale_value;
+					$movementDetail2->exonerated_value = 0;
+					$movementDetail2->inaccurate_value = $inaccurate_value;
+					$movementDetail2->igv = $igv;
+					$movementDetail2->total = $total;
+					$movementDetail2->igv_perception = $igv_perception;
+					$movementDetail2->igv_percentage = $item['igv_percentage'];
+					$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
+					$movementDetail2->created_at_user = Auth::user()->user;
+					$movementDetail2->updated_at_user = Auth::user()->user;
+					$movementDetail2->save();
+				}
+
+				$relatedArticles3 = Article::where('warehouse_type_id', 4)->where('code', $article->code)->get();
+
+				foreach ($relatedArticles3 as $relatedArticle) {
+					$relatedArticle->stock_good += $item['digit_amount'];
+					$relatedArticle->save();
+
+					$movementDetail3 = new WarehouseMovementDetail();
+					$movementDetail3->warehouse_movement_id = $movement3->id;
+					$movementDetail3->item_number = $item['item_number'];
+					$movementDetail3->article_code = $relatedArticle->id;
+					$movementDetail3->digit_amount = $digit_amount;
+					$movementDetail3->converted_amount = $converted_amount;
+					$movementDetail3->old_stock_good = $relatedArticle->stock_good;
+					$movementDetail3->old_stock_repair = $relatedArticle->stock_repair;
+					$movementDetail3->old_stock_return = $relatedArticle->stock_return;
+					$movementDetail3->old_stock_damaged = $relatedArticle->stock_damaged;
+					$movementDetail3->new_stock_good = $relatedArticle->stock_good;
+					$movementDetail3->new_stock_repair = $relatedArticle->stock_repair;
+					$movementDetail3->new_stock_return = $relatedArticle->stock_return;
+					$movementDetail3->new_stock_damaged = $relatedArticle->stock_damaged;
+					$movementDetail3->currency_id = $item['currency_id'];
+					$movementDetail3->price = $price;
+					$movementDetail3->sale_value = $sale_value;
+					$movementDetail3->exonerated_value = 0;
+					$movementDetail3->inaccurate_value = $inaccurate_value;
+					$movementDetail3->igv = $igv;
+					$movementDetail3->total = $total;
+					$movementDetail3->igv_perception = $igv_perception;
+					$movementDetail3->igv_percentage = $item['igv_percentage'];
+					$movementDetail3->igv_perception_percentage = $item['perception_percentage'];
+					$movementDetail3->created_at_user = Auth::user()->user;
+					$movementDetail3->updated_at_user = Auth::user()->user;
+					$movementDetail3->save();
+				}
+			}
 
 			$movementDetail = new WarehouseMovementDetail();
 			$movementDetail->warehouse_movement_id = $movement->id;
@@ -506,62 +562,6 @@ class StockRegisterController extends Controller
 			}
 
 			$movementDetail->save();
-
-			$movementDetail2 = new WarehouseMovementDetail();
-			$movementDetail2->warehouse_movement_id = $movement2->id;
-			$movementDetail2->item_number = $item['item_number'];
-			$movementDetail2->article_code = $item['id'];
-			$movementDetail2->digit_amount = $digit_amount;
-			$movementDetail2->converted_amount = $converted_amount;
-			$movementDetail2->old_stock_good = $article->stock_good;
-			$movementDetail2->old_stock_repair = $article->stock_repair;
-			$movementDetail2->old_stock_return = $article->stock_return;
-			$movementDetail2->old_stock_damaged = $article->stock_damaged;
-			$movementDetail2->new_stock_good = $article->stock_good;
-			$movementDetail2->new_stock_repair = $article->stock_repair;
-			$movementDetail2->new_stock_return = $article->stock_return;
-			$movementDetail2->new_stock_damaged = $article->stock_damaged;
-			$movementDetail2->currency_id = $item['currency_id'];
-			$movementDetail2->price = $price;
-			$movementDetail2->sale_value = $sale_value;
-			$movementDetail2->exonerated_value = 0;
-			$movementDetail2->inaccurate_value = $inaccurate_value;
-			$movementDetail2->igv = $igv;
-			$movementDetail2->total = $total;
-			$movementDetail2->igv_perception = $igv_perception;
-			$movementDetail2->igv_percentage = $item['igv_percentage'];
-			$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
-			$movementDetail2->created_at_user = Auth::user()->user;
-			$movementDetail2->updated_at_user = Auth::user()->user;
-			$movementDetail2->save();
-
-			$movementDetail3 = new WarehouseMovementDetail();
-			$movementDetail3->warehouse_movement_id = $movement3->id;
-			$movementDetail3->item_number = $item['item_number'];
-			$movementDetail3->article_code = $item['id'];
-			$movementDetail3->digit_amount = $digit_amount;
-			$movementDetail3->converted_amount = $converted_amount;
-			$movementDetail3->old_stock_good = $article->stock_good;
-			$movementDetail3->old_stock_repair = $article->stock_repair;
-			$movementDetail3->old_stock_return = $article->stock_return;
-			$movementDetail3->old_stock_damaged = $article->stock_damaged;
-			$movementDetail3->new_stock_good = $article->stock_good;
-			$movementDetail3->new_stock_repair = $article->stock_repair;
-			$movementDetail3->new_stock_return = $article->stock_return;
-			$movementDetail3->new_stock_damaged = $article->stock_damaged;
-			$movementDetail3->currency_id = $item['currency_id'];
-			$movementDetail3->price = $price;
-			$movementDetail3->sale_value = $sale_value;
-			$movementDetail3->exonerated_value = 0;
-			$movementDetail3->inaccurate_value = $inaccurate_value;
-			$movementDetail3->igv = $igv;
-			$movementDetail3->total = $total;
-			$movementDetail3->igv_perception = $igv_perception;
-			$movementDetail3->igv_percentage = $item['igv_percentage'];
-			$movementDetail3->igv_perception_percentage = $item['perception_percentage'];
-			$movementDetail3->created_at_user = Auth::user()->user;
-			$movementDetail3->updated_at_user = Auth::user()->user;
-			$movementDetail3->save();
 
 			$article->edit = 1;
 			$article->save();

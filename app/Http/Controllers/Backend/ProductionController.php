@@ -477,22 +477,6 @@ class ProductionController extends Controller
 				->where('warehouse_type_id', 4)
 				->get();
 
-			foreach ($relatedArticlesForDescUnits as $relatedArticle) {
-				$relatedArticle->stock_good -= $item['digit_amount'];
-				$relatedArticle->save();
-			}
-
-			foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
-				$relatedArticle->stock_good -= $item['digit_amount'];
-				$relatedArticle->stock_repair += $item['digit_amount'];
-				$relatedArticle->save();
-			}
-
-			foreach ($relatedArticlesForDescUnitsWithConvertion as $relatedArticle) {
-				$relatedArticle->stock_good -= $item['digit_amount'] * $article->convertion;
-				$relatedArticle->save();
-			}
-
 			$digit_amount = str_replace(',', '', $item['digit_amount']);
 			$converted_amount = str_replace(',', '', $item['converted_amount']);
 			$price = str_replace(',', '', $item['price']);
@@ -562,22 +546,25 @@ class ProductionController extends Controller
 
 			$movementDetail->save();
 
+			foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
+				$relatedArticle->stock_good -= $item['digit_amount'];
+				$relatedArticle->stock_repair += $item['digit_amount'];
+				$relatedArticle->save();
 
-			if ($article->warehouse_type_id == 6) {
 				$movementDetail = new WarehouseMovementDetail();
 				$movementDetail->warehouse_movement_id = $movement2->id;
 				$movementDetail->item_number = $item['item_number'];
-				$movementDetail->article_code = $item['id'];
+				$movementDetail->article_code = $relatedArticle->id;
 				$movementDetail->digit_amount = $digit_amount;
 				$movementDetail->converted_amount = $converted_amount;
-				$movementDetail->old_stock_good = $article->stock_good;
-				$movementDetail->old_stock_repair = $article->stock_repair;
-				$movementDetail->old_stock_return = $article->stock_return;
-				$movementDetail->old_stock_damaged = $article->stock_damaged;
-				$movementDetail->new_stock_good = $article->stock_good;
-				$movementDetail->new_stock_repair = $article->stock_repair;
-				$movementDetail->new_stock_return = $article->stock_return;
-				$movementDetail->new_stock_damaged = $article->stock_damaged;
+				$movementDetail->old_stock_good = $relatedArticle->stock_good;
+				$movementDetail->old_stock_repair = $relatedArticle->stock_repair;
+				$movementDetail->old_stock_return = $relatedArticle->stock_return;
+				$movementDetail->old_stock_damaged = $relatedArticle->stock_damaged;
+				$movementDetail->new_stock_good = $relatedArticle->stock_good;
+				$movementDetail->new_stock_repair = $relatedArticle->stock_repair;
+				$movementDetail->new_stock_return = $relatedArticle->stock_return;
+				$movementDetail->new_stock_damaged = $relatedArticle->stock_damaged;
 				$movementDetail->currency_id = $item['currency_id'];
 				$movementDetail->price = $price;
 				$movementDetail->sale_value = $sale_value;
@@ -593,21 +580,24 @@ class ProductionController extends Controller
 				$movementDetail->save();
 			}
 
-			if ($article->code == 1 && $article->warehouse_type_id == 4) {
+			foreach ($relatedArticlesForDescUnitsWithConvertion as $relatedArticle) {
+				$relatedArticle->stock_good -= $item['digit_amount'] * $article->convertion;
+				$relatedArticle->save();
+
 				$movementDetail = new WarehouseMovementDetail();
 				$movementDetail->warehouse_movement_id = $movement3->id;
 				$movementDetail->item_number = $item['item_number'];
-				$movementDetail->article_code = $item['id'];
+				$movementDetail->article_code = $relatedArticle->id;
 				$movementDetail->digit_amount = $digit_amount;
 				$movementDetail->converted_amount = $converted_amount;
-				$movementDetail->old_stock_good = $article->stock_good;
-				$movementDetail->old_stock_repair = $article->stock_repair;
-				$movementDetail->old_stock_return = $article->stock_return;
-				$movementDetail->old_stock_damaged = $article->stock_damaged;
-				$movementDetail->new_stock_good = $article->stock_good;
-				$movementDetail->new_stock_repair = $article->stock_repair;
-				$movementDetail->new_stock_return = $article->stock_return;
-				$movementDetail->new_stock_damaged = $article->stock_damaged;
+				$movementDetail->old_stock_good = $relatedArticle->stock_good;
+				$movementDetail->old_stock_repair = $relatedArticle->stock_repair;
+				$movementDetail->old_stock_return = $relatedArticle->stock_return;
+				$movementDetail->old_stock_damaged = $relatedArticle->stock_damaged;
+				$movementDetail->new_stock_good = $relatedArticle->stock_good;
+				$movementDetail->new_stock_repair = $relatedArticle->stock_repair;
+				$movementDetail->new_stock_return = $relatedArticle->stock_return;
+				$movementDetail->new_stock_damaged = $relatedArticle->stock_damaged;
 				$movementDetail->currency_id = $item['currency_id'];
 				$movementDetail->price = $price;
 				$movementDetail->sale_value = $sale_value;
@@ -623,54 +613,24 @@ class ProductionController extends Controller
 				$movementDetail->save();
 			}
 
-			if ($article->warehouse_type_id == 4) {
-				$movementDetail = new WarehouseMovementDetail();
-				$movementDetail->warehouse_movement_id = $movement->id;
-				$movementDetail->item_number = $item['item_number'];
-				$movementDetail->article_code = $item['id'];
-				$movementDetail->digit_amount = $digit_amount;
-				$movementDetail->converted_amount = $converted_amount;
-				$movementDetail->old_stock_good = $article->stock_good;
-				$movementDetail->old_stock_repair = $article->stock_repair;
-				$movementDetail->old_stock_return = $article->stock_return;
-				$movementDetail->old_stock_damaged = $article->stock_damaged;
-				$movementDetail->new_stock_good = $article->stock_good;
-				$movementDetail->new_stock_repair = $article->stock_repair;
-				$movementDetail->new_stock_return = $article->stock_return;
-				$movementDetail->new_stock_damaged = $article->stock_damaged;
-				$movementDetail->currency_id = $item['currency_id'];
-				$movementDetail->price = $price;
-				$movementDetail->sale_value = $sale_value;
-				$movementDetail->exonerated_value = 0;
-				$movementDetail->inaccurate_value = $inaccurate_value;
-				$movementDetail->igv = $igv;
-				$movementDetail->total = $total;
-				$movementDetail->igv_perception = $igv_perception;
-				$movementDetail->igv_percentage = $item['igv_percentage'];
-				$movementDetail->igv_perception_percentage = $item['perception_percentage'];
-				$movementDetail->created_at_user = Auth::user()->user;
-				$movementDetail->updated_at_user = Auth::user()->user;
-				$movementDetail->save();
-			}
-
-			if ($article->warehouse_type_id == 5) {
-				$article->stock_good += $item['digit_amount'];
-				$article->save();
+			foreach ($relatedArticlesForDescUnits as $relatedArticle) {
+				$relatedArticle->stock_good -= $item['digit_amount'];
+				$relatedArticle->save();
 
 				$movementDetail = new WarehouseMovementDetail();
 				$movementDetail->warehouse_movement_id = $movement4->id;
 				$movementDetail->item_number = $item['item_number'];
-				$movementDetail->article_code = $item['id'];
+				$movementDetail->article_code = $relatedArticle->id;
 				$movementDetail->digit_amount = $digit_amount;
 				$movementDetail->converted_amount = $converted_amount;
-				$movementDetail->old_stock_good = $article->stock_good;
-				$movementDetail->old_stock_repair = $article->stock_repair;
-				$movementDetail->old_stock_return = $article->stock_return;
-				$movementDetail->old_stock_damaged = $article->stock_damaged;
-				$movementDetail->new_stock_good = $article->stock_good;
-				$movementDetail->new_stock_repair = $article->stock_repair;
-				$movementDetail->new_stock_return = $article->stock_return;
-				$movementDetail->new_stock_damaged = $article->stock_damaged;
+				$movementDetail->old_stock_good = $relatedArticle->stock_good;
+				$movementDetail->old_stock_repair = $relatedArticle->stock_repair;
+				$movementDetail->old_stock_return = $relatedArticle->stock_return;
+				$movementDetail->old_stock_damaged = $relatedArticle->stock_damaged;
+				$movementDetail->new_stock_good = $relatedArticle->stock_good;
+				$movementDetail->new_stock_repair = $relatedArticle->stock_repair;
+				$movementDetail->new_stock_return = $relatedArticle->stock_return;
+				$movementDetail->new_stock_damaged = $relatedArticle->stock_damaged;
 				$movementDetail->currency_id = $item['currency_id'];
 				$movementDetail->price = $price;
 				$movementDetail->sale_value = $sale_value;

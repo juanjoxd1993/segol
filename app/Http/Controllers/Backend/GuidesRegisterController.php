@@ -401,32 +401,6 @@ class GuidesRegisterController extends Controller
 				->where('id', $item['id'])
 				->firstOrFail();
 
-			if ($article->movement_type_id == 11) {
-				$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 6)
-					->where('business_type', $item['business_type'])
-					->where('convertion', $item['convertion'])
-					->get();
-
-				foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
-					$relatedArticle->stock_repair -= $item['digit_amount'];
-					$relatedArticle->stock_damaged += $item['digit_amount'];
-					$relatedArticle->save();
-				}
-			}
-
-			if ($article->movement_type_id == 12) {
-				$relatedArticles2 = Article::where('warehouse_type_id', 6)
-					->where('business_type', $item['business_type'])
-					->where('convertion', $item['convertion'])
-					->get();
-
-				foreach ($relatedArticles2 as $relatedArticle) {
-					$relatedArticle->stock_repair -= $item['digit_amount'];
-					$relatedArticle->stock_good += $item['digit_amount'];
-					$relatedArticle->save();
-				}
-			}
-
 			$digit_amount = str_replace(',', '', $item['digit_amount']);
 			$converted_amount = str_replace(',', '', $item['converted_amount']);
 			$price = str_replace(',', '', $item['price']);
@@ -495,33 +469,82 @@ class GuidesRegisterController extends Controller
 
 			$movementDetail->save();
 
-			if ($article->movement_type_id == 12) {
-				$movementDetail2 = new WarehouseMovementDetail();
-				$movementDetail2->warehouse_movement_id = $movement2->id;
-				$movementDetail2->item_number = $item['item_number'];
-				$movementDetail2->article_code = $item['id'];
-				$movementDetail2->digit_amount = $digit_amount;
-				$movementDetail2->converted_amount = $converted_amount;
-				$movementDetail2->old_stock_good = $article->stock_good;
-				$movementDetail2->old_stock_repair = $article->stock_repair;
-				$movementDetail2->old_stock_return = $article->stock_return;
-				$movementDetail2->old_stock_damaged = $article->stock_damaged;
-				$movementDetail2->new_stock_good = $article->stock_good;
-				$movementDetail2->new_stock_repair = $article->stock_repair;
-				$movementDetail2->new_stock_return = $article->stock_return;
-				$movementDetail2->new_stock_damaged = $article->stock_damaged;
-				$movementDetail2->price = $price;
-				$movementDetail2->sale_value = $sale_value;
-				$movementDetail2->exonerated_value = 0;
-				$movementDetail2->inaccurate_value = $inaccurate_value;
-				$movementDetail2->igv = $igv;
-				$movementDetail2->total = $total;
-				$movementDetail2->igv_perception = $igv_perception;
-				$movementDetail2->igv_percentage = $item['igv_percentage'];
-				$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
-				$movementDetail2->created_at_user = Auth::user()->user;
-				$movementDetail2->updated_at_user = Auth::user()->user;
-				$movementDetail2->save();
+			if ($movement_type_id == 11) {
+				$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 6)
+					->where('business_type', $item['business_type'])
+					->where('convertion', $item['convertion'])
+					->get();
+
+				foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
+					$relatedArticle->stock_repair -= $item['digit_amount'];
+					$relatedArticle->stock_damaged += $item['digit_amount'];
+					$relatedArticle->save();
+
+					$movementDetail2 = new WarehouseMovementDetail();
+					$movementDetail2->warehouse_movement_id = $movement2->id;
+					$movementDetail2->item_number = $item['item_number'];
+					$movementDetail2->article_code = $relatedArticle->id;
+					$movementDetail2->digit_amount = $digit_amount;
+					$movementDetail2->converted_amount = $converted_amount;
+					$movementDetail2->old_stock_good = $relatedArticle->stock_good;
+					$movementDetail2->old_stock_repair = $relatedArticle->stock_repair;
+					$movementDetail2->old_stock_return = $relatedArticle->stock_return;
+					$movementDetail2->old_stock_damaged = $relatedArticle->stock_damaged;
+					$movementDetail2->new_stock_good = $relatedArticle->stock_good;
+					$movementDetail2->new_stock_repair = $relatedArticle->stock_repair;
+					$movementDetail2->new_stock_return = $relatedArticle->stock_return;
+					$movementDetail2->new_stock_damaged = $relatedArticle->stock_damaged;
+					$movementDetail2->price = $price;
+					$movementDetail2->sale_value = $sale_value;
+					$movementDetail2->exonerated_value = 0;
+					$movementDetail2->inaccurate_value = $inaccurate_value;
+					$movementDetail2->igv = $igv;
+					$movementDetail2->total = $total;
+					$movementDetail2->igv_perception = $igv_perception;
+					$movementDetail2->igv_percentage = $item['igv_percentage'];
+					$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
+					$movementDetail2->created_at_user = Auth::user()->user;
+					$movementDetail2->updated_at_user = Auth::user()->user;
+					$movementDetail2->save();
+				}
+			} else if ($movement_type_id == 12) {
+				$relatedArticles2 = Article::where('warehouse_type_id', 6)
+					->where('business_type', $item['business_type'])
+					->where('convertion', $item['convertion'])
+					->get();
+
+				foreach ($relatedArticles2 as $relatedArticle) {
+					$relatedArticle->stock_repair -= $item['digit_amount'];
+					$relatedArticle->stock_good += $item['digit_amount'];
+					$relatedArticle->save();
+
+					$movementDetail2 = new WarehouseMovementDetail();
+					$movementDetail2->warehouse_movement_id = $movement2->id;
+					$movementDetail2->item_number = $item['item_number'];
+					$movementDetail2->article_code = $relatedAticle->id;
+					$movementDetail2->digit_amount = $digit_amount;
+					$movementDetail2->converted_amount = $converted_amount;
+					$movementDetail2->old_stock_good = $relatedAticle->stock_good;
+					$movementDetail2->old_stock_repair = $relatedAticle->stock_repair;
+					$movementDetail2->old_stock_return = $relatedAticle->stock_return;
+					$movementDetail2->old_stock_damaged = $relatedAticle->stock_damaged;
+					$movementDetail2->new_stock_good = $relatedAticle->stock_good;
+					$movementDetail2->new_stock_repair = $relatedAticle->stock_repair;
+					$movementDetail2->new_stock_return = $relatedAticle->stock_return;
+					$movementDetail2->new_stock_damaged = $relatedAticle->stock_damaged;
+					$movementDetail2->price = $price;
+					$movementDetail2->sale_value = $sale_value;
+					$movementDetail2->exonerated_value = 0;
+					$movementDetail2->inaccurate_value = $inaccurate_value;
+					$movementDetail2->igv = $igv;
+					$movementDetail2->total = $total;
+					$movementDetail2->igv_perception = $igv_perception;
+					$movementDetail2->igv_percentage = $item['igv_percentage'];
+					$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
+					$movementDetail2->created_at_user = Auth::user()->user;
+					$movementDetail2->updated_at_user = Auth::user()->user;
+					$movementDetail2->save();
+				}
 			}
 
 			$article->edit = 1;
