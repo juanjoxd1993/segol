@@ -13,27 +13,7 @@
         <form class="kt-form" @submit.prevent="formController(url, $event)">
             <div class="kt-portlet__body">
                 <div class="row">
-                <!--     <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Ingreso/Salida:</label>
-                            <select class="form-control" name="movement_class_id" id="movement_class_id" v-model="model.movement_class_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="movement_class in movement_classes" :value="movement_class.id" v-bind:key="movement_class.id">{{ movement_class.name }}</option>
-                            </select>
-                            <div id="movement_class_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>-->
-                  
-                  <!--       <div class="col-lg-3" v-if="model.movement_type_id == 21">
-                        <div class="form-group">
-                            <label class="form-control-label">Tipo de Stock:</label>
-                            <select class="form-control" name="movement_stock_type_id" id="movement_stock_type_id" v-model="model.movement_stock_type_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="movement_stock_type in movement_stock_types" :value="movement_stock_type.id" v-bind:key="movement_stock_type.id">{{ movement_stock_type.name }}</option>
-                            </select>
-                            <div id="movement_stock_type_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div> -->
+               
 
                     <div class="col-lg-3">
                         <div class="form-group">
@@ -44,22 +24,12 @@
                                             <option value="9">PLUS-CALLAO</option>
                                             <option value="10">NUMAY LIMA</option>
                                             <option value="11">UNNA</option>
-                                             <option value="11">NUMAY PISCO</option>
+                                            <option value="12">NUMAY PISCO</option>
                             </select>
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
 
-                  <!--  <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Compañía:</label>
-                            <select class="form-control" name="company_id" id="company_id" v-model="model.company_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{ company.name }}</option>
-                            </select>
-                            <div id="company_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div> -->
 
 
                       <div class="col-lg-3">
@@ -71,13 +41,6 @@
                             <div id="currency-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <!-- <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Fecha:</label>
-                            <input type="text" class="form-control" name="since_date" id="since_date" v-model="model.since_date" @focus="$parent.clearErrorMsg($event)" readonly="readonly">
-                            <div id="since_date-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div> -->
 
 					<div class="col-lg-3">
                         <div class="form-group">
@@ -119,16 +82,7 @@
                         </div>
                     </div>
                  
-                <!--     <div class="col-lg-3">
-                         <div class="form-group">
-                            <label class="form-control-label">Tipo Referencia:</label>
-                            <select class="form-control" name="referral_warehouse_document_type_id" id="referral_warehouse_document_type_id" v-model="model.referral_warehouse_document_type_id" @focus="$parent.clearErrorMsg($event)">
-                              
-                                 <option value="5">Factura Electrónica</option>
-                            </select>
-                            <div id="referral_warehouse_document_type_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>-->
+              
                      <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Serie de Factura:</label>
@@ -162,59 +116,6 @@
                         </div>
                     </div>
 
-                     
-              <!--       <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Placa:</label>
-                            <input type="text" class="form-control" name="license_plate" id="license_plate" v-model="model.license_plate" @focus="$parent.clearErrorMsg($event)"> 
-                         <select class="form-control" name="vehicle_id" id="vehicle_id" v-model="model.vehicle_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="vehicle in vehicles" :value="vehicle.plate" v-bind:key="vehicle.plate">{{ vehicle.plate }}</option>
-                            </select> 
-                            <div id="license_plate-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                     <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Ruta:</label>
-                            <select class="form-control" name="route_id" id="route_id" v-model="model.route_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="client_route in client_routes" :value="client_route.id" v-bind:key="client_route.id">{{ client_route.name }}</option>
-                            </select>                          
-                            <div id="route_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                            <label class="form-control-label">Fecha de Traslado:</label>
-                            <datetime
-                                v-model="model.traslate_date"
-                                placeholder="Selecciona una Fecha"
-                                :format="'dd-LL-yyyy'"
-                                input-id="traslate_date"
-                                name="traslate_date"
-                                value-zone="America/Lima"
-                                zone="America/Lima"
-                                class="form-control"
-                                :min-datetime="this.current_date"
-                                :max-datetime="this.max_datetime"
-                                @focus="$parent.clearErrorMsg($event)">
-                            </datetime>
-                            <div id="traslate_date-error" class="error invalid-feedback"></div>
-                        </div>  -->
-                       <!--    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Serie de Guía de Remisión:</label>
-                              <select class="form-control" name="referral_guide_series" id="referral_guide_series" v-model="model.referral_guide_series" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="guide_serie in guide_series" :value="guide_serie.num_serie" v-bind:key="guide_serie.num_serie">{{ guide_serie.num_serie }}</option>
-                            </select>  
-                             <select class="form-control" name="referral_guide_series" id="referral_guide_series" v-model="model.referral_guide_series" v-on:change="getNextCorrelative()" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="guide_serie in guide_series" :value="guide_serie.num_serie" v-bind:key="guide_serie.num_serie">{{ guide_serie.num_serie }}</option>
-                            </select>    
-                            <div id="guide_serie.id-error" class="error invalid-feedback"></div>              
-                        </div> 
-                    </div> -->
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Número de Orden de Compra:</label>
@@ -338,7 +239,7 @@
                     tc:'',
              //    traslate_date: this.min_datetime,
                     since_date: this.current_date,
-                    warehouse_account_type_id: '2',
+                    warehouse_account_type_id: 2,
                     warehouse_account_id: '',
                     referral_guide_series: '',
                     referral_guide_number: '',
@@ -362,8 +263,8 @@
                 this.model.company_id = '';
             //    this.model.traslate_date = this.traslate_date;
                 this.model.since_date = this.current_date;
-                this.model.warehouse_account_type_id = '2';
-                this.model.warehouse_account_id = 2;
+                this.model.warehouse_account_type_id = 2;
+                this.model.warehouse_account_id = '';
                 this.model.referral_guide_series = '';
                 this.model.referral_guide_number = '';
                  this.model.referral_warehouse_document_type_id = '';
@@ -393,6 +294,7 @@
                     return this.movement_types.filter(mt => mt.movent_class === this.model.movement_class_id || mt.movent_class === 3);
                 }
             },
+
             warehouseAccountTypes: function() {
                 if ( this.model.movement_type_id == 1 || this.model.movement_type_id == 2 || this.model.movement_type_id == 15 ) {
                     return this.warehouse_account_types.filter(wat => wat.id === 2);
@@ -402,6 +304,7 @@
                     return this.warehouse_account_types;
                 }
             },
+           
         },
         methods: {
             warehouseAccountTypesChange: function() {
@@ -453,21 +356,6 @@
                                 }
                             };
                         },
-                
-                  /*      url: this.url_get_correlative,
-                        dataType: 'json',
-                        delay: 250,
-                        type: 'POST',
-                        data: function (params) {
-                            var queryParameters = {
-                                q: params.term,
-                                company_id: vm.model.company_id,
-                                guides_serie_id: vm.model.guides_serie_id,
-                                _token: token,
-                            }
-
-                            return queryParameters;
-                        },*/
 
                         cache: true
                         

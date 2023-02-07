@@ -94,13 +94,7 @@ class StockRegisterReportController extends Controller
 		$final_date = date_format($final_date, 'Y-m-d H:i:s');
 		$warehouse_account_type_id = request('model.warehouse_account_type_id');
 		$warehouse_account_id = request('model.warehouse_account_id');
-		// $referral_guide_series = request('model.referral_guide_series');
-		// $referral_guide_number = request('model.referral_guide_number');
-		// $warehouse_document_type_id = request('model.warehouse_document_type_id');
-		// $referral_serie_number = request('model.referral_serie_number');
-		// $referral_voucher_number = request('model.referral_voucher_number');
-		// $scop_number = request('model.scop_number');
-		// $license_plate = request('model.license_plate');
+	
 
 		$movements = WarehouseMovement::select('id', 'company_id', 'movement_class_id', 'movement_type_id', 'movement_stock_type_id', 'movement_number', 'created_at', 'warehouse_account_type_id', 'account_id', 'account_document_number', 'account_name', 'referral_guide_series', 'referral_guide_number', 'scop_number', 'license_plate', 'state')
 			->where('movement_class_id', $movement_class_id)
@@ -165,7 +159,7 @@ class StockRegisterReportController extends Controller
 					->where('id', $item->account_id)
 					->first();
 			}
-
+ 
 			$account_document_type = $query->document_type->name;
 			
 			$item->warehouse_movement_details->map(function($detail, $detailIndex) use($item, $account_document_type, $movement_details, $valued, $export) {

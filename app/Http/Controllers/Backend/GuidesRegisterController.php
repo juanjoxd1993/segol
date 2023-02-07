@@ -45,8 +45,7 @@ class GuidesRegisterController extends Controller
 		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
-		$client_routes= ClientRoute::select('id','name')->get();
-		$vehicles= Vehicle::select('id','plate')->get();
+		
 		$guide_series= GuidesSerie::select('id','num_serie','correlative')->get();
 
 
@@ -55,7 +54,7 @@ class GuidesRegisterController extends Controller
 			->where('state', 1)
 			->first();
 
-		return view('backend.guides_register')->with(compact('movement_classes', 'movement_types', 'movement_stock_types', 'warehouse_types', 'companies', 'currencies', 'current_date', 'min_datetime', 'max_datetime', 'warehouse_account_types', 'warehouse_document_types', 'igv','client_routes','guide_series','vehicles'));
+		return view('backend.guides_register')->with(compact('movement_classes', 'movement_types', 'movement_stock_types', 'warehouse_types', 'companies', 'currencies', 'current_date', 'min_datetime', 'max_datetime', 'warehouse_account_types', 'warehouse_document_types', 'igv','guide_series'));
 	}
 
 	
@@ -130,9 +129,9 @@ class GuidesRegisterController extends Controller
 			'since_date.required'								=> 'Debe seleccionar una Fecha.',
 			'referral_guide_series.required_if'			        => 'Debe digitar la Serie de Guía de Remisión.',
 			'referral_guide_number.required_if'					=> 'Debe digitar el Número de Guía de Remisión.',
-			'vehicle_id.required_if'							=> 'Debe digitar el Número de Placa.',
+		//	'vehicle_id.required_if'							=> 'Debe digitar el Número de Placa.',
 			'traslate_date.required_if'                         => 'Debe seleccionar la fecha de traslado.',
-			'route_id.required_if'                              => 'Debe seleccionar la ruta.',
+			
 		];
 
 		$rules = [
@@ -141,10 +140,10 @@ class GuidesRegisterController extends Controller
 			'since_date'							=> 'required',
 			'referral_guide_series'					=> 'required_if:movement_type_id,1,7,8,9,11,13,15,19,20',
 			'referral_guide_number'					=> 'required_if:movement_type_id,1,7,8,9,11,13,15,19,20',
-			'scop_number'							=> 'required_if:movement_type_id,1,12,13,14,15,16',
-			'vehicle_id'							=> 'required_if:movement_type_id,11,12,13,14,19,20',
+		//	'scop_number'							=> 'required_if:movement_type_id,1,12,13,14,15,16',
+		//	'vehicle_id'							=> 'required_if:movement_type_id,11,12,13,14,19,20',
 			'traslate_date'							=> 'required',
-			'route_id'							    => 'required',
+		//	'route_id'							    => 'required',
 
 		];
 
@@ -166,8 +165,8 @@ class GuidesRegisterController extends Controller
 		$referral_guide_series = request('referral_guide_series');
 		$referral_guide_number = request('referral_guide_number');
 		$scop_number = request('scop_number');
-		$vehicle_id= request('vehicle_id');
-		$route_id = request('route_id');
+		$license_plate= request('license_plate');
+	//	$route_id = request('route_id');
 
 		$model = request()->all();
 
@@ -289,8 +288,8 @@ class GuidesRegisterController extends Controller
 		$referral_guide_series = request('model.referral_guide_series');
 		$referral_guide_number = request('model.referral_guide_number');
 		$scop_number = request('model.scop_number');
-		$license_plate = request('model.vehicle_id');
-		$route_id = request('model.route_id');
+		$license_plate = request('model.license_plate');
+	//	$route_id = request('model.route_id');
 		$articles = request('article_list');
 
 		$tmpGuideSerie = GuidesSerie::where ('company_id',$company_id)
@@ -334,8 +333,6 @@ class GuidesRegisterController extends Controller
 
 		
 
-
-
 		$movement = new WarehouseMovement();
 		$movement->company_id = $company_id;
 		$movement->warehouse_type_id = $warehouse_type_id;
@@ -362,7 +359,7 @@ class GuidesRegisterController extends Controller
 		$movement->updated_at_user = Auth::user()->user;
 		$movement->traslate_date = date('Y-m-d', strtotime($traslate_date));
 		$movement->fac_date = date('Y-m-d', strtotime($traslate_date));
-		$movement->route_id = $route_id;
+	//	$movement->route_id = $route_id;
 	
 		$movement->save();
 
@@ -392,7 +389,7 @@ class GuidesRegisterController extends Controller
 		$movement2->updated_at_user = Auth::user()->user;
 		$movement2->traslate_date = date('Y-m-d', strtotime($traslate_date));
 		$movement2->fac_date = date('Y-m-d', strtotime($traslate_date));
-		$movement2->route_id = $route_id;
+	//	$movement2->route_id = $route_id;
 	
 		$movement2->save();
 

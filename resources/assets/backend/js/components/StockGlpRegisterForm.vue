@@ -13,16 +13,7 @@
         <form class="kt-form" @submit.prevent="formController(url, $event)">
             <div class="kt-portlet__body">
                 <div class="row">
-                   <!-- <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Ingreso/Salida:</label>
-                            <select class="form-control" name="movement_class_id" id="movement_class_id" v-model="model.movement_class_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="movement_class in movement_classes" :value="movement_class.id" v-bind:key="movement_class.id">{{ movement_class.name }}</option>
-                            </select>
-                            <div id="movement_class_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div> -->
+                  
                   <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo Movimiento:</label>
@@ -35,16 +26,6 @@
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <!--<div class="col-lg-3" v-if="model.movement_type_id == 21">
-                        <div class="form-group">
-                            <label class="form-control-label">Tipo de Stock:</label>
-                            <select class="form-control" name="movement_stock_type_id" id="movement_stock_type_id" v-model="model.movement_stock_type_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="movement_stock_type in movement_stock_types" :value="movement_stock_type.id" v-bind:key="movement_stock_type.id">{{ movement_stock_type.name }}</option>
-                            </select>
-                            <div id="movement_stock_type_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div> -->
                    
                     <div class="col-lg-3">
                         <div class="form-group">
@@ -55,20 +36,13 @@
                                             <option value="9">PLUS-CALLAO</option>
                                             <option value="10">NUMAY LIMA</option>
                                             <option value="11">UNNA</option>
-                                             <option value="12">NUMAY PISCO</option>
+                                            <option value="12">NUMAY PISCO</option>
                             </select>
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
                    
                    
-                    <!-- <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Fecha:</label>
-                            <input type="text" class="form-control" name="since_date" id="since_date" v-model="model.since_date" @focus="$parent.clearErrorMsg($event)" readonly="readonly">
-                            <div id="since_date-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div> -->
 					<div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Fecha Emisión:</label>
@@ -203,7 +177,7 @@
                          <label class="form-control-label">Mezcla:</label>
                             <select class="form-control" name="mezcla" id="mezcla" v-model="model.mezcla" @focus="$parent.clearErrorMsg($event)">
                                <option disabled value="">Seleccionar</option>
-                                            <option value="60/40">65/35</option>
+                                            <option value="65/35">65/35</option>
                                             <option value="60/40">60/40</option>
                                             <option value="70/30">70/30</option>
                                                                                        

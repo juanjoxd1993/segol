@@ -38,25 +38,6 @@
                                 </div>
 
 
-                                
-                           <!--     <div class="col-lg-3" >
-                                    <div class="form-group">
-                                        <label class="form-control-label">Precio unitario:</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">
-                                                    {{ this.currency.symbol }}
-                                                </span>
-                                            </div>
-                                            <input type="tel" class="form-control" name="price" id="price" placeholder="0" v-model="model.price" @focus="$parent.clearErrorMsg($event)">
-                                        </div>
-                                        <div id="price-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>-->
-
-
-
-
                                 <div class="col-lg-3" >
                                     <div class="form-group">
                                         <label class="form-control-label">Total:</label>

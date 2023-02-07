@@ -1,6 +1,6 @@
 <template>
     <!--begin::Modal-->
-    <div class="modal fade" id="stock-register-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="stock-glp-register-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <!--begin::Form-->
@@ -162,20 +162,20 @@
 			}
         },
         created() {
-            EventBus.$on('stock_register_modal', function(articles, movement_class_id, movement_type_id) {
+            EventBus.$on('stock-glp-register-modal', function(articles, movement_class_id, movement_type_id) {
                 this.articles = articles;
                 this.movement_class_id = movement_class_id;
                 this.movement_type_id = movement_type_id;
-                $('#stock-register-modal').modal('show');
+                $('#stock-glp-register-modal').modal('show');
             }.bind(this));
 
-            EventBus.$on('stock-register-modal-hide', function() {
+            EventBus.$on('stock-glp-register-modal_hide', function() {
                 this.model.article_id = '';
                 this.model.quantity = '';
                 this.model.quantity_2 = '';
                 this.model.quantity_3 = '';
                 $('#article').val(null).trigger('change');
-                $('#stock-register-modal').modal('hide');
+                $('#stock-glp-register-modal').modal('hide');
                 // document.getElementById('add_article_2').disabled = false;
             }.bind(this));
 
@@ -189,7 +189,7 @@
                 console.log(index, id);
             }.bind(this));
 
-            EventBus.$on('reset_stock_register', function() {
+            EventBus.$on('reset_stock_glp_register', function() {
                 this.model.article_id = '';
                 this.model.quantity = '';
                 this.model.quantity_2 = '';
@@ -219,7 +219,7 @@
         mounted() {
             this.newSelect2();
 
-            $('#stock-register-modal').on('hide.bs.modal', function(e) {
+            $('#stock-glp-register-modal').on('hide.bs.modal', function(e) {
                 this.model.article_id = '';
                 this.model.quantity = '';
                 this.model.quantity_2 = '';

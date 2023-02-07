@@ -287,20 +287,20 @@ class ProductionController extends Controller
 	}
 
 	public function store() {
-		$movement_class_id = request('model.movement_class_id');
-		$movement_type_id = request('model.movement_type_id');
+		$movement_class_id = 1;
+		$movement_type_id = 3;
 		$movement_stock_type_id = request('model.movement_stock_type_id');
-		$warehouse_type_id = request('model.warehouse_type_id');
-		$company_id = request('model.company_id');
-		$currency_id = request('model.currency');
+		$warehouse_type_id = 5;
+		$company_id = 1;
+		$currency_id = 1;
 		$since_date = request('model.since_date');
-		$warehouse_account_type_id = request('model.warehouse_account_type_id');
-		$warehouse_account_id = request('model.warehouse_account_id');
+		$warehouse_account_type_id = 3;
+		$warehouse_account_id = 18;
 		$referral_guide_series = request('model.referral_guide_series');
 		$referral_guide_number = request('model.referral_guide_number');
-		$referral_warehouse_document_type_id = request('model.referral_warehouse_document_type_id');
-		$referral_serie_number = request('model.referral_serie_number');
-		$referral_voucher_number = request('model.referral_voucher_number');
+		$referral_warehouse_document_type_id = 10;
+		$referral_serie_number = 1;
+		$referral_voucher_number = 1;
 		$scop_number = request('model.scop_number');
 		$license_plate = request('model.license_plate');
 		$articles = request('article_list');
@@ -581,7 +581,7 @@ class ProductionController extends Controller
 			}
 
 			foreach ($relatedArticlesForDescUnitsWithConvertion as $relatedArticle) {
-				$relatedArticle->stock_good -= $item['digit_amount'] * $article->convertion;
+				$relatedArticle->stock_good -= $item['converted_amount'] * $article->convertion;
 				$relatedArticle->save();
 
 				$movementDetail = new WarehouseMovementDetail();

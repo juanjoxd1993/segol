@@ -11,7 +11,6 @@
 		:movement_types = "{{ $movement_types }}"
 		:movement_stock_types = "{{ $movement_stock_types }}"
 		:currencies = "{{ $currencies }}"
-		:client_routes = "{{ $client_routes }}"
 		:guide_series = "{{ $guide_series }}"
 		:current_date = "'{{ $current_date }}'"
 		{{-- :min_datetime = "'{{ $min_datetime }}'" --}}
@@ -19,7 +18,6 @@
 		:warehouse_types = "{{ $warehouse_types }}"
 		:warehouse_account_types = "{{ $warehouse_account_types }}"
 		:warehouse_document_types = "{{ $warehouse_document_types }}"	
-		:vehicles = "{{ $vehicles }}"
 		:url = "'{{ route('dashboard.operations.guides_register.list') }}'"
 		:url_get_accounts = "'{{ route('dashboard.operations.guides_register.get_accounts') }}'"
 		:url_get_articles = "'{{ route('dashboard.operations.guides_register.get_articles') }}'"

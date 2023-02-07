@@ -91,7 +91,7 @@
                 this.addArticle(model, this.igv.value, this.perception_percentage);
             }.bind(this));
 
-            EventBus.$on('reset_stock_register', function() {
+            EventBus.$on('reset_stock_glp_register', function() {
                 this.show_table = 0;
                 this.datatable = undefined;
                 this.article_list = [];
@@ -113,7 +113,7 @@
         },
         methods: {
             openModal: function() {
-                EventBus.$emit('stock_register_modal', this.articles, this.igv, this.perception_percentage, this.currency, this.model.movement_class_id, this.model.movement_type_id);
+                EventBus.$emit('stock-glp-register-modal', this.articles, this.igv, this.perception_percentage, this.currency, this.model.movement_class_id, this.model.movement_type_id);
             },
             addArticle: function(model, igv_percentage, perception_percentage) {
                 axios.post(this.url_get_article, {
@@ -130,7 +130,7 @@
                     this.fillTableX();
                     EventBus.$emit('loading', false);
 
-                    EventBus.$emit('stock_register_modal_hide');
+                    EventBus.$emit('stock_glp_register_modal_hide');
                     EventBus.$emit('add_article_id', response.data.id);
                 }).catch(error => {
                     console.log(error);
