@@ -20,7 +20,7 @@
                             <label class="form-control-label">Almacén:</label>
                             <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
                                <option disabled value="">Seleccionar</option>
-                                            <option value="8">PLUSPETROL</option>
+                                            <option value="8">PLUSPETROL PISCO</option>
                                             <option value="9">PLUS-CALLAO</option>
                                             <option value="10">NUMAY LIMA</option>
                                             <option value="11">UNNA</option>
