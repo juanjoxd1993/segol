@@ -121,6 +121,12 @@ class TerminalsReportController extends Controller
 				->select('referral_guide_number')
 				->sum('referral_guide_number');
 
+				$recojo = WarehouseMovement::join('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')
+				->where('referral_voucher_number', $item['referral_voucher_number'])
+				->where('movement_class_id', 2)
+				->select('converted_amount')
+				->sum('converted_amount');
+
 				$tc = WarehouseMovement::where('referral_voucher_number', $item['referral_voucher_number'])
 				->where('movement_class_id', 1)
 				->select('tc')
@@ -129,6 +135,7 @@ class TerminalsReportController extends Controller
 				$detail->article;
 				$detail->cantidad += $cantidad;
 				$detail->total += $total;
+				$detail->recojo += $recojo;
 				$detail->pedido_m += $pedido;
 				$detail->factura = $item->factura;
 				$detail->quantity = $detail->converted_amount;
@@ -167,6 +174,15 @@ class TerminalsReportController extends Controller
 						}
 				
 				
+
+				if ($detail->cantidad != 0 )  {
+					$detail->rest = $detail->cantidad-$detail->recojo;
+				}
+				else {
+					$detail->rest = 0;
+				}
+
+
 				$detail->igv = $detail->soles-$detail->sub_total;			
 				$detail->date = date('d-m-Y', strtotime($item->created_at));
 				$detail->article_code = $detail->article->code;
@@ -262,20 +278,6 @@ class TerminalsReportController extends Controller
 		$date = request('date');
 		$date_emi = request('date_emi');
 		$typing_error = request('typing_error');
-
-		// Revisar Nª de Scop
-		// $scop = WarehouseMovement::where('scop_number', $scop_number)
-		// 	->where('account_id', '!=', $account_id)
-		// 	->first();
-
-		// if ( $scop ) {
-		// 	$data = new stdClass();
-		// 	$data->type = 5;
-		// 	$data->title = '¡Error!';
-		// 	$data->msg = 'El Nº de Scop ya existe en otro Registro.';
-
-		// 	return response()->json($data);
-		// }
 
 		$element = WarehouseMovement::findOrFail($id);
 		$element->referral_guide_series = $referral_guide_series;

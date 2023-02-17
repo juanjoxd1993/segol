@@ -290,6 +290,9 @@ class LiquidationFinalController extends Controller
 				->select('id', 'address')
 				->first();
 
+
+				
+
 			
 			$client->credit_limit_days = $client->credit_limit_days ? $client->credit_limit_days : 0;
 			$sale_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));

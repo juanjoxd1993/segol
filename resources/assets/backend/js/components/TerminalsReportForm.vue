@@ -13,36 +13,7 @@
         <form class="kt-form" @submit.prevent="formController(url, $event)">
             <div class="kt-portlet__body">
                 <div class="row">
-                 <!--   <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Ingreso/Salida:</label>
-                            <select class="form-control" name="movement_class_id" id="movement_class_id" v-model="model.movement_class_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="movement_class in movement_classes" :value="movement_class.id" v-bind:key="movement_class.id">{{ movement_class.name }}</option>
-                            </select>
-                            <div id="movement_class_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Tipo Movimiento:</label>
-                            <select class="form-control" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="movement_type in movementTypes" :value="movement_type.id" v-bind:key="movement_type.id">{{ movement_type.name }}</option>
-                            </select>
-                            <div id="movement_type_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Almacén:</label>
-                            <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="warehouse_type in warehouse_types" :value="warehouse_type.id" v-bind:key="warehouse_type.id">{{ warehouse_type.name }}</option>
-                            </select>
-                            <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div> -->
+                
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
@@ -89,77 +60,7 @@
                             <div id="final_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                 <!--    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Tipo:</label>
-                            <select class="form-control" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
-                                <option value="">Seleccionar</option>
-                                <option v-for="warehouse_account_type in warehouseAccountTypes" :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{ warehouse_account_type.name }}</option>
-                            </select>
-                            <div id="warehouse_account_type_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Nombre o Razón Social:</label>
-                            <select class="form-control kt-select2" name="warehouse_account_id" id="warehouse_account_id" v-model="model.warehouse_account_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                            </select>
-                            <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div> -->
-                    <!-- <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Serie de Guía de Remisión:</label>
-                            <input type="text" class="form-control" name="referral_guide_series" id="referral_guide_series" v-model="model.referral_guide_series" @focus="$parent.clearErrorMsg($event)">
-                            <div id="referral_guide_series-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Número de Guía de Remisión:</label>
-                            <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="model.referral_guide_number" @focus="$parent.clearErrorMsg($event)">
-                            <div id="referral_guide_number-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Tipo Referencia:</label>
-                            <select class="form-control" name="warehouse_document_type_id" id="warehouse_document_type_id" v-model="model.warehouse_document_type_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="warehouse_document_type in warehouse_document_types" :value="warehouse_document_type.id" v-bind:key="warehouse_document_type.id">{{ warehouse_document_type.name }}</option>
-                            </select>
-                            <div id="warehouse_document_type_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Serie de Referencia:</label>
-                            <input type="text" class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="model.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
-                            <div id="referral_serie_number-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Número de Referencia:</label>
-                            <input type="text" class="form-control" name="referral_voucher_number" id="referral_voucher_number" v-model="model.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
-                            <div id="referral_voucher_number-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Número de SCOP:</label>
-                            <input type="text" class="form-control" name="scop_number" id="scop_number" v-model="model.scop_number" @focus="$parent.clearErrorMsg($event)">
-                            <div id="scop_number-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Placa:</label>
-                            <input type="text" class="form-control" name="license_plate" id="license_plate" v-model="model.license_plate" @focus="$parent.clearErrorMsg($event)">
-                            <div id="license_plate-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div> -->
+              
                 </div>
             </div>
             <div class="kt-portlet__foot">

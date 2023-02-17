@@ -217,13 +217,15 @@
                 if ( this.igv_flag == 0 ) {
                     this.model.igv = 0;
                 } else {
-                    let igv = this.model.total * (this.igv / 100);
+
+                    let igv = this.model.total -(this.model.total/1.18) ;
+                  //  let igv = this.model.total * (this.igv / 100);
                     this.model.igv = igv.toFixed(4);
                 }
                 return this.model.igv;
             },
             getValue: function() {
-                let sale_value = Number(this.model.sale_value) - Number(this.model.inaccurate_value) + Number(this.model.igv);
+                let sale_value = Number(this.model.total) - Number(this.model.inaccurate_value) - Number(this.model.igv);
                 this.model.sale_value = sale_value.toFixed(4);
                 return this.model.sale_value;
             },
