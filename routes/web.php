@@ -79,16 +79,16 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones/guardar', 'LiquidationController@store')->name('dashboard.voucher.liquidations.store');
 
 	/** Facturación > Liquidaciones Final */
-	Route::get('/facturacion/liquidaciones-final', 'LiquidationFinalController@index')->name('dashboard.voucher.liquidations_final');
-	Route::post('/facturacion/liquidaciones-final/validar-formulario', 'LiquidationFinalController@validateForm')->name('dashboard.voucher.liquidations_final.validate_form');
-	Route::post('/facturacion/liquidaciones-final/obtener-movimientos-almacen', 'LiquidationFinalController@getWarehouseMovements')->name('dashboard.voucher.liquidations_final.get_warehouse_movements');
-	Route::post('/facturacion/liquidaciones-final/listar', 'LiquidationFinalController@list')->name('dashboard.voucher.liquidations_final.list');
-	Route::post('/facturacion/liquidaciones-final/obtener-clientes', 'LiquidationFinalController@getClients')->name('dashboard.voucher.liquidations_final.get_clients');
-	Route::post('/facturacion/liquidaciones-final/obtener-precio-articulo', 'LiquidationFinalController@getArticlePrice')->name('dashboard.voucher.liquidations_final.get_article_price');
-	Route::post('/facturacion/liquidaciones-final/obtener-cuentas-banco', 'LiquidationFinalController@getBankAccounts')->name('dashboard.voucher.liquidations_final.get_bank_accounts');
-	Route::post('/facturacion/liquidaciones-final/verificar-documento', 'LiquidationFinalController@verifyDocumentType')->name('dashboard.voucher.liquidations_final.verify_document_type');
-	Route::post('/facturacion/liquidaciones-final/guardar', 'LiquidationFinalController@store')->name('dashboard.voucher.liquidations_final.store');
-
+	Route::get('/facturacion/liquidaciones-final', 'LiquidationFinalMainController@index')->name('dashboard.voucher.liquidations_final');
+	Route::post('/facturacion/liquidaciones-final/validar-formulario', 'LiquidationFinalMainController@validateForm')->name('dashboard.voucher.liquidations_final.validate_form');
+	Route::post('/facturacion/liquidaciones-final/obtener-movimientos-almacen', 'LiquidationFinalMainController@getWarehouseMovements')->name('dashboard.voucher.liquidations_final.get_warehouse_movements');
+	Route::post('/facturacion/liquidaciones-final/listar', 'LiquidationFinalMainController@list')->name('dashboard.voucher.liquidations_final.list');
+	Route::post('/facturacion/liquidaciones-final/obtener-clientes', 'LiquidationFinalMainController@getClients')->name('dashboard.voucher.liquidations_final.get_clients');
+	Route::post('/facturacion/liquidaciones-final/obtener-precio-articulo', 'LiquidationFinalMainController@getArticlePrice')->name('dashboard.voucher.liquidations_final.get_article_price');
+	Route::post('/facturacion/liquidaciones-final/obtener-cuentas-banco', 'LiquidationFinalMainController@getBankAccounts')->name('dashboard.voucher.liquidations_final.get_bank_accounts');
+	Route::post('/facturacion/liquidaciones-final/verificar-documento', 'LiquidationFinalMainController@verifyDocumentType')->name('dashboard.voucher.liquidations_final.verify_document_type');
+	Route::post('/facturacion/liquidaciones-final/guardar', 'LiquidationFinalMainController@store')->name('dashboard.voucher.liquidations_final.store');
+	Route::get('/facturacion/liquidaciones-final/get-op-number', 'LiquidationFinalMainController@getOperationNumber')->name('dashboard.voucher.liquidations_final.get_op_number');
 
 	/** Facturación > Lista de Precios */
 	Route::get('/facturacion/lista-de-precios', 'PriceListController@index')->name('dashboard.voucher.price_list');

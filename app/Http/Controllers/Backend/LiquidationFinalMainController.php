@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Auth;
 use DB;
 
 
-class LiquidationFinalController extends Controller
+class LiquidationFinalMainController extends Controller
 {
 	public function index() {
         $companies = Company::select('id', 'name')->get();
@@ -561,5 +561,19 @@ class LiquidationFinalController extends Controller
 		$warehouse_movement->save();
 
 		// return request()->all();
+	}
+
+	public function getOperationNumber() {
+		if (request('payment_method') == '2') {
+			$count = Liquidation::where('bank_account_id', request('bank_account'))
+								->where('operation_number', request('operation_number'))
+								->count();
+
+			if ($count > 0) {
+				return response()->json([], 422);
+			}
+		}
+
+		return response()->json([], 200);
 	}
 }
