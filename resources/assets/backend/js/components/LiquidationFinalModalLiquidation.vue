@@ -77,7 +77,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-12 text-right">
-                                    <button id="add_payment" type="submit" class="btn btn-success" @click.prevent="addLiquidation(model)">Agregar</button>
+                                    <button id="add_payment" type="submit" class="btn btn-success" @click.prevent="addLiquidation(model)" :disabled="model.payment_method == 2">Agregar</button>
                                     <button type="button" class="btn btn-secondary" @click.prevent="resetLiquidation()">Cancelar</button>
                                     <div class="kt-separator kt-separator--space kt-separator--dashed"></div>
                                 </div>
@@ -252,21 +252,21 @@
             addLiquidation: function() {
                 let liquidation = JSON.parse(JSON.stringify(this.model));
                 let text = '';
+                console.log(liquidation);
 
-
-                if ( liquidation.payment_method == '' && liquidation.payment_id.id == this.payment_cash) {
+                if ( liquidation.payment_method == '' && liquidation.payment_id == this.payment_cash) {
                     text = 'Debe seleccionar una Forma de Pago.';
-                } else if ( liquidation.currency == '' && liquidation.payment_id.id == this.payment_cash) {
+                } else if ( liquidation.currency == '' && liquidation.payment_id == this.payment_cash) {
                     text = 'Debe seleccionar una Moneda.';
-                } else if ( ( liquidation.payment_method.id == 2 || liquidation.payment_method.id == 3 ) && liquidation.bank_account == '' ) {
+                } else if ( ( liquidation.payment_method == 2 || liquidation.payment_method == 3 ) && liquidation.bank_account == '' ) {
                     text = 'Debe seleccionar un Banco.';
-                } else if ( ( liquidation.payment_method.id == 2 || liquidation.payment_method.id == 3 ) && liquidation.operation_number == '' ) {
+                } else if ( ( liquidation.payment_method == 2 || liquidation.payment_method == 3 ) && liquidation.operation_number == '' ) {
                     text = 'El Nº de Operación es obligatorio.';
-                } else if ( ( liquidation.currency.id == 2 || liquidation.currency.id == 3 ) && liquidation.exchange_rate == '' ) {
+                } else if ( ( liquidation.currency == 2 || liquidation.currency == 3 ) && liquidation.exchange_rate == '' ) {
                     text = 'El Tipo de Cambio es obligatorio.';
-                } else if ( (liquidation.amount == '' || liquidation.amount <= 0 ) && liquidation.payment_id.id == this.payment_cash) {
+                } else if ( (liquidation.amount == '' || liquidation.amount <= 0 ) && liquidation.payment_id == this.payment_cash) {
                     text = 'El Monto es obligatorio y debe ser mayor a 0.';
-                } else if (this.$store.state.sale.payment_id != this.payment_credit && liquidation.payment_id.id == this.payment_credit) {
+                } else if (this.$store.state.sale.payment_id != this.payment_credit && liquidation.payment_id == this.payment_credit) {
                     text = 'El cliente no cuenta con crédito disponible';
                 }
                 
@@ -347,7 +347,7 @@
                     });
                 }
 
-                  if ( this.model.payment_id.id == this.payment_credit && (this.$store.state.sale.total_perception - accounting.unformat(this.addTotals))> this.$store.state.sale.credit_limit ) {
+                if ( this.model.payment_id == this.payment_credit && (this.$store.state.sale.total_perception - accounting.unformat(this.addTotals))> this.$store.state.sale.credit_limit ) {
                     error = 1;
                     Swal.fire({
                         title: '¡Error!',
@@ -369,7 +369,6 @@
                     });
                 }
 
-              
 				if ( error == 0 ) {
 					let liquidations = JSON.parse(JSON.stringify(this.liquidations));
 					let sale = JSON.parse(JSON.stringify(this.$store.state.sale));
@@ -404,7 +403,7 @@
                 }
             },
             checkPayment() {
-                switch (this.model.payment_id.id) {
+                switch (this.model.payment_id) {
                     case this.payment_cash:
                         $('#modal-liquidation').find('#payment_method_id').prop('disabled', false);
                         $('#modal-liquidation').find('#currency_id').prop('disabled', false);
@@ -423,9 +422,6 @@
                 }
             },
             manageOperationNumber() {
-                console.log(this.model.payment_method);
-
-
                 if (this.model.payment_method === 2) {
                     EventBus.$emit('loading', true);
                     $('#add_payment').prop('disabled', true);

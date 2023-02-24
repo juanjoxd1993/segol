@@ -138,14 +138,14 @@ class LiquidationFinalMainController extends Controller
         $q = request('q');
 
         if ( isset($client_id) ) {
-            $elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id')
+            $elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit')
                 ->where('id', $client_id)
                 ->first();
 
             $elements->text = $elements->business_name;
             unset($elements->business_name);
         } else {
-            $elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id')
+            $elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id', 'credit_limit')
                 ->where('company_id', $company_id)
                 ->where('business_name', 'like', '%'.$q.'%') ->orWhere('id', 'like', '%'.$q.'%')
                 ->orderBy('business_name', 'asc')
