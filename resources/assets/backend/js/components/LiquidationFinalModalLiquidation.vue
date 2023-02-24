@@ -252,7 +252,6 @@
             addLiquidation: function() {
                 let liquidation = JSON.parse(JSON.stringify(this.model));
                 let text = '';
-                console.log(liquidation);
 
                 if ( liquidation.payment_method == '' && liquidation.payment_id == this.payment_cash) {
                     text = 'Debe seleccionar una Forma de Pago.';
