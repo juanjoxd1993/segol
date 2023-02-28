@@ -179,6 +179,13 @@ class CollectionRegisterController extends Controller
 			$sale = Sale::find($item['id']);
 			$sale->balance -= $item['paid'];
 			$sale->paid += $item['paid'];
+
+			$pendSaleLiquidations = $sale->liquidations()->where('payment_method_id', 7)->get();
+
+			foreach ($pendSaleLiquidations as $pendLiquidation) {
+				$pendLiquidation->amount -= $item['paid'];
+			}
+
 			$sale->save();
 		}
 
