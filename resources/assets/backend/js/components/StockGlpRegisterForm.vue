@@ -27,22 +27,36 @@
                         </div>
                     </div>
                    
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" v-if="model.movement_type_id == 31">
                         <div class="form-group">
-                            <label class="form-control-label">Almacén:</label>
+                            <label class="form-control-label">Almacén Proveedor:</label>
                             <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
-                               <option disabled value="">Seleccionar</option>
-                                            <option value="8">PLUSPETROL</option>
-                                            <option value="9">PLUS-CALLAO</option>
-                                            <option value="10">NUMAY LIMA</option>
-                                            <option value="11">UNNA</option>
-                                            <option value="12">NUMAY PISCO</option>
+                                <option disabled value="">Seleccionar</option>
+                                <option v-for="warehouseType in warehouse_providers" :value="warehouseType.id">{{ warehouseType.name }}</option>
                             </select>
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                   
-                   
+                    <div class="col-lg-3" v-if="model.movement_type_id == 31">
+                        <div class="form-group">
+                            <label class="form-control-label">Almacén Receptor:</label>
+                            <select class="form-control" name="warehouse_receiver" id="warehouse_receiver" v-model="model.warehouse_receiver" @focus="$parent.clearErrorMsg($event)">
+                                <option disabled value="">Seleccionar</option>
+                                <option v-for="warehouseType in warehouse_receivers" :value="warehouseType.id">{{ warehouseType.name }}</option>
+                            </select>
+                            <div id="warehouse_receiver-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3" v-if="model.movement_type_id == 31">
+                        <div class="form-group">
+                            <label class="form-control-label">Factura:</label>
+                            <select class="form-control" name="invoice" id="invoice" v-model="model.invoice" @focus="$parent.clearErrorMsg($event)">
+                                <option disabled value="">Seleccionar</option>
+                                <option v-for="invoice in model.invoices" :value="invoice.id">{{ invoice.id }}</option>
+                            </select>
+                            <div id="invoice-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
 					<div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Fecha Emisión:</label>
@@ -95,14 +109,14 @@
                         </div>
                     </div>
                     
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" v-if="model.movement_type_id != 31">
                         <div class="form-group">
                             <label class="form-control-label">Serie de Factura</label>
                             <input type="text" class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="model.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" v-if="model.movement_type_id != 31">
                         <div class="form-group">
                             <label class="form-control-label">Número de Factura:</label>
                             <input type="text" class="form-control" name="referral_voucher_number" id="referral_voucher_number" v-model="model.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
@@ -239,6 +253,14 @@
                 type: Array,
                 default: ''
             },
+            warehouse_providers: {
+                type: Array,
+                default: ''
+            },
+            warehouse_receivers: {
+                type: Array,
+                default: ''
+            },
             companies: {
                 type: Array,
                 default: ''
@@ -275,6 +297,10 @@
                 type: String,
                 default: ''
             },
+            url_get_invoices: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -300,6 +326,8 @@
                     price_mes: '',
                     mezcla:'',
                     isla:'',
+                    warehouse_receiver: '',
+                    invoices: [],
                 },
             }
         },
@@ -309,6 +337,7 @@
                 this.model.movement_type_id = '';
                 this.model.movement_stock_type_id = '';
                 this.model.warehouse_type_id = '';
+                this.model.warehouse_receiver = '';
                 this.model.company_id = '';
             //    this.model.currency = 1;
                 this.model.since_date = this.current_date;
@@ -336,7 +365,15 @@
             this.newSelect2();
         },
         watch: {
-            
+            'model.warehouse_type_id': function (val) {
+                axios.post(this.url_get_invoices, {
+                    movement_type: 1,
+                    warehouse_type: val
+                }).then(response => {
+                    this.model.invoices = response.data;
+                }).catch(error => {
+                });
+            }
         },
         computed: {
             movementTypes: function() {

@@ -15,6 +15,8 @@
 		{{-- :min_datetime = "'{{ $min_datetime }}'" --}}
 		:max_datetime = "'{{ $max_datetime }}'"
 		:warehouse_types = "{{ $warehouse_types }}"
+		:warehouse_providers = "{{ $warehouse_providers }}"
+		:warehouse_receivers = "{{ $warehouse_receivers }}"
 		:warehouse_account_types = "{{ $warehouse_account_types }}"
 		:warehouse_document_types = "{{ $warehouse_document_types }}"	
 		:url = "'{{ route('dashboard.operations.stock_glp_register.list') }}'"
@@ -23,6 +25,7 @@
 		:url_get_perception_percentage = "'{{ route('dashboard.operations.stock_glp_register.get_perception_percentage') }}'"
 		:url_get_article = "'{{ route('dashboard.operations.stock_glp_register.get_article') }}'"
 		:url_store = "'{{ route('dashboard.operations.stock_glp_register.store') }}'"
+		:url_get_invoices = "'{{ route('dashboard.operations.stock_glp_register.get_invoices') }}'"
 	></stock-glp-register-form>
 
 	<stock-glp-register-table

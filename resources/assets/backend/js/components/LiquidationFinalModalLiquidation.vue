@@ -18,7 +18,7 @@
                                         <label class="form-control-label">Condición de Pago:</label>
                                         <select class="form-control" name="payment_id" id="payment_id" v-model="model.payment_id" @focus="$parent.clearErrorMsg($event)" v-on:change="checkPayment">
                                             <option value="">Seleccionar</option>
-                                            <option v-for="payment in payments" :value="payment" v-bind:key="payment.id">{{ payment.name }}</option>
+                                            <option v-for="payment in payments" :value="payment.id" v-bind:key="payment.id">{{ payment.name }}</option>
                                         </select>
                                         <div id="payment_id-error" class="error invalid-feedback"></div>
                                     </div>
@@ -28,7 +28,7 @@
                                         <label class="form-control-label">Forma de Pago:</label>
                                         <select class="form-control" name="payment_method_id" id="payment_method_id" v-model="model.payment_method" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
-                                            <option v-for="payment_method in payment_methods" :value="payment_method" v-bind:key="payment_method.id">{{ payment_method.name }}</option>
+                                            <option v-for="payment_method in payment_methods" :value="payment_method.id" v-bind:key="model.payment_method.id">{{ payment_method.name }}</option>
                                         </select>
                                         <div id="payment_method_id-error" class="error invalid-feedback"></div>
                                     </div>
@@ -38,32 +38,32 @@
                                         <label class="form-control-label">Moneda:</label>
                                         <select class="form-control" name="currency_id" id="currency_id" v-model="model.currency" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
-                                            <option v-for="currency in currencies" :value="currency" v-bind:key="currency.id">{{ currency.name }}</option>
+                                            <option v-for="currency in currencies" :value="currency.id" v-bind:key="currency.id">{{ currency.name }}</option>
                                         </select>
                                         <div id="currency_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3" v-if="model.currency != '' && model.currency.id != 1">
+                                <div class="col-lg-3" v-if="model.currency != '' && model.currency != 1">
                                     <div class="form-group">
                                         <label class="form-control-label">Tipo de Cambio:</label>
                                         <input type="number" class="form-control" name="exchange_rate" id="exchange_rate" min="0" v-model="model.exchange_rate" @focus="$parent.clearErrorMsg($event)">
                                         <div id="exchange_rate-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3" v-if="model.payment_method.id == 2 || model.payment_method.id == 3">
+                                <div class="col-lg-3" v-if="model.payment_method == 2 || model.payment_method == 3">
                                     <div class="form-group">
                                         <label class="form-control-label">Banco:</label>
                                         <select class="form-control" name="bank_account_id" id="bank_account_id" v-model="model.bank_account" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
-                                            <option v-for="bank_account in bank_accounts" :value="bank_account" v-bind:key="bank_account.id">{{ bank_account.name }}</option>
+                                            <option v-for="bank_account in bank_accounts" :value="bank_account.id" v-bind:key="bank_account.id">{{ bank_account.name }}</option>
                                         </select>
                                         <div id="bank_account_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3" v-if="model.payment_method.id == 2 || model.payment_method.id == 3">
+                                <div class="col-lg-3" v-if="model.payment_method == 2 || model.payment_method == 3">
                                     <div class="form-group">
                                         <label class="form-control-label">Nº de Operación:</label>
-                                        <input type="text" class="form-control" name="operation_number" id="operation_number" v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)">
+                                        <input type="text" class="form-control" name="operation_number" id="operation_number" v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageOperationNumber">
                                         <div id="operation_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -77,7 +77,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-12 text-right">
-                                    <button type="submit" class="btn btn-success" @click.prevent="addLiquidation(model)">Agregar</button>
+                                    <button id="add_payment" type="submit" class="btn btn-success" @click.prevent="addLiquidation(model)" :disabled="model.payment_method == 2">Agregar</button>
                                     <button type="button" class="btn btn-secondary" @click.prevent="resetLiquidation()">Cancelar</button>
                                     <div class="kt-separator kt-separator--space kt-separator--dashed"></div>
                                 </div>
@@ -205,12 +205,12 @@
         },
         watch: {
             'model.currency': function(val) {
-                if ( this.model.payment_method.id == 2 || this.model.payment_method.id == 3 ) {
+                if ( this.model.payment_method == 2 || this.model.payment_method == 3 ) {
                     EventBus.$emit('loading', true);
 
                     axios.post(this.url_get_bank_accounts, {
                         company_id: this.$store.state.model.company_id,
-                        currency_id: val.id
+                        currency_id: val
                     }).then(response => {
                         // console.log(response);
                         this.model.bank_account = '';
@@ -253,20 +253,19 @@
                 let liquidation = JSON.parse(JSON.stringify(this.model));
                 let text = '';
 
-
-                if ( liquidation.payment_method == '' && liquidation.payment_id.id == this.payment_cash) {
+                if ( liquidation.payment_method == '' && liquidation.payment_id == this.payment_cash) {
                     text = 'Debe seleccionar una Forma de Pago.';
-                } else if ( liquidation.currency == '' && liquidation.payment_id.id == this.payment_cash) {
+                } else if ( liquidation.currency == '' && liquidation.payment_id == this.payment_cash) {
                     text = 'Debe seleccionar una Moneda.';
-                } else if ( ( liquidation.payment_method.id == 2 || liquidation.payment_method.id == 3 ) && liquidation.bank_account == '' ) {
+                } else if ( ( liquidation.payment_method == 2 || liquidation.payment_method == 3 ) && liquidation.bank_account == '' ) {
                     text = 'Debe seleccionar un Banco.';
-                } else if ( ( liquidation.payment_method.id == 2 || liquidation.payment_method.id == 3 ) && liquidation.operation_number == '' ) {
+                } else if ( ( liquidation.payment_method == 2 || liquidation.payment_method == 3 ) && liquidation.operation_number == '' ) {
                     text = 'El Nº de Operación es obligatorio.';
-                } else if ( ( liquidation.currency.id == 2 || liquidation.currency.id == 3 ) && liquidation.exchange_rate == '' ) {
+                } else if ( ( liquidation.currency == 2 || liquidation.currency == 3 ) && liquidation.exchange_rate == '' ) {
                     text = 'El Tipo de Cambio es obligatorio.';
-                } else if ( (liquidation.amount == '' || liquidation.amount <= 0 ) && liquidation.payment_id.id == this.payment_cash) {
+                } else if ( (liquidation.amount == '' || liquidation.amount <= 0 ) && liquidation.payment_id == this.payment_cash) {
                     text = 'El Monto es obligatorio y debe ser mayor a 0.';
-                } else if (this.$store.state.sale.payment_id != this.payment_credit && liquidation.payment_id.id == this.payment_credit) {
+                } else if (this.$store.state.sale.payment_id != this.payment_credit && liquidation.payment_id == this.payment_credit) {
                     text = 'El cliente no cuenta con crédito disponible';
                 }
                 
@@ -347,7 +346,7 @@
                     });
                 }
 
-                  if ( this.model.payment_id.id == this.payment_credit && (this.$store.state.sale.total_perception - accounting.unformat(this.addTotals))> this.$store.state.sale.credit_limit ) {
+                if ( this.model.payment_id == this.payment_credit && (this.$store.state.sale.total_perception - accounting.unformat(this.addTotals))> this.$store.state.sale.credit_limit ) {
                     error = 1;
                     Swal.fire({
                         title: '¡Error!',
@@ -369,7 +368,6 @@
                     });
                 }
 
-              
 				if ( error == 0 ) {
 					let liquidations = JSON.parse(JSON.stringify(this.liquidations));
 					let sale = JSON.parse(JSON.stringify(this.$store.state.sale));
@@ -404,7 +402,7 @@
                 }
             },
             checkPayment() {
-                switch (this.model.payment_id.id) {
+                switch (this.model.payment_id) {
                     case this.payment_cash:
                         $('#modal-liquidation').find('#payment_method_id').prop('disabled', false);
                         $('#modal-liquidation').find('#currency_id').prop('disabled', false);
@@ -420,6 +418,33 @@
                         $('#modal-liquidation').find('#currency_id').prop('disabled', false);
                         $('#modal-liquidation').find('#amount').prop('disabled', false);
                         break;
+                }
+            },
+            manageOperationNumber() {
+                if (this.model.payment_method === 2) {
+                    EventBus.$emit('loading', true);
+                    $('#add_payment').prop('disabled', true);
+                    $('#operation_number-error').hide();
+                    $('#operation_number-error').text('');
+
+                    axios.get('/facturacion/liquidaciones-final/get-op-number', {
+                        params: {
+                            operation_number: this.model.operation_number,
+                            payment_method: this.model.payment_method,
+                            bank_account: this.model.bank_account
+                        }
+                    }).then(response => {
+                        console.log('bien');
+                        EventBus.$emit('loading', false);
+                        $('#add_payment').prop('disabled', false);
+                        $('#operation_number-error').text('');
+                        $('#operation_number-error').hide();
+                    }).catch(error => {
+                        EventBus.$emit('loading', false);
+                        $('#add_payment').prop('disabled', true);
+                        $('#operation_number-error').text('El Nro. de Operación del Deposito ya fue usado anteriormente');
+                        $('#operation_number-error').show();
+                    });
                 }
             }
         }

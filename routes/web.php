@@ -64,7 +64,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-final/obtener-cuentas-banco', 'LiquidationFinalController@getBankAccounts')->name('dashboard.voucher.liquidations_final.get_bank_accounts');
 	Route::post('/facturacion/liquidaciones-final/verificar-documento', 'LiquidationFinalController@verifyDocumentType')->name('dashboard.voucher.liquidations_final.verify_document_type');
 	Route::post('/facturacion/liquidaciones-final/guardar', 'LiquidationFinalController@store')->name('dashboard.voucher.liquidations_final.store');
-	Route::get('/facturacion/liquidaciones-final/get-op-number', 'LiquidationFinalController@getOperationNumber')->name('dashboard.voucher.liquidations_final.get_op_number');
 
 
 	
@@ -519,6 +518,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/registro-movimiento-glp/obtener-tasas', 'StockGlpRegisterController@getArticleRates')->name('dashboard.operations.stock_glp_register.get_article_rates');
 	Route::post('/controlglp/registro-movimiento-glp/obtener-articulo', 'StockGlpRegisterController@getArticle')->name('dashboard.operations.stock_glp_register.get_article');
 	Route::post('/controlglp/registro-movimiento-glp/guardar', 'StockGlpRegisterController@store')->name('dashboard.operations.stock_glp_register.store');
+	Route::post('/controlglp/registro-movimiento-glp/get-invoices', 'StockGlpRegisterController@getInvoices')->name('dashboard.operations.stock_glp_register.get_invoices');
 
 
 	 /** Compras GLP > Reporte de Compras GLP */

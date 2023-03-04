@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Auth;
 use DB;
 
 
-class LiquidationFinalController extends Controller
+class LiquidationFinalMainController extends Controller
 {
 	public function index() {
         $companies = Company::select('id', 'name')->get();
@@ -138,14 +138,14 @@ class LiquidationFinalController extends Controller
         $q = request('q');
 
         if ( isset($client_id) ) {
-            $elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id')
+            $elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit')
                 ->where('id', $client_id)
                 ->first();
 
             $elements->text = $elements->business_name;
             unset($elements->business_name);
         } else {
-            $elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id')
+            $elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id', 'credit_limit')
                 ->where('company_id', $company_id)
                 ->where('business_name', 'like', '%'.$q.'%') ->orWhere('id', 'like', '%'.$q.'%')
                 ->orderBy('business_name', 'asc')
@@ -473,6 +473,7 @@ class LiquidationFinalController extends Controller
 			$sale_model->paid = $paid;
 			$sale_model->created_at_user = Auth::user()->user;
 			$sale_model->updated_at_user = Auth::user()->user;
+			$sale_model->pend = 0;
 			$sale_model->save();
 
 			// if ( $client->payment_id == 2 ) {
@@ -510,21 +511,29 @@ class LiquidationFinalController extends Controller
 						$liquidation_model = new Liquidation();
 						$liquidation_model->sale_id = $sale_model->id;
 						$liquidation_model->company_id = $model['company_id'];
-						$liquidation_model->payment_method_id = $liquidation['payment_method']['id'];
-						$liquidation_model->currency_id = $liquidation['currency']['id'];
+						$liquidation_model->payment_method_id = $liquidation['payment_method'];
+						$liquidation_model->currency_id = $liquidation['currency'];
 						$liquidation_model->exchange_rate = $liquidation['exchange_rate'];
-						$liquidation_model->bank_account_id = $liquidation['bank_account']['id'];
+						$liquidation_model->bank_account_id = $liquidation['bank_account'];
 						$liquidation_model->operation_number = $liquidation['operation_number'];
 						$liquidation_model->amount = round($liquidation['amount'], 4);
 						$liquidation_model->created_at_user = Auth::user()->user;
 						$liquidation_model->updated_at_user = Auth::user()->user;
 						$liquidation_model->save();
 
-						if ( $liquidation['payment_id']['id'] == 1 ) {
-                            if ($liquidation['payment_method']['id'] == 1) {
+						if ($liquidation['payment_method'] == 7) {
+							$sale_model->pend = $sale_model->pend + round($liquidation['amount'], 4);
+						}
+
+						if ($liquidation['payment_method'] == 7 || $liquidation['payment_method'] == 5) {
+							$sale_model->balance = $sale_model->balance + round($liquidation['amount'], 4);
+						}
+
+						if ( $liquidation['payment_id'] == 1 ) {
+                            if ($liquidation['payment_method'] == 1) {
                                 $sale_model->payment_method_efective = 1;
                                 $sale_model->efective += round($liquidation['amount'], 4);
-                            } elseif ($liquidation['payment_method']['id'] == 2) {
+                            } elseif ($liquidation['payment_method'] == 2) {
                                 $sale_model->payment_method_deposit = 4;
                                 $sale_model->deposit += round($liquidation['amount'], 4);
                             }
@@ -543,7 +552,7 @@ class LiquidationFinalController extends Controller
                                 'sale_id' => $sale_model->id,
                                 'company_id' => $model['company_id'],
                                 'client_id' => $sale['client_id'],
-                                'currency_id' =>  $liquidation['currency']['id'],
+                                'currency_id' =>  $liquidation['currency'],
                                 'amount' => round($sale_model['pre_balance'], 4),
                                 'created_at_user' => auth()->user()->name,
                                 'created_at' => Carbon::now(),
@@ -561,5 +570,19 @@ class LiquidationFinalController extends Controller
 		$warehouse_movement->save();
 
 		// return request()->all();
+	}
+
+	public function getOperationNumber() {
+		if (request('payment_method') == '2') {
+			$count = Liquidation::where('bank_account_id', request('bank_account'))
+								->where('operation_number', request('operation_number'))
+								->count();
+
+			if ($count > 0) {
+				return response()->json([], 422);
+			}
+		}
+
+		return response()->json([], 200);
 	}
 }
