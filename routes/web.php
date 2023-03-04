@@ -562,6 +562,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/registro-movimiento-glp/obtener-tasas', 'StockGlpRegisterController@getArticleRates')->name('dashboard.operations.stock_glp_register.get_article_rates');
 	Route::post('/controlglp/registro-movimiento-glp/obtener-articulo', 'StockGlpRegisterController@getArticle')->name('dashboard.operations.stock_glp_register.get_article');
 	Route::post('/controlglp/registro-movimiento-glp/guardar', 'StockGlpRegisterController@store')->name('dashboard.operations.stock_glp_register.store');
+	Route::post('/controlglp/registro-movimiento-glp/get-invoices', 'StockGlpRegisterController@getInvoices')->name('dashboard.operations.stock_glp_register.get_invoices');
 
 
 	 /** Compras GLP > Reporte de Compras GLP */

@@ -13,6 +13,8 @@
 		
 		:max_datetime = "'<?php echo e($max_datetime); ?>'"
 		:warehouse_types = "<?php echo e($warehouse_types); ?>"
+		:warehouse_providers = "<?php echo e($warehouse_providers); ?>"
+		:warehouse_receivers = "<?php echo e($warehouse_receivers); ?>"
 		:warehouse_account_types = "<?php echo e($warehouse_account_types); ?>"
 		:warehouse_document_types = "<?php echo e($warehouse_document_types); ?>"	
 		:url = "'<?php echo e(route('dashboard.operations.stock_glp_register.list')); ?>'"
@@ -21,6 +23,7 @@
 		:url_get_perception_percentage = "'<?php echo e(route('dashboard.operations.stock_glp_register.get_perception_percentage')); ?>'"
 		:url_get_article = "'<?php echo e(route('dashboard.operations.stock_glp_register.get_article')); ?>'"
 		:url_store = "'<?php echo e(route('dashboard.operations.stock_glp_register.store')); ?>'"
+		:url_get_invoices = "'<?php echo e(route('dashboard.operations.stock_glp_register.get_invoices')); ?>'"
 	></stock-glp-register-form>
 
 	<stock-glp-register-table
