@@ -10,16 +10,16 @@
 		:client_sectors = "{{ $client_sectors }}"
 		:client_channels = "{{ $client_channels }}"
 		:client_routes = "{{ $client_routes }}"
-		:url = "'{{ route('dashboard.voucher.price_list.validate_form') }}'"
+		:url = "'{{ route('dashboard.commercial.price_list.validate_form') }}'"
 	></price-list-form>
 	
 	<price-list-table
-		:url = "'{{ route('dashboard.voucher.price_list.list') }}'"
+		:url = "'{{ route('dashboard.commercial.price_list.list') }}'"
 	></price-list-table>
 
 	<price-list-modal
-		:url = "'{{ route('dashboard.voucher.price_list.store') }}'"
-		:url_get_min_effective_date = "'{{ route('dashboard.voucher.price_list.get_min_effective_date') }}'"
+		:url = "'{{ route('dashboard.commercial.price_list.store') }}'"
+		:url_get_min_effective_date = "'{{ route('dashboard.commercial.price_list.get_min_effective_date') }}'"
 	></price-list-modal>
 
 	<loading></loading>

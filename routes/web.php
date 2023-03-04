@@ -32,13 +32,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/obtener-detalle-documento', 'VoucherController@get_voucher_detail')->name('dashboard.voucher.get_voucher_detail');
 	Route::post('/facturacion/enviar-documento', 'VoucherController@send_voucher')->name('dashboard.voucher.send_voucher');
 
-	/** Facturación > Consulta Envío OSE */
-	Route::get('/facturacion/reporte-ose', 'VoucherReportOseController@index')->name('dashboard.voucher.reportOse');
-	Route::post('/facturacion/reporte-ose/validar-formulario-documentos', 'VoucherReportOseController@validateForm')->name('dashboard.voucher.reportOse.validateForm');
-	Route::post('/facturacion/reporte-ose/obtener-documentos-tabla', 'VoucherReportOseController@getVouchersTable')->name('dashboard.voucher.reportOse.getVouchersTable');
-	Route::post('/facturacion/reporte-ose/obtener-detalle-documento', 'VoucherReportOseController@getVoucherDetail')->name('dashboard.voucher.reportOse.getVoucherDetail');
-	Route::post('/facturacion/reporte-ose/enviar-documento', 'VoucherReportOseController@sendVoucher')->name('dashboard.voucher.reportOse.sendVoucher');
-
 	
 
 	/** Facturación > Registro de Documentos por Cobrar */
@@ -50,14 +43,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/documentos-por-cobrar/validar-tercer-paso', 'RegisterDocumentChargeController@validateThirdStep')->name('dashboard.voucher.register_document_charge.validate_third_step');
 	Route::post('/facturacion/documentos-por-cobrar/guardar', 'RegisterDocumentChargeController@store')->name('dashboard.voucher.register_document_charge.store');
 
-/** Facturación > Registro de Facturacion a Global */
-	Route::get('/facturacion/documentos-global', 'RegisterDocumentFactController@index')->name('dashboard.voucher.register_document_fact');
-	Route::post('/facturacion/documentos-global/validar-primer-paso', 'RegisterDocumentFactController@validateFirstStep')->name('dashboard.voucher.register_document_fact.validate_first_step');
-	Route::post('/facturacion/documentos-global/obtener-comprobante', 'RegisterDocumentFactController@getVoucher')->name('dashboard.voucher.register_document_fact.get_voucher');
-	Route::post('/facturacion/documentos-global/validar-segundo-paso', 'RegisterDocumentFactController@validateSecondStep')->name('dashboard.voucher.register_document_fact.validate_second_step');
-	Route::post('/facturacion/documentos-global/obtener-clientes', 'RegisterDocumentFactController@getClients')->name('dashboard.voucher.register_document_fact.get_clients');
-	Route::post('/facturacion/documentos-global/validar-tercer-paso', 'RegisterDocumentFactController@validateThirdStep')->name('dashboard.voucher.register_document_fact.validate_third_step');
-	Route::post('/facturacion/documentos-global/guardar', 'RegisterDocumentFactController@store')->name('dashboard.voucher.register_document_fact.store');
+ 
 
 	/** Facturación > Registro de Cobranzas */
 	Route::get('/facturacion/cobranzas', 'CollectionRegisterController@index')->name('dashboard.voucher.collection_register');
@@ -67,17 +53,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/cobranzas/obtener-ventas', 'CollectionRegisterController@getSales')->name('dashboard.voucher.collection_register.get_sales');
 	Route::post('/facturacion/cobranzas/guardar', 'CollectionRegisterController@store')->name('dashboard.voucher.collection_register.store');
 
-	/** Facturación > Liquidaciones */
-	Route::get('/facturacion/liquidaciones', 'LiquidationController@index')->name('dashboard.voucher.liquidations');
-	Route::post('/facturacion/liquidaciones/validar-formulario', 'LiquidationController@validateForm')->name('dashboard.voucher.liquidations.validate_form');
-	Route::post('/facturacion/liquidaciones/obtener-movimientos-almacen', 'LiquidationController@getWarehouseMovements')->name('dashboard.voucher.liquidations.get_warehouse_movements');
-	Route::post('/facturacion/liquidaciones/listar', 'LiquidationController@list')->name('dashboard.voucher.liquidations.list');
-	Route::post('/facturacion/liquidaciones/obtener-clientes', 'LiquidationController@getClients')->name('dashboard.voucher.liquidations.get_clients');
-	Route::post('/facturacion/liquidaciones/obtener-precio-articulo', 'LiquidationController@getArticlePrice')->name('dashboard.voucher.liquidations.get_article_price');
-	Route::post('/facturacion/liquidaciones/obtener-cuentas-banco', 'LiquidationController@getBankAccounts')->name('dashboard.voucher.liquidations.get_bank_accounts');
-	Route::post('/facturacion/liquidaciones/verificar-documento', 'LiquidationController@verifyDocumentType')->name('dashboard.voucher.liquidations.verify_document_type');
-	Route::post('/facturacion/liquidaciones/guardar', 'LiquidationController@store')->name('dashboard.voucher.liquidations.store');
-
+	
 	/** Facturación > Liquidaciones Final */
 	Route::get('/facturacion/liquidaciones-final', 'LiquidationFinalController@index')->name('dashboard.voucher.liquidations_final');
 	Route::post('/facturacion/liquidaciones-final/validar-formulario', 'LiquidationFinalController@validateForm')->name('dashboard.voucher.liquidations_final.validate_form');
@@ -88,15 +64,10 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-final/obtener-cuentas-banco', 'LiquidationFinalController@getBankAccounts')->name('dashboard.voucher.liquidations_final.get_bank_accounts');
 	Route::post('/facturacion/liquidaciones-final/verificar-documento', 'LiquidationFinalController@verifyDocumentType')->name('dashboard.voucher.liquidations_final.verify_document_type');
 	Route::post('/facturacion/liquidaciones-final/guardar', 'LiquidationFinalController@store')->name('dashboard.voucher.liquidations_final.store');
+	Route::get('/facturacion/liquidaciones-final/get-op-number', 'LiquidationFinalController@getOperationNumber')->name('dashboard.voucher.liquidations_final.get_op_number');
 
 
-	/** Facturación > Lista de Precios */
-	Route::get('/facturacion/lista-de-precios', 'PriceListController@index')->name('dashboard.voucher.price_list');
-	Route::post('/facturacion/lista-de-precios/validar-formulario', 'PriceListController@validateForm')->name('dashboard.voucher.price_list.validate_form');
-	Route::post('/facturacion/lista-de-precios/listar', 'PriceListController@list')->name('dashboard.voucher.price_list.list');
-	Route::post('/facturacion/lista-de-precios/obtener-dia', 'PriceListController@getMinEffectiveDate')->name('dashboard.voucher.price_list.get_min_effective_date');
-	Route::post('/facturacion/lista-de-precios/guardar', 'PriceListController@store')->name('dashboard.voucher.price_list.store');
-
+	
 	/** Reportes > Cuentas Corrientes Clientes */
 	Route::get('/reporte/cuentas-corrientes-clientes', 'CheckingAccountReportController@index')->name('dashboard.report.checking_account_report');
 	Route::post('/reporte/cuentas-corrientes-clientes/obtener-clientes', 'CheckingAccountReportController@getClients')->name('dashboard.report.checking_account_report.get_clients');
@@ -202,13 +173,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/lista-de-precios/listar', 'PriceListReportController@list')->name('dashboard.report.price_list.list');
 	Route::post('/reporte/lista-de-precios/exportar-pdf', 'PriceListReportController@exportPdf')->name('dashboard.report.price_list.export_pdf');
 
-	/** Reportes > Movimiento de Existencias */
-	Route::get('/reporte/movimiento-existencias', 'StockRegisterReportController@index')->name('dashboard.report.stock_register');
-	Route::get('/reporte/movimiento-existencias-valorizado', 'StockRegisterReportController@index')->name('dashboard.report.stock_register_valued');
-	Route::post('/reporte/movimiento-existencias/validar-formulario', 'StockRegisterReportController@validateForm')->name('dashboard.report.stock_register.validate_form');
-	Route::post('/reporte/movimiento-existencias/listar', 'StockRegisterReportController@list')->name('dashboard.report.stock_register.list');
-	Route::post('/reporte/movimiento-existencias/detalle', 'StockRegisterReportController@detail')->name('dashboard.report.stock_register.detail');
-	Route::post('/reporte/movimiento-existencias/actualizar', 'StockRegisterReportController@update')->name('dashboard.report.stock_register.update');
 	
 
 	/** Reportes > Parte de Almacén */
@@ -339,6 +303,15 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 
 	Route::get('/boletas-backup', 'BackupController@boletaBackup');
 
+    /** Logística > Reporte de Movimiento de Existencias */
+	Route::get('/logistica/reporte-movimiento-existencias', 'StockRegisterReportController@index')->name('dashboard.logistics.report.stock_register');
+	Route::get('/logistica/reporte-movimiento-existencias-valorizado', 'StockRegisterReportController@index')->name('dashboard.logistics.report.stock_register_valued');
+	Route::post('/logistica/reporte-movimiento-existencias/validar-formulario', 'StockRegisterReportController@validateForm')->name('dashboard.logistics.report.stock_register.validate_form');
+	Route::post('/logistica/reporte-movimiento-existencias/listar', 'StockRegisterReportController@list')->name('dashboard.logistics.report.stock_register.list');
+	Route::post('/logistica/reporte-movimiento-existencias/detalle', 'StockRegisterReportController@detail')->name('dashboard.logistics.report.stock_register.detail');
+	Route::post('/logistica/reporte-movimiento-existencias/actualizar', 'StockRegisterReportController@update')->name('dashboard.logistics.report.stock_register.update');
+	
+
     /** Operaciones > Guias */
 	Route::get('/operaciones/registro-movimiento-existencias', 'GuidesRegisterController@index')->name('dashboard.operations.guides_register');
 	Route::post('/operaciones/registro-movimiento-existencias/validar-formulario', 'GuidesRegisterController@validateForm')->name('dashboard.operations.guides_register.validate_form');
@@ -388,25 +361,33 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	 Route::post('/comercial/estado-guias/actualizar', 'GuidesCommercialReportController@update')->name('dashboard.commercial.guides_commercial.update');
 
 
+     /** Comercial > Lista de Precios */
+	Route::get('/comercial/lista-de-precios', 'PriceListController@index')->name('dashboard.commercial.price_list');
+	Route::post('/comercial/lista-de-precios/validar-formulario', 'PriceListController@validateForm')->name('dashboard.commercial.price_list.validate_form');
+	Route::post('/comercial/lista-de-precios/listar', 'PriceListController@list')->name('dashboard.commercial.price_list.list');
+	Route::post('/comercial/lista-de-precios/obtener-dia', 'PriceListController@getMinEffectiveDate')->name('dashboard.commercial.price_list.get_min_effective_date');
+	Route::post('/comercial/lista-de-precios/guardar', 'PriceListController@store')->name('dashboard.commercial.price_list.store');
+
+
 
 	 /** comercial > Clientes */
-	Route::get('/comercial/clientes', 'ClientController@index')->name('dashboard.voucher.clients');
-	Route::post('/comercial/clientes/validar-formulario', 'ClientController@validateForm')->name('dashboard.voucher.clients.validate_form');
-	Route::post('/comercial/clientes/listar', 'ClientController@list')->name('dashboard.voucher.clients.list');
-	Route::post('/comercial/clientes/guardar', 'ClientController@store')->name('dashboard.voucher.clients.store');
-	Route::post('/comercial/clientes/detalle', 'ClientController@detail')->name('dashboard.voucher.clients.detail');
-	Route::post('/comercial/clientes/obtener-ubigeos', 'ClientController@getUbigeos')->name('dashboard.voucher.clients.get_ubigeos');
-	Route::post('/comercial/clientes/obtener-clientes', 'ClientController@getClients')->name('dashboard.voucher.clients.get_clients');
-	Route::post('/comercial/clientes/obtener-select2', 'ClientController@getSelect2')->name('dashboard.voucher.clients.get_select2');
-	Route::post('/comercial/clientes/eliminar', 'ClientController@delete')->name('dashboard.voucher.clients.delete');
-	Route::post('/comercial/clientes/listar-direcciones', 'ClientController@addressList')->name('dashboard.voucher.clients.address_list');
-	Route::post('/comercial/clientes/guardar-direccion', 'ClientController@addressStore')->name('dashboard.voucher.clients.address_store');
-	Route::post('/comercial/clientes/detalle-direccion', 'ClientController@addressDetail')->name('dashboard.voucher.clients.address_detail');
-	Route::post('/comercial/clientes/eliminar-direccion', 'ClientController@addressDelete')->name('dashboard.voucher.clients.address_delete');
-	Route::post('/comercial/clientes/listar-precios', 'ClientController@priceList')->name('dashboard.voucher.clients.price_list');
-	Route::post('/comercial/clientes/listar-articulos', 'ClientController@priceArticles')->name('dashboard.voucher.clients.price_articles');
-	Route::post('/comercial/clientes/obtener-dia', 'ClientController@priceMinEffectiveDate')->name('dashboard.voucher.clients.price_min_effective_date');
-	Route::post('/comercial/clientes/guardar-precio', 'ClientController@priceStore')->name('dashboard.voucher.clients.price_store');
+	Route::get('/comercial/clientes', 'ClientController@index')->name('dashboard.commercial.clients');
+	Route::post('/comercial/clientes/validar-formulario', 'ClientController@validateForm')->name('dashboard.commercial.clients.validate_form');
+	Route::post('/comercial/clientes/listar', 'ClientController@list')->name('dashboard.commercial.clients.list');
+	Route::post('/comercial/clientes/guardar', 'ClientController@store')->name('dashboard.commercial.clients.store');
+	Route::post('/comercial/clientes/detalle', 'ClientController@detail')->name('dashboard.commercial.clients.detail');
+	Route::post('/comercial/clientes/obtener-ubigeos', 'ClientController@getUbigeos')->name('dashboard.commercial.clients.get_ubigeos');
+	Route::post('/comercial/clientes/obtener-clientes', 'ClientController@getClients')->name('dashboard.commercial.clients.get_clients');
+	Route::post('/comercial/clientes/obtener-select2', 'ClientController@getSelect2')->name('dashboard.commercial.clients.get_select2');
+	Route::post('/comercial/clientes/eliminar', 'ClientController@delete')->name('dashboard.commercial.clients.delete');
+	Route::post('/comercial/clientes/listar-direcciones', 'ClientController@addressList')->name('dashboard.commercial.clients.address_list');
+	Route::post('/comercial/clientes/guardar-direccion', 'ClientController@addressStore')->name('dashboard.commercial.clients.address_store');
+	Route::post('/comercial/clientes/detalle-direccion', 'ClientController@addressDetail')->name('dashboard.commercial.clients.address_detail');
+	Route::post('/comercial/clientes/eliminar-direccion', 'ClientController@addressDelete')->name('dashboard.commercial.clients.address_delete');
+	Route::post('/comercial/clientes/listar-precios', 'ClientController@priceList')->name('dashboard.commercial.clients.price_list');
+	Route::post('/comercial/clientes/listar-articulos', 'ClientController@priceArticles')->name('dashboard.commercial.clients.price_articles');
+	Route::post('/comercial/clientes/obtener-dia', 'ClientController@priceMinEffectiveDate')->name('dashboard.commercial.clients.price_min_effective_date');
+	Route::post('/comercial/clientes/guardar-precio', 'ClientController@priceStore')->name('dashboard.commercial.clients.price_store');
 
 
 	 /** Comercial > Venta Canal*/
@@ -423,31 +404,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 
 
 
-	/** Reportes > Venta Diaria*/
-	Route::get('/reporte/venta-diaria', 'DaysReportController@index')->name('dashboard.report.days');
-	Route::post('/reporte/venta-diaria/validar-formulario', 'DaysReportController@validateForm')->name('dashboard.report.days.validate_form');
-	Route::post('/reporte/venta-diaria/listar', 'DaysReportController@list')->name('dashboard.report.days.list');
-
-	/** Reportes > Gerencia Diaria*/
-	Route::get('/reporte/gerencia-diaria', 'GerenciaReportController@index')->name('dashboard.report.gerencia');
-	Route::post('/reporte/gerencia-diaria/validar-formulario', 'GerenciaReportController@validateForm')->name('dashboard.report.gerencia.validate_form');
-	Route::post('/reporte/gerencia-diaria/listar', 'GerenciaReportController@list')->name('dashboard.report.gerencia.list');
-
-
-	/** Reportes > Proyección*/
-	Route::get('/reporte/proyeccion-diaria', 'ProyectionReportController@index')->name('dashboard.report.proyection');
-	Route::post('/reporte/proyeccion-diaria/validar-formulario', 'ProyectionReportController@validateForm')->name('dashboard.report.proyection.validate_form');
-	Route::post('/reporte/proyeccion-diaria/listar', 'ProyectionReportController@list')->name('dashboard.report.proyection.list');
-
-	/** Reportes > Cobertura*/
-	Route::get('/reporte/cobertura-diaria', 'CobertReportController@index')->name('dashboard.report.cobert');
-	Route::post('/reporte/cobertura-diaria/validar-formulario', 'CobertReportController@validateForm')->name('dashboard.report.cobert.validate_form');
-	Route::post('/reporte/cobertura-diaria/listar', 'CobertReportController@list')->name('dashboard.report.cobert.list');
-
-	/** Reportes > Rutas*/
-	Route::get('/reporte/rutas-diaria', 'RutasReportController@index')->name('dashboard.report.rutas');
-	Route::post('/reporte/rutas-diaria/validar-formulario', 'RutasReportController@validateForm')->name('dashboard.report.rutas.validate_form');
-	Route::post('/reporte/rutas-diaria/listar', 'RutasReportController@list')->name('dashboard.report.rutas.list');
+	
 
 
 	/** Reportes > GLP COSTO*/

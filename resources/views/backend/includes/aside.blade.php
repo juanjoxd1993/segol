@@ -93,14 +93,7 @@
 									<span class="kt-menu__link-text">Generación de Documentos </span>
 								</a>
 							</li>
-                            <li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.register_document_fact' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.voucher.register_document_fact') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Facturación Manual</span>
-								</a>
-							</li>
+                         
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.collection_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.voucher.collection_register') }}" class="kt-menu__link ">
@@ -250,14 +243,6 @@
 								</a>
 							</li>
 							
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.stock_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.report.stock_register') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Movimiento de Existencias</span>
-								</a>
-							</li>
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.warehouse_part' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.warehouse_part') }}" class="kt-menu__link ">
@@ -326,6 +311,16 @@
 										<span></span>
 									</i>
 									<span class="kt-menu__link-text">Registro Movimiento de Existencias</span>
+								</a>
+							</li>
+
+							
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.logistics.report.stock_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.logistics.report.stock_register') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte de Movimiento de Existencias</span>
 								</a>
 							</li>
 						
@@ -449,12 +444,12 @@
 							</li>
 
 
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.clients' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.voucher.clients') }}" class="kt-menu__link ">
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.commercial.clients' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.commercial.clients') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Registro de Clientes</span>
+									<span class="kt-menu__link-text">Gestión de Clientes</span>
 								</a>
 							</li>
 
@@ -470,12 +465,12 @@
 							
 							
 						    	
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.price_list' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.voucher.price_list') }}" class="kt-menu__link ">
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.commercial.price_list' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.commercial.price_list') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Modificación de Precios</span>
+									<span class="kt-menu__link-text">Modificación Masiva de Precios</span>
 								</a>
 							</li>
 
@@ -515,51 +510,9 @@
 								</a>
 							</li> 
 
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.days' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								  <a href="{{ route('dashboard.report.days') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Reporte de Avance de Venta Diaria</span>
-								</a>
-							</li>
+							
 
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.gerencia' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								  <a href="{{ route('dashboard.report.gerencia') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Reporte de Gerencia Diaria</span>
-								</a>
-							</li>
-
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.proyection' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								  <a href="{{ route('dashboard.report.proyection') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Reporte de Proyección Diaria</span>
-								</a>
-							</li>
-
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.cobert' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								  <a href="{{ route('dashboard.report.cobert') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Reporte de Cobertura Diaria</span>
-								</a>
-							</li>
-
-
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.rutas' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								  <a href="{{ route('dashboard.report.rutas') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Reporte de Rutas Diarias</span>
-								</a>
-							</li>
+						
 
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.days_glp' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
