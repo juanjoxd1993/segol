@@ -198,60 +198,7 @@
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label">Sector:</label>
-                                        <select class="form-control" name="sector_id" id="sector_id" v-model="model.sector_id" @focus="$parent.clearErrorMsg($event)">
-                                            <option value="">Seleccionar</option>
-                                            <option v-for="sector in client_sectors" :value="sector.id" v-bind:key="sector.id">{{ sector.name }}</option>
-                                        </select>
-                                        <div id="sector_id-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Vendedor:</label>
-                                        <select class="form-control" name="seller_id" id="seller_id"  v-model="model.seller_id" @focus="$parent.clearErrorMsg($event)">
-                                         <option disabled value="">Seleccionar</option>
-                                            <option value="SANTOS CCAYPANE">SANTOS CCAYPANE</option>
-                                            <option value="LITO PINTO">LITO PINTO</option>
-                                            <option value="EZEQUIEL MONTAÑEZ">EZEQUIEL MONTAÑEZ</option>
-                                            <option value="FAUSTINO ESTRADA">FAUSTINO ESTRADA</option>
-                                            <option value="FRANKLIN RONCAL">FRANKLIN RONCAL</option>
-                                            <option value="ED MARTIN">ED MARTIN</option>
-                                            <option value="JUAN TRUJILLO">JUAN TRUJILLO</option>
-                                            <option value="JORGE FLORES ">JORGE FLORES </option>                                                              
-                                            <option value="MIGUEL PACHERREZ">MIGUEL PACHERREZ</option>
-                                            <option value="JULIO OLIVERA">JULIO OLIVERA</option>
-                                            <option value="CARLOS FABIAN">CARLOS FABIAN</option>
-                                            <option value="LEANDRO YATACO">LEANDRO YATACO</option>
-                                            <option value="ASENCIOS POMPEYO">ASENCIOS POMPEYO</option>
-                                             <option value="JORDI GUERRERO">JORDI GUERRERO</option>
-                                             <option value="MANUEL RENGIFO">MANUEL RENGIFO</option>
-                                            <option value="JOAQUIN MUNAYA">JOAQUIN MUNAYA</option>
-                                            <option value="JORGE JUSTO">JORGE JUSTO</option>
-                                            <option value="VICTOR CORTEZ">VICTOR CORTEZ</option>
-                                            <option value="JAVIER ARIAS">JAVIER ARIAS</option>
-                                            <option value="JACKSON GARCÍA">JACKSON GARCÍA</option>
-                                            <option value="ENRIQUE SALVATIERRA">ENRIQUE SALVATIERRA</option>
-                                            <option value="MARCO ADONAYRE">MARCO ADONAYRE</option>
-                                            <option value="ROBERTO RENGIFO">ROBERTO RENGIFO</option>
-                                            <option value="ROBERTO MARTINEZ">PERCY OLIVARES</option>
-                                            <option value="ROBERTO MARTINEZ">ROBERTO MARTINEZ</option>
-                                            <option value="EDUARDO MORALES">EDUARDO MORALES</option>
-                                            <option value="JACKSON GARCIA">JACKSON GARCIA</option>
-                                            <option value="Anthony Valencia">Anthony Valencia</option>
-                                            <option value="Mauricio Diaz">Mauricio Diaz</option>
-                                            <option value="Percy Velaochaga">Percy Velaochaga</option>
-                                            <option value="Yimmy León">Yimmy León</option>
-                                            <option value="Genesis Adreani">Rocio Ramos</option>
-                                            <option value="Richard Alvarado">Richard Alvarado</option>
-                                            <option value="Massiel Alor">Massiel Alor</option>
-                                            <option value="Omar Casachahua">Omar Casachahua</option>
-                                            <option value="DANI VELASQUEZ">DANI VELASQUEZ</option>
-                                            <option value="JORGE SARA">JORGE SARA</option>
-                                            <option value="DAVID PALLI">DAVID PALLI</option>
-                                            <option value="OSCAR HUANAY">OSCAR HUANAY</option>
-                                            <option value="LUIS HERNANDEZ">LUIS HERNANDEZ</option>
-                                             <option value="OFICINA PLANTA">OFICINA PLANTA</option>
-                                     </select>
+                                        <input type="text"  class="form-control" name="sector_id" id="sector_id" v-model="model.sector_id" @focus="$parent.clearErrorMsg($event)">
                                         <div id="seller_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -284,17 +231,12 @@
                                    <label class="form-control-label">Supervisor:</label>
                                    <select class="form-control" name="manager_id" id="manager_id" v-model="model.manager_id" @focus="$parent.clearErrorMsg($event)">
                                     <option disabled value="">Seleccionar</option>
-                                            <option value="4">Anthony Valencia</option>
-                                            <option value="3">Mauricio Diaz</option>
-                                            <option value="1">Percy Velaochaga</option>
-                                            <option value="5">Yimmy León</option>
-                                            <option value="6">Genesis Adreani</option>
-                                            <option value="8">Omar Casachahua</option>
-                                            <option value="7">Massiel Alor</option>
-                                            <option value="9">OFICINA PLANTA</option>
-                                            <option value="10">Richard Alvarado</option>
-                                            <option value="11">David Venegas</option>
-                                            <option value="12">Rocio Ramos</option>
+                                            <option value="1">Andrea Olivera</option>
+                                            <option value="2">Daniel Alvarez</option>
+                                            <option value="3">José Silva</option>
+                                            <option value="4">Juan La Rosa</option>
+                                            <option value="5">Petroamerica</option>
+                                            <option value="6">Sra. Belen</option>
                                      </select>
                                        <div id="manager_id-error" class="error invalid-feedback"></div>
                                       </div>
@@ -303,9 +245,7 @@
                                     <div class="col-lg-4">
                                    <div class="form-group">
                                    <label class="form-control-label">Mail:</label>
-                                   <select class="form-control" name="manager_mail" id="manager_mail" v-model="model.manager_mail" @focus="$parent.clearErrorMsg($event)">
-                                    <option disabled value="">Seleccionar</option>
-                                     </select>
+                                   <input type="text" name="manager_mail" id="manager_mail" v-model="model.manager_mail" @focus="$parent.clearErrorMsg($event)">
                                        <div id="manager_mail-error" class="error invalid-feedback"></div>
                                       </div>
                                      </div>
