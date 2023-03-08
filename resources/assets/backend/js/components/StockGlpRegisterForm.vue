@@ -50,7 +50,7 @@
                             <label class="form-control-label">Factura:</label>
                             <select class="form-control" name="invoice" id="invoice" v-model="model.invoice" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                <option v-for="invoice in model.invoices" :value="invoice.id">{{ invoice.id }}</option>
+                                <option v-for="invoice in model.invoices" :data-serie="invoice.referral_serie_number" :data-voucher="invoice.referral_voucher_number" :value="invoice.id">{{ invoice.referral_serie_number + ' - ' + invoice.referral_voucher_number }}</option>
                             </select>
                             <div id="invoice-error" class="error invalid-feedback"></div>
                         </div>
@@ -107,14 +107,14 @@
                         </div>
                     </div>
                     
-                    <div class="col-lg-3">
+                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 31 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Serie de Factura</label>
                             <input type="text" class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="model.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3" >
+                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 31 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Número de Factura:</label>
                             <input type="text" class="form-control" name="referral_voucher_number" id="referral_voucher_number" v-model="model.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
@@ -128,14 +128,15 @@
                             <div id="scop_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+
+                    <div class="'col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Cisterna:</label>
                             <input type="text" class="form-control" name="license_plate" id="license_plate" v-model="model.license_plate" @focus="$parent.clearErrorMsg($event)">
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-
+                   
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tracto:</label>
@@ -371,6 +372,20 @@
                     this.model.invoices = response.data;
                 }).catch(error => {
                 });
+            },
+            'model.warehouse_receiver': function (val) {
+                let receiverText = $('#warehouse_receiver > option[value="' + val + '"]').text();
+
+                $('#license_plate').val(receiverText);
+            },
+            'model.invoice': function (val) {
+                let selectedInvoiceOption = $('#invoice > option[value="' + val + '"]');
+
+                setTimeout(function () {
+                    $('#referral_serie_number').val(selectedInvoiceOption.data('serie'));
+                    $('#referral_voucher_number').val(selectedInvoiceOption.data('voucher'));
+                }, 500);
+
             }
         },
         computed: {

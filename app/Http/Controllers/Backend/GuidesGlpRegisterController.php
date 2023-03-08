@@ -395,8 +395,10 @@ class GuidesGlpRegisterController extends Controller
 		$movement->tc = $tc;
 		}
 		$movement->soles = $movement->total*$movement->tc;
-		$movement->origin= array_sum(array_column($articles, 'group_id'));
-		$movement->cost_glp=$movement->soles/array_sum(array_column($articles, 'converted_amount'));
+		$movement->origin = array_sum(array_column($articles, 'group_id'));
+		$movement->cost_glp = $movement->soles/array_sum(array_column($articles, 'converted_amount'));
+		$movement->stock_ini = array_sum(array_column($articles, 'converted_amount'));
+		$movement->stock_pend = $movement->stock_ini;
 
 		$movement->save();
 

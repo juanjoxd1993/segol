@@ -177,11 +177,6 @@ class StockGlpRegisterController extends Controller
 
 		if (request('movement_type_id') == 31) {
 			// Obtener artículos
-			$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged','group_id')
-				->where('warehouse_type_id', $warehouse_type_id)
-				->orderBy('code', 'asc')
-				->get();
-
 			$article = WarehouseMovementDetail::where('warehouse_movement_id', request('invoice'))->first()->article;
 			$article->sale_unit_id = $article->sale_unit->name;
 			$article->warehouse_unit_id = $article->warehouse_unit->name;
@@ -304,6 +299,7 @@ class StockGlpRegisterController extends Controller
 		$mezcla = request('model.mezcla');
 		$price_mes = request('model.price_mes');
 		$isla = request('model.isla');
+		$warehouse_type_id_receiver = request('model.warehouse_receiver');
 
 		$movement_number = WarehouseMovement::select('movement_number')
 			->where('movement_class_id', $movement_class_id)
@@ -463,7 +459,7 @@ class StockGlpRegisterController extends Controller
 		if (request('model.movement_type_id') == 31) {
 			$movementReceptor = new WarehouseMovement();
 			$movementReceptor->company_id = $company_id;
-			$movementReceptor->warehouse_type_id = $warehouse_type_id;
+			$movementReceptor->warehouse_type_id = $warehouse_type_id_receiver;
 			$movementReceptor->movement_class_id = 1;
 			$movementReceptor->movement_type_id = $movement_type_id;
 			$movementReceptor->movement_number = $movement_number;
@@ -509,7 +505,7 @@ class StockGlpRegisterController extends Controller
 			//	$igv_perception = str_replace(',', '', $item['perception']);
 
 				$movementDetail = new WarehouseMovementDetail();
-				$movementDetail->warehouse_movement_id = $movement->id;
+				$movementDetail->warehouse_movement_id = $movementReceptor->id;
 				$movementDetail->item_number = $item['item_number'];
 				$movementDetail->article_code = $item['id'];
 				$movementDetail->digit_amount = $digit_amount;
@@ -534,27 +530,7 @@ class StockGlpRegisterController extends Controller
 				$movementDetail->created_at_user = Auth::user()->user;
 				$movementDetail->updated_at_user = Auth::user()->user;
 				
-				if ( $movement->movement_class_id == 1 ) {
-					$article->stock_good += $movementDetail->converted_amount;
-					$movementDetail->new_stock_good += $movementDetail->converted_amount;
-					
-					if ( $movement->movement_type_id == 1 || $movement->movement_type_id == 2 ) {
-						$article->last_price = $movementDetail->price;
-					}
-				} elseif ( $movement->movement_class_id == 2 ) {
-					if ( $movement->movement_type_id == 15 ) {
-						$article->stock_return -= $movementDetail->converted_amount;
-						$movementDetail->new_stock_return -= $movementDetail->converted_amount;
-					} elseif ( $movement->movement_type_id == 4 ) {
-						$article->stock_repair -= $movementDetail->converted_amount;
-						$movementDetail->new_stock_repair -= $movementDetail->converted_amount;
-					} else {
-						$article->stock_good -= $movementDetail->converted_amount;
-						$movementDetail->new_stock_good -= $movementDetail->converted_amount;
-
-					}
-				}
-
+				
 				$tmpArticle = Article::where('warehouse_type_id', request('model.warehouse_receiver'))
 									->where('code', $item['code'])
 									->first();
