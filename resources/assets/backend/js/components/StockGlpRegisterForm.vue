@@ -16,18 +16,16 @@
                   
                   <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Tipo Movimiento:</label>
-                            <select class="form-control" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
+                            <label class="form-control-label" readonly="">Tipo Movimiento:</label>
+                            <select class="form-control readonly" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                            <option value="30">Abastecimiento Punto Gas</option>
-                                            <option value="31">Abastecimiento Operaciones</option>
-                                            
+                                            <option value="31">Abastecimiento Punto Gas</option>            
                             </select>
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
                    
-                    <div class="col-lg-3" v-if="model.movement_type_id == 31">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Almacén Proveedor:</label>
                             <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
@@ -37,7 +35,7 @@
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3" v-if="model.movement_type_id == 31">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Almacén Receptor:</label>
                             <select class="form-control" name="warehouse_receiver" id="warehouse_receiver" v-model="model.warehouse_receiver" @focus="$parent.clearErrorMsg($event)">
@@ -47,12 +45,12 @@
                             <div id="warehouse_receiver-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3" v-if="model.movement_type_id == 31">
+                    <div class="col-lg-3" >
                         <div class="form-group">
                             <label class="form-control-label">Factura:</label>
                             <select class="form-control" name="invoice" id="invoice" v-model="model.invoice" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                <option v-for="invoice in model.invoices" :data-serie="invoice.referral_serie_number" :data-voucher="invoice.referral_voucher_number" :value="invoice.id">{{ invoice.referral_serie_number + ' - ' + invoice.referral_voucher_number }}</option>
+                                <option v-for="invoice in model.invoices" :value="invoice.id">{{ invoice.id }}</option>
                             </select>
                             <div id="invoice-error" class="error invalid-feedback"></div>
                         </div>
@@ -109,14 +107,14 @@
                         </div>
                     </div>
                     
-                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 31 ? '' : ' d-none')">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Serie de Factura</label>
                             <input type="text" class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="model.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 31 ? '' : ' d-none')">
+                    <div class="col-lg-3" >
                         <div class="form-group">
                             <label class="form-control-label">Número de Factura:</label>
                             <input type="text" class="form-control" name="referral_voucher_number" id="referral_voucher_number" v-model="model.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
@@ -306,7 +304,7 @@
             return {
                 model: {
                     movement_class_id: '',
-                    movement_type_id: '',
+                    movement_type_id: '31',
                     movement_stock_type_id: '',
                     warehouse_type_id: '',
                     company_id: '1',
@@ -373,19 +371,6 @@
                     this.model.invoices = response.data;
                 }).catch(error => {
                 });
-            },
-            'model.warehouse_receiver': function (val) {
-                let receiverText = $('#warehouse_receiver > option[value="' + val + '"]').text();
-
-                $('#license_plate').val(receiverText);
-            },
-            'model.invoice': function (val) {
-                let selectedInvoiceOption = $('#invoice > option[value="' + val + '"]');
-
-                setTimeout(function () {
-                    $('#referral_serie_number').val(selectedInvoiceOption.data('serie'));
-                    $('#referral_voucher_number').val(selectedInvoiceOption.data('voucher'));
-                }, 500);
             }
         },
         computed: {

@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Auth;
 use DB;
 
 
-class LiquidationFinalMainController extends Controller
+class LiquidationFinalController extends Controller
 {
 	public function index() {
         $companies = Company::select('id', 'name')->get();

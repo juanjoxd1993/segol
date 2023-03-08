@@ -177,6 +177,11 @@ class StockGlpRegisterController extends Controller
 
 		if (request('movement_type_id') == 31) {
 			// Obtener artículos
+			$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged','group_id')
+				->where('warehouse_type_id', $warehouse_type_id)
+				->orderBy('code', 'asc')
+				->get();
+
 			$article = WarehouseMovementDetail::where('warehouse_movement_id', request('invoice'))->first()->article;
 			$article->sale_unit_id = $article->sale_unit->name;
 			$article->warehouse_unit_id = $article->warehouse_unit->name;
@@ -299,7 +304,6 @@ class StockGlpRegisterController extends Controller
 		$mezcla = request('model.mezcla');
 		$price_mes = request('model.price_mes');
 		$isla = request('model.isla');
-		$warehouse_type_id_receiver = request('model.warehouse_receiver');
 
 		$movement_number = WarehouseMovement::select('movement_number')
 			->where('movement_class_id', $movement_class_id)
@@ -459,7 +463,7 @@ class StockGlpRegisterController extends Controller
 		if (request('model.movement_type_id') == 31) {
 			$movementReceptor = new WarehouseMovement();
 			$movementReceptor->company_id = $company_id;
-			$movementReceptor->warehouse_type_id = $warehouse_type_id_receiver;
+			$movementReceptor->warehouse_type_id = $warehouse_type_id;
 			$movementReceptor->movement_class_id = 1;
 			$movementReceptor->movement_type_id = $movement_type_id;
 			$movementReceptor->movement_number = $movement_number;
