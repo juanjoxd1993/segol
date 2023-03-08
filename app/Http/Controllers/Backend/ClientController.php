@@ -24,6 +24,7 @@ use Carbon\Carbon;
 use DateTime;
 use DB;
 use stdClass;
+use App\Services\ClientDataService;
 
 class ClientController extends Controller
 {
@@ -67,7 +68,7 @@ class ClientController extends Controller
 		$q = request('query');
 		$page = (int)$p['page'];
 		$perpage = (int)( $p['perpage'] ? $p['perpage'] : 10 );
-		$search = $q['generalSearch'];
+		$search = $q['generalSearch'] ?? '';
 		request()->replace(['page' => $page]);
 
 		$elements = Client::select('id', 'company_id', 'code', 'business_name', 'document_type_id', 'document_number', 'channel_id', 'email', 'phone_number_1', 'phone_number_2', 'seller_id', 'credit_limit','manager_id', 'perception_percentage_id', 'zone_id', 'route_id', 'sector_id','grupo', 'estado')
@@ -748,5 +749,21 @@ class ClientController extends Controller
 				$clientAddress->save();
 			}
 		});
+	}
+
+	public function searchClientByRuc(ClientDataService $clientDataService)
+	{
+		$response = $clientDataService->getClientInfoByRuc(request('ruc'));
+
+		if ($response === null) {
+			abort(404);
+		}
+
+		$data = [
+			'business_name' => $response['nombre_o_razon_social'],
+			'address' => $response['direccion_completa'],
+		];
+
+		return response()->json($data, 200);
 	}
 }

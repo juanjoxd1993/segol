@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use App\Endpoints\ClientEndpointInterface;
+use App\Endpoints\BasicSunatClientEndpoint;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,7 +16,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            ClientEndpointInterface::class,
+            BasicSunatClientEndpoint::class
+        );
     }
 
     /**

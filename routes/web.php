@@ -387,6 +387,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/comercial/clientes/listar-articulos', 'ClientController@priceArticles')->name('dashboard.commercial.clients.price_articles');
 	Route::post('/comercial/clientes/obtener-dia', 'ClientController@priceMinEffectiveDate')->name('dashboard.commercial.clients.price_min_effective_date');
 	Route::post('/comercial/clientes/guardar-precio', 'ClientController@priceStore')->name('dashboard.commercial.clients.price_store');
+	Route::get('/comercial/clientes/bsucar-cliente-ruc', 'ClientController@searchClientByRuc')->name('dashboard.commercial.clients.search_client');
 
 
 	 /** Comercial > Venta Canal*/

@@ -18,7 +18,7 @@
                                 <div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Tipo de Documento:</label>
-										<select class="form-control" name="document_type_id" id="document_type_id" v-model="model.document_type_id" @focus="$parent.clearErrorMsg($event)">
+										<select class="form-control" name="document_type_id" id="document_type_id" v-on:change="searchRuc" v-model="model.document_type_id" @focus="$parent.clearErrorMsg($event)">
 											<option value="">Seleccionar</option>
 											<option v-for="document_type in document_types" :value="document_type.id" v-bind:key="document_type.id">{{ document_type.name }}</option>
 										</select>
@@ -28,7 +28,7 @@
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label">Número de Documento:</label>
-                                        <input type="text" class="form-control" name="document_number" id="document_number" placeholder="123456789" v-model="model.document_number" @focus="$parent.clearErrorMsg($event)">
+                                        <input type="text" class="form-control" name="document_number" id="document_number" placeholder="123456789" v-on:keyup="searchRuc" v-model="model.document_number" @focus="$parent.clearErrorMsg($event)">
                                         <div id="document_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -383,6 +383,10 @@
                 type: String,
                 default: ''
             },
+            url_search_client: {
+                type: String,
+                default: ''
+            },
             document_types: {
                 type: Array,
                 default: ''
@@ -729,6 +733,30 @@
                     });
                 });
             },
+            searchRuc: function() {
+                let documentType = $('#document_type_id');
+                let documentNumber = $('#document_number');
+
+                if (documentType.val() == 1 && documentNumber.val().length == 11) {
+                    EventBus.$emit('loading', true);
+                    axios.get(this.url_search_client, {
+                        params: {
+                            ruc: documentNumber.val()
+                        }
+                    }).then(response => {
+                        EventBus.$emit('loading', false);
+                        $('#business_name').val(response.data.business_name);
+                        $('#address').val(response.data.address);
+                        $('#document_number-error').css('display', 'none');
+                    }).catch(error => {
+                        EventBus.$emit('loading', false);
+                        $('#document_number-error').css('display', 'block');
+                        $('#document_number-error').html('Error, no encontrado');
+                        $('#business_name').val('');
+                        $('#address').val('');
+                    });
+                }
+            }
         }
     };
 </script>

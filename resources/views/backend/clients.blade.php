@@ -28,6 +28,7 @@
 		:client_channels = "{{ $client_channels }}"
 		:client_routes = "{{ $client_routes }}"
 		:client_sectors = "{{ $client_sectors }}"
+		:url_search_client = "'{{ route('dashboard.commercial.clients.search_client') }}'"
 	></client-modal>
 
 	<client-address-modal
