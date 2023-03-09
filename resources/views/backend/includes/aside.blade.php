@@ -735,7 +735,16 @@
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Abastecimiento de GLP</span>
+									<span class="kt-menu__link-text">Abastecimiento Comercial GLP</span>
+								</a>
+							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.stock_abast_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.stock_abast_register') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Abastecimiento Transportistas GLP</span>
 								</a>
 							</li>
 

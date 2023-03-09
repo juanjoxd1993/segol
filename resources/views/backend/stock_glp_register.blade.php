@@ -2,7 +2,7 @@
 
 @section('body-class', '')
 @section('title', 'Control GLP')
-@section('subtitle', 'Registro Abastecimientos GLP')
+@section('subtitle', 'Registro Abastecimiento Comercial')
 
 @section('content')
 	<stock-glp-register-form

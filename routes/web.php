@@ -509,17 +509,29 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/registro-movimiento-existencias/guardar', 'GuidesGlpRegisterController@store')->name('dashboard.operations.guides_glp_register.store');
 
 
-	/** Compras GLP > Registro de Abastecimiento*/
-	Route::get('/controlglp/registro-movimiento-glp', 'StockGlpRegisterController@index')->name('dashboard.operations.stock_glp_register');
-	Route::post('/controlglp/registro-movimiento-glp/validar-formulario', 'StockGlpRegisterController@validateForm')->name('dashboard.operations.stock_glp_register.validate_form');
-	Route::post('/controlglp/registro-movimiento-glp/listar', 'StockGlpRegisterController@list')->name('dashboard.operations.stock_glp_register.list');
-	Route::post('/controlglp/registro-movimiento-glp/listar-cuentas', 'StockGlpRegisterController@getAccounts')->name('dashboard.operations.stock_glp_register.get_accounts');
-	Route::post('/controlglp/registro-movimiento-glp/listar-articulos', 'StockGlpRegisterController@getArticles')->name('dashboard.operations.stock_glp_register.get_articles');
-	Route::post('/controlglp/registro-movimiento-glp/obtener-percepcion', 'StockGlpRegisterController@getPerceptionPercentage')->name('dashboard.operations.stock_glp_register.get_perception_percentage');
-	Route::post('/controlglp/registro-movimiento-glp/obtener-tasas', 'StockGlpRegisterController@getArticleRates')->name('dashboard.operations.stock_glp_register.get_article_rates');
-	Route::post('/controlglp/registro-movimiento-glp/obtener-articulo', 'StockGlpRegisterController@getArticle')->name('dashboard.operations.stock_glp_register.get_article');
-	Route::post('/controlglp/registro-movimiento-glp/guardar', 'StockGlpRegisterController@store')->name('dashboard.operations.stock_glp_register.store');
-	Route::post('/controlglp/registro-movimiento-glp/get-invoices', 'StockGlpRegisterController@getInvoices')->name('dashboard.operations.stock_glp_register.get_invoices');
+	/** Compras GLP > Registro de Abastecimiento Comercial*/
+	Route::get('/controlglp/registro-movimiento-comercial', 'StockGlpRegisterController@index')->name('dashboard.operations.stock_glp_register');
+	Route::post('/controlglp/registro-movimiento-comercial/validar-formulario', 'StockGlpRegisterController@validateForm')->name('dashboard.operations.stock_glp_register.validate_form');
+	Route::post('/controlglp/registro-movimiento-comercial/listar', 'StockGlpRegisterController@list')->name('dashboard.operations.stock_glp_register.list');
+	Route::post('/controlglp/registro-movimiento-comercial/listar-cuentas', 'StockGlpRegisterController@getAccounts')->name('dashboard.operations.stock_glp_register.get_accounts');
+	Route::post('/controlglp/registro-movimiento-comercial/listar-articulos', 'StockGlpRegisterController@getArticles')->name('dashboard.operations.stock_glp_register.get_articles');
+	Route::post('/controlglp/registro-movimiento-comercial/obtener-percepcion', 'StockGlpRegisterController@getPerceptionPercentage')->name('dashboard.operations.stock_glp_register.get_perception_percentage');
+	Route::post('/controlglp/registro-movimiento-comercial/obtener-tasas', 'StockGlpRegisterController@getArticleRates')->name('dashboard.operations.stock_glp_register.get_article_rates');
+	Route::post('/controlglp/registro-movimiento-comercial/obtener-articulo', 'StockGlpRegisterController@getArticle')->name('dashboard.operations.stock_glp_register.get_article');
+	Route::post('/controlglp/registro-movimiento-comercial/guardar', 'StockGlpRegisterController@store')->name('dashboard.operations.stock_glp_register.store');
+	Route::post('/controlglp/registro-movimiento-comercial/get-invoices', 'StockGlpRegisterController@getInvoices')->name('dashboard.operations.stock_glp_register.get_invoices');
+    
+	/** Compras GLP > Registro de Abastecimiento GLP*/
+	Route::get('/controlglp/registro-movimiento-glp', 'StockAbastRegisterController@index')->name('dashboard.operations.stock_abast_register');
+	Route::post('/controlglp/registro-movimiento-glp/validar-formulario', 'StockAbastRegisterController@validateForm')->name('dashboard.operations.stock_abast_register.validate_form');
+	Route::post('/controlglp/registro-movimiento-glp/listar', 'StockAbastRegisterController@list')->name('dashboard.operations.stock_abast_register.list');
+	Route::post('/controlglp/registro-movimiento-glp/listar-cuentas', 'StockAbastRegisterController@getAccounts')->name('dashboard.operations.stock_abast_register.get_accounts');
+	Route::post('/controlglp/registro-movimiento-glp/listar-articulos', 'StockAbastRegisterController@getArticles')->name('dashboard.operations.stock_abast_register.get_articles');
+	Route::post('/controlglp/registro-movimiento-glp/obtener-percepcion', 'StockAbastRegisterController@getPerceptionPercentage')->name('dashboard.operations.stock_abast_register.get_perception_percentage');
+	Route::post('/controlglp/registro-movimiento-glp/obtener-tasas', 'StockAbastRegisterController@getArticleRates')->name('dashboard.operations.stock_abast_register.get_article_rates');
+	Route::post('/controlglp/registro-movimiento-glp/obtener-articulo', 'StockAbastRegisterController@getArticle')->name('dashboard.operations.stock_abast_register.get_article');
+	Route::post('/controlglp/registro-movimiento-glp/guardar', 'StockAbastRegisterController@store')->name('dashboard.operations.stock_abast_register.store');
+	Route::post('/controlglp/registro-movimiento-glp/get-invoices', 'StockAbastRegisterController@getInvoices')->name('dashboard.operations.stock_abast_register.get_invoices');
 
 
 	 /** Compras GLP > Reporte de Compras GLP */
