@@ -532,6 +532,19 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/registro-movimiento-glp/obtener-articulo', 'StockAbastRegisterController@getArticle')->name('dashboard.operations.stock_abast_register.get_article');
 	Route::post('/controlglp/registro-movimiento-glp/guardar', 'StockAbastRegisterController@store')->name('dashboard.operations.stock_abast_register.store');
 	Route::post('/controlglp/registro-movimiento-glp/get-invoices', 'StockAbastRegisterController@getInvoices')->name('dashboard.operations.stock_abast_register.get_invoices');
+    
+
+	/** Compras GLP > Transferencia entre almacenes*/
+	Route::get('/controlglp/registro-abastecimiento-glp', 'AbastecimientoRegisterController@index')->name('dashboard.operations.abastecimiento_register');
+	Route::post('/controlglp/registro-abastecimiento-glp/validar-formulario', 'AbastecimientoRegisterController@validateForm')->name('dashboard.operations.abastecimiento_register.validate_form');
+	Route::post('/controlglp/registro-abastecimiento-glp/listar', 'AbastecimientoRegisterController@list')->name('dashboard.operations.abastecimiento_register.list');
+	Route::post('/controlglp/registro-abastecimiento-glp/listar-cuentas', 'AbastecimientoRegisterController@getAccounts')->name('dashboard.operations.abastecimiento_register.get_accounts');
+	Route::post('/controlglp/registro-abastecimiento-glp/listar-articulos', 'AbastecimientoRegisterController@getArticles')->name('dashboard.operations.abastecimiento_register.get_articles');
+	Route::post('/controlglp/registro-abastecimiento-glp/obtener-percepcion', 'AbastecimientoRegisterController@getPerceptionPercentage')->name('dashboard.operations.abastecimiento_register.get_perception_percentage');
+	Route::post('/controlglp/registro-abastecimiento-glp/obtener-tasas', 'AbastecimientoRegisterController@getArticleRates')->name('dashboard.operations.abastecimiento_register.get_article_rates');
+	Route::post('/controlglp/registro-abastecimiento-glp/obtener-articulo', 'AbastecimientoRegisterController@getArticle')->name('dashboard.operations.abastecimiento_register.get_article');
+	Route::post('/controlglp/registro-abastecimiento-glp/guardar', 'AbastecimientoRegisterController@store')->name('dashboard.operations.abastecimiento_register.store');
+	Route::post('/controlglp/registro-abastecimiento-glp/get-invoices', 'AbastecimientoRegisterController@getInvoices')->name('dashboard.operations.abastecimiento_register.get_invoices');
 
 
 	 /** Compras GLP > Reporte de Compras GLP */

@@ -748,6 +748,15 @@
 								</a>
 							</li>
 
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.abastecimiento_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.abastecimiento_register') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Abastecimiento General(Transferencia GLP)</span>
+								</a>
+							</li>
+
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.terminals' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.terminals') }}" class="kt-menu__link ">
