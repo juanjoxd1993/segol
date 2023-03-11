@@ -486,7 +486,14 @@ class StockAbastRegisterController extends Controller
 			$movementReceptor->traslate_date = date('Y-m-d', strtotime($traslate_date));
 			$movementReceptor->created_at_user = Auth::user()->user;
 			$movementReceptor->updated_at_user = Auth::user()->user;
+			$movementReceptor->stock_ini = (array_sum(array_column($articles, 'converted_amount')));
+            $movementReceptor->stock_pend = $movementReceptor->stock_ini;
 			$movementReceptor->save();
+
+			$invoice = WareHouseMovement::find(request('model.invoice'));
+			$invoice->stock_out += $converted_amount;
+			$invoice->stock_pend -= $converted_amount;
+			$invoice->save();
 
 			foreach ($articles as $item) {
 				$article = Article::where('warehouse_type_id', $movement->warehouse_type_id)
@@ -555,6 +562,8 @@ class StockAbastRegisterController extends Controller
 		return response()->json(
 			WarehouseMovement::where('movement_type_id', request('movement_type'))
 				->where('warehouse_type_id', request('warehouse_type'))
+				->whereNotNull('stock_pend')
+				->where('stock_pend', '>', 0)
 				->get(),
 			200
 		);

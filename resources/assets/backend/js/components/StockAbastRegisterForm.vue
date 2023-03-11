@@ -40,7 +40,7 @@
                             <label class="form-control-label">Almacén Receptor:</label>
                             <select class="form-control" name="warehouse_receiver" id="warehouse_receiver" v-model="model.warehouse_receiver" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                <option v-for="warehouseType in warehouse_receivers" :value="warehouseType.id">{{ warehouseType.name }}</option>
+                                <option v-for="invoice in model.invoices" :data-serie="invoice.referral_serie_number" :data-voucher="invoice.referral_voucher_number" :value="invoice.id">{{ invoice.referral_serie_number + ' - ' + invoice.referral_voucher_number  + ' Stock: ' + invoice.stock_pend }}</option>
                             </select>
                             <div id="warehouse_receiver-error" class="error invalid-feedback"></div>
                         </div>
@@ -382,8 +382,8 @@
                 let selectedInvoiceOption = $('#invoice > option[value="' + val + '"]');
 
                 setTimeout(function () {
-                    $('#referral_serie_number').val(selectedInvoiceOption.data('serie'));
-                    $('#referral_voucher_number').val(selectedInvoiceOption.data('voucher'));
+                    elt.model.referral_voucher_number = selectedInvoiceOption.data('voucher');
+                    elt.model.referral_serie_number = selectedInvoiceOption.data('serie');
                 }, 500);
 
             }

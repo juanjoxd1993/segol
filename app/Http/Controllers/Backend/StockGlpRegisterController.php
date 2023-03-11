@@ -483,6 +483,8 @@ class StockGlpRegisterController extends Controller
 			$movementReceptor->traslate_date = date('Y-m-d', strtotime($traslate_date));
 			$movementReceptor->created_at_user = Auth::user()->user;
 			$movementReceptor->updated_at_user = Auth::user()->user;
+			$movementReceptor->stock_ini = (array_sum(array_column($articles, 'converted_amount')));
+            $movementReceptor->stock_pend = $movementReceptor->stock_ini;
 			$movementReceptor->save();
 
 			$invoice = WareHouseMovement::find(request('model.invoice'));
