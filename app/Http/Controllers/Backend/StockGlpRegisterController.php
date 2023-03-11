@@ -316,9 +316,6 @@ class StockGlpRegisterController extends Controller
 		->where('movement_type_id', 1)
 		->sum('cost_glp');
 
-
-
-
 		if ( $warehouse_account_type_id == 1 ) {
 			$account = Client::select('business_name', 'document_number')
 				->where('id', $warehouse_account_id)
@@ -488,6 +485,11 @@ class StockGlpRegisterController extends Controller
 			$movementReceptor->updated_at_user = Auth::user()->user;
 			$movementReceptor->save();
 
+			$invoice = WareHouseMovement::find(request('model.invoice'));
+			$invoice->stock_out += $converted_amount;
+			$invoice->stock_pend -= $converted_amount;
+			$invoice->save();
+
 			foreach ($articles as $item) {
 				$article = Article::where('warehouse_type_id', $movement->warehouse_type_id)
 					->where('id', $item['id'])
@@ -555,6 +557,8 @@ class StockGlpRegisterController extends Controller
 		return response()->json(
 			WarehouseMovement::where('movement_type_id', request('movement_type'))
 				->where('warehouse_type_id', request('warehouse_type'))
+				->whereNotNull('stock_pend')
+				->where('stock_pend', '>', 0)
 				->get(),
 			200
 		);

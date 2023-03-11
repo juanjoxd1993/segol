@@ -50,7 +50,7 @@
                             <label class="form-control-label">Factura:</label>
                             <select class="form-control" name="invoice" id="invoice" v-model="model.invoice" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                <option v-for="invoice in model.invoices" :data-serie="invoice.referral_serie_number" :data-voucher="invoice.referral_voucher_number" :value="invoice.id">{{ invoice.referral_serie_number + ' - ' + invoice.referral_voucher_number }}</option>
+                                <option v-for="invoice in model.invoices" :data-serie="invoice.referral_serie_number" :data-voucher="invoice.referral_voucher_number" :value="invoice.id">{{ invoice.referral_serie_number + ' - ' + invoice.referral_voucher_number  + ' Stock: ' + invoice.stock_pend }}</option>
                             </select>
                             <div id="invoice-error" class="error invalid-feedback"></div>
                         </div>
@@ -380,10 +380,11 @@
             },
             'model.invoice': function (val) {
                 let selectedInvoiceOption = $('#invoice > option[value="' + val + '"]');
+                let elt = this;
 
                 setTimeout(function () {
-                    $('#referral_serie_number').val(selectedInvoiceOption.data('serie'));
-                    $('#referral_voucher_number').val(selectedInvoiceOption.data('voucher'));
+                    elt.model.referral_voucher_number = selectedInvoiceOption.data('voucher');
+                    elt.model.referral_serie_number = selectedInvoiceOption.data('serie');
                 }, 500);
 
             }

@@ -1,6 +1,6 @@
 <?php $__env->startSection('body-class', ''); ?>
 <?php $__env->startSection('title', 'Control GLP'); ?>
-<?php $__env->startSection('subtitle', 'Registro Abastecimientos GLP'); ?>
+<?php $__env->startSection('subtitle', 'Registro Abastecimiento Comercial'); ?>
 
 <?php $__env->startSection('content'); ?>
 	<stock-glp-register-form
