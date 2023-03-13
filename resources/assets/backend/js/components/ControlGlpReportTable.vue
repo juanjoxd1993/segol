@@ -42,7 +42,7 @@
         },
         data() {
             return {
-                liquidations_sales_report_datatable: undefined,
+                control_glp_report_datatable: undefined,
                 show_table: false,
 				model: {},
 				export: '',
@@ -58,23 +58,23 @@
 				this.model = response;
 
 				Vue.nextTick(function() {
-					if ( vm.liquidations_sales_report_datatable == undefined ) {
+					if ( vm.control_glp_report_datatable == undefined ) {
 						vm.fillTableX();
 					} else {
-						vm.liquidations_sales_report_datatable.setDataSourceParam('model', vm.model);
-						vm.liquidations_sales_report_datatable.load();
+						vm.control_glp_report_datatable.setDataSourceParam('model', vm.model);
+						vm.control_glp_report_datatable.load();
 					}
 				
-					vm.liquidations_sales_report_datatable.on('kt-datatable--on-ajax-done', function() {
+					vm.control_glp_report_datatable.on('kt-datatable--on-ajax-done', function() {
 						EventBus.$emit('loading', false);
 					});
 				});
             }.bind(this));
 
             EventBus.$on('refresh_table', function() {
-                if ( this.liquidations_sales_report_datatable != undefined ) {
-                  this.liquidations_sales_report_datatable.setDataSourceParam('model', this.model);
-                   this.liquidations_sales_report_datatable.load();
+                if ( this.control_glp_report_datatable != undefined ) {
+                  this.control_glp_report_datatable.setDataSourceParam('model', this.model);
+                   this.control_glp_report_datatable.load();
                }
             }.bind(this));
         },
@@ -89,7 +89,7 @@
                 let vm = this;
                 let token = document.head.querySelector('meta[name="csrf-token"]').content;
 
-                this.liquidations_sales_report_datatable = $('.kt-datatable').KTDatatable({
+                this.control_glp_report_datatable = $('.kt-datatable').KTDatatable({
                     // datasource definition
                     data: {
                         type: 'remote',
@@ -169,50 +169,47 @@
                         {
                             field: 'company_short_name',
                             title: 'Compañía',
-                            width: 60,
+                            width: 40,
                             textAlign: 'left',
                         },
                    
                         {
                             field: 'sale_date',
                             title: 'Fecha Despacho',
-                            width: 80,
+                            width: 60,
                             textAlign: 'center',
                         },
                         {
-                            field: 'business_unit_name',
-                            title: 'Unidad de Negocio',
-                            width: 60,
-                            textAlign: 'left',
-                        },
-                        {
-                            field: 'client_channel_name',
-                            title: 'Canal venta',
-                            width: 60,
-                            textAlign: 'left',
-                        },
-                        {
-                            field: 'client_zone_name',
-                            title: 'Zona venta',
-                            width: 60,
-                            textAlign: 'left',
-                        },
-                        {
-                            field: 'client_sector_name',
-                            title: 'Sector econom.',
-                            width: 60,
-                            textAlign: 'left',
-                        },
-                        {
-                            field: 'client_route_id',
-                            title: 'Ruta',
-                            width: 40,
+                            field: 'movement_type_name',
+                            title: 'Movimiento',
+                            width: 80,
                             textAlign: 'left',
                         },
 
                         {
-                            field: 'warehouse_document_type_short_name',
+                            field: 'movement_class_name',
                             title: 'Tipo',
+                            width: 80,
+                            textAlign: 'left',
+                        },
+                       
+                        {
+                            field: 'warehouse_type_code',
+                            title: 'Código Almacén',
+                            width: 40,
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'warehouse_type_name',
+                            title: 'Almacén',
+                            width: 80,
+                            textAlign: 'left',
+                        },
+                        
+
+                        {
+                            field: 'warehouse_document_type_short_name',
+                            title: 'Tipo Docmuento',
                             width: 60,
                             textAlign: 'left',
                         },
@@ -237,49 +234,12 @@
                       
 						{
                             field: 'sum_total',
-                            title: 'TM',
+                            title: 'Cantidad',
                             width: 80,
                             textAlign: 'center',
                         },
-                        {
-                            field: 'price',
-                            title: 'Precio',
-                            width: 80,
-                            textAlign: 'center',
-                        },
-
-						{
-                            field: 'total',
-                            title: 'Total',
-                            width: 120,
-                            textAlign: 'right',
-                        },
+                       
 						
-						{
-                            field: 'client_code',
-                            title: 'Código Cliente',
-                            width: 80,
-                            textAlign: 'left',
-                        },
-						{
-                            field: 'client_business_name',
-                            title: 'Razón Social',
-                            width: 120,
-                            textAlign: 'left',
-                        },
-
-						{
-                            field: 'warehouse_movement_movement_number',
-                            title: '# Parte',
-                            width: 60,
-                            textAlign: 'left',
-                        },
-						{
-                            field: 'movement_type_name',
-                            title: 'Tipo Movimiento',
-                            width: 80,
-                            textAlign: 'left',
-                        },
 						{
                             field: 'guide',
                             title: 'Guía',
@@ -288,28 +248,11 @@
                         },
                         {
                             field: 'plate',
-                            title: 'PLaca',
+                            title: 'Placa',
                             width: 60,
                             textAlign: 'left',
                         },
-                       {
-							field: 'district',
-							title: 'Distrito',
-							width: 120,
-							textAlign: 'left',
-						},
-                        {
-							field: 'province',
-							title: 'Provincia',
-							width: 120,
-							textAlign: 'left',
-						},
-						{
-							field: 'department',
-							title: 'Departamento',
-							width: 120,
-							textAlign: 'left',
-						},
+                      
 
 						
 						{
@@ -329,7 +272,7 @@
                     ]
                 });
 
-                this.liquidations_sales_report_datatable.columns('id').visible(false);
+                this.control_glp_report_datatable.columns('id').visible(false);
             },
 			exportExcel: function() {
                 EventBus.$emit('loading', true);
@@ -347,7 +290,7 @@
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'reporte-liquidaciones-'+Date.now()+'.xls');
+                    link.setAttribute('download', 'reporte-movimientos-glp-'+Date.now()+'.xls');
                     document.body.appendChild(link);
                     link.click();
 

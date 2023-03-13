@@ -486,7 +486,19 @@ class AbastecimientoRegisterController extends Controller
 			$movementReceptor->traslate_date = date('Y-m-d', strtotime($traslate_date));
 			$movementReceptor->created_at_user = Auth::user()->user;
 			$movementReceptor->updated_at_user = Auth::user()->user;
+			if ($movementReceptor->warehouse_type_id >19)
+			{
+			$movementReceptor->stock_ini = (array_sum(array_column($articles, 'converted_amount')));
+			}else{
+			$movementReceptor->stock_ini = 0;
+			}
+            $movementReceptor->stock_pend = $movementReceptor->stock_ini;
 			$movementReceptor->save();
+
+			$invoice = WareHouseMovement::find(request('model.invoice'));
+			$invoice->stock_out += $converted_amount;
+			$invoice->stock_pend -= $converted_amount;
+			$invoice->save();
 
 			foreach ($articles as $item) {
 				$article = Article::where('warehouse_type_id', $movement->warehouse_type_id)
@@ -497,17 +509,17 @@ class AbastecimientoRegisterController extends Controller
 				$converted_amount = str_replace(',', '', $item['converted_amount']);
 				$old_stock_return = str_replace(',', '', $item['old_stock_return']);
 				$old_stock_damaged = str_replace(',', '', $item['old_stock_damaged']);
-			//	$price = str_replace(',', '', $item['price']);
-			//	$sale_value = str_replace(',', '', $item['sale_value']);
-			//	$inaccurate_value = str_replace(',', '', $item['inaccurate_value']);
-			//	$igv = str_replace(',', '', $item['igv']);
-			//	$total = str_replace(',', '', $item['total']);
-			//	$igv_perception = str_replace(',', '', $item['perception']);
+			
+
+				$article_code = Article::where('warehouse_type_id', $movementReceptor->warehouse_type_id)
+				->where('code', $item['code'])
+				->select('id')
+				->sum('id');
 
 				$movementDetail = new WarehouseMovementDetail();
 				$movementDetail->warehouse_movement_id = $movementReceptor->id;
 				$movementDetail->item_number = $item['item_number'];
-				$movementDetail->article_code = $item['id'];
+				$movementDetail->article_code = $article_code;
 				$movementDetail->digit_amount = $digit_amount;
 				$movementDetail->converted_amount = $converted_amount;
 				$movementDetail->old_stock_good = $article->stock_good;
@@ -555,6 +567,8 @@ class AbastecimientoRegisterController extends Controller
 		return response()->json(
 			WarehouseMovement::where('movement_type_id', request('movement_type'))
 				->where('warehouse_type_id', request('warehouse_type'))
+				->whereNotNull('stock_pend')
+				->where('stock_pend', '>', 0)
 				->get(),
 			200
 		);

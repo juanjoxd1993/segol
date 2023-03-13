@@ -758,6 +758,25 @@
 							</li>
 
 
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.warehouse_glp' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.warehouse_glp') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte de Stocks Almacenes GLP </span>
+								</a>
+							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.control_glp' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.control_glp') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte de Movimientos GLP </span>
+								</a>
+							</li>
+
+
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.terminals' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.terminals') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">

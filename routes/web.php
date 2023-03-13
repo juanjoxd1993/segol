@@ -138,11 +138,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 
 	 
 
-    /** Reportes > Venta Comercial */
-	Route::get('/reporte/venta-comercial', 'LiquidationSalesReportController@index')->name('dashboard.report.liquidations_sales');
-	Route::post('/reporte/venta-comercial/validar-formulario', 'LiquidationSalesReportController@validateForm')->name('dashboard.report.liquidations_sales.validate_form');
-	Route::post('/reporte/venta-comercial/obtener-clientes', 'LiquidationSalesReportController@getClients')->name('dashboard.report.liquidations_sales.get_clients');
-	Route::post('/reporte/venta-comercial/listar', 'LiquidationSalesReportController@list')->name('dashboard.report.liquidations_sales.list');
+    
 
 
 	/** Reportes > Venta Canal*/
@@ -562,7 +558,17 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	  Route::post('/control-glp/editor/listar', 'GlpFactReportController@list')->name('dashboard.report.glp_fact.list');
 	  Route::post('/control-glp/editor/detalle', 'GlpFactReportController@detail')->name('dashboard.report.glp_fact.detail');
 	  Route::post('/control-glp/editor/actualizar', 'GlpFactReportController@update')->name('dashboard.report.glp_fact.update');
- 
+    
+
+	  /** Compras GLP > Stocks Artículos GLP */
+	Route::get('/control-glp', 'WarehouseGlpController@index')->name('dashboard.operations.warehouse_glp');
+	Route::post('/control-glp/validar-formulario', 'WarehouseGlpController@validateForm')->name('dashboard.operations.warehouse_glp.validate_form');
+	Route::post('/control-glp/listar', 'WarehouseGlpController@list')->name('dashboard.operations.warehouse_glp.list');
+	Route::post('/control-glp/guardar', 'WarehouseGlpController@store')->name('dashboard.operations.warehouse_glp.store');
+	Route::post('/control-glp/detalle', 'WarehouseGlpController@detail')->name('dashboard.operations.warehouse_glp.detail');
+	Route::post('/control-glp/eliminar', 'WarehouseGlpController@delete')->name('dashboard.operations.warehouse_glp.delete');
+	Route::post('/control-glp/exportar', 'WarehouseGlpController@exportRecord')->name('dashboard.operations.warehouse_glp.export_record');
+
 
 
 	 /** Compras GLP > Reporte de Abastecimiento */
@@ -571,6 +577,13 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/movimiento-abastecimiento/listar', 'TerminalsReportController@list')->name('dashboard.report.terminals.list');
 	Route::post('/controlglp/movimiento-abastecimiento/detalle', 'TerminalsReportController@detail')->name('dashboard.report.terminals.detail');
 	Route::post('/controlglp/movimiento-abastecimiento/actualizar', 'TerminalsReportController@update')->name('dashboard.report.terminals.update');
+
+   /** Compras GLP  > Reporte Control GLP */
+	Route::get('/controlglp/reporte-movimientos-glp', 'ControlGlpReportController@index')->name('dashboard.operations.control_glp');
+	Route::post('/controlglp/reporte-movimientos-glp/validar-formulario', 'ControlGlpReportController@validateForm')->name('dashboard.operations.control_glp.validate_form');
+	Route::post('/controlglp/reporte-movimientos-glp/listar', 'ControlGlpReportController@list')->name('dashboard.operations.control_glp.list');
+
+
 
 
 	/** Compras GLP > Registro de Costos */

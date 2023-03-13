@@ -501,17 +501,18 @@ class StockGlpRegisterController extends Controller
 				$converted_amount = str_replace(',', '', $item['converted_amount']);
 				$old_stock_return = str_replace(',', '', $item['old_stock_return']);
 				$old_stock_damaged = str_replace(',', '', $item['old_stock_damaged']);
-			//	$price = str_replace(',', '', $item['price']);
-			//	$sale_value = str_replace(',', '', $item['sale_value']);
-			//	$inaccurate_value = str_replace(',', '', $item['inaccurate_value']);
-			//	$igv = str_replace(',', '', $item['igv']);
-			//	$total = str_replace(',', '', $item['total']);
-			//	$igv_perception = str_replace(',', '', $item['perception']);
+			
+
+
+				$article_code = Article::where('warehouse_type_id', $movementReceptor->warehouse_type_id)
+				->where('code', $item['code'])
+				->select('id')
+				->sum('id');
 
 				$movementDetail = new WarehouseMovementDetail();
 				$movementDetail->warehouse_movement_id = $movementReceptor->id;
 				$movementDetail->item_number = $item['item_number'];
-				$movementDetail->article_code = $item['id'];
+				$movementDetail->article_code = $article_code;
 				$movementDetail->digit_amount = $digit_amount;
 				$movementDetail->converted_amount = $converted_amount;
 				$movementDetail->old_stock_good = $article->stock_good;

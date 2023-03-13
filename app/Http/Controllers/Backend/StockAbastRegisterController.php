@@ -510,11 +510,15 @@ class StockAbastRegisterController extends Controller
 			//	$igv = str_replace(',', '', $item['igv']);
 			//	$total = str_replace(',', '', $item['total']);
 			//	$igv_perception = str_replace(',', '', $item['perception']);
+			    $article_code = Article::where('warehouse_type_id', $movementReceptor->warehouse_type_id)
+				->where('code', $item['code'])
+				->select('id')
+				->sum('id');
 
 				$movementDetail = new WarehouseMovementDetail();
 				$movementDetail->warehouse_movement_id = $movementReceptor->id;
 				$movementDetail->item_number = $item['item_number'];
-				$movementDetail->article_code = $item['id'];
+				$movementDetail->article_code = $article_code;
 				$movementDetail->digit_amount = $digit_amount;
 				$movementDetail->converted_amount = $converted_amount;
 				$movementDetail->old_stock_good = $article->stock_good;

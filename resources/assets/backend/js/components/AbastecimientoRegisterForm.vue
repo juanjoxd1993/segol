@@ -47,10 +47,10 @@
                     </div>
                     <div class="col-lg-3" >
                         <div class="form-group">
-                            <label class="form-control-label">Factura:</label>
+                            <label class="form-control-label">Guia:</label>
                             <select class="form-control" name="invoice" id="invoice" v-model="model.invoice" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                <option v-for="invoice in model.invoices" :data-serie="invoice.referral_serie_number" :data-voucher="invoice.referral_voucher_number" :value="invoice.id">{{ invoice.referral_serie_number + ' - ' + invoice.referral_voucher_number }}</option>
+                                <option v-for="invoice in model.invoices" :data-serie="invoice.referral_guide_series" :data-voucher="invoice.referral_guide_number" :value="invoice.id">{{ invoice.referral_guide_series + ' - ' + invoice.referral_guide_number  + ' Stock: ' + invoice.stock_pend}}</option>
                             </select>
                             <div id="invoice-error" class="error invalid-feedback"></div>
                         </div>
@@ -92,14 +92,14 @@
                             <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 32 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Numero de Pedido:</label>
                             <input type="text" class="form-control" name="referral_guide_series" id="referral_guide_series" v-model="model.referral_guide_series" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_guide_series-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 32 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Número de Guía de Remisión:</label>
                             <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="model.referral_guide_number" @focus="$parent.clearErrorMsg($event)">
@@ -107,16 +107,16 @@
                         </div>
                     </div>
                     
-                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 32 ? '' : ' d-none')">
+                    <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Serie de Factura</label>
+                            <label class="form-control-label">Serie de Guía Interna</label>
                             <input type="text" class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="model.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 32 ? '' : ' d-none')">
+                    <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Número de Factura:</label>
+                            <label class="form-control-label">Número de Guía Interna:</label>
                             <input type="text" class="form-control" name="referral_voucher_number" id="referral_voucher_number" v-model="model.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_voucher_number-error" class="error invalid-feedback"></div>
                         </div>
@@ -364,9 +364,12 @@
             this.newSelect2();
         },
         watch: {
+
+           
+
             'model.warehouse_type_id': function (val) {
                 axios.post(this.url_get_invoices, {
-                    movement_type: 1,
+                    movement_type: 30,
                     warehouse_type: val
                 }).then(response => {
                     this.model.invoices = response.data;
@@ -380,13 +383,15 @@
             },
             'model.invoice': function (val) {
                 let selectedInvoiceOption = $('#invoice > option[value="' + val + '"]');
+                let elt = this;
 
                 setTimeout(function () {
-                    $('#referral_serie_number').val(selectedInvoiceOption.data('serie'));
-                    $('#referral_voucher_number').val(selectedInvoiceOption.data('voucher'));
+                    $('#referral_guide_series').val(selectedInvoiceOption.data('serie'));
+                    $('#referral_guide_number').val(selectedInvoiceOption.data('voucher'));
                 }, 500);
 
             }
+          
         },
         computed: {
             movementTypes: function() {

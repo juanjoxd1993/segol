@@ -59,13 +59,14 @@
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-					<div class="col-lg-3">
+                    <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Nombre o Razón Social:</label>
-                            <select class="form-control kt-select2" name="client_id" id="client_id" v-model="model.client_id" @focus="$parent.clearErrorMsg($event)">
+                            <label class="form-control-label">Almacén:</label>
+                            <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
+                                <option v-for="warehouse_type in warehouse_types" :value="warehouse_type.id" v-bind:key="warehouse_type.id">{{ warehouse_type.name }}</option>
                             </select>
-                            <div id="client_id-error" class="error invalid-feedback"></div>
+                            <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
                 </div>
@@ -101,14 +102,15 @@
                 type: String,
                 default: ''
             },
+            warehouse_types: {
+                type: String,
+                default: ''
+            },
             url: {
                 type: String,
                 default: ''
             },
-			url_get_clients: {
-				type: String,
-				default: ''
-			}
+			
         },
         data() {
             return {
@@ -116,7 +118,7 @@
                     initial_date: '',
                     final_date: '',
                     company_id: '',
-                    client_id: '',
+                    warehouse_type_id: '',
                 },
             }
         },
@@ -127,71 +129,14 @@
             this.newSelect2();
         },
         watch: {
-            'model.company_id': function(val, old) {
-				if ( val != old ) {
-					this.model.client_id = '';
-					$('#client_id').val(null).trigger('change');
-				}
-			}
+          
         },
         computed: {
 
         },
         methods: {
 			newSelect2: function() {
-                let vm = this;
-                let token = document.head.querySelector('meta[name="csrf-token"]').content;
-
-                $("#client_id").select2({
-                    placeholder: "Buscar",
-                    allowClear: true,
-                    language: {
-                        noResults: function() {
-                            return 'No hay resultados';
-                        },
-                        searching: function() {
-                            return 'Buscando...';
-                        },
-                        inputTooShort: function() {
-                            return 'Ingresa 1 o más caracteres';
-                        },
-                        errorLoading: function() {
-                            return 'No se pudo cargar la información'
-                        }
-                    },
-                    ajax: {
-                        url: vm.url_get_clients,
-                        dataType: 'json',
-                        delay: 250,
-                        type: 'POST',
-                        data: function (params) {
-                            var queryParameters = {
-                                q: params.term,
-                                company_id: vm.model.company_id,
-                                _token: token,
-                            }
-
-                            return queryParameters;
-                        },
-                        processResults: function(data, params) {
-                            params.page = params.page || 1;
-
-                            return {
-                                results: data,
-                                pagination: {
-                                    more: (params.page * 30) < data.total_count
-                                }
-                            };
-                        },
-                        cache: true
-                    },
-                    minimumInputLength: 1,
-                }).on('select2:select', function(e) {
-                    var selected_element = $(e.currentTarget);
-                    vm.model.client_id = parseInt(selected_element.val());
-                }).on('select2:unselect', function(e) {
-                    vm.model.client_id = '';
-                });
+              
             },
             formController: function(url, event) {
                 var vm = this;
