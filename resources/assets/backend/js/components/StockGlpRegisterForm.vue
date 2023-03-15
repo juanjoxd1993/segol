@@ -333,7 +333,6 @@
         created() {
             EventBus.$on('reset_stock_register', function() {
                 this.model.movement_class_id = '';
-                this.model.movement_type_id = '';
                 this.model.movement_stock_type_id = '';
                 this.model.warehouse_type_id = '';
                 this.model.warehouse_receiver = '';
@@ -341,7 +340,6 @@
             //    this.model.currency = 1;
                 this.model.since_date = this.current_date;
                 this.model.traslate_date = this.traslate_date;
-                this.model.warehouse_account_type_id = '';
                 this.model.warehouse_account_id = '';
                 this.model.referral_guide_series = '';
                 this.model.referral_guide_number = '';
