@@ -317,7 +317,6 @@
         created() {
             EventBus.$on('reset_stock_register', function() {
                 this.model.movement_class_id = '';
-                this.model.movement_type_id = '';
                 this.model.movement_stock_type_id = '';
                 this.model.warehouse_type_id = '';
                 this.model.warehouse_receiver = '';

@@ -358,12 +358,10 @@
                         console.log(response);
                         
                         this.model.movement_class_id = '';
-                        this.model.movement_type_id = '';
                         this.model.warehouse_type_id = '';
                         this.model.company_id = '';
                      //   this.model.currency = 1;
                         this.model.since_date = this.current_date;
-                        this.model.warehouse_account_type_id = '';
                         this.model.warehouse_account_id = '';
                         this.model.referral_guide_series = '';
                         this.model.referral_guide_number = '';
@@ -378,8 +376,8 @@
                         this.model.price_mes = '';
                         this.article_list = [];
                         $('#warehouse_account_id').val(null).trigger('change');
-
                         this.datatable.destroy();
+                        EventBus.$emit('reset_stock_glp_register');
 
                         Swal.fire({
                             title: '¡Bien!',
@@ -394,7 +392,7 @@
                             this.show_table = 0;
                             this.datatable = undefined;
                             this.article_list = [];
-                            this.model = '';
+                            //this.model = '';
                             this.perception_percentage = '';
                          //  this.currency = '';
                             this.articles = [];
