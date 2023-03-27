@@ -1,21 +1,21 @@
 @extends('backend.templates.app')
 
 @section('body-class', 'kt-header--fixed kt-header-mobile--fixed')
-@section('title', 'Reportes')
-@section('subtitle', 'Lista de Precios')
+@section('title', 'Comercial')
+@section('subtitle', 'Reporte de Precios')
 
 @section('content')
 	<price-list-report-form
 		:business_units = "{{ $business_units }}"
 		:companies = "{{ $companies }}"
-		:url = "'{{ route('dashboard.report.price_list.validate_form') }}'"
-		:url_get_clients = "'{{ route('dashboard.report.price_list.get_clients') }}'"
-		:url_get_articles = "'{{ route('dashboard.report.price_list.get_articles') }}'"
+		:url = "'{{ route('dashboard.commercial.price_list_report.validate_form') }}'"
+		:url_get_clients = "'{{ route('dashboard.commercial.price_list_report.get_clients') }}'"
+		:url_get_articles = "'{{ route('dashboard.commercial.price_list_report.get_articles') }}'"
 	></price-list-report-form>
 
 	<price-list-report-table
-		:url = "'{{ route('dashboard.report.price_list.list') }}'"
-		:url_export_pdf = "'{{ route('dashboard.report.price_list.export_pdf') }}'"
+		:url = "'{{ route('dashboard.commercial.price_list_report.list') }}'"
+		:url_export_pdf = "'{{ route('dashboard.commercial.price_list_report.export_pdf') }}'"
 	></price-list-report-table>
 
 	<loading></loading>

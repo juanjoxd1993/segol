@@ -14,12 +14,13 @@
             <div class="kt-portlet__body">
                 <div class="row">
                   
-                  <div class="col-lg-3">
+                
+                  <div v-bind:class="'col-lg-3' + (' d-none')">
                         <div class="form-group">
                             <label class="form-control-label" readonly="">Tipo Movimiento:</label>
                             <select class="form-control readonly" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
-                                <option disabled value="">Seleccionar</option>
-                                            <option value="31">Abastecimiento Punto Gas</option>            
+                                
+                                            <option selected value="30">Abastecimiento Punto Gas</option>            
                             </select>
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -73,12 +74,11 @@
                             <div id="since_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div v-bind:class="'col-lg-3' + (' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Trabajador:</label>
-                            <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
-                                <option value="">Seleccionar</option>
-                                <option v-for="warehouse_account_type in warehouseAccountTypes" :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{ warehouse_account_type.name }}</option>
+                            <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id" v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)" >
+                                <option selected value="3">Trabajador</option> 
                             </select>
                             <div id="warehouse_account_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -86,7 +86,8 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Choferes:</label>
-                            <select class="form-control kt-select2" name="warehouse_account_id" id="warehouse_account_id" v-model="model.warehouse_account_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control kt-select2" name="warehouse_account_id" id="warehouse_account_id"
+                             v-model="model.warehouse_account_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
                             </select>
                             <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
@@ -107,14 +108,14 @@
                         </div>
                     </div>
                     
-                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 31 ? '' : ' d-none')">
+                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 30 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Serie de Factura</label>
                             <input type="text" class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="model.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 31 ? '' : ' d-none')">
+                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 30 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Número de Factura:</label>
                             <input type="text" class="form-control" name="referral_voucher_number" id="referral_voucher_number" v-model="model.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
@@ -129,7 +130,7 @@
                         </div>
                     </div>
 
-                    <div class="'col-lg-3">
+                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 30 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Cisterna:</label>
                             <input type="text" class="form-control" name="license_plate" id="license_plate" v-model="model.license_plate" @focus="$parent.clearErrorMsg($event)">
@@ -168,22 +169,6 @@
                     </div>
 
                   
-                     <div class="form-group">
-                            <label class="form-control-label">Fecha de Ingreso:</label>
-                            <datetime
-                                v-model="model.traslate_date"
-                                placeholder="Selecciona una Fecha"
-                                :format="'dd-LL-yyyy'"
-                                input-id="traslate_date"
-                                name="traslate_date"
-                                value-zone="America/Lima"
-                                zone="America/Lima"
-                                class="form-control"
-                                :max-datetime="this.max_datetime"
-                                @focus="$parent.clearErrorMsg($event)">
-                            </datetime>
-                            <div id="traslate_date-error" class="error invalid-feedback"></div>
-                        </div>
 
                         <div class="col-lg-3">
                         <div class="form-group">
@@ -305,12 +290,11 @@
             return {
                 model: {
                     movement_class_id: '',
-                    movement_type_id: '31',
+                    movement_type_id: '30',
                     movement_stock_type_id: '',
                     warehouse_type_id: '',
                     company_id: '1',
                  //   currency: 1,
-                    traslate_date: this.min_datetime,
                     since_date: this.current_date,
                     warehouse_account_type_id: '3',
                     warehouse_account_id: '',
@@ -340,8 +324,7 @@
                 this.model.company_id = '';
             //    this.model.currency = 1;
                 this.model.since_date = this.current_date;
-                this.model.traslate_date = this.traslate_date;
-                this.model.warehouse_account_type_id = '';
+                this.model.warehouse_account_type_id = '3';
                 this.model.warehouse_account_id = '';
                 this.model.referral_guide_series = '';
                 this.model.referral_guide_number = '';
@@ -478,10 +461,37 @@
                     }
                 }).then(response => {
                     EventBus.$emit('loading', false);
-                    target.find('input').prop('disabled', true);
-                    target.find('select').prop('disabled', true);
-                    target.find('button').prop('disabled', true);
+                 
+                   
+                    
                     EventBus.$emit('show_table', response.data);
+                    this.model = {
+                    movement_class_id: '',
+                movement_type_id: '30',
+                movement_stock_type_id: '',
+                warehouse_type_id: '',
+                company_id: '1',
+                //   currency: 1,
+                traslate_date: this.min_datetime,
+                since_date: this.current_date,
+                warehouse_account_type_id: '3',
+                warehouse_account_id: '',
+                referral_guide_series: '',
+                referral_guide_number: '',
+                referral_warehouse_document_type_id: '',
+                referral_serie_number: '',
+                referral_voucher_number: '',
+                scop_number: '',
+                license_plate: '',
+                license_plate_2: '',
+                price_mes: '',
+                mezcla: '',
+                isla: '',
+                warehouse_receiver: '',
+                invoices: [],
+                }
+
+                  
                     // console.log(response);
                 }).catch(error => {
                     EventBus.$emit('loading', false);

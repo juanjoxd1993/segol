@@ -136,22 +136,11 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/boletas-emitidas/obtener-clientes', 'FacturationBoletasReportController@getClients')->name('dashboard.report.facturation_boletas.get_clients');
 	Route::post('/reporte/boletas-emitidas/listar', 'FacturationBoletasReportController@list')->name('dashboard.report.facturation_boletas.list');
 
+
 	 
 
     
 
-
-	/** Reportes > Venta Canal*/
-	Route::get('/reporte/venta-canal', 'LiquidationChannelReportController@index')->name('dashboard.report.liquidations_channel');
-	Route::post('/reporte/venta-canal/validar-formulario', 'LiquidationChannelReportController@validateForm')->name('dashboard.report.liquidations_channel.validate_form');
-	Route::post('/reporte/venta-canal/obtener-clientes', 'LiquidationChannelReportController@getClients')->name('dashboard.report.liquidations_channel.get_clients');
-	Route::post('/reporte/venta-canal/listar', 'LiquidationChannelReportController@list')->name('dashboard.report.liquidations_channel.list');
-
-	/** Reportes > Venta Canal Resumido*/
-	Route::get('/reporte/venta-canal-resumido', 'LiquidationChannelTotalReportController@index')->name('dashboard.report.liquidations_channel_total');
-	Route::post('/reporte/venta-canal-resumido/validar-formulario', 'LiquidationChannelTotalReportController@validateForm')->name('dashboard.report.liquidations_channel_total.validate_form');
-	Route::post('/reporte/venta-canal-resumido/obtener-clientes', 'LiquidationChannelTotalReportController@getClients')->name('dashboard.report.liquidations_channel_total.get_clients');
-	Route::post('/reporte/venta-canal-resumido/listar', 'LiquidationChannelTotalReportController@list')->name('dashboard.report.liquidations_channel_total.list');
 
 	
 	/** Reportes > Liquidación Detallado */
@@ -160,15 +149,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/liquidacion-detallado/validar-formulario', 'CollectionSalesReportController@validateForm')->name('dashboard.report.collection_sales_report.validate_form');
 	Route::post('/reporte/liquidacion-detallado/listar', 'CollectionSalesReportController@list')->name('dashboard.report.collection_sales_report.list');
 
-	/** Reportes > Lista de Precios */
-	Route::get('/reporte/lista-de-precios', 'PriceListReportController@index')->name('dashboard.report.price_list');
-	Route::post('/reporte/lista-de-precios/validar-formulario', 'PriceListReportController@validateForm')->name('dashboard.report.price_list.validate_form');
-	Route::post('/reporte/lista-de-precios/obtener-clientes', 'PriceListReportController@getClients')->name('dashboard.report.price_list.get_clients');
-	Route::post('/reporte/lista-de-precios/obtener-articulos', 'PriceListReportController@getArticles')->name('dashboard.report.price_list.get_articles');
-	Route::post('/reporte/lista-de-precios/listar', 'PriceListReportController@list')->name('dashboard.report.price_list.list');
-	Route::post('/reporte/lista-de-precios/exportar-pdf', 'PriceListReportController@exportPdf')->name('dashboard.report.price_list.export_pdf');
-
-	
 
 	/** Reportes > Parte de Almacén */
 	Route::get('/reporte/parte-almacen', 'WarehousePartController@index')->name('dashboard.report.warehouse_part');
@@ -184,11 +164,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/registro-ventas/listar', 'SalesRegisterReportController@list')->name('dashboard.report.sales-register.list');
 	Route::post('/reporte/registro-ventas/exportar', 'SalesRegisterReportController@export')->name('dashboard.report.sales-register.export');
 
-	/** Reportes > Relación de Clientes */
-	Route::get('/reporte/relacion-de-clientes', 'ListClientsReportController@index')->name('dashboard.report.list_clients');
-	Route::post('/reporte/relacion-de-clientes/validar-formulario', 'ListClientsReportController@validateForm')->name('dashboard.report.list_clients.validate_form');
-	Route::post('/reporte/relacion-de-clientes/listar', 'ListClientsReportController@list')->name('dashboard.report.list_clients.list');
-
+	
 	/** Reportes > Relación de Cobranzas */
 	Route::get('/reporte/relacion-de-cobranzas', 'CollectionReportController@index')->name('dashboard.report.collection_report');
 	Route::post('/reporte/relacion-de-cobranzas/obtener-clientes', 'CollectionReportController@getClients')->name('dashboard.report.collection_report.get_clients');
@@ -392,16 +368,35 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/comercial/venta-diaria/obtener-clientes', 'CommercialChannelReportController@getClients')->name('dashboard.commercial.commercial_channel.get_clients');
 	Route::post('/comercial/venta-diaria/listar', 'CommercialChannelReportController@list')->name('dashboard.commercial.commercial_channel.list');
 
-	/** Reportes > Venta Canal Resumido*/
-	Route::get('/comercial/venta-canal-resumido', 'CommercialChannelTotalReportController@index')->name('dashboard.commercial.commercial_channel_total');
-	Route::post('/comercial/venta-canal-resumido/validar-formulario', 'CommercialChannelTotalReportController@validateForm')->name('dashboard.commercial.commercial_channel_total.validate_form');
-	Route::post('/comercial/venta-canal-resumido/obtener-clientes', 'CommercialChannelTotalReportController@getClients')->name('dashboard.commercial.commercial_channel_total.get_clients');
-	Route::post('/comercial/venta-canal-resumido/listar', 'CommercialChannelTotalReportController@list')->name('dashboard.commercial.commercial_channel_total.list');
+		/** Comercial > Lista de Precios */
+		Route::get('/comercial/lista/lista-de-precios', 'PriceListReportController@index')->name('dashboard.commercial.price_list_report');
+		Route::post('/comercial/lista/lista-de-precios/validar-formulario', 'PriceListReportController@validateForm')->name('dashboard.commercial.price_list_report.validate_form');
+		Route::post('/comercial/lista/lista-de-precios/obtener-clientes', 'PriceListReportController@getClients')->name('dashboard.commercial.price_list_report.get_clients');
+		Route::post('/comercial/lista/lista-de-precios/obtener-articulos', 'PriceListReportController@getArticles')->name('dashboard.commercial.price_list_report.get_articles');
+		Route::post('/comercial/lista/lista-de-precios/listar', 'PriceListReportController@list')->name('dashboard.commercial.price_list_report.list');
+		Route::post('/comercial/lista/lista-de-precios/exportar-pdf', 'PriceListReportController@exportPdf')->name('dashboard.commercial.price_list_report.export_pdf');
+	
+		
+		/** Comercial > Relación de Clientes */
+		Route::get('/comercial/relacion-de-clientes', 'ListClientsReportController@index')->name('dashboard.commercial.list_clients');
+		Route::post('/comercial/relacion-de-clientes/validar-formulario', 'ListClientsReportController@validateForm')->name('dashboard.commercial.list_clients.validate_form');
+		Route::post('/comercial/relacion-de-clientes/listar', 'ListClientsReportController@list')->name('dashboard.commercial.list_clients.list');
+	
+	
+	
+	/** Comercial > Venta Canal*/
+	Route::get('/comercial/venta-canal', 'LiquidationChannelReportController@index')->name('dashboard.commercial.liquidations_channel');
+	Route::post('/comercial/venta-canal/validar-formulario', 'LiquidationChannelReportController@validateForm')->name('dashboard.commercial.liquidations_channel.validate_form');
+	Route::post('/comercial/venta-canal/obtener-clientes', 'LiquidationChannelReportController@getClients')->name('dashboard.commercial.liquidations_channel.get_clients');
+	Route::post('/comercial/venta-canal/listar', 'LiquidationChannelReportController@list')->name('dashboard.commercial.liquidations_channel.list');
 
-
+	/** Comercial > Venta Canal Resumido*/
+	Route::get('/comercial/venta-canal-resumido', 'LiquidationChannelTotalReportController@index')->name('dashboard.commercial.liquidations_channel_total');
+	Route::post('/comercial/venta-canal-resumido/validar-formulario', 'LiquidationChannelTotalReportController@validateForm')->name('dashboard.commercial.liquidations_channel_total.validate_form');
+	Route::post('/comercial/venta-canal-resumido/obtener-clientes', 'LiquidationChannelTotalReportController@getClients')->name('dashboard.commercial.liquidations_channel_total.get_clients');
+	Route::post('/comercial/venta-canal-resumido/listar', 'LiquidationChannelTotalReportController@list')->name('dashboard.commercial.liquidations_channel_total.list');
 
 	
-
 
 	/** Reportes > GLP COSTO*/
 	Route::get('/reporte/glp-diaria', 'DaysGlpReportController@index')->name('dashboard.report.days_glp');
@@ -541,6 +536,21 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/registro-abastecimiento-glp/obtener-articulo', 'AbastecimientoRegisterController@getArticle')->name('dashboard.operations.abastecimiento_register.get_article');
 	Route::post('/controlglp/registro-abastecimiento-glp/guardar', 'AbastecimientoRegisterController@store')->name('dashboard.operations.abastecimiento_register.store');
 	Route::post('/controlglp/registro-abastecimiento-glp/get-invoices', 'AbastecimientoRegisterController@getInvoices')->name('dashboard.operations.abastecimiento_register.get_invoices');
+
+    /** Compras GLP > Empleados */
+	Route::get('/empleados', 'EmployesController@index')->name('dashboard.employes');
+	Route::post('/empleados/validar-formulario', 'EmployesController@validateForm')->name('dashboard.employes.validate_form');
+	Route::post('/empleados/listar', 'EmployesController@list')->name('dashboard.employes.list');
+	Route::post('/empleados/guardar', 'EmployesController@store')->name('dashboard.employes.store');
+	Route::post('/empleados/detalle', 'EmployesController@detail')->name('dashboard.employes.detail');
+	Route::post('/empleados/obtener-ubigeos', 'EmployesController@getUbigeos')->name('dashboard.employes.get_ubigeos');
+	Route::post('/empleados/obtener-ubigeo', 'EmployesController@getUbigeo')->name('dashboard.employes.get_ubigeo');
+	Route::post('/empleados/eliminar', 'EmployesController@delete')->name('dashboard.employes.delete'); 
+
+
+
+
+
 
 
 	 /** Compras GLP > Reporte de Compras GLP */

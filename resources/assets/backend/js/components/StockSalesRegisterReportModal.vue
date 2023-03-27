@@ -119,12 +119,40 @@
                                <option disabled value="">Seleccionar</option>
                                             <option value="8">PLUSPETROL</option>
                                             <option value="9">PLUS-ZETA</option>
-                                            <option value="10">PETROPERU</option>
-                                            <option value="11">SOLGAS</option>
+                                            <option value="10">NUMAY CALLAO</option>
+                                            <option value="11">UNNA</option>
+                                            <option value="12">NUMAY PISCO</option>
+                                            <option value="14">NUMAY SOLGAS</option>
+                                            <option value="16">PETROPERU TALARA</option>
+                                            <option value="17">PETROPERU CALLAO</option>
+                                            <option value="40">SOLGAS CALLAO</option>
+                                            <option value="41">SOLGAS TRUJILLO</option>
+                                            <option value="42">SOLGAS CHICLAYO</option>
+                                            <option value="43">ZETA GAS CALLAO</option>
+                                            <option value="44">SAVIA</option>
                             </select>
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
+                    <div class="col-12">
+                                    <table class="table">
+                                        <thead>
+                                            <th>Código</th>
+                                            <th>Nombre</th>
+                                            <th>Cantidad</th>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item, index) in model.details">
+                                                <input type="hidden" :name="`details[${index}][id]`" :value="item.id">
+                                                <td>{{ item.code }}</td>
+                                                <td>{{ item.name }}</td>
+                                                <td><input type="number" step=".00001" class="form-control" :name="`details[${index}][converted_amount]`" style="width:200px" :value="item.converted_amount">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
 
 
 								
@@ -177,6 +205,7 @@
                     total: '',
                     tc: '',
                     price_mes: '',
+                    details: []
                 },
                 button_text: ''
             }
@@ -206,6 +235,7 @@
                     total: '',
                     tc: '',
                     price_mes: '',
+                    details: []
                 };
 
                 $('#modal').modal('show');
@@ -255,6 +285,7 @@
                     total: '',
                     tc: '',
                     price_mes: '',
+                    details: []
 					};
 
                     EventBus.$emit('refresh_table');

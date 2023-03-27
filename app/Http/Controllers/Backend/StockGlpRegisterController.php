@@ -110,7 +110,7 @@ class StockGlpRegisterController extends Controller
 			'referral_serie_number.required_if'					=> 'Debe digitar la Serie de Referencia.',
 			'referral_voucher_number.required_if'				=> 'Debe digitar el Número de Referencia.',
 			'scop_number.required_if'							=> 'Debe digitar el Número de SCOP.',
-			'license_plate.required_if'							=> 'Debe digitar el Número de Placa.',
+		//	'license_plate.required_if'							=> 'Debe digitar el Número de Placa.',
 			'price_mes.required_if'							    => 'Debe seleccionar un costo mes',
 		];
 
@@ -124,7 +124,7 @@ class StockGlpRegisterController extends Controller
 			'referral_serie_number'					=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
 			'referral_voucher_number'				=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
 			'scop_number'							=> 'required',
-			'license_plate'							=> 'required',
+		//	'license_plate'							=> 'required',
 			'price_mes'							    => 'required',
 		];
 
@@ -175,7 +175,7 @@ class StockGlpRegisterController extends Controller
 			$perception_percentage = 0;
 		}
 
-		if (request('movement_type_id') == 31) {
+		if (request('movement_type_id') == 30) {
 			// Obtener artículos
 			$article = WarehouseMovementDetail::where('warehouse_movement_id', request('invoice'))->first()->article;
 			$article->sale_unit_id = $article->sale_unit->name;
@@ -225,14 +225,6 @@ class StockGlpRegisterController extends Controller
 		$quantity = request('model.quantity');
 		$quantity_2 = request('model.quantity_2');
 		$quantity_3 = request('model.quantity_3');
-	//	$price = request('model.price');
-	//	$sale_value = request('model.sale_value');
-	//	$inaccurate_value = request('model.inaccurate_value');
-	//	$igv = request('model.igv');
-	//	$total = request('model.total');
-	//	$perception = request('model.perception');
-	//	$igv_percentage = request('igv_percentage');
-	//	$perception_percentage = request('perception_percentage');
 		$item_number = request('item_number');
 		$movement_type_id = request('movement_type_id');
 
@@ -280,7 +272,7 @@ class StockGlpRegisterController extends Controller
 
 	public function store() {
 		$movement_class_id = 2;
-		$movement_type_id = request('model.movement_type_id');
+		$movement_type_id = 30;
 		$warehouse_type_id = request('model.warehouse_type_id');
 		$company_id = 1;
 		$since_date = request('model.since_date');
@@ -292,9 +284,8 @@ class StockGlpRegisterController extends Controller
 		$referral_serie_number = request('model.referral_serie_number');
 		$referral_voucher_number = request('model.referral_voucher_number');
 		$scop_number = request('model.scop_number');
-		$license_plate = request('model.license_plate');
+		$plate = request('model.warehouse_receiver');
 		$articles = request('article_list');
-		$traslate_date = request('model.traslate_date');
 		$license_plate_2 = request('model.license_plate_2');
 		$mezcla = request('model.mezcla');
 		$price_mes = request('model.price_mes');
@@ -309,7 +300,13 @@ class StockGlpRegisterController extends Controller
 		
 		$movement_number = ( $movement_number ? $movement_number + 1 : 1 );
 
+       
+		$license = WarehouseType::select('name')
+		->where('id', $plate)
+		->first();
 
+		
+		
 
 		$cost_glp=WarehouseMovement::select('cost_glp')
 		->where('referral_voucher_number',$referral_voucher_number)
@@ -353,7 +350,7 @@ class StockGlpRegisterController extends Controller
 		$movement->referral_serie_number = $referral_serie_number;
 		$movement->referral_voucher_number = $referral_voucher_number;
 		$movement->scop_number = $scop_number;
-		$movement->license_plate = $license_plate;
+		$movement->license_plate = $license ? $license->name : '';
 		$movement->license_plate_2 = $license_plate_2;
 		$movement->price_mes = $price_mes;
 		$movement->mezcla = $mezcla;
@@ -361,15 +358,8 @@ class StockGlpRegisterController extends Controller
 		$movement->igv=$cost_glp;
 		$movement->total=$cost_glp* (array_sum(array_column($articles, 'converted_amount')));
 		$movement->origin= array_sum(array_column($articles, 'group_id'));
-		//$movement->taxed_operation = array_sum(array_column($articles, 'sale_value'));
-		//$movement->unaffected_operation = array_sum(array_column($articles, 'inaccurate_value'));
-		//$movement->exonerated_operation = 0;
-		//$movement->igv = array_sum(array_column($articles, 'igv'));
-		//$movement->total = array_sum(array_column($articles, 'total'));
-		//$movement->total_perception = array_sum(array_column($articles, 'perception'));
 		$movement->action_type_id = ( $movement_type ? $movement_type->action_type_id : '' );
 		$movement->created_at = date('Y-m-d', strtotime($since_date));
-		$movement->traslate_date = date('Y-m-d', strtotime($traslate_date));
 		$movement->created_at_user = Auth::user()->user;
 		$movement->updated_at_user = Auth::user()->user;
 		$movement->save();
@@ -383,12 +373,7 @@ class StockGlpRegisterController extends Controller
 			$converted_amount = str_replace(',', '', $item['converted_amount']);
 			$old_stock_return = str_replace(',', '', $item['old_stock_return']);
 			$old_stock_damaged = str_replace(',', '', $item['old_stock_damaged']);
-		//	$price = str_replace(',', '', $item['price']);
-		//	$sale_value = str_replace(',', '', $item['sale_value']);
-		//	$inaccurate_value = str_replace(',', '', $item['inaccurate_value']);
-		//	$igv = str_replace(',', '', $item['igv']);
-		//	$total = str_replace(',', '', $item['total']);
-		//	$igv_perception = str_replace(',', '', $item['perception']);
+		
 
 			$movementDetail = new WarehouseMovementDetail();
 			$movementDetail->warehouse_movement_id = $movement->id;
@@ -404,15 +389,6 @@ class StockGlpRegisterController extends Controller
 			$movementDetail->new_stock_repair = $article->stock_repair;
 			$movementDetail->new_stock_return = $article->stock_return;
 			$movementDetail->new_stock_damaged = $article->stock_damaged;
-		//	$movementDetail->price = $price;
-		//	$movementDetail->sale_value = $sale_value;
-		//	$movementDetail->exonerated_value = 0;
-		//	$movementDetail->inaccurate_value = $inaccurate_value;
-		//	$movementDetail->igv = $igv;
-		//	$movementDetail->total = $total;
-		//	$movementDetail->igv_perception = $igv_perception;
-		//	$movementDetail->igv_percentage = $item['igv_percentage'];
-		//	$movementDetail->igv_perception_percentage = $item['perception_percentage'];
 			$movementDetail->created_at_user = Auth::user()->user;
 			$movementDetail->updated_at_user = Auth::user()->user;
 			
@@ -437,7 +413,7 @@ class StockGlpRegisterController extends Controller
 				}
 			}
 
-			if (request('model.movement_type_id') == 31) {
+			if (request('model.movement_type_id') == 30) {
 				$tmpArticle = Article::where('warehouse_type_id', request('model.warehouse_type_id'))
 									->where('code', $item['code'])
 									->first();
@@ -453,7 +429,7 @@ class StockGlpRegisterController extends Controller
 			$article->save();
 		}
 
-		if (request('model.movement_type_id') == 31) {
+		if (request('model.movement_type_id') == 30) {
 			$movementReceptor = new WarehouseMovement();
 			$movementReceptor->company_id = $company_id;
 			$movementReceptor->warehouse_type_id = $warehouse_type_id_receiver;
@@ -470,7 +446,7 @@ class StockGlpRegisterController extends Controller
 			$movementReceptor->referral_serie_number = $referral_serie_number;
 			$movementReceptor->referral_voucher_number = $referral_voucher_number;
 			$movementReceptor->scop_number = $scop_number;
-			$movementReceptor->license_plate = $license_plate;
+			$movementReceptor->license_plate = $license ? $license->name : '';
 			$movementReceptor->license_plate_2 = $license_plate_2;
 			$movementReceptor->price_mes = $price_mes;
 			$movementReceptor->mezcla = $mezcla;
@@ -480,7 +456,6 @@ class StockGlpRegisterController extends Controller
 			$movementReceptor->origin= array_sum(array_column($articles, 'group_id'));
 			$movementReceptor->action_type_id = ( $movement_type ? $movement_type->action_type_id : '' );
 			$movementReceptor->created_at = date('Y-m-d', strtotime($since_date));
-			$movementReceptor->traslate_date = date('Y-m-d', strtotime($traslate_date));
 			$movementReceptor->created_at_user = Auth::user()->user;
 			$movementReceptor->updated_at_user = Auth::user()->user;
 			$movementReceptor->stock_ini = (array_sum(array_column($articles, 'converted_amount')));

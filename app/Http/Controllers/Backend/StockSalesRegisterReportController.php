@@ -217,8 +217,21 @@ class StockSalesRegisterReportController extends Controller
 		$element->min_datetime = $date->startOfDay()->subDays(2)->toAtomString();
 		$element->max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
 	//	$element->typing_error = $element->movement_type_id == 29 ? 1 : 0;
+	$details = [];
 
-		return $element;
+	foreach($element->warehouse_movement_details as $detail){
+
+		array_push($details, [
+			'id' => $detail->id,
+			'code' => $detail->article->code,
+			'name' => $detail->article->name,
+			'converted_amount' => $detail->converted_amount,
+		]);
+
+	   }
+	   $element->details = $details;
+	
+	    return $element;
 	}
 
 	public function update() {
@@ -251,6 +264,16 @@ class StockSalesRegisterReportController extends Controller
 		$element->tc = $tc;
 		$element->price_mes = $price_mes;
 		$element->save();
+
+		if(isset(request()->details)){
+			foreach(request()->details as $detail){
+
+				WarehouseMovementDetail::where('id', $detail['id'])
+									->update([
+										'converted_amount' => $detail['converted_amount']
+									]);
+			}
+		}
 
 		$data = new stdClass();
 		$data->type = 1;

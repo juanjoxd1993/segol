@@ -124,7 +124,8 @@
                     item_number: this.article_list.length,
 					movement_type_id: this.model.movement_type_id,
                 }).then(response => {
-                    console.log(response.data);
+                    $("#stock-glp-register-modal").modal('hide')
+                    
                     this.article_list.push(response.data);
                     this.datatable.destroy();
                     this.fillTableX();
@@ -388,7 +389,7 @@
                         });
 
                         this.$nextTick(function() {
-                            EventBus.$emit('reset_stock_register');
+                            EventBus.$emit('reset_stock_glp_register');
 
                             this.show_table = 0;
                             this.datatable = undefined;

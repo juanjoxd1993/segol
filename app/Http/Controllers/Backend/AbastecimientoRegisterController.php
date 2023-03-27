@@ -280,7 +280,7 @@ class AbastecimientoRegisterController extends Controller
 
 	public function store() {
 		$movement_class_id = 2;
-		$movement_type_id = request('model.movement_type_id');
+		$movement_type_id = 32;
 		$warehouse_type_id = request('model.warehouse_type_id');
 		$company_id = 1;
 		$since_date = request('model.since_date');
@@ -292,7 +292,7 @@ class AbastecimientoRegisterController extends Controller
 		$referral_serie_number = request('model.referral_serie_number');
 		$referral_voucher_number = request('model.referral_voucher_number');
 		$scop_number = request('model.scop_number');
-		$license_plate = request('model.license_plate');
+		$plate = request('model.warehouse_receiver');
 		$articles = request('article_list');
 		$traslate_date = request('model.traslate_date');
 		$license_plate_2 = request('model.license_plate_2');
@@ -309,7 +309,9 @@ class AbastecimientoRegisterController extends Controller
 		
 		$movement_number = ( $movement_number ? $movement_number + 1 : 1 );
 
-
+		$license = WarehouseType::select('name')
+		->where('id', $plate)
+		->first();
 
 		$cost_glp=WarehouseMovement::select('cost_glp')
 		->where('referral_voucher_number',$referral_voucher_number)
@@ -356,7 +358,7 @@ class AbastecimientoRegisterController extends Controller
 		$movement->referral_serie_number = $referral_serie_number;
 		$movement->referral_voucher_number = $referral_voucher_number;
 		$movement->scop_number = $scop_number;
-		$movement->license_plate = $license_plate;
+		$movement->license_plate = $license ? $license->name : '';
 		$movement->license_plate_2 = $license_plate_2;
 		$movement->price_mes = $price_mes;
 		$movement->mezcla = $mezcla;
@@ -473,7 +475,7 @@ class AbastecimientoRegisterController extends Controller
 			$movementReceptor->referral_serie_number = $referral_serie_number;
 			$movementReceptor->referral_voucher_number = $referral_voucher_number;
 			$movementReceptor->scop_number = $scop_number;
-			$movementReceptor->license_plate = $license_plate;
+			$movementReceptor->license_plate =$license ? $license->name : '';
 			$movementReceptor->license_plate_2 = $license_plate_2;
 			$movementReceptor->price_mes = $price_mes;
 			$movementReceptor->mezcla = $mezcla;
