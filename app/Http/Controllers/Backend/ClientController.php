@@ -71,7 +71,7 @@ class ClientController extends Controller
 		$search = $q['generalSearch'] ?? '';
 		request()->replace(['page' => $page]);
 
-		$elements = Client::select('id', 'company_id', 'code', 'business_name', 'document_type_id', 'document_number', 'channel_id', 'email', 'phone_number_1', 'phone_number_2', 'seller_id', 'credit_limit','manager_id', 'perception_percentage_id', 'zone_id', 'route_id', 'sector_id','grupo', 'estado')
+		$elements = Client::select('id', 'company_id', 'code', 'business_name', 'document_type_id', 'document_number', 'channel_id', 'email', 'phone_number_1', 'phone_number_2', 'seller_id', 'credit_limit','manager_id', 'perception_percentage_id', 'zone_id', 'route_id', 'sector_id','grupo')
 		
 			->when($search, function($query, $search) {
 			return $query->where('id', 'like', /*'%'.*/$search/*.'%'*/) ->orWhere('business_name', 'like', '%'.$search.'%');
@@ -105,7 +105,7 @@ class ClientController extends Controller
 	public function detail() {
 		$id = request('id');
 
-		$element = Client::select('id', 'company_id', 'code', 'business_name', 'document_type_id', 'document_number', 'contact_name_1', 'contact_name_2', 'email', 'phone_number_1', 'phone_number_2', 'phone_number_3', 'link_client_id', 'seller_id', 'business_type','dgh','police','manager','manager_id','manager_mail', 'payment_id', 'credit_limit', 'credit_limit_days', 'perception_percentage_id', 'business_unit_id', 'zone_id', 'channel_id', 'route_id', 'sector_id','grupo','estado')->findOrFail($id);
+		$element = Client::select('id', 'company_id', 'code', 'business_name', 'document_type_id', 'document_number', 'contact_name_1', 'contact_name_2', 'email', 'phone_number_1', 'phone_number_2', 'phone_number_3', 'seller_id', 'business_type','dgh','police','manager','manager_id','manager_mail', 'payment_id', 'credit_limit', 'credit_limit_days', 'perception_percentage_id', 'business_unit_id', 'zone_id', 'channel_id', 'route_id', 'sector_id','grupo')->findOrFail($id);
 
 		$childElement = ClientAddress::where('client_id', $id)
 			->where('address_type_id', 1)
@@ -115,8 +115,7 @@ class ClientController extends Controller
 		$element->address = ( $childElement ? $childElement->address : '' );
 		$element->address_reference = ( $childElement ? $childElement->address_reference : '' );
 		$element->ubigeo_id = ( $childElement ? $childElement->ubigeo_id : '' );
-		$element->gps_x = ( $childElement ? $childElement->gps_x : '' );
-		$element->gps_y = ( $childElement ? $childElement->gps_y : '' );
+		
 
 		return $element;
 	}
@@ -212,9 +211,9 @@ class ClientController extends Controller
 
 	public function getSelect2() {
 		$ubigeo_id = request('ubigeo_id');
-		$link_client_id = request('link_client_id');
+		
 		$ubigeo = '';
-		$link_client = '';
+		
 
 		if ( isset($ubigeo_id) ) {
 			$ubigeo = Ubigeo::select('id', 'district', 'province', 'department', 'country')
@@ -228,18 +227,11 @@ class ClientController extends Controller
 			unset($ubigeo->country);
 		}
 
-		if ( isset($link_client_id) ) {
-			$link_client = Client::select('id', 'business_name')
-				->where('id', $link_client_id)
-				->first();
-			
-			$link_client->text = $link_client->business_name;
-			unset($link_client->business_name);
-		}
+		
 
 		return response()->json([
 			'ubigeo'	=> $ubigeo,
-			'link_client'	=> $link_client,
+			
 		]);
 	}
 
@@ -255,15 +247,12 @@ class ClientController extends Controller
 		$address = request('address');
 		$address_reference = request('address_reference');
 		$ubigeo_id = request('ubigeo_id');
-		$gps_x = request('gps_x');
-		$gps_y = request('gps_y');
 		$contact_name_1 = request('contact_name_1');
 		$contact_name_2 = request('contact_name_2');
 		$email = request('email');
 		$phone_number_1 = request('phone_number_1');
 		$phone_number_2 = request('phone_number_2');
 		$phone_number_3 = request('phone_number_3');
-		$link_client_id = request('link_client_id');
 		$business_unit_id = request('business_unit_id');
 		$zone_id = request('zone_id');
 		$channel_id = request('channel_id');
@@ -280,7 +269,6 @@ class ClientController extends Controller
 		$credit_limit = request('credit_limit');
 		$credit_limit_days = request('credit_limit_days');
 		$grupo = request('grupo');
-		$estado = request('estado');
 		$perception_percentage_id = request('perception_percentage_id');
 
 		if ( isset($id) ) {
@@ -314,7 +302,6 @@ class ClientController extends Controller
 		$element->phone_number_1 = $phone_number_1;
 		$element->phone_number_2 = $phone_number_2;
 		$element->phone_number_3 = $phone_number_3;
-		$element->link_client_id = $link_client_id;
 		$element->business_unit_id = $business_unit_id;
 		$element->zone_id = $zone_id;
 		$element->channel_id = $channel_id;
@@ -329,7 +316,6 @@ class ClientController extends Controller
 		$element->manager_mail= $manager_mail;
 		$element->payment_id = $payment_id;
 		$element->grupo = $grupo;
-		$element->estado = $estado;
 		$element->credit_limit = $payment_id == 2 ? $credit_limit : 0;
 		$element->credit_limit_days = $payment_id == 2 ? $credit_limit_days : 0;
 		$element->perception_percentage_id = $perception_percentage_id;
@@ -341,8 +327,7 @@ class ClientController extends Controller
 		$childElement->address = $address;
 		$childElement->address_reference = $address_reference;
 		$childElement->ubigeo_id = $ubigeo_id;
-		$childElement->gps_x = $gps_x;
-		$childElement->gps_y = $gps_y;
+
 		$childElement->save();
 
 		$type = 1;

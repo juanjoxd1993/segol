@@ -111,6 +111,16 @@
 									<span class="kt-menu__link-text">Liquidaciones Final</span>
 								</a>
 							</li>
+
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.voucher.liquidations_glp' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.voucher.liquidations_glp') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Liquidación GLP</span>
+								</a>
+							</li>
 							
 					 </ul>
 				 </div>
@@ -391,6 +401,22 @@
 										<span></span>
 									</i>
 									<span class="kt-menu__link-text">Registro de Producción</span>
+								</a>
+							</li>
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.opeinventories' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.opeinventories') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Ajuste de Inventario</span>
+								</a>
+							</li>
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.anulacionguias' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.anulacionguias') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Anulación Guías</span>
 								</a>
 							</li>
 			            </ul>
@@ -703,8 +729,6 @@
 								</a>
 							</li>
 
-						
-
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.stock_glp_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.stock_glp_register') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -715,6 +739,17 @@
 							</li>
 
 
+							
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.inventories' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.inventories') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Ajuste de Inventario</span>
+								</a>
+							</li>
+							
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.abastecimiento_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.abastecimiento_register') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -753,12 +788,23 @@
 								</a>
 							</li>
 
+
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.employes' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.employes') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Empleados</span>
+									<span class="kt-menu__link-text">Choferes</span>
+								</a>
+							</li>
+
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.plates' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.plates') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Placas</span>
 								</a>
 							</li>
 

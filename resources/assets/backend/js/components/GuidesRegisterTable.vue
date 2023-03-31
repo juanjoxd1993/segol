@@ -122,14 +122,20 @@
                     item_number: this.article_list.length,
 					movement_type_id: this.model.movement_type_id,
                 }).then(response => {
-                    console.log(response.data);
-                    this.article_list.push(response.data);
+
+                    if(!response.data.isSuccess){
+                        return alert('No se encontró conversión')
+                    }
+
+                    this.article_list.push(response.data.article);
+                    this.article_list.push(response.data.article2);
                     this.datatable.destroy();
                     this.fillTableX();
                     EventBus.$emit('loading', false);
 
                     EventBus.$emit('guides_register_modal_hide');
-                    EventBus.$emit('add_article_id', response.data.id);
+                    EventBus.$emit('add_article_id', response.data.article.id);
+                    EventBus.$emit('add_article_id', response.data.article2.id);
                 }).catch(error => {
                     console.log(error);
                     console.log(error.response);

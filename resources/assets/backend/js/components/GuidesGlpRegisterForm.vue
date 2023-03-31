@@ -17,14 +17,10 @@
 
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Almacén:</label>
+                            <label class="form-control-label">Almacén Proveedor:</label>
                             <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
-                               <option disabled value="">Seleccionar</option>
-                                            <option value="8">PLUSPETROL PISCO</option>
-                                            <option value="9">PLUS-CALLAO</option>
-                                            <option value="10">NUMAY LIMA</option>
-                                            <option value="11">UNNA</option>
-                                            <option value="12">NUMAY PISCO</option>
+                                <option disabled value="">Seleccionar</option>
+                                <option v-for="warehouseType in warehouse_providers" :value="warehouseType.id">{{ warehouseType.name }}</option>
                             </select>
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -176,6 +172,10 @@
             },
             tc: {
                 type: String,
+                default: ''
+            },
+            warehouse_providers: {
+                type: Array,
                 default: ''
             },
             current_date: {

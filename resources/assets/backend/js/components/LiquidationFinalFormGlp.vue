@@ -26,10 +26,20 @@
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Guía:</label>
+                            <label class="form-control-label">Almacén:</label>
+                            <select class="form-control" name="warehouse_id" id="warehouse_id" v-model="model.warehouse_type_id">
+                                <option value="" disabled>Seleccionar</option>
+                                <option v-for="warehouse in warehouses_types" :value="warehouse.id" v-bind:key="warehouse.id">{{ warehouse.name }}</option>
+                            </select>
+                            <div id="warehouse_Type-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Nº de Parte:</label>
                             <select class="form-control" name="warehouse_movement_id" id="warehouse_movement_id" v-model="model.warehouse_movement_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
-                                <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id" v-bind:key="warehouse_movement.id"># {{ warehouse_movement.referral_guide_series }}-{{ warehouse_movement.referral_guide_number }} | {{ warehouse_movement.license_plate }} | {{ warehouse_movement.creation_date }}</option>
+                                <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id" v-bind:key="warehouse_movement.id">#{{ warehouse_movement.movement_number }} | {{ warehouse_movement.referral_guide_series }}-{{ warehouse_movement.referral_guide_number }} | {{ warehouse_movement.license_plate }} | {{ warehouse_movement.traslate_date }}</option>
                             </select>
                             <div id="warehouse_movement_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -60,6 +70,10 @@
                 type: Array,
                 default: ''
             },
+            warehouses_types: {
+                type: Array,
+                default: ''
+            },
             url: {
                 type: String,
                 default: ''
@@ -74,7 +88,7 @@
                 model: {
                     company_id: '',
                     warehouse_movement_id: '',
-                    warehouse_type_id: 5,
+                    warehouse_type_id: '',
                 },
                 warehouse_movements: [],
             }
@@ -96,12 +110,13 @@
             }.bind(this));
         },
         watch: {
-            'model.company_id': function(val) {
+            'model.warehouse_type_id': function(val) {
                 if ( val != '' ) {
                     EventBus.$emit('loading', true);
 
                     axios.post(this.url_get_warehouse_movements, {
-                        company_id: this.model.company_id
+                        company_id: this.model.company_id,
+                        warehouse_type_id: this.model.warehouse_type_id,
                     }).then(response => {
                         // console.log(response);
                         this.model.warehouse_movement_id = '';
@@ -140,8 +155,6 @@
 					target.find('input').prop('disabled', true);
                     target.find('select').prop('disabled', true);
                     target.find('button').prop('disabled', true);
-                    EventBus.$emit('loading', false);
-
                     EventBus.$emit('show_table', response.data);
                 }).catch(error => {
                     EventBus.$emit('loading', false);

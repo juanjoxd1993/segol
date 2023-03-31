@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\WarehouseType;
 use App\Article;
 use App\Classification;
-use App\Exports\ArticleReportExport;
+use App\Exports\WarehouseGlpReportExport;
 use App\OperationType;
 use App\Unit;
 use Auth;

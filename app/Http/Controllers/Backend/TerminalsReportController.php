@@ -121,11 +121,10 @@ class TerminalsReportController extends Controller
 				->select('referral_guide_number')
 				->sum('referral_guide_number');
 
-				$recojo = WarehouseMovement::join('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')
-				->where('referral_voucher_number', $item['referral_voucher_number'])
-				->where('movement_class_id', 2)
-				->select('converted_amount')
-				->sum('converted_amount');
+				$recojo = WarehouseMovement::where('referral_voucher_number', $item['referral_voucher_number'])
+				->where('movement_class_id', 1)
+				->select('stock_pend')
+				->sum('stock_pend');
 
 				$tc = WarehouseMovement::where('referral_voucher_number', $item['referral_voucher_number'])
 				->where('movement_class_id', 1)

@@ -14,6 +14,7 @@
 		:guide_series = "{{ $guide_series }}"
 		:current_date = "'{{ $current_date }}'"
 		:warehouse_types = "{{ $warehouse_types }}"
+		:warehouse_providers = "{{ $warehouse_providers }}"
 		:warehouse_account_types = "{{ $warehouse_account_types }}"
 		:warehouse_document_types = "{{ $warehouse_document_types }}"	
 		:vehicles = "{{ $vehicles }}"

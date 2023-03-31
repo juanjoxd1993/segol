@@ -48,13 +48,15 @@ class GuidesGlpRegisterController extends Controller
 		$vehicles= Vehicle::select('id','plate')->get();
 		$guide_series= GuidesSerie::select('id','num_serie','correlative')->get();
 
+		$warehouse_providers = WarehouseType::select('id', 'name')->where('type', 2)->get();
+
 
 		$igv = Rate::select('description', 'value')
 			->where('description', 'IGV')
 			->where('state', 1)
 			->first();
 
-		return view('backend.guides_glp_register')->with(compact('movement_classes', 'movement_types', 'movement_stock_types', 'warehouse_types', 'companies', 'currencies', 'current_date', 'min_datetime', 'max_datetime', 'warehouse_account_types', 'warehouse_document_types', 'igv','guide_series','vehicles'));
+		return view('backend.guides_glp_register')->with(compact('movement_classes', 'movement_types', 'movement_stock_types', 'warehouse_types', 'companies', 'currencies', 'current_date', 'min_datetime', 'max_datetime', 'warehouse_account_types', 'warehouse_document_types', 'igv','guide_series','vehicles', 'warehouse_providers'));
 	}
 
 	/*		public function getNextcorrelative() {

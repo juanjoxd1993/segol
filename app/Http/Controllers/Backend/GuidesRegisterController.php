@@ -239,6 +239,7 @@ class GuidesRegisterController extends Controller
 		$perception_percentage = request('perception_percentage');
 		$item_number = request('item_number');
 		$movement_type_id = request('movement_type_id');
+		$warehouse_account_type_id = request('model.warehouse_account_type_id');
 
 		
 		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
@@ -272,7 +273,184 @@ class GuidesRegisterController extends Controller
 		$article->igv_percentage = ( $igv == 0 ? 0 : $igv_percentage );
 		$article->perception_percentage = $perception_percentage;
 
-		return $article;
+		$article2 = Article::where(function($query){
+			$query->where('group_id', 7) //Envases
+				->orWhere('group_id', 26); //Artículos
+		})
+		->where('convertion', $article->convertion)
+		->first();
+
+        if(!$article2){
+        return response()->json(['isSuccess' => false]);
+        }
+
+        $article2->item_number = ++$item_number;
+        $article2->sale_unit_id = $article2->sale_unit->name;
+        $article2->digit_amount = number_format($quantity, 4, '.', ',');
+        if ($movement_type_id == 1 || $movement_type_id == 2) {
+        if ($article2->operation_type_name == 'Suma') {
+        $article2->converted_amount = number_format($quantity + $article2->factor, 4, '.', ',');
+        } elseif ($article2->operation_type_name == 'Resta') {
+        $article2->converted_amount = number_format($quantity - $article2->factor, 4, '.', ',');
+        } elseif ($article2->operation_type_name == 'Multiplica') {
+        $article2->converted_amount = number_format($quantity * $article2->factor, 4, '.', ',');
+        } elseif ($article->operation_type_name == 'Divide') {
+        $article2->converted_amount = number_format($quantity / $article2->factor, 4, '.', ',');
+        }
+        } else {
+           $article2->converted_amount = number_format($quantity, 4, '.', ',');
+           }
+
+        $article2->price = number_format($price, 4, '.', ',');
+        $article2->sale_value = number_format($sale_value, 4, '.', ',');
+        $article2->inaccurate_value = number_format($inaccurate_value, 4, '.', ',');
+        $article2->igv = number_format($igv, 4, '.', ',');
+        $article2->total = number_format($total, 4, '.', ',');
+        $article2->perception = number_format($perception, 4, '.', ',');
+        $article2->igv_percentage = ($igv == 0 ? 0 : $igv_percentage);
+        $article2->perception_percentage = $perception_percentage;
+
+        if ($movement_type_id == 11) {
+        /************ Pre-Venta ********/
+
+        //Actualizar stock good y repair
+        $m_article = Article::find($article_id);
+        $m_article->stock_good = $article->stock_good - $quantity;
+        $m_article->stock_repair = $article->stock_repair - $quantity;
+        $m_article->save();
+
+        //Generar Movimiento de salida - Mercaderías
+       $id = WarehouseMovement::insertGetId([
+       'company_id' => 1,
+       'warehouse_type_id' => 5, //Mercaderías
+       'movement_class_id' => 2, //Salida
+       'movement_type_id' => 1, //Compras
+       'warehouse_account_type_id' => $warehouse_account_type_id,
+       'total' => $quantity,
+       'created_at' => date('Y-m-d'),
+       'updated_at' => date('Y-m-d'),
+        ]);
+
+       WarehouseMovementDetail::insert([
+       'warehouse_movement_id' => $id,
+       'item_number' => 1,
+       'article_code' => $article->id,
+       'new_stock_good' => $quantity,
+       'converted_amount' => $quantity,
+       'total' => $quantity,
+       'created_at' => date('Y-m-d'),
+       'updated_at' => date('Y-m-d'),
+        ]);
+
+       //Restar stock artículo por la salida
+       $m_article->stock_good = $article->stock_good - $quantity;
+       $m_article->save();
+
+       //Generar Movimiento de ingreso - Producción
+       $id = WarehouseMovement::insertGetId([
+       'company_id' => 1,
+       'warehouse_type_id' => 4, //Producción ATE
+       'movement_class_id' => 1, //Salida
+       'movement_type_id' => 5,
+       'warehouse_account_type_id' => $warehouse_account_type_id,
+       'total' => $quantity,
+       'created_at' => date('Y-m-d'),
+       'updated_at' => date('Y-m-d'),
+        ]);
+
+    WarehouseMovementDetail::insert([
+    'warehouse_movement_id' => $id,
+    'item_number' => 1,
+    'article_code' => $article->id,
+    'new_stock_good' => $quantity,
+    'converted_amount' => $quantity,
+    'total' => $quantity,
+    'created_at' => date('Y-m-d'),
+    'updated_at' => date('Y-m-d'),
+    ]);
+
+    //Sumar stock artículo por la salida
+    $m_article->stock_good = $article->stock_good + $quantity;
+    $m_article->save();
+
+    //Salida Por Pre Venta
+    $id = WarehouseMovement::insertGetId([
+    'company_id' => 1,
+    'warehouse_type_id' => 4, //Producción
+    'movement_class_id' => 2, //Salida
+    'movement_type_id' => 11, //Pre-venta
+    'warehouse_account_type_id' => $warehouse_account_type_id,
+    'total' => $quantity,
+    'created_at' => date('Y-m-d'),
+    'updated_at' => date('Y-m-d'),
+     ]);
+
+WarehouseMovementDetail::insert([
+'warehouse_movement_id' => $id,
+'item_number' => 1,
+'article_code' => $article->id,
+'new_stock_good' => $quantity,
+'converted_amount' => $quantity,
+'total' => $quantity,
+'created_at' => date('Y-m-d'),
+'updated_at' => date('Y-m-d'),
+]);
+
+//Restar stock artículo por la salida
+$m_article->stock_good = $article->stock_good - $quantity;
+$m_article->save();
+
+
+} else {
+//Generar Movimiento de ingreso - Producción
+$id = WarehouseMovement::insertGetId([
+'company_id' => 1,
+'warehouse_type_id' => 4, //Producción ATE
+'movement_class_id' => 1, //Ingreso
+'movement_type_id' => $movement_type_id,
+'warehouse_account_type_id' => $warehouse_account_type_id,
+'total' => $quantity,
+'created_at' => date('Y-m-d'),
+'updated_at' => date('Y-m-d'),
+]);
+
+WarehouseMovementDetail::insert([
+'warehouse_movement_id' => $id,
+'item_number' => 1,
+'article_code' => $article->id,
+'new_stock_good' => $quantity,
+'converted_amount' => $quantity,
+'total' => $quantity,
+'created_at' => date('Y-m-d'),
+'updated_at' => date('Y-m-d'),
+]);
+
+//Salida por Venta - Planta
+$id = WarehouseMovement::insertGetId([
+'company_id' => 1,
+'warehouse_type_id' => 4, //Mercaderías
+'movement_class_id' => 2, //Salida
+'movement_type_id' => $movement_type_id,
+'warehouse_account_type_id' => $warehouse_account_type_id,
+'total' => $quantity,
+'created_at' => date('Y-m-d'),
+'updated_at' => date('Y-m-d'),
+]);
+
+WarehouseMovementDetail::insert([
+'warehouse_movement_id' => $id,
+'item_number' => 1,
+'article_code' => $article->id,
+'new_stock_good' => $quantity,
+'converted_amount' => $quantity,
+'total' => $quantity,
+'created_at' => date('Y-m-d'),
+'updated_at' => date('Y-m-d'),
+]);
+    }
+
+
+    return response()->json(['isSuccess' => true, 'article' => $article, 'article2' => $article2]);
 	}
 
 	public function store() {

@@ -76,30 +76,17 @@
                                         <div id="ubigeo_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
+								
 								<div class="col-lg-4">
                                     <div class="form-group">
-                                        <label class="form-control-label">GPS X:</label>
-                                        <input type="text" class="form-control" name="gps_x" id="gps_x" placeholder="12.18435168" v-model="model.gps_x" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="gps_x-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
-								<div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">GPS Y:</label>
-                                        <input type="text" class="form-control" name="gps_y" id="gps_y" placeholder="12.8754354" v-model="model.gps_y" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="gps_y-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
-								<div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Nombre de Contacto 1:</label>
+                                        <label class="form-control-label">Nombre de Contacto :</label>
                                         <input type="text" class="form-control" name="contact_name_1" id="contact_name_1" placeholder="Nombre Apellido" v-model="model.contact_name_1" @focus="$parent.clearErrorMsg($event)">
                                         <div id="contact_name_1-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
 								<div class="col-lg-4">
                                     <div class="form-group">
-                                        <label class="form-control-label">Nombre de Contacto 2:</label>
+                                        <label class="form-control-label">Nombre de Cobranza:</label>
                                         <input type="text" class="form-control" name="contact_name_2" id="contact_name_2" placeholder="Nombre Apellido" v-model="model.contact_name_2" @focus="$parent.clearErrorMsg($event)">
                                         <div id="contact_name_2-error" class="error invalid-feedback"></div>
                                     </div>
@@ -113,14 +100,14 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <label class="form-control-label">Teléfono 1:</label>
+                                        <label class="form-control-label">Teléfono:</label>
                                         <input type="text" class="form-control" name="phone_number_1" id="phone_number_1" placeholder="987654321" v-model="model.phone_number_1" @focus="$parent.clearErrorMsg($event)">
                                         <div id="phone_number_1-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <label class="form-control-label">Teléfono 2:</label>
+                                        <label class="form-control-label">Teléfono de Cobranza:</label>
                                         <input type="text" class="form-control" name="phone_number_2" id="phone_number_2" placeholder="014754512" v-model="model.phone_number_2" @focus="$parent.clearErrorMsg($event)">
                                         <div id="phone_number_2-error" class="error invalid-feedback"></div>
                                     </div>
@@ -130,15 +117,6 @@
                                         <label class="form-control-label">Teléfono Fijo:</label>
                                         <input type="text" class="form-control" name="phone_number_3" id="phone_number_3" placeholder="014754512" v-model="model.phone_number_3" @focus="$parent.clearErrorMsg($event)">
                                         <div id="phone_number_3-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Cliente de enlace:</label>
-                                        <select class="form-control kt-select2" name="link_client_id" id="link_client_id" v-model="model.link_client_id" @focus="$parent.clearErrorMsg($event)">
-                                            <option value="">Seleccionar</option>
-                                        </select>
-                                        <div id="link_client_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
 								<div class="col-lg-4">
@@ -218,13 +196,7 @@
                                     </div>
                                 </div>
 
-                                 <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Estado:</label>
-                                        <input type="text" class="form-control" name="estado" id="estado" placeholder="" v-model="model.estado" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="estado-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
+                              
 								
                                     <div class="col-lg-4">
                                    <div class="form-group">
@@ -372,15 +344,12 @@
                     address: '',
                     address_reference: '',
                     ubigeo_id: '',
-                    gps_x: '',
-                    gps_y: '',
                     contact_name_1: '',
                     contact_name_2: '',
                     email: '',
                     phone_number_1: '',
                     phone_number_2: '',
                     phone_number_3: '',
-                    link_client_id: '',
                     business_unit_id: '',
                     zone_id: '',
                     channel_id: '',
@@ -389,7 +358,6 @@
                     seller_id: '',
                     business_type: '',
                     grupo:'',
-                    estado:'',
                     dgh: '',
                     manager_id:'',
                     police: '',
@@ -420,15 +388,12 @@
                 this.model.address = '';
                 this.model.address_reference = '';
                 this.model.ubigeo_id = '';
-                this.model.gps_x = '';
-                this.model.gps_y = '';
                 this.model.contact_name_1 = '';
                 this.model.contact_name_2 = '';
                 this.model.email = '';
                 this.model.phone_number_1 = '';
                 this.model.phone_number_2 = '';
                 this.model.phone_number_3 = '';
-                this.model.link_client_id = '';
                 this.model.business_unit_id = '';
                 this.model.zone_id = '';
                 this.model.channel_id = '';
@@ -438,7 +403,6 @@
                 this.model.business_type = '';
                 this.model.dgh = '';
                 this.model.grupo = '';
-                this.model.estado = '';
                 this.model.manager_id= '';
                 this.model.police = '';
                 this.model.payment_id = '';
@@ -447,7 +411,6 @@
                 this.model.perception_percentage_id = '';
 
                 $('#ubigeo_id').val(null).trigger('change');
-                $('#link_client_id').val(null).trigger('change');
                 $('#modal-client').modal('show');
             }.bind(this));
 
@@ -458,7 +421,6 @@
                 
                 axios.post(this.url_get_select2, {
                     ubigeo_id: this.model.ubigeo_id,
-                    link_client_id: this.model.link_client_id,
                 }).then(response => {
                     if ( response.data.ubigeo ) {
                         let option = new Option(response.data.ubigeo.text, response.data.ubigeo.id, true, true);
@@ -471,16 +433,7 @@
                         });
                     }
 
-                    if ( response.data.link_client ) {
-                        let option = new Option(response.data.link_client.text, response.data.link_client.id, true, true);
-                        $('#link_client_id').append(option).trigger('change');
-                        $('#link_client_id').trigger({
-                            type: 'select2:select',
-                            params: {
-                                data: response.data.link_client
-                            }
-                        });
-                    }
+                  
 
                     EventBus.$emit('loading', false);
                     $('#modal-client').modal('show');
@@ -547,57 +500,6 @@
                 }).on('select2:unselect', function(e) {
                     vm.model.ubigeo_id = '';
                 });
-
-                $("#link_client_id").select2({
-                    placeholder: "Buscar",
-                    allowClear: true,
-                    language: {
-                        noResults: function() {
-                            return 'No hay resultados';
-                        },
-                        searching: function() {
-                            return 'Buscando...';
-                        },
-                        inputTooShort: function() {
-                            return 'Ingresa 1 o más caracteres';
-                        },
-                        errorLoading: function() {
-                            return 'No se pudo cargar la información'
-                        }
-                    },
-                    ajax: {
-                        url: this.url_get_clients,
-                        dataType: 'json',
-                        delay: 250,
-                        type: 'POST',
-                        data: function (params) {
-                            var queryParameters = {
-                                q: params.term,
-                                company_id: vm.model.company_id,
-                                _token: token,
-                            }
-
-                            return queryParameters;
-                        },
-                        processResults: function(data, params) {
-                            params.page = params.page || 1;
-
-                            return {
-                                results: data,
-                                pagination: {
-                                    more: (params.page * 30) < data.total_count
-                                }
-                            };
-                        },
-                        cache: true
-                    },
-                    minimumInputLength: 1,
-                }).on('select2:select', function(e) {
-                    var selected_element = $(e.currentTarget);
-                    vm.model.link_client_id = parseInt(selected_element.val());
-                }).on('select2:unselect', function(e) {
-                    vm.model.link_client_id = '';
-                });
             },
             formController: function(url, event) {
                 var vm = this;
@@ -626,15 +528,12 @@
                     this.model.address = '';
                     this.model.address_reference = '';
                     this.model.ubigeo_id = '';
-					this.model.gps_x = '';
-                	this.model.gps_y = '';
 					this.model.contact_name_1 = '';
                 	this.model.contact_name_2 = '';
                     this.model.email = '';
                     this.model.phone_number_1 = '';
                     this.model.phone_number_2 = '';
                     this.model.phone_number_3 = '';
-                    this.model.link_client_id = '';
 					this.model.business_unit_id = '';
                     this.model.zone_id = '';
                     this.model.channel_id = '';
@@ -644,7 +543,6 @@
                     this.model.business_type = '';
                     this.model.dgh = '';
                     this.model.grupo = '';
-                    this.model.estado = '';
                     this.model.manager_id= '';
                     this.model.police = '';
                     this.model.payment_id = '';
