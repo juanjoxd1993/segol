@@ -68,7 +68,6 @@ class TerminalsReportExport implements FromCollection, WithTitle, WithHeadings, 
                 'Peso Inicial',
                 'Peso Bruto',
                 'Peso Neto',
-                'Dif',
                 'CONCATENAR'
             ];
         
@@ -108,7 +107,6 @@ class TerminalsReportExport implements FromCollection, WithTitle, WithHeadings, 
                 $collection->old_stock,
                 $collection->old_stock_r,
                 $collection->peso_neto,
-                $collection->dif,
                 $collection->concat,
             ];
         

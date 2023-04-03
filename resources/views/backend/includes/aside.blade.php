@@ -178,14 +178,7 @@
 							</li>
 							
 
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.stock_final' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.report.stock_final') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Reporte de Guías</span>
-								</a>
-							</li>
+							
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.guides_scop' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.guides_scop') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -194,14 +187,7 @@
 									<span class="kt-menu__link-text">Estado de Guías</span>
 								</a>
 							</li>
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.guides_seek' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.report.guides_seek') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Buscador de Guías</span>
-								</a>
-							</li>
+							
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.facturations_sales' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.facturations_sales') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -379,14 +365,7 @@
 									<span class="kt-menu__link-text">Registro de Guías de Remisión</span>
 								</a>
 							</li>
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.operations_part' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.operations.operations_part') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Impresión de Guías</span>
-								</a>
-							</li>
+							
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_return' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.guides_return') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -395,12 +374,22 @@
 									<span class="kt-menu__link-text">Retorno de Guías de Remisión</span>
 								</a>
 							</li>
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.logistics.production_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.logistics.production_register') }}" class="kt-menu__link ">
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.stock_seek_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.stock_seek_register') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Registro de Producción</span>
+									<span class="kt-menu__link-text">Reporte de Guías</span>
+								</a>
+							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_seek' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.guides_seek') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Buscador de Guías</span>
 								</a>
 							</li>
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.opeinventories' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">

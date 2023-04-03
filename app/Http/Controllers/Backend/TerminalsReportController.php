@@ -175,7 +175,7 @@ class TerminalsReportController extends Controller
 				
 
 				if ($detail->cantidad != 0 )  {
-					$detail->rest = $detail->cantidad-$detail->recojo;
+					$detail->rest = $detail->recojo;
 				}
 				else {
 					$detail->rest = 0;

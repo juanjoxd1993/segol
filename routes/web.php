@@ -103,15 +103,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/liquidaciones-resumen/obtener-clientes', 'LiquidationTotalReportController@getClients')->name('dashboard.report.liquidations_total.get_clients');
 	Route::post('/reporte/liquidaciones-resumen/listar', 'LiquidationTotalReportController@list')->name('dashboard.report.liquidations_total.list');
 
-	 /** Reportes > Prueba Guias */
-	 Route::get('/reporte/guias-registro', 'StockSeekRegisterReportController@index')->name('dashboard.report.stock_seek_register');
-	 Route::post('/reporte/guias-registro/validar-formulario', 'StockSeekRegisterReportController@validateForm')->name('dashboard.report.stock_seek_register.validate_form');
-	 Route::post('/reporte/guias-registro/obtener-guias', 'StockSeekRegisterReportController@getWarehouseMovements')->name('dashboard.report.stock_seek_register.get_warehouse_movements');
-	 Route::post('/reporte/guias-registro/listar', 'StockSeekRegisterReportController@list')->name('dashboard.report.stock_seek_register.list');
-	 Route::post('/reporte/guias-registro/detalle', 'StockSeekRegisterReportController@detail')->name('dashboard.report.stock_seek_register.detail');
-	 Route::post('/reporte/guias-registro/actualizar', 'StockSeekRegisterReportController@update')->name('dashboard.report.stock_seek_register.update');
-
-	
+	 
 
 	 /** Reportes > Guias */
 	 Route::get('/reporte/guias', 'StockFinalReportController@index')->name('dashboard.report.stock_final');
@@ -121,10 +113,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	 Route::post('/reporte/guias/detalle', 'StockFinalReportController@detail')->name('dashboard.report.stock_final.detail');
 	 Route::post('/reporte/guias/actualizar', 'StockFinalReportController@update')->name('dashboard.report.stock_final.update');
 
-	  /** Reportes > Buscador de Guías */
-	Route::get('/reporte/buscador-guias', 'GuidesSeekReportController@index')->name('dashboard.report.guides_seek');
-	Route::post('/reporte/buscador-guias/validar-formulario', 'GuidesSeekReportController@validateForm')->name('dashboard.report.guides_seek.validate_form');
-	Route::post('/reporte/buscador-guias/listar', 'GuidesSeekReportController@list')->name('dashboard.report.guides_seek.list');
 	
     /** Reportes > Estado de Guías */
 	Route::get('/reporte/estado-guias', 'GuidesScopReportController@index')->name('dashboard.report.guides_scop');
@@ -313,7 +301,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/parte-almacen/exportar', 'OperationsPartController@export')->name('dashboard.operations.operations_part.export');
 	Route::get('/operaciones/parte-almacen/exportar-guia-remision', 'OperationsPartController@exportReferralGuide')->name('dashboard.operations.operations_part.export_referral_guide');
 
-/** Operaciones > Retorno de Guías */
+   /** Operaciones > Retorno de Guías */
 	
     Route::get('/operaciones/retorno-guias', 'GuidesReturnController@index')->name('dashboard.operations.guides_return');
 	Route::post('/operaciones/retorno-guias/validar-formulario', 'GuidesReturnController@validateForm')->name('dashboard.operations.guides_return.validate_form');
@@ -332,7 +320,20 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/logistica/registro-produccion/obtener-tasas', 'ProductionController@getArticleRates')->name('dashboard.logistics.production_register.get_article_rates');
 	Route::post('/logistica/registro-produccion/obtener-articulo', 'ProductionController@getArticle')->name('dashboard.logistics.production_register.get_article');
 	Route::post('/logistica/registro-produccion/guardar', 'ProductionController@store')->name('dashboard.logistics.production_register.store');
+ 
+	/** Reportes > Prueba Guias */
+	Route::get('/operaciones/guias-registro', 'StockSeekRegisterReportController@index')->name('dashboard.operations.stock_seek_register');
+	Route::post('/operaciones/guias-registro/validar-formulario', 'StockSeekRegisterReportController@validateForm')->name('dashboard.operations.stock_seek_register.validate_form');
+	Route::post('/operaciones/guias-registro/obtener-guias', 'StockSeekRegisterReportController@getWarehouseMovements')->name('dashboard.operations.stock_seek_register.get_warehouse_movements');
+	Route::post('/operaciones/guias-registro/listar', 'StockSeekRegisterReportController@list')->name('dashboard.operations.stock_seek_register.list');
+	Route::post('/operaciones/guias-registro/detalle', 'StockSeekRegisterReportController@detail')->name('dashboard.operations.stock_seek_register.detail');
+	Route::post('/operaciones/guias-registro/actualizar', 'StockSeekRegisterReportController@update')->name('dashboard.operations.stock_seek_register.update');
 
+     /** Reportes > Buscador de Guías */
+	Route::get('/operaciones/buscador-guias', 'GuidesSeekReportController@index')->name('dashboard.operations.guides_seek');
+	Route::post('/operaciones/buscador-guias/validar-formulario', 'GuidesSeekReportController@validateForm')->name('dashboard.operations.guides_seek.validate_form');
+	Route::post('/operaciones/buscador-guias/listar', 'GuidesSeekReportController@list')->name('dashboard.operations.guides_seek.list');
+	
 
 	Route::get('/operaciones/inventario', 'OpeAdjustInventoryController@index')->name('dashboard.operations.opeinventories');
 	Route::post('/operaciones/inventario/validar-formulario', 'OpeAdjustInventoryController@validateForm')->name('dashboard.operations.opeinventories.validate_form');

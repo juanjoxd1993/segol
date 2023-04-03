@@ -6,12 +6,12 @@
 @section('content')
 	<guides-seek-report-form
 		:companies = "{{ $companies }}"
-		:url = "'{{ route('dashboard.report.guides_seek.validate_form') }}'"
+		:url = "'{{ route('dashboard.operations.guides_seek.validate_form') }}'"
 		
 	></guides-seek-report-form>
 	
 	<guides-seek-report-table
-		:url = "'{{ route('dashboard.report.guides_seek.list') }}'"
+		:url = "'{{ route('dashboard.operations.guides_seek.list') }}'"
 	></guides-seek-report-table>
 
 	<loading></loading>
