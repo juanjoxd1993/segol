@@ -458,8 +458,6 @@ class StockGlpRegisterController extends Controller
 			$movementReceptor->created_at = date('Y-m-d', strtotime($since_date));
 			$movementReceptor->created_at_user = Auth::user()->user;
 			$movementReceptor->updated_at_user = Auth::user()->user;
-			$movementReceptor->stock_ini = (array_sum(array_column($articles, 'converted_amount')));
-            $movementReceptor->stock_pend = $movementReceptor->stock_ini;
 			$movementReceptor->save();
 
 			$invoice = WareHouseMovement::find(request('model.invoice'));
@@ -526,6 +524,64 @@ class StockGlpRegisterController extends Controller
 				$article->save();
 			}
 		}
+
+		//Movimiento Tipo 5
+		foreach ($articles as $item) {
+
+		    
+			$converted_amount = str_replace(',', '', $item['converted_amount']);
+			$isla = request('model.isla');
+			$referral_guide_series = request('model.referral_guide_series');
+			$referral_guide_number = request('model.referral_guide_number');
+			$warehouse_type_id_receiver = request('model.warehouse_receiver');
+
+			$article_code= $item['id'];
+			
+			
+
+
+
+			$id = WarehouseMovement::insertGetId([
+				'company_id' => $company_id,
+				'warehouse_type_id' => $warehouse_type_id_receiver,
+				'movement_class_id' => 2,
+				'movement_type_id' => 11, //Pre Venta
+				'warehouse_account_type_id' => 3, //Trabajador
+				'referral_guide_series'=> $referral_guide_series,
+				'referral_guide_number'=> $referral_guide_number,
+				'stock_pend' => $converted_amount,
+				'total' => $converted_amount,
+				'created_at' => date('Y-m-d H:i:s') ,
+				'updated_at' => date('Y-m-d H:i:s') ,
+			]);
+
+			WarehouseMovementDetail::insert([
+				'warehouse_movement_id' => $id,
+				'item_number' => 1,
+				'article_code' => $article_code,
+				'article_num' => 4771,
+				'converted_amount' => $converted_amount,			
+				'total' => $converted_amount,
+				'sale_value'=>1,
+				'created_at' => date('Y-m-d H:i:s'),
+				'updated_at' => date('Y-m-d H:i:s'),
+			]);
+			WarehouseMovementDetail::insert([
+				'warehouse_movement_id' => $id,
+				'item_number' => 2,
+				'article_code' => 4856,
+				'article_num' => 4856,
+				'digit_amount' => $converted_amount,
+				'converted_amount' => ($converted_amount/($isla*3.7854)),
+				'sale_value'=>($isla*3.7854),
+				'total' => $converted_amount,
+				'created_at' => date('Y-m-d H:i:s'),
+				'updated_at' => date('Y-m-d H:i:s'),
+			]);
+		}
+
+
+
 
 		return $articles;
 	}

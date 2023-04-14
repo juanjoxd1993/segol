@@ -566,7 +566,7 @@ class LiquidationFinalController extends Controller
 			}
 		}
 
-		$warehouse_movement->state = 1;
+		$warehouse_movement->state = 2;
 		$warehouse_movement->save();
 
 		// return request()->all();

@@ -48,14 +48,7 @@ class GuidesReturnController extends Controller
         $elements = WarehouseMovement::select('id', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'created_at')
             ->where('company_id', $company_id)
             ->where('warehouse_type_id', 5)
-
-            ->where(function ($query) {
-                $query->where('action_type_id', 3)
-                    ->orWhere('action_type_id', 4)
-                    ->orWhere('action_type_id', 6)
-                    ->orWhere('action_type_id', 7)
-                    ->orWhere('action_type_id', 8);
-            })
+            ->where('movement_type_id', 11)
             ->where('state', 0)
             ->orderBy('movement_number', 'asc')
             ->get();
@@ -97,8 +90,8 @@ class GuidesReturnController extends Controller
         foreach ($movementDetails as $item) {
             //Encontrar conversión
             $article2 = Article::where(function ($query) {
-                $query->where('group_id', 7); //Envases
-                    //->orWhere('group_id', 26); //Artículos
+                $query->where('group_id', 7) //Envases
+                    ->orWhere('group_id', 26); //Artículos
             })
                 ->where('convertion', $item->article->convertion)
                 ->first();
@@ -158,7 +151,7 @@ class GuidesReturnController extends Controller
                     'company_id' => 1,
                     'warehouse_type_id' => 4, //Producción
                     'movement_class_id' => 1, //Ingreso
-                    'movement_type_id' => 19, //Retorno de Pre-Venta
+                    'movement_type_id' => 11, //Pre-Venta
                     'warehouse_account_type_id' => 1,
                     'total' => $article->retorno,
                     'created_at' => date('Y-m-d'),
@@ -213,13 +206,12 @@ class GuidesReturnController extends Controller
                 //Actualizar Stock por el Movimiento
                 Article::where('id', $article->article_id)
                     ->update([
-                        'stock_repair' => DB::raw('stock_repair - ' . ($article->cambios + $article->retorno)),
-                        'stock_return' => DB::raw('stock_return + ' . ($article->cambios + $article->retorno)),
+                        'stock_repair' => DB::raw('stock_repair + ' . $article->cambios)
                     ]);
             }
 
 
-            if ($article->prestamo > 0 && $article->parent) {
+            if ($article->prestamo > 0) {
 
                 /********** Préstamos - Movimiento *********/
 
@@ -242,7 +234,6 @@ class GuidesReturnController extends Controller
                     'new_stock_good' => $article->prestamo,
                     'converted_amount' => $article->prestamo,
                     'total' => $article->prestamo,
-                    'press' => 1,
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
                 ]);
@@ -250,13 +241,12 @@ class GuidesReturnController extends Controller
                 //Actualizar Stock por el Movimiento
                 Article::where('id', $article->article_id)
                     ->update([
-                        'stock_repair' => DB::raw('stock_repair - ' . $article->prestamo),
-                        'stock_damaged' => DB::raw('stock_damaged + ' . $article->prestamo)
+                        'stock_damaged' => DB::raw('stock_damaged - ' . $article->prestamo)
                     ]);
             }
 
 
-            if ($article->cesion > 0 && $article->parent) {
+            if ($article->cesion > 0) {
 
                 /********** Cesión de uso - Movimiento *********/
 
@@ -277,7 +267,6 @@ class GuidesReturnController extends Controller
                     'item_number' => 1,
                     'article_code' => $article->article_id,
                     'new_stock_good' => $article->cesion,
-                    'new_stock_return' => $article->presale_converted_amount - $article->cesion,
                     'converted_amount' => $article->cesion,
                     'total' => $article->cesion,
                     'created_at' => date('Y-m-d'),
@@ -287,38 +276,19 @@ class GuidesReturnController extends Controller
                 //Actualizar Stock por el Movimiento
                 Article::where('id', $article->article_id)
                     ->update([
-                        'stock_good' => DB::raw('stock_good + ' . $article->prestamo),
-                        'stock_repair' => DB::raw('stock_repair - ' . $article->prestamo),
-                        'stock_minimum' => DB::raw('stock_minimum + ' . $article->cesion),
+                        'stock_repair' => DB::raw('stock_repair - ' . $article->prestamo)
                     ]);
             }
 
 
-            if($article->vacios && $article->parent){
+            if($article->vacios){
                 Article::where('id', $article->article_id)
                     ->update([
-                        'stock_repair' => DB::raw('stock_repair - ' . $article->vacios),
-                        'stock_good' => DB::raw('stock_good + ' .$article->vacios),
+                        'stock_good' => $article->vacios
                     ]);
             }
 
-
-            //Actualizar new_stock_return
-            WarehouseMovementDetail::where('warehouse_movement_id', $request->warehouse_movement_id)
-                                    ->where('article_code', $article->article_id)
-                                    ->update([
-                                        'new_stock_return' => $article->presale_converted_amount - $article->retorno - $article->cambios,
-                                    ]);
-
-    
-
         }
-
-        //Actualizar estado
-        WarehouseMovement::where('id', $request->warehouse_movement_id)
-                        ->update([
-                            'state' => 1,
-                        ]);
 
         $data = new stdClass();
         $data->type = 1;
