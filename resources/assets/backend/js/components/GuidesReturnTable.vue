@@ -151,11 +151,18 @@ export default {
             axios.post(this.url, {
                 model: this.$store.state.model,
             }).then(response => {
-                // console.log(response.data);
-                this.$store.commit('addArticles', response.data);
+                const data = response.data;
+                // data.map(item => console.log(item.parent))
+                // console.log(data)
+                const filteredArticles = data.filter((article, index, arr) =>
+                    index === arr.findIndex((t) => t.article_name === article.article_name)
+                );
+                console.log(filteredArticles)
+
+                this.$store.commit('addArticles', filteredArticles);
 
                 if (this.guides_return_datatable == undefined) {
-                    this.fillTableX(response.data);
+                    this.fillTableX(filteredArticles);
                 } else {
                     this.guides_return_datatable.originalDataSet = this.articlesState;
                     this.guides_return_datatable.load();
@@ -170,7 +177,6 @@ export default {
 
         EventBus.$on('refresh_table_guides_return', function () {
             if (this.guides_return_datatable != undefined) {
-                // console.log(this.articlesState);
                 this.guides_return_datatable.originalDataSet = this.articlesState;
                 this.guides_return_datatable.load();
             }
@@ -226,12 +232,14 @@ export default {
         update() {
             this.table.destroy();
 
-            this.article.vacios = this.article.presale_converted_amount - this.article.retorno - this.article.cambios - this.article.prestamo - this.article.cesion
+            this.article.vacios = this.article.presale_converted_amount - this.article.retorno - this.article.cambios - this.article.prestamo - this.article.cesion;
+
             this.article.liquidar = this.article.presale_converted_amount - this.article.retorno - this.article.cambios;
 
             this.data[this.article.index] = this.article;
 
-            let index = this.data.findIndex(el => el.parent == this.article.article_id)
+            let index = this.data.findIndex(el => el.article_id == this.article.article_id)
+            console.log(this.article.presale_converted_amount)
 
             //Cambiar en su conversión
             this.data[index].retorno = this.article.retorno;

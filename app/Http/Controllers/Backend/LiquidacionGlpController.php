@@ -596,12 +596,7 @@ class LiquidacionGlpController extends Controller
 
 
 
-		Article::where('warehouse_type_id', $article->article_id)
-		->update([
-			'stock_good' => DB::raw('stock_good + ' . $article->prestamo),
-			'stock_repair' => DB::raw('stock_repair - ' . $article->prestamo),
-			'stock_minimum' => DB::raw('stock_minimum + ' . $article->cesion),
-		]);
+		
 
 
 
