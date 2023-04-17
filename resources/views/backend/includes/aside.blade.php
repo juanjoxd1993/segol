@@ -578,12 +578,14 @@
 								</a>
 							</li>
 
-
-
-
-
-
-
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.credits.register_voucher' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.credits.register_voucher') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Registro de Vouchers para pagos con depósito</span>
+								</a>
+							</li>
 					  </ul>
 					</div>
 				</li>

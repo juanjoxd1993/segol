@@ -471,6 +471,8 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('creditos/reporte/liquidaciones-creditos/validar-formulario', 'LiquidationCreditsReportController@validateForm')->name('dashboard.credits.report.liquidations_credits.validate_form');
 	Route::post('creditos/reporte/liquidaciones-creditos/obtener-clientes', 'LiquidationCreditsReportController@getClients')->name('dashboard.credits.report.liquidations_credits.get_clients');
 	Route::post('creditos/reporte/liquidaciones-creditos/listar', 'LiquidationCreditsReportController@list')->name('dashboard.credits.report.liquidations_credits.list');
+	Route::get('creditos/reporte/liquidaciones-creditos/registrar-voucher', 'LiquidationCreditsReportController@showRegisterVoucher')->name('dashboard.credits.register_voucher');
+	Route::post('creditos/reporte/liquidaciones-creditos/registrar-voucher', 'LiquidationCreditsReportController@registerVoucher')->name('dashboard.credits.register_voucher');
     
 
 	/** Creditos y Cobranzas > Relación de Documentos Pendientes Internos*/
