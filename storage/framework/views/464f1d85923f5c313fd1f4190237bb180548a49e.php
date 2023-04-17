@@ -111,6 +111,16 @@
 									<span class="kt-menu__link-text">Liquidaciones Final</span>
 								</a>
 							</li>
+
+
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.voucher.liquidations_glp' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.operations.voucher.liquidations_glp')); ?>" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Liquidación GLP</span>
+								</a>
+							</li>
 							
 					 </ul>
 				 </div>
@@ -168,14 +178,7 @@
 							</li>
 							
 
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.stock_final' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.stock_final')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Reporte de Guías</span>
-								</a>
-							</li>
+							
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.guides_scop' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.report.guides_scop')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -184,14 +187,7 @@
 									<span class="kt-menu__link-text">Estado de Guías</span>
 								</a>
 							</li>
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.guides_seek' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.guides_seek')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Buscador de Guías</span>
-								</a>
-							</li>
+							
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.facturations_sales' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.report.facturations_sales')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -211,28 +207,6 @@
 							</li>
 
 							
-
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.liquidations_channel' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.liquidations_channel')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Venta Canales</span>
-								</a>
-							</li>
-
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.liquidations_channel_total' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.liquidations_channel_total')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Venta Canales Resumido</span>
-								</a>
-							</li>
-
-
-
-
 
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.collection_sales_report' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.report.collection_sales_report')); ?>" class="kt-menu__link ">
@@ -391,14 +365,7 @@
 									<span class="kt-menu__link-text">Registro de Guías de Remisión</span>
 								</a>
 							</li>
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.operations_part' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.operations.operations_part')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Impresión de Guías</span>
-								</a>
-							</li>
+							
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.guides_return' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.operations.guides_return')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -407,12 +374,38 @@
 									<span class="kt-menu__link-text">Retorno de Guías de Remisión</span>
 								</a>
 							</li>
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.logistics.production_register' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.logistics.production_register')); ?>" class="kt-menu__link ">
+
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.stock_seek_register' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.operations.stock_seek_register')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Registro de Producción</span>
+									<span class="kt-menu__link-text">Reporte de Guías</span>
+								</a>
+							</li>
+
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.guides_seek' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.operations.guides_seek')); ?>" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Buscador de Guías</span>
+								</a>
+							</li>
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.opeinventories' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.operations.opeinventories')); ?>" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Ajuste de Inventario</span>
+								</a>
+							</li>
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.anulacionguias' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.operations.anulacionguias')); ?>" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Anulación Guías</span>
 								</a>
 							</li>
 			            </ul>
@@ -453,8 +446,8 @@
 								</a>
 							</li>
 
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.list_clients' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.list_clients')); ?>" class="kt-menu__link ">
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.commercial.list_clients' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.commercial.list_clients')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
@@ -474,25 +467,30 @@
 								</a>
 							</li>
 
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.price_list' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.price_list')); ?>" class="kt-menu__link ">
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.commercial.price_list_report' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.commercial.price_list_report')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Lista de Precios</span>
+									<span class="kt-menu__link-text">Reporte de Precios</span>
 								</a>
 							</li>
-						
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.commercial.commercial_channel' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								  <a href="<?php echo e(route('dashboard.commercial.commercial_channel')); ?>" class="kt-menu__link ">
+
+
+
+							
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.commercial.liquidations_channel' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.commercial.liquidations_channel')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Consulta de Ventas Detallado</span>
+									<span class="kt-menu__link-text">Reporte de Ventas</span>
 								</a>
-							</li> 
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.liquidations_channel_total' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.liquidations_channel_total')); ?>" class="kt-menu__link ">
+							</li>
+
+
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.commercial.liquidations_channel_total' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.commercial.liquidations_channel_total')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
@@ -580,12 +578,14 @@
 								</a>
 							</li>
 
-
-
-
-
-
-
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.credits.register_voucher' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.credits.register_voucher')); ?>" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Registro de Vouchers para pagos con depósito</span>
+								</a>
+							</li>
 					  </ul>
 					</div>
 				</li>
@@ -720,40 +720,33 @@
 								</a>
 							</li>
 
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.report.glp_fact' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.report.glp_fact')); ?>" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Editor de Compras GLP</span>
-								</a>
-							</li>
-
-
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.stock_glp_register' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.operations.stock_glp_register')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Abastecimiento Comercial GLP</span>
+									<span class="kt-menu__link-text">Abastecimiento GLP</span>
 								</a>
 							</li>
 
-							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.stock_abast_register' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
-								<a href="<?php echo e(route('dashboard.operations.stock_abast_register')); ?>" class="kt-menu__link ">
+
+							
+
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.inventories' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.operations.inventories')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Abastecimiento Transportistas GLP</span>
+									<span class="kt-menu__link-text">Ajuste de Inventario</span>
 								</a>
 							</li>
-
+							
 							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.operations.abastecimiento_register' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
 								<a href="<?php echo e(route('dashboard.operations.abastecimiento_register')); ?>" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Abastecimiento General(Transferencia GLP)</span>
+									<span class="kt-menu__link-text">Transferencia GLP</span>
 								</a>
 							</li>
 
@@ -783,6 +776,26 @@
 										<span></span>
 									</i>
 									<span class="kt-menu__link-text">Reporte de Abastecimientos </span>
+								</a>
+							</li>
+
+
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.employes' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.employes')); ?>" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Choferes</span>
+								</a>
+							</li>
+
+
+							<li class="kt-menu__item <?php echo e(( ( Route::currentRouteName() === 'dashboard.plates' ) ? 'kt-menu__item--active' : '' )); ?>" aria-haspopup="true">
+								<a href="<?php echo e(route('dashboard.plates')); ?>" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Placas</span>
 								</a>
 							</li>
 
