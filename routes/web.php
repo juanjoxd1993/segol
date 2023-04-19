@@ -60,6 +60,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-final/obtener-movimientos-almacen', 'LiquidationFinalController@getWarehouseMovements')->name('dashboard.voucher.liquidations_final.get_warehouse_movements');
 	Route::post('/facturacion/liquidaciones-final/listar', 'LiquidationFinalController@list')->name('dashboard.voucher.liquidations_final.list');
 	Route::post('/facturacion/liquidaciones-final/obtener-clientes', 'LiquidationFinalController@getClients')->name('dashboard.voucher.liquidations_final.get_clients');
+	Route::post('/facturacion/liquidaciones-final/obtener-sale-serie', 'LiquidationFinalController@getSaleSeries')->name('dashboard.voucher.liquidations_final.get_sale_serie');
 	Route::post('/facturacion/liquidaciones-final/obtener-precio-articulo', 'LiquidationFinalController@getArticlePrice')->name('dashboard.voucher.liquidations_final.get_article_price');
 	Route::post('/facturacion/liquidaciones-final/obtener-cuentas-banco', 'LiquidationFinalController@getBankAccounts')->name('dashboard.voucher.liquidations_final.get_bank_accounts');
 	Route::post('/facturacion/liquidaciones-final/verificar-documento', 'LiquidationFinalController@verifyDocumentType')->name('dashboard.voucher.liquidations_final.verify_document_type');
@@ -473,6 +474,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('creditos/reporte/liquidaciones-creditos/listar', 'LiquidationCreditsReportController@list')->name('dashboard.credits.report.liquidations_credits.list');
 	Route::get('creditos/reporte/liquidaciones-creditos/registrar-voucher', 'LiquidationCreditsReportController@showRegisterVoucher')->name('dashboard.credits.register_voucher');
 	Route::post('creditos/reporte/liquidaciones-creditos/registrar-voucher', 'LiquidationCreditsReportController@registerVoucher')->name('dashboard.credits.register_voucher');
+
     
 
 	/** Creditos y Cobranzas > Relación de Documentos Pendientes Internos*/

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\SaleSeries;
+
 use App\Article;
 use App\Bank;
 use App\BankAccount;
@@ -165,6 +167,16 @@ class LiquidationFinalController extends Controller
 
         return $elements;
     }
+
+		public function getSaleSeries() {
+			$warehouse_document_type_id = request('warehouse_document_type_id');
+
+			$sale_serie = SaleSeries::select('id', 'num_serie')
+				->where('warehouse_document_type_id', $warehouse_document_type_id)
+				->get();
+
+			return $sale_serie;
+		}
 
     public function getArticlePrice() {
         $article_id = request('article_id');

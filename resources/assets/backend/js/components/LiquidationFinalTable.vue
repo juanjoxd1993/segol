@@ -60,8 +60,9 @@
                 axios.post(this.url, {
                     model: this.$store.state.model,
                 }).then(response => {
-                    // console.log(response.data);
-                    this.$store.commit('addArticles', response.data);
+                    const data = response.data;
+
+                    this.$store.commit('addArticles', data);
                     
                     if ( this.liquidation_datatable == undefined ) {
                         this.fillTableX();
@@ -225,6 +226,7 @@
                     },
 
                     // columns definition
+				    // Esta podria ser solo una solucion de vista ya que en la tabla de warehouse_movement_detail en la columna new_stock_return la informacion que se muestra es la que trae cada article en su propiedad return_converted_amount antes de ser convertido si al guardar la informacion es correcta entonces al pedir la informacion se devuelve erroneamente
                     columns: [
                         {
                             field: 'article_code',
@@ -243,8 +245,14 @@
                             width: 120,
                             textAlign: 'right',
                         },
+                        // {
+                        //     field: 'return_converted_amount',
+                        //     title: 'Retorno',
+                        //     width: 120,
+                        //     textAlign: 'right',
+                        // },
                         {
-                            field: 'return_converted_amount',
+                            field: 'new_balance_converted_amount',
                             title: 'Retorno',
                             width: 120,
                             textAlign: 'right',
@@ -255,8 +263,14 @@
                             width: 120,
                             textAlign: 'right',
                         },
+                        // {
+                        //     field: 'new_balance_converted_amount',
+                        //     title: 'Saldo',
+                        //     width: 120,
+                        //     textAlign: 'right',
+                        // },
                         {
-                            field: 'new_balance_converted_amount',
+                            field: 'return_converted_amount',
                             title: 'Saldo',
                             width: 120,
                             textAlign: 'right',

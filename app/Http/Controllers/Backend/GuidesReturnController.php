@@ -229,6 +229,7 @@ class GuidesReturnController extends Controller
                     'movement_type_id' => 33, //Préstamos de Balones
                     'warehouse_account_type_id' => 1,
                     'total' => $article->prestamo,
+                    'press' => 1,
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
                 ]);
@@ -240,7 +241,6 @@ class GuidesReturnController extends Controller
                     'new_stock_good' => $article->prestamo,
                     'converted_amount' => $article->prestamo,
                     'total' => $article->prestamo,
-                    'press' => 1,
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
                 ]);
