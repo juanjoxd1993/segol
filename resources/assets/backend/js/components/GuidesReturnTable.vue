@@ -157,7 +157,8 @@ export default {
                 const filteredArticles = data.filter((article, index, arr) =>
                     index === arr.findIndex((t) => t.article_name === article.article_name)
                 );
-                console.log(filteredArticles)
+                // const filteredArticles = data.filter(article => article.parent != null);
+                console.log(filteredArticles);
 
                 this.$store.commit('addArticles', filteredArticles);
 

@@ -74,7 +74,7 @@ class ClientController extends Controller
 		$elements = Client::select('id', 'company_id', 'code', 'business_name', 'document_type_id', 'document_number', 'channel_id', 'email', 'phone_number_1', 'phone_number_2', 'seller_id', 'credit_limit','manager_id', 'perception_percentage_id', 'zone_id', 'route_id', 'sector_id','grupo')
 		
 			->when($search, function($query, $search) {
-			return $query->where('id', 'like', /*'%'.*/$search/*.'%'*/) ->orWhere('business_name', 'like', '%'.$search.'%');
+			return $query->where('document_number', 'like', '%'.$search.'%') ->orWhere('business_name', 'like', '%'.$search.'%');
 			})
 			->where('company_id', $company_id)
 			->orderBy('id', 'asc')
@@ -99,6 +99,7 @@ class ClientController extends Controller
 		return response()->json([
 			'meta'	=> $meta,
 			'data'	=> $elements->items(),
+			'search' => $search,
 		]);
 	}
 

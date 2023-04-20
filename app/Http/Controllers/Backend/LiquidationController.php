@@ -113,10 +113,10 @@ class LiquidationController extends Controller
             $item->sale_warehouse_movement_id = $item->warehouse_movement_id;
             $item->article_id = $item->article->id;
             $item->article_code = $item->article->code;
-			$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
+						$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
             $item->presale_converted_amount = $item->converted_amount;
             $item->sale_converted_amount = number_format(0, 4, '.', '');
-			$item->return_converted_amount = $item->new_stock_return;
+						$item->return_converted_amount = $item->new_stock_return;
             $item->balance_converted_amount = number_format($item->converted_amount - $item->return_converted_amount, 4, '.', '');
             $item->new_balance_converted_amount = number_format($item->converted_amount - $item->return_converted_amount, 4, '.', '');
             

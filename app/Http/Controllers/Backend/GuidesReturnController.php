@@ -314,10 +314,10 @@ class GuidesReturnController extends Controller
         }
 
         //Actualizar estado
-        WarehouseMovement::where('id', $request->warehouse_movement_id)
-                        ->update([
-                            'state' => 1,
-                        ]);
+        // WarehouseMovement::where('id', $request->warehouse_movement_id)
+        //                 ->update([
+        //                     'state' => 1,
+        //                 ]);
 
         $data = new stdClass();
         $data->type = 1;

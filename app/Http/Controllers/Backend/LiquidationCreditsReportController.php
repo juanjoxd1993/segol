@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Backend;
 
 use App\Client;
 use App\Company;
-use App\Bank;
-use App\BankAccount;
-use App\Deposit;
 use App\Exports\LiquidationReportExport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -407,44 +404,5 @@ class LiquidationCreditsReportController extends Controller
 		} else {
 			return response()->json($response);
 		}
-	}
-
-	public function showRegisterVoucher()
-	{
-		$data = [
-			'banks' => Bank::all(),
-			'bank_accounts' => BankAccount::all(),
-		];
-
-		return view('backend.voucher_register', $data);
-	}
-
-	public function registerVoucher()
-	{
-		request()->validate([
-			'model.bank' => ['required'],
-			'model.bank_account' => ['required'],
-			'model.bank_date' => ['required'],
-			'model.operation_number' => ['required'],
-			'model.total' => ['required'],
-		], [
-			'model.bank.required' => 'Debe seleccionar banco',
-			'model.bank_account.required' => 'Debe seleccionar cuenta',
-			'model.bank_date.required' => 'Debe seleccionar fecha',
-			'model.operation_number.required' => 'Debe ingresar número de operación',
-			'model.total.required' => 'Debe ingresar total',
-		]);
-
-		$deposit = new Deposit();
-
-		$deposit->bank_id = request('model.bank');
-		$deposit->bank_account_id = request('model.bank_account');
-		$deposit->bank_date = request('model.bank_date');
-		$deposit->operation_number = request('model.operation_number');
-		$deposit->total = request('model.total');
-		$deposit->total_pend = request('model.total');
-		$deposit->save();
-
-		return response()->json(null, 200);
 	}
 }

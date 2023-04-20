@@ -602,13 +602,13 @@ class GuidesRegisterController extends Controller
 				$movementDetail->digit_amount = $digit_amount;
 				$movementDetail->converted_amount = $converted_amount;
 				$movementDetail->old_stock_good = $article->stock_good;
-				$movementDetail->old_stock_repair = $article->stock_repair;
-				$movementDetail->old_stock_return = $article->stock_return;
-				$movementDetail->old_stock_damaged = $article->stock_damaged;
+				// $movementDetail->old_stock_repair = $article->stock_repair;
+				// $movementDetail->old_stock_return = $article->stock_return;
+				// $movementDetail->old_stock_damaged = $article->stock_damaged;
 				$movementDetail->new_stock_good = $article->stock_good;
-				$movementDetail->new_stock_repair = $article->stock_repair;
-				$movementDetail->new_stock_return = $article->stock_return;
-				$movementDetail->new_stock_damaged = $article->stock_damaged;
+				// $movementDetail->new_stock_repair = $article->stock_repair;
+				// $movementDetail->new_stock_return = '';
+				// $movementDetail->new_stock_damaged = $article->stock_damaged;
 				$movementDetail->price = $price;
 				$movementDetail->sale_value = $sale_value;
 				$movementDetail->exonerated_value = 0;
@@ -631,23 +631,23 @@ class GuidesRegisterController extends Controller
 				} elseif ($movement->movement_class_id == 2) {
 					if ($movement->movement_type_id == 15) {
 						$article->stock_return -= $movementDetail->converted_amount;
-						$movementDetail->new_stock_return -= $movementDetail->converted_amount;
+						// $movementDetail->new_stock_return -= $movementDetail->converted_amount;
 					} elseif ($movement->movement_type_id == 4) {
 						$article->stock_repair -= $movementDetail->converted_amount;
-						$movementDetail->new_stock_repair -= $movementDetail->converted_amount;
+						// $movementDetail->new_stock_repair -= $movementDetail->converted_amount;
 					} else {
 						$article->stock_good -= $movementDetail->converted_amount;
 						$movementDetail->new_stock_good -= $movementDetail->converted_amount;
 
 						if ($movement->movement_type_id == 18 && $movement->movement_stock_type_id == 1) {
 							$article->stock_return += $movementDetail->converted_amount;
-							$movementDetail->new_stock_return += $movementDetail->converted_amount;
+							// $movementDetail->new_stock_return += $movementDetail->converted_amount;
 						} elseif ($movement->movement_type_id == 18 && $movement->movement_stock_type_id == 2) {
 							$article->stock_repair += $movementDetail->converted_amount;
-							$movementDetail->new_stock_repair += $movementDetail->converted_amount;
+							// $movementDetail->new_stock_repair += $movementDetail->converted_amount;
 						} elseif ($movement->movement_type_id == 18 && $movement->movement_stock_type_id == 3) {
 							$article->stock_damaged += $movementDetail->converted_amount;
-							$movementDetail->new_stock_damaged += $movementDetail->converted_amount;
+							// $movementDetail->new_stock_damaged += $movementDetail->converted_amount;
 						}
 					}
 				}
@@ -673,13 +673,13 @@ class GuidesRegisterController extends Controller
 						$movementDetail2->digit_amount = $digit_amount;
 						$movementDetail2->converted_amount = $converted_amount;
 						$movementDetail2->old_stock_good = $relatedArticle->stock_good;
-						$movementDetail2->old_stock_repair = $relatedArticle->stock_repair;
-						$movementDetail2->old_stock_return = $relatedArticle->stock_return;
-						$movementDetail2->old_stock_damaged = $relatedArticle->stock_damaged;
+						// $movementDetail2->old_stock_repair = $relatedArticle->stock_repair;
+						// $movementDetail2->old_stock_return = $relatedArticle->stock_return;
+						// $movementDetail2->old_stock_damaged = $relatedArticle->stock_damaged;
 						$movementDetail2->new_stock_good = $relatedArticle->stock_good;
-						$movementDetail2->new_stock_repair = $relatedArticle->stock_repair;
-						$movementDetail2->new_stock_return = $relatedArticle->stock_return;
-						$movementDetail2->new_stock_damaged = $relatedArticle->stock_damaged;
+						// $movementDetail2->new_stock_repair = $relatedArticle->stock_repair;
+						// $movementDetail2->new_stock_return = null;
+						// $movementDetail2->new_stock_damaged = $relatedArticle->stock_damaged;
 						$movementDetail2->price = $price;
 						$movementDetail2->sale_value = $sale_value;
 						$movementDetail2->exonerated_value = 0;
@@ -712,13 +712,13 @@ class GuidesRegisterController extends Controller
 						$movementDetail2->digit_amount = $digit_amount;
 						$movementDetail2->converted_amount = $converted_amount;
 						$movementDetail2->old_stock_good = $relatedAticle->stock_good;
-						$movementDetail2->old_stock_repair = $relatedAticle->stock_repair;
-						$movementDetail2->old_stock_return = $relatedAticle->stock_return;
-						$movementDetail2->old_stock_damaged = $relatedAticle->stock_damaged;
+						// $movementDetail2->old_stock_repair = $relatedAticle->stock_repair;
+						// $movementDetail2->old_stock_return = $relatedAticle->stock_return;
+						// $movementDetail2->old_stock_damaged = $relatedAticle->stock_damaged;
 						$movementDetail2->new_stock_good = $relatedAticle->stock_good;
-						$movementDetail2->new_stock_repair = $relatedAticle->stock_repair;
-						$movementDetail2->new_stock_return = $relatedAticle->stock_return;
-						$movementDetail2->new_stock_damaged = $relatedAticle->stock_damaged;
+						// $movementDetail2->new_stock_repair = $relatedAticle->stock_repair;
+						// $movementDetail2->new_stock_return = $relatedAticle->stock_return;
+						// $movementDetail2->new_stock_damaged = $relatedAticle->stock_damaged;
 						$movementDetail2->price = $price;
 						$movementDetail2->sale_value = $sale_value;
 						$movementDetail2->exonerated_value = 0;
@@ -733,6 +733,13 @@ class GuidesRegisterController extends Controller
 						$movementDetail2->save();
 					}
 				}
+
+				// validar
+				Article::where('warehouse_type_id', 4)
+					->where('code', $article->code)
+					->update(
+						['stock_good' => $article->stock_good -  $converted_amount]
+					);
 
 				$article->edit = 1;
 				$article->save();

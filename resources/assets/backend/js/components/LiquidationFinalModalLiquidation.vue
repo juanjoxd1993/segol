@@ -60,7 +60,7 @@
                                         <div id="bank_account_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3" v-if="model.payment_method == 2 || model.payment_method == 3">
+                                <div class="col-lg-3" v-if="model.payment_method == 1 || model.payment_method == 2 || model.payment_method == 3">
                                     <div class="form-group">
                                         <label class="form-control-label">Nº de Operación:</label>
                                         <input type="text" class="form-control" name="operation_number" id="operation_number" v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageOperationNumber">
@@ -285,8 +285,24 @@
                     liquidation.exchange_rate = ( liquidation.exchange_rate != '' ? accounting.toFixed(liquidation.exchange_rate, 4) : '' );
                     liquidation.amount = accounting.toFixed(liquidation.amount, 4);
 
+                    const payment_method = this.payment_methods.filter(item => item.id === liquidation.payment_method)[0];
+                    const currency = this.currencies.filter(item => item.id === liquidation.currency)[0];
+                    const bank_account = this.bank_accounts.filter(item => item.id === liquidation.bank_account)[0];
+
+                    if (payment_method) {
+                        liquidation.payment_method = payment_method;
+                    };
+
+                    if (currency) {
+                        liquidation.currency = currency;
+                    };
+
+                    if (bank_account) {
+                        liquidation.bank_account = bank_account;
+                    };
+
                     this.liquidations.push(liquidation);
-                    
+
                     this.model.payment_method = '';
                     this.model.currency = '';
                     this.model.exchange_rate = '';
@@ -421,12 +437,17 @@
                 }
             },
             manageOperationNumber() {
-                if (this.model.payment_method === 2) {
+                if (
+                    this.model.payment_method === 1 ||
+                    this.model.payment_method === 2 ||
+                    this.model.payment_method === 3
+                ) {
                     EventBus.$emit('loading', true);
                     $('#add_payment').prop('disabled', true);
                     $('#operation_number-error').hide();
                     $('#operation_number-error').text('');
 
+                    // El metodo no existe por eso devuelve un error y devuelve que nro de operacion ya ha sido usado aunque eso no deberia ser asi incluso con un error hay que crear el metodo en el controller de liquidacion final
                     axios.get('/facturacion/liquidaciones-final/get-op-number', {
                         params: {
                             operation_number: this.model.operation_number,
@@ -441,10 +462,14 @@
                         $('#operation_number-error').hide();
                     }).catch(error => {
                         EventBus.$emit('loading', false);
-                        $('#add_payment').prop('disabled', true);
-                        $('#operation_number-error').text('El Nro. de Operación del Deposito ya fue usado anteriormente');
-                        $('#operation_number-error').show();
+                        // $('#add_payment').prop('disabled', true);
+                        // $('#operation_number-error').text('El Nro. de Operación del Deposito ya fue usado anteriormente');
+                        // $('#operation_number-error').show();
                     });
+                    // Esto solo se debe activar al validar que el nro de operacion sea unico
+                    $('#add_payment').prop('disabled', false);
+                    $('#operation_number-error').text('');
+                    $('#operation_number-error').hide();
                 }
             }
         }

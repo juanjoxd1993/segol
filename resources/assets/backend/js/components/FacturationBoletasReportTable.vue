@@ -288,8 +288,31 @@
                             //     hidden: 'xl'
                             // }
                         },
-					
-                      
+                        {
+                            field: 'options',
+                            title: 'Opciones',
+                            sortable: false,
+                            width: 60,
+                            overflow: 'visible',
+                            autoHide: false,
+                            textAlign: 'right',
+                            class: 'td-sticky',
+                            template: function (row) {
+
+                                let actions = '<div class="actions" style="display:flex">';
+                                actions += '<a style="cursor:pointer" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">';
+                                actions += '<i class="la la-edit"></i>';
+                                actions += '</a>';
+                                actions += '</a>';
+                                actions += `<a style="cursor:pointer; color:#dc3545" class="btn btn-sm btn-icon btn-icon-md" title="Eliminar">`;
+                                    actions += '<i class="la la-trash-o"></i>';
+                                actions += '</a>';
+                                actions += '</div>';
+
+                                return actions;
+
+                            },
+                        },
                     ]
                 });
 

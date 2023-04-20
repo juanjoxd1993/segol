@@ -300,13 +300,9 @@ class StockGlpRegisterController extends Controller
 		
 		$movement_number = ( $movement_number ? $movement_number + 1 : 1 );
 
-       
 		$license = WarehouseType::select('name')
 		->where('id', $plate)
 		->first();
-
-		
-		
 
 		$cost_glp=WarehouseMovement::select('cost_glp')
 		->where('referral_voucher_number',$referral_voucher_number)
@@ -528,7 +524,6 @@ class StockGlpRegisterController extends Controller
 		//Movimiento Tipo 5
 		foreach ($articles as $item) {
 
-		    
 			$converted_amount = str_replace(',', '', $item['converted_amount']);
 			$isla = request('model.isla');
 			$referral_guide_series = request('model.referral_guide_series');
@@ -536,10 +531,6 @@ class StockGlpRegisterController extends Controller
 			$warehouse_type_id_receiver = request('model.warehouse_receiver');
 
 			$article_code= $item['id'];
-			
-			
-
-
 
 			$id = WarehouseMovement::insertGetId([
 				'company_id' => $company_id,

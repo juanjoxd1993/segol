@@ -15,7 +15,7 @@
                 <div class="row">
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Compañia:</label>
+                            <label class="form-control-label">Compaña:</label>
                             <select class="form-control" name="company_id" id="company_id" v-model="model.company_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
                                 <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{ company.name }}</option>

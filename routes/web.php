@@ -73,6 +73,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-glp/obtener-movimientos-almacen', 'LiquidacionGlpController@getWarehouseMovements')->name('dashboard.operations.voucher.liquidations_glp.get_warehouse_movements');
 	Route::post('/facturacion/liquidaciones-glp/listar', 'LiquidacionGlpController@list')->name('dashboard.voucher.liquidations_glp.list');
 	Route::post('/facturacion/liquidaciones-glp/obtener-clientes', 'LiquidacionGlpController@getClients')->name('dashboard.operations.voucher.liquidations_glp.get_clients');
+	Route::post('/facturacion/liquidaciones-glp/obtener-sale-serie', 'LiquidationGlpController@getSaleSeries')->name('dashboard.voucher.liquidations_glp.get_sale_serie');
 	Route::post('/facturacion/liquidaciones-glp/obtener-precio-articulo', 'LiquidacionGlpController@getArticlePrice')->name('dashboard.operations.voucher.liquidations_glp.get_article_price');
 	Route::post('/facturacion/liquidaciones-glp/obtener-cuentas-banco', 'LiquidacionGlpController@getBankAccounts')->name('dashboard.operations.voucher.liquidations_glp.get_bank_accounts');
 	Route::post('/facturacion/liquidaciones-glp/verificar-documento', 'LiquidacionGlpController@verifyDocumentType')->name('dashboard.operations.voucher.liquidations_glp.verify_document_type');

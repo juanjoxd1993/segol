@@ -173,7 +173,7 @@ class LiquidationFinalController extends Controller
 
 			$sale_serie = SaleSeries::select('id', 'num_serie')
 				->where('warehouse_document_type_id', $warehouse_document_type_id)
-				->get();
+				->first();
 
 			return $sale_serie;
 		}
@@ -182,7 +182,7 @@ class LiquidationFinalController extends Controller
         $article_id = request('article_id');
         $client_id = request('client_id');
         $warehouse_movement_id = request('warehouse_movement_id');
-		$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'traslate_date']);
+				$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'traslate_date']);
         $today = Carbon::now()->startOfDay();
         $current_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
 

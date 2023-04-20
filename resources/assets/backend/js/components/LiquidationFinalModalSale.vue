@@ -34,7 +34,7 @@
                                 <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id >= 4 && this.sale.warehouse_document_type_id <= 9">
                                     <div class="form-group">
                                         <label class="form-control-label">Serie de Referencia:</label>
-                                        <input type="text" class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="sale.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
+                                        <input type="text" readonly class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="sale.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
                                         <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -188,6 +188,10 @@
                 type: String,
                 default: ''
             },
+            url_get_sale_series: {
+                type: String,
+                default: ''
+            },
             url_verify_document_type: {
                 type: String,
                 default: ''
@@ -231,7 +235,6 @@
             }
         },
         created() {
-
         },
         mounted() {
             this.newSelect2();
@@ -312,6 +315,25 @@
 			// 	}
 			// },
 			'sale.warehouse_document_type_id': function(val) {
+                axios.post(this.url_get_sale_series, {
+                    warehouse_document_type_id: val
+                })
+                    .then(response => {
+                        const data = response.data;
+
+                        const num_serie = data.num_serie;
+
+                        if (num_serie) {
+                            this.sale.referral_serie_number = num_serie;
+                        } else {
+                            this.sale.referral_serie_number = '';
+                        };
+
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+
 				let warehouse_document_type = this.warehouse_document_types.find(element => element.id == val);
 				this.sale.warehouse_document_type_name = warehouse_document_type ? warehouse_document_type.name : '';
 			}
@@ -796,6 +818,7 @@
                 }).on('select2:select', function(e) {
                     // var selected_element = $(e.currentTarget);
                     // vm.sale.client_id = parseInt(selected_element.val());
+                    console.log(e.params.data)
                     vm.sale.client_id = e.params.data.id;
                     vm.sale.client_name = e.params.data.text;
                     vm.sale.document_type_id = e.params.data.document_type_id;
