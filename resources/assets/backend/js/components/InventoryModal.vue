@@ -28,12 +28,12 @@
 								</div>
                                 <div class="col-lg-3">
                                     <div class="form-group">
-                                        <label class="form-control-label">Cantidad Buen estado:</label>
+                                        <label class="form-control-label">Cantidad{{ !is_glp ? ' Buen estado' : '' }}:</label>
                                         <input type="tel" class="form-control" name="found_stock_good" id="found_stock_good" placeholder="0.00" v-model="model.found_stock_good" @focus="$parent.clearErrorMsg($event)">
                                         <div id="found_stock_good-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3">
+                                <div class="col-lg-3" v-if="!is_glp">
                                     <div class="form-group">
                                         <label class="form-control-label">Cantidad Mal estado:</label>
                                         <input type="tel" class="form-control" name="found_stock_damaged" id="found_stock_damaged" placeholder="0.00" v-model="model.found_stock_damaged" @focus="$parent.clearErrorMsg($event)">
@@ -81,6 +81,10 @@
                 type: String,
                 default: ''
             },
+            is_glp: {
+                type: Boolean,
+                default: false
+            }
         },
         data() {
             return {

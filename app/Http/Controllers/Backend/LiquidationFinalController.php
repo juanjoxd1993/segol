@@ -101,14 +101,19 @@ class LiquidationFinalController extends Controller
         $warehouse_type_id = request('model.warehouse_type_id');
         $warehouse_movement_id = request('model.warehouse_movement_id');
 
-        $saleWarehouseMovement = WarehouseMovement::select('id', 'referral_serie_number', 'referral_voucher_number')
-            ->where('id', $warehouse_movement_id)
-            ->where('company_id', $company_id)
-            ->first();
+        // $saleWarehouseMovement = WarehouseMovement::select('id', 'referral_serie_number', 'referral_voucher_number')
+        //     ->where('id', $warehouse_movement_id)
+        //     ->where('company_id', $company_id)
+        //     ->first();
 
-       
-
-        $movementDetails = WarehouseMovementDetail::select('id', 'warehouse_movement_id', 'item_number', 'article_code', 'converted_amount','new_stock_return')
+        $movementDetails = WarehouseMovementDetail::select(
+					'id',
+					'warehouse_movement_id',
+					'item_number',
+					'article_code',
+					'converted_amount',
+					'new_stock_return'
+				)
             ->where('warehouse_movement_id', $warehouse_movement_id)
             ->orderBy('item_number', 'asc')
             ->get();
@@ -117,15 +122,12 @@ class LiquidationFinalController extends Controller
             $item->sale_warehouse_movement_id = $item->warehouse_movement_id;
             $item->article_id = $item->article->id;
             $item->article_code = $item->article->code;
-			$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
+						$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
             $item->presale_converted_amount = $item->converted_amount;
             $item->sale_converted_amount = number_format(0, 2, '.', '');
-			$item->return_converted_amount = $item->new_stock_return;
+						$item->return_converted_amount = $item->new_stock_return;
             $item->balance_converted_amount = number_format($item->converted_amount - $item->return_converted_amount, 2, '.', '');
             $item->new_balance_converted_amount = number_format($item->converted_amount - $item->return_converted_amount, 2, '.', '');
-            
-                
-            
 
             unset($item->warehouse_movement_id);
             unset($item->converted_amount);

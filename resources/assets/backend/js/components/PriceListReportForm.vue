@@ -147,6 +147,7 @@
 							var queryParameters = {
 								q: params.term,
 								company_id: vm.model.company_id,
+								business_unit_id: vm.model.business_unit_id,
 								_token: token,
 							}
 
@@ -171,7 +172,6 @@
 				}).on('select2:unselect', function(e) {
 					vm.model.client_id = '';
 				});
-
 				$("#article_id").select2({
 					placeholder: "Buscar",
 					allowClear: true,
@@ -224,8 +224,6 @@
 				});
 			},
 			formController: function(url, event) {
-				var vm = this;
-
 				var target = $(event.target);
 				var url = url;
 				var fd = new FormData(event.target);

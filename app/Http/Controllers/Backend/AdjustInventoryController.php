@@ -181,13 +181,13 @@ class AdjustInventoryController extends Controller
 		$messages = [
 			'article_id.required'			=> 'Debe seleccionar un Artículo.',
 			'found_stock_good.required'		=> 'La Cantidad Buen estado es obligatoria.',
-			'found_stock_damaged.required'	=> 'La Cantidad Mal estado es obligatoria.',
+			// 'found_stock_damaged.required'	=> 'La Cantidad Mal estado es obligatoria.',
 		];
 
 		$rules = [
 			'article_id'			=> 'required',
 			'found_stock_good'		=> 'required',
-			'found_stock_damaged'	=> 'required',
+			// 'found_stock_damaged'	=> 'required',
 		];
 
 		request()->validate($rules, $messages);
@@ -204,7 +204,7 @@ class AdjustInventoryController extends Controller
 		$creation_date = date('Y-m-d', strtotime(request('creation_date')));
 		$article_id = request('article_id');
 		$found_stock_good = request('found_stock_good');
-		$found_stock_damaged = request('found_stock_damaged');
+		// $found_stock_damaged = request('found_stock_damaged');
 		$observations = request('observations');
 
 		$article = Article::find($article_id);
@@ -216,7 +216,7 @@ class AdjustInventoryController extends Controller
 		if (isset($id)) {
 			$element = Inventory::findOrFail($id);
 			$element->found_stock_good = $found_stock_good;
-			$element->found_stock_damaged = $found_stock_damaged;
+			// $element->found_stock_damaged = $found_stock_damaged;
 			$element->observations = $observations;
 			$element->updated_at_user = Auth::user()->user;
 
@@ -235,7 +235,7 @@ class AdjustInventoryController extends Controller
 				$element->article_id = $article_id;
 				$element->creation_date = $creation_date;
 				$element->found_stock_good = $found_stock_good;
-				$element->found_stock_damaged = $found_stock_damaged;
+				// $element->found_stock_damaged = $found_stock_damaged;
 				$element->observations = $observations;
 				$element->state = 0;
 				$element->created_at_user = Auth::user()->user;
@@ -244,7 +244,7 @@ class AdjustInventoryController extends Controller
 				$msg = 'Registro creado exitosamente';
 			} else {
 				$element->found_stock_good = $found_stock_good;
-				$element->found_stock_damaged = $found_stock_damaged;
+				// $element->found_stock_damaged = $found_stock_damaged;
 				$element->observations = $observations;
 				$element->updated_at_user = Auth::user()->user;
 

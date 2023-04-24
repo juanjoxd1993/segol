@@ -25,6 +25,7 @@
 		:url = "'{{ route('dashboard.operations.inventories.store') }}'"
 		:url_get_articles = "'{{ route('dashboard.operations.inventories.get_articles') }}'"
 		:url_get_select2 = "'{{ route('dashboard.operations.inventories.get_select2') }}'"
+		:is_glp = "{{ false }}"
 	></inventory-modal>
 
 	<loading></loading>

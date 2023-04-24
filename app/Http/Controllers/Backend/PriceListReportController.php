@@ -30,11 +30,16 @@ class PriceListReportController extends Controller
 		$company_id = request('company_id');
 		$q = request('q');
 
+		// $clients = Client::select('id', 'business_name as text')
+		// 	->where('business_unit_id', $business_unit_id)
+		// 	->when($company_id, function ($query, $company_id) {
+		// 		return $query->where('company_id', $company_id);
+		// 	})
+		// 	->where('business_name', 'like', '%'.$q.'%')
+		// 	->get();
 		$clients = Client::select('id', 'business_name as text')
 			->where('business_unit_id', $business_unit_id)
-			->when($company_id, function ($query, $company_id) {
-				return $query->where('company_id', $company_id);
-			})
+			->where('company_id', $company_id)
 			->where('business_name', 'like', '%'.$q.'%')
 			->get();
 

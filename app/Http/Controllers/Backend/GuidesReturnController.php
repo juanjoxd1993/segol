@@ -280,7 +280,7 @@ class GuidesReturnController extends Controller
             WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
                 ->where('article_code', $article['article_id'])
                 ->update([
-                    'new_stock_return' => $article['presale_converted_amount'] - $article['retorno'] - $article['cambios'],
+                    'new_stock_return' =>  $article['retorno'] + $article['cambios'],
                 ]);
 
     

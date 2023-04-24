@@ -52,7 +52,7 @@ class LiquidacionGlpController extends Controller
                 'payments',
                 'payment_cash',
                 'payment_credit',
-				'warehouse_types'
+								'warehouse_types'
             )
         );
     }
@@ -74,10 +74,20 @@ class LiquidacionGlpController extends Controller
 
     public function getWarehouseMovements(Request $request) {
         $company_id = request('company_id');
+				$warehouse_type_id = request('warehouse_type_id');
 
-        $elements = WarehouseMovement::select('id', 'movement_number', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'license_plate_2', 'created_at', 'scop_number')
+        $elements = WarehouseMovement::select(
+					'id',
+					'movement_number',
+					'referral_guide_series',
+					'referral_guide_number',
+					'license_plate',
+					'license_plate_2',
+					'created_at',
+					'scop_number'
+				)
             ->where('company_id', $company_id)
-            ->where('warehouse_type_id', $request->warehouse_type_id)
+            ->where('warehouse_type_id', $warehouse_type_id)
 						->where('movement_type_id', 11)
             ->where('stock_pend', '>', 0)
 						->where('state', 0)

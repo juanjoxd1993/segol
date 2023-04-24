@@ -206,7 +206,7 @@
 							width: 120,
 							textAlign: 'left',
 						},
-                        {
+            {
 							field: 'province',
 							title: 'Provincia',
 							width: 120,
@@ -267,7 +267,7 @@
 							width: 80,
 							textAlign: 'left',
 						},
-                        {
+            {
 							field: 'client_phone',
 							title: 'Teléfono',
 							width: 80,
@@ -276,18 +276,6 @@
 						{
 							field: 'client_email',
 							title: 'correo',
-							width: 100,
-							textAlign: 'left',
-						},
-						{
-							field: 'client_gps_X',
-							title: 'gps_x',
-							width: 100,
-							textAlign: 'left',
-						},
-						{
-							field: 'client_gps_Y',
-							title: 'gps_y',
 							width: 100,
 							textAlign: 'left',
 						},
@@ -304,7 +292,7 @@
 							width: 160,
 							textAlign: 'left', 
 						},  
-							{
+						{
 							field: 'police',
 							title: 'Poliza',
 							width: 160,
