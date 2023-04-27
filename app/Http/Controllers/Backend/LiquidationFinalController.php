@@ -525,8 +525,8 @@ class LiquidationFinalController extends Controller
 						$liquidation_model = new Liquidation();
 						$liquidation_model->sale_id = $sale_model->id;
 						$liquidation_model->company_id = $model['company_id'];
-						$liquidation_model->payment_method_id = $liquidation['payment_method'];
-						$liquidation_model->currency_id = $liquidation['currency'];
+						$liquidation_model->payment_method_id = $liquidation['payment_method']['id'];
+						$liquidation_model->currency_id = $liquidation['currency']['id'];
 						$liquidation_model->exchange_rate = $liquidation['exchange_rate'];
 						$liquidation_model->bank_account_id = $liquidation['bank_account'];
 						$liquidation_model->operation_number = $liquidation['operation_number'];
