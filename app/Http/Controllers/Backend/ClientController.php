@@ -281,7 +281,15 @@ class ClientController extends Controller
 				->where('address_type_id', 1)
 				->where('item_number', 1)
 				->first();
-			$childElement->updated_at_user = Auth::user()->user;
+
+			if ($childElement) {
+				$childElement->updated_at_user = Auth::user()->user;
+			} else {
+				$childElement = new ClientAddress();
+				$childElement->created_at_user = Auth::user()->user;
+				$childElement->updated_at_user = Auth::user()->user;
+			}
+			
 		} else {
 			$element = new Client();
 			$msg = 'Registro creado exitosamente';

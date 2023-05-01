@@ -41,7 +41,7 @@ class GuidesRegisterController extends Controller
 		$currencies = Currency::select('id', 'name', 'symbol')->get();
 		$current_date = date('d-m-Y');
 		$date = CarbonImmutable::now()->startOfDay();
-		$current_date = $date->startOfDay()->modify("-2 day")->toAtomString();
+		$current_date = $date->startOfDay()->toAtomString();
 		$min_datetime = $date->startOfDay()->toAtomString();
 
 		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
@@ -235,7 +235,6 @@ class GuidesRegisterController extends Controller
 	{
 		// $this->validateModalForm();
 
-
 		$article_id = request('model.article_id');
 		$quantity = request('model.quantity');
 		$price = request('model.price');
@@ -250,9 +249,31 @@ class GuidesRegisterController extends Controller
 		$movement_type_id = request('movement_type_id');
 		$warehouse_account_type_id = request('model.warehouse_account_type_id');
 
-		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
-			->where('articles.id', $article_id)
-			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'business_type', 'convertion')
+		$articles = array();
+
+		$article = Article::leftjoin(
+				'operation_types',
+				'operation_types.id',
+				'=',
+				'articles.operation_type_id'
+			)
+			->where(
+				'articles.id',
+				$article_id
+			)
+			->select(
+				'articles.id',
+				'code',
+				'articles.name',
+				'package_sale',
+				'sale_unit_id',
+				'operation_type_id',
+				'factor',
+				'operation_types.name as operation_type_name',
+				'business_type',
+				'convertion',
+				'group_id'
+			)
 			->first();
 
 		$article->item_number = ++$item_number;
@@ -281,11 +302,17 @@ class GuidesRegisterController extends Controller
 		$article->igv_percentage = ($igv == 0 ? 0 : $igv_percentage);
 		$article->perception_percentage = $perception_percentage;
 
+		array_push($articles, $article);
+
+		if ($article->group_id == 7) {
+			return response()->json(['isSuccess' => true, 'articles' => $articles]);
+		};
+
 		//Encontrar conversión
 		$article2 = Article::where(function ($query) {
-			$query->where('group_id', 7) //Envases
-				->orWhere('group_id', 26); //Artículos
-		})
+				$query->where('group_id', 7) //Envases
+					->orWhere('group_id', 26); //Artículos
+			})
 			->where('convertion', $article->convertion)
 			->first();
 
@@ -318,6 +345,8 @@ class GuidesRegisterController extends Controller
 		$article2->perception = number_format($perception, 4, '.', ',');
 		$article2->igv_percentage = ($igv == 0 ? 0 : $igv_percentage);
 		$article2->perception_percentage = $perception_percentage;
+
+		array_push($articles, $article2);
 
 		if ($movement_type_id == 11) {
 			/************ Pre-Venta ********/
@@ -456,8 +485,7 @@ class GuidesRegisterController extends Controller
 			]);
 		}
 
-
-		return response()->json(['isSuccess' => true, 'article' => $article, 'article2' => $article2]);
+		return response()->json(['isSuccess' => true, 'articles' => $articles]);
 	}
 
 	public function store()
@@ -735,11 +763,11 @@ class GuidesRegisterController extends Controller
 				}
 
 				// validar
-				Article::where('warehouse_type_id', 4)
-					->where('code', $article->code)
-					->update(
-						['stock_good' => $article->stock_good -  $converted_amount]
-					);
+				// Article::where('warehouse_type_id', 4)
+				// 	->where('code', $article->code)
+				// 	->update(
+				// 		['stock_good' => $article->stock_good -  $converted_amount]
+				// 	);
 
 				$article->edit = 1;
 				$article->save();

@@ -125,17 +125,36 @@
 
                     if(!response.data.isSuccess){
                         return alert('No se encontró conversión')
-                    }
+                    };
 
-                    this.article_list.push(response.data.article);
-                    this.article_list.push(response.data.article2);
-                    this.datatable.destroy();
-                    this.fillTableX();
-                    EventBus.$emit('loading', false);
+                    const data = response.data;
 
-                    EventBus.$emit('guides_register_modal_hide');
-                    EventBus.$emit('add_article_id', response.data.article.id);
-                    EventBus.$emit('add_article_id', response.data.article2.id);
+                    const articles = data.articles;
+
+                    articles.map(article => {
+                        this.article_list.push(article);
+                        this.datatable.destroy();
+                        this.fillTableX();
+                        EventBus.$emit('loading', false);
+                        EventBus.$emit('guides_register_modal_hide');
+                        EventBus.$emit('add_article_id', article.id);
+                    });
+                    // this.article_list.push(article);
+
+                    // if (article2) {
+                    //     this.article_list.push(data.article2);
+                    // };
+
+                    // this.datatable.destroy();
+                    // this.fillTableX();
+                    // EventBus.$emit('loading', false);
+
+                    // EventBus.$emit('guides_register_modal_hide');
+                    // EventBus.$emit('add_article_id', article.id);
+
+                    // if (article2) {
+                    //     EventBus.$emit('add_article_id', response.data.article2.id);
+                    // };
                 }).catch(error => {
                     console.log(error);
                     console.log(error.response);
@@ -245,7 +264,7 @@
                             width: 80,
                             textAlign: 'right',
                         },
-                         {
+                        {
                             field: 'new_stock_return',
                             title: 'Cantidad retornada',
                             width: 80,

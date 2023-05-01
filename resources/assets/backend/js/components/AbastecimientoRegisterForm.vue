@@ -145,29 +145,6 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                         <label class="form-control-label">Costo Mes:</label>
-                            <select class="form-control" name="price_mes" id="price_mes" v-model="model.price_mes" @focus="$parent.clearErrorMsg($event)">
-                               <option disabled value="">Seleccionar</option>
-                                            <option value="01">ENERO</option>
-                                            <option value="02">FEBRERO</option>
-                                            <option value="03">MARZO</option>    
-                                            <option value="04">ABRIL</option> 
-                                            <option value="05">MAYO</option>
-                                            <option value="06">JUNIO</option>
-                                            <option value="07">JULIO</option>    
-                                            <option value="08">AGOSTO</option> 
-                                            <option value="09">SEPTIEMBRE</option> 
-                                            <option value="10">OCTUBRE</option> 
-                                            <option value="11">NOVIEMBRE</option> 
-                                            <option value="12">DICIEMBRE</option>                                         
-                            </select>
-                            <div id="price_mes-error" class="error invalid-feedback"></div>
-                      </div>
-                    </div>
-
-                  
                      <div class="form-group">
                             <label class="form-control-label">Fecha de Ingreso:</label>
                             <datetime
@@ -485,30 +462,30 @@
                    
                     EventBus.$emit('show_table', response.data);
                     this.model = {
-                    movement_class_id: '',
-                movement_type_id: '32',
-                movement_stock_type_id: '',
-                warehouse_type_id: '',
-                company_id: '1',
-                //   currency: 1,
-                traslate_date: this.min_datetime,
-                since_date: this.current_date,
-                warehouse_account_type_id: '3',
-                warehouse_account_id: '',
-                referral_guide_series: '',
-                referral_guide_number: '',
-                referral_warehouse_document_type_id: '',
-                referral_serie_number: '',
-                referral_voucher_number: '',
-                scop_number: '',
-                license_plate: '',
-                license_plate_2: '',
-                price_mes: '',
-                mezcla: '',
-                isla: '',
-                warehouse_receiver: '',
-                invoices: [],
-                }
+                        movement_class_id: '',
+                        movement_type_id: '32',
+                        movement_stock_type_id: '',
+                        warehouse_type_id: '',
+                        company_id: '1',
+                        //   currency: 1,
+                        traslate_date: this.min_datetime,
+                        since_date: this.current_date,
+                        warehouse_account_type_id: '3',
+                        warehouse_account_id: '',
+                        referral_guide_series: '',
+                        referral_guide_number: '',
+                        referral_warehouse_document_type_id: '',
+                        referral_serie_number: '',
+                        referral_voucher_number: '',
+                        scop_number: '',
+                        license_plate: '',
+                        license_plate_2: '',
+                        price_mes: '',
+                        mezcla: '',
+                        isla: '',
+                        warehouse_receiver: '',
+                        invoices: [],
+                    }
                     // console.log(response);
                 }).catch(error => {
                     EventBus.$emit('loading', false);

@@ -31,7 +31,18 @@
                                         <div id="warehouse_document_type_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id >= 4 && this.sale.warehouse_document_type_id <= 9">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Serie de Usuario:</label>
+                                        <select class="form-control" name="sale_serie_id" id="sale_serie_id" v-model="sale.sale_serie_id" @focus="$parent.clearErrorMsg($event)">
+                                            <option value="">Seleccionar</option>
+                                            <option v-for="sale_serie in sale_series" :value="sale_serie.id" v-bind:key="sale_serie.id">{{ sale_serie.num_serie }}</option>
+                                        </select>
+                                        <div id="sale_serie_id-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id >= 4 && this.sale.warehouse_document_type_id <= 9"> -->
+                                <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Serie de Referencia:</label>
                                         <input type="text" readonly class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="sale.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
@@ -228,10 +239,12 @@
                     total_perception: '',
                     payment_id: '',
 					currency_id: 1,
-                    credit_limit: ''
+                    credit_limit: '',
+                    sale_serie_id: ''
                 },
                 filterArticles: [],
                 edit_flag: false,
+                sale_series: []
             }
         },
         created() {
@@ -315,27 +328,28 @@
 			// 	}
 			// },
 			'sale.warehouse_document_type_id': function(val) {
+                this.sale_series = [];
                 axios.post(this.url_get_sale_series, {
                     warehouse_document_type_id: val
                 })
                     .then(response => {
                         const data = response.data;
-
-                        const num_serie = data.num_serie;
-
-                        if (num_serie) {
-                            this.sale.referral_serie_number = num_serie;
-                        } else {
-                            this.sale.referral_serie_number = '';
-                        };
-
+                        
+                        this.sale_series = data;
                     })
                     .catch(error => {
+                        this.sale_series = [];
                         console.log(error);
                     });
 
 				let warehouse_document_type = this.warehouse_document_types.find(element => element.id == val);
+
 				this.sale.warehouse_document_type_name = warehouse_document_type ? warehouse_document_type.name : '';
+			},
+			'sale.sale_serie_id': function(val) {
+				let sale_serie = this.sale_series.find(element => element.id == val);
+
+                this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : '';
 			}
         },
         computed: {
@@ -588,7 +602,7 @@
 								total_perception: '',
 								payment_id: '',
 								currency_id: 1,
-                              credit_limit: '',
+                                credit_limit: '',
 							};
 						}
 					}).catch(error => {
@@ -764,6 +778,7 @@
                     payment_id: '',
 					currency_id: 1,
                     credit_limit: '',
+                    sale_serie_id: ''
                 };
 
 				$('#modal-sale').modal('hide');

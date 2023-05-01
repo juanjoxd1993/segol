@@ -28,13 +28,13 @@
                                             <input type="text" class="form-control" v-model="article.cambios">
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3" v-if="!Boolean(article_group_id === 26)">
                                         <div class="form-group">
                                             <label class="form-control-label">Préstamo:</label>
                                             <input type="text" class="form-control" v-model="article.prestamo">
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3" v-if="!Boolean(article_group_id === 26)">
                                         <div class="form-group">
                                             <label class="form-control-label">Cesión de Uso:</label>
                                             <input type="text" class="form-control" v-model="article.cesion">
@@ -126,19 +126,21 @@ export default {
                 cesion: '',
                 vacios: '',
                 liquidar: '',
-            }
+            },
+            article_group_id: 0,
         }
     },
     created() {
         let context = this;
         $(document).on('click', '.edit', function () {
-            let index = $(this).parents('tr').index();
+            const index = $(this).parents('tr').index();
 
-            let data = context.data[index];
+            const data = context.data[index];
+            const article_group_id = data.article.group_id;
 
             context.article = data;
             context.article.index = index;
-
+            context.article_group_id = article_group_id;
 
             $("#modal").modal('show')
         })
@@ -158,7 +160,7 @@ export default {
                     index === arr.findIndex((t) => t.article_name === article.article_name)
                 );
                 // const filteredArticles = data.filter(article => article.parent != null);
-                console.log(filteredArticles);
+                // console.log(filteredArticles);
 
                 this.$store.commit('addArticles', filteredArticles);
 
@@ -266,22 +268,18 @@ export default {
                     source: data,
                     pageSize: 10,
                 },
-
                 // layout definition
                 layout: {
                     scroll: true, // enable/disable datatable scroll both horizontal and vertical when needed.
                     height: 400,
                     footer: false // display/hide footer
                 },
-
                 // column sorting
                 sortable: true,
                 pagination: false,
-
                 search: {
                     input: $('#generalSearch'),
                 },
-
                 translate: {
                     records: {
                         processing: 'Espere porfavor...',
@@ -304,14 +302,11 @@ export default {
                         }
                     }
                 },
-
                 rows: {
                     autoHide: true,
                 },
-
                 // columns definition
                 columns: [
-
                     {
                         field: 'article_code',
                         title: 'Código',
@@ -365,7 +360,6 @@ export default {
                         width: 90,
                         textAlign: 'right',
                     },
-
                     {
                         field: 'id',
                         title: 'ID',
@@ -377,7 +371,6 @@ export default {
                             hidden: 'lg',
                             hidden: 'xl'
                         }
-
                     },
                     {
                         field: 'options',

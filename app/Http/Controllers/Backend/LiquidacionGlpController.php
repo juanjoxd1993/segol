@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\SaleSeries;
+
 use App\Article;
 use App\Bank;
 use App\BankAccount;
@@ -30,32 +32,37 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use DB;
 
+use stdClass;
 
 class LiquidacionGlpController extends Controller
 {
 	public function index() {
-				$companies = Company::select('id', 'name')->get();
-				$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
-				$warehouse_types = WarehouseType::select('id', 'name')->get();
-				$payment_methods = PaymentMethod::select('id', 'name', 'payment_id')->get();
-				$currencies = Currency::select('id', 'name')->get();
-				$payments = Payment::all();
-				$payment_cash = Payment::CASH;
-				$payment_credit = Payment::CREDIT;
+			$companies = Company::select('id', 'name')->get();
+			$warehouse_document_types = WarehouseDocumentType::select('id', 'name')
+				->where('name', 'Factura Electrónica')
+				->orWhere('name', 'Boleta de Venta Electrónica')
+				->orWhere('name', 'Nota Interna')
+				->get();
+			$warehouse_types = WarehouseType::select('id', 'name')->get();
+			$payment_methods = PaymentMethod::select('id', 'name', 'payment_id')->get();
+			$currencies = Currency::select('id', 'name')->get();
+			$payments = Payment::all();
+			$payment_cash = Payment::CASH;
+			$payment_credit = Payment::CREDIT;
 
-        return view('backend.liquidations_glp')->with(
-            compact(
-                'companies',
-                'warehouse_document_types',
-                'payment_methods',
-                'currencies',
-                'payments',
-                'payment_cash',
-                'payment_credit',
-								'warehouse_types'
-            )
-        );
-    }
+			return view('backend.liquidations_glp')->with(
+					compact(
+							'companies',
+							'warehouse_document_types',
+							'payment_methods',
+							'currencies',
+							'payments',
+							'payment_cash',
+							'payment_credit',
+							'warehouse_types'
+					)
+			);
+  }
 
   public function validateForm() {
 		$messages = [
@@ -72,168 +79,175 @@ class LiquidacionGlpController extends Controller
 		return request()->all();
 	}
 
-    public function getWarehouseMovements(Request $request) {
-        $company_id = request('company_id');
-				$warehouse_type_id = request('warehouse_type_id');
+	public function getWarehouseMovements(Request $request) {
+			$company_id = request('company_id');
+			$warehouse_type_id = request('warehouse_type_id');
 
-        $elements = WarehouseMovement::select(
-					'id',
-					'movement_number',
-					'referral_guide_series',
-					'referral_guide_number',
-					'license_plate',
-					'license_plate_2',
-					'created_at',
-					'scop_number'
-				)
-            ->where('company_id', $company_id)
-            ->where('warehouse_type_id', $warehouse_type_id)
-						->where('movement_type_id', 11)
-            ->where('stock_pend', '>', 0)
-						->where('state', 0)
-            ->orderBy('movement_number', 'asc')
-            ->get();
-
-        $elements->map(function ($item, $index) {
-            $item->creation_date = date('d-m-Y', strtotime($item->created_at));
-        });
-
-        return $elements;
-    }
-
-    public function list() {
-        $company_id = request('model.company_id');
-        $warehouse_type_id = request('model.warehouse_type_id');
-        $warehouse_movement_id = request('model.warehouse_movement_id');
-
-        $saleWarehouseMovement = WarehouseMovement::select('id', 'referral_serie_number', 'referral_voucher_number','stock_pend')
-            ->where('id', $warehouse_movement_id)
-            ->where('company_id', $company_id)
-            ->first();
-
-       
-
-        $movementDetails = WarehouseMovementDetail::select('id', 'warehouse_movement_id', 'item_number', 'article_code', 'converted_amount','new_stock_return','article_num','sale_value')
-            ->where('warehouse_movement_id', $warehouse_movement_id)
-            ->orderBy('item_number', 'asc')
-            ->get();
-
-        $movementDetails->map(function ($item, $index)  {
-					$warehouse_type_id = request('model.warehouse_type_id');
-								$item->sale_warehouse_movement_id = $item->warehouse_movement_id;
-								$item->article_id = $item->article->id;
-								$item->article_code = $item->article->code;
-
-					$cantidad=article::select('warehouse_type_id', 'code', 'stock_good')
+			$elements = WarehouseMovement::select(
+				'id',
+				'movement_number',
+				'referral_guide_series',
+				'referral_guide_number',
+				'license_plate',
+				'license_plate_2',
+				'created_at',
+				'scop_number'
+			)
+					->where('company_id', $company_id)
 					->where('warehouse_type_id', $warehouse_type_id)
-						->where('code', 1)
-						->sum('stock_good');
+					->where('movement_type_id', 11)
+					->where('stock_pend', '>', 0)
+					->where('state', 0)
+					->orderBy('movement_number', 'asc')
+					->get();
+
+			$elements->map(function ($item, $index) {
+					$item->creation_date = date('d-m-Y', strtotime($item->created_at));
+			});
+
+			return $elements;
+	}
+
+	public function list() {
+			$company_id = request('model.company_id');
+			$warehouse_type_id = request('model.warehouse_type_id');
+			$warehouse_movement_id = request('model.warehouse_movement_id');
+
+			$saleWarehouseMovement = WarehouseMovement::select('id', 'referral_serie_number', 'referral_voucher_number','stock_pend')
+					->where('id', $warehouse_movement_id)
+					->where('company_id', $company_id)
+					->first();
+
+			$movementDetails = WarehouseMovementDetail::select('id', 'warehouse_movement_id', 'item_number', 'article_code', 'converted_amount','new_stock_return','article_num','sale_value')
+					->where('warehouse_movement_id', $warehouse_movement_id)
+					->orderBy('item_number', 'asc')
+					->get();
+
+			$movementDetails->map(function ($item, $index)  {
+				$warehouse_type_id = request('model.warehouse_type_id');
+							$item->sale_warehouse_movement_id = $item->warehouse_movement_id;
+							$item->article_id = $item->article->id;
+							$item->article_code = $item->article->code;
+
+				$cantidad=article::select('warehouse_type_id', 'code', 'stock_good')
+				->where('warehouse_type_id', $warehouse_type_id)
+					->where('code', 1)
+					->sum('stock_good');
 
 
-		
+	
 
-          if ($item->article_code != 3){
-            $item->article_stock_good = $item->article->stock_good;
-		    	}
-					elseif($item->article_code == 3){
+				if ($item->article_code != 3){
+					$item->article_stock_good = $item->article->stock_good;
+				}
+				elseif($item->article_code == 3){
+					if ($item->sale_value) {
 						$item->article_stock_good = $cantidad/$item->sale_value;
+					} else {
+						$item->article_stock_good = 0;
 					}
+				}
 
-						$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
-            $item->presale_converted_amount = $item->converted_amount;
-            $item->sale_converted_amount = number_format(0, 2, '.', '');
-						$item->return_converted_amount = $item->new_stock_return;
-            $item->balance_converted_amount = number_format($item->warehouse_movement->stock_pend - $item->return_converted_amount, 2, '.', '');
-            $item->new_balance_converted_amount = number_format( $item->article_stock_good - $item->sale_converted_amount, 2, '.', '');
-            
-                
-            
+					$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
+					$item->presale_converted_amount = $item->converted_amount;
+					$item->sale_converted_amount = number_format(0, 2, '.', '');
+					$item->return_converted_amount = $item->new_stock_return;
+					$item->balance_converted_amount = number_format($item->warehouse_movement->stock_pend - $item->return_converted_amount, 2, '.', '');
+					$item->new_balance_converted_amount = number_format( $item->article_stock_good - $item->sale_converted_amount, 2, '.', '');
+					
+							
+					
 
-            unset($item->warehouse_movement_id);
-            unset($item->converted_amount);
-        });
+					unset($item->warehouse_movement_id);
+					unset($item->converted_amount);
+			});
 
-        return $movementDetails;
-    }
+			return $movementDetails;
+	}
 
-    public function getClients() {
-        $company_id = request('company_id');
-        $client_id = request('client_id');
-        $q = request('q');
+	public function getClients() {
+			$company_id = request('company_id');
+			$client_id = request('client_id');
+			$q = request('q');
 
-        if ( isset($client_id) ) {
-            $elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit')
-                ->where('id', $client_id)
-                ->first();
+			if ( isset($client_id) ) {
+					$elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit')
+							->where('id', $client_id)
+							->first();
 
-            $elements->text = $elements->business_name;
-            unset($elements->business_name);
-        } else {
-            $elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id', 'credit_limit')
-                ->where('company_id', $company_id)
-                ->where('business_name', 'like', '%'.$q.'%') ->orWhere('id', 'like', '%'.$q.'%')
-                ->orderBy('business_name', 'asc')
-                ->with(['perception_percentage' => function ($query) {
-                    $query->select('id', 'value');
-                }])
-                ->get();
+					$elements->text = $elements->business_name;
+					unset($elements->business_name);
+			} else {
+					$elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id', 'credit_limit')
+							->where('company_id', $company_id)
+							->where('business_name', 'like', '%'.$q.'%') ->orWhere('id', 'like', '%'.$q.'%')
+							->orderBy('business_name', 'asc')
+							->with(['perception_percentage' => function ($query) {
+									$query->select('id', 'value');
+							}])
+							->get();
 
-            $elements->map(function($item, $index) {
-                $item->text = $item->id . ' - ' .$item->business_name;
-                unset($item->business_name);
-                unset($item->code);
+					$elements->map(function($item, $index) {
+							$item->text = $item->id . ' - ' .$item->business_name;
+							unset($item->business_name);
+							unset($item->code);
 
-                return $item;
-            });
-        }
+							return $item;
+					});
+			}
 
-        return $elements;
-    }
+			return $elements;
+	}
 
-		public function getSaleSeries() {
-			$warehouse_document_type_id = request('warehouse_document_type_id');
+	public function getSaleSeries() {
+		$warehouse_document_type_id = request('warehouse_document_type_id');
 
-			$sale_serie = SaleSeries::select('id', 'num_serie')
-				->where('warehouse_document_type_id', $warehouse_document_type_id)
-				->first();
+		$sale_series = SaleSeries::select('id', 'num_serie', 'correlative')
+			->where('warehouse_document_type_id', $warehouse_document_type_id)
+			->get();
 
-			return $sale_serie;
+		$series = array();
+
+		foreach ($sale_series as $sale_serie) {
+			$obj = new stdClass();
+			$obj->id = $sale_serie->id;
+			$obj->num_serie = $sale_serie->num_serie;
+			$obj->correlative = $sale_serie->correlative + 1;
+			array_push($series, $obj);
 		}
 
-    public function getArticlePrice() {
+		return $series;
+	}
+
+  public function getArticlePrice() {
+			$article_id = request('article_id');
+			$client_id = request('client_id');
+			$warehouse_movement_id = request('warehouse_movement_id');
+			$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'created_at']);
+			$today = Carbon::now()->startOfDay();
+			$current_date = date('Y-m-d', strtotime($warehouse_movement->created_at));
 
 
+			$article_det = WarehouseMovementDetail::select('article_num')
+			->where('warehouse_movement_id', $warehouse_movement_id)
+			->first();
 
-        $article_id = request('article_id');
-        $client_id = request('client_id');
-        $warehouse_movement_id = request('warehouse_movement_id');
-		$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'created_at']);
-        $today = Carbon::now()->startOfDay();
-        $current_date = date('Y-m-d', strtotime($warehouse_movement->created_at));
+			$article_num = $article_det ? $article_det->article_num : '' ;
 
+			$element = PriceList::select('id', 'article_id', 'price_igv')
+					->where('client_id', $client_id)
+					->where('warehouse_type_id', 5)
+					->where('article_id', $article_num)
+					//->where('initial_effective_date', '<=', $current_date)
+					//->where('final_effective_date', '>=', $current_date)
+					->where('state', 1)
+					->with(['article' => function ($query) {
+							$query->select('id', 'igv', 'perception');
+					}])
+					->first();
 
-		$article_det = WarehouseMovementDetail::select('article_num')
-		->where('warehouse_movement_id', $warehouse_movement_id)
-		->first();
-
-		$article_num = $article_det ? $article_det->article_num : '' ;
-
-
-		
-        $element = PriceList::select('id', 'article_id', 'price_igv')
-            ->where('client_id', $client_id)
-            ->where('warehouse_type_id', 5)
-            ->where('article_id', $article_num)
-            //->where('initial_effective_date', '<=', $current_date)
-            //->where('final_effective_date', '>=', $current_date)
-            ->where('state', 1)
-            ->with(['article' => function ($query) {
-                $query->select('id', 'igv', 'perception');
-            }])
-            ->first();
-
-        return $element;
-    }
+      return $element;
+  }
 
     public function getBankAccounts() {
         $company_id = request('company_id');
@@ -403,7 +417,7 @@ class LiquidacionGlpController extends Controller
 				$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
 				$voucher->issue_date = date('Y-m-d', strtotime($warehouse_movement->created_at));
 				$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->created_at));
-                $voucher->expiry_date = $expiry_date;
+        $voucher->expiry_date = $expiry_date;
 				$voucher->currency_id = $sale['currency_id'];
 				$voucher->payment_id = $sale['payment_id'];
 				$voucher->total = $sale['total'];

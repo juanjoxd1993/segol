@@ -78,7 +78,7 @@
                 this.show_table = 1;
                 this.model = data.model;
                 this.perception_percentage = data.perception_percentage;
-            //    this.currency = data.currency;
+                // this.currency = data.currency;
                 this.articles = data.articles;
 
                 this.$nextTick(function() {
@@ -124,7 +124,7 @@
                     item_number: this.article_list.length,
 					movement_type_id: this.model.movement_type_id,
                 }).then(response => {
-                    $("#stock-glp-register-modal").modal('hide')
+                    $("#abastecimiento-register-modal").modal('hide')
                     this.article_list.push(response.data);
                     this.datatable.destroy();
                     this.fillTableX();
@@ -144,6 +144,10 @@
                     data: {
                         type: 'local',
                         source: vm.article_list,
+                        pageSize: 10,
+                        serverPaging: true,
+                        serverFiltering: true,
+                        serverSorting: true,
                     },
 
                     // layout definition
@@ -186,20 +190,6 @@
 
                     // columns definition
                     columns: [
-                        // {
-                        //     field: 'voucher_id',
-                        //     title: '#',
-                        //     sortable: false,
-                        //     width: 0,
-                        //     selector: {class: 'kt-checkbox--solid'},
-                        //     textAlign: 'center',
-                        //     responsive: {
-                        //         hidden: 'sm',
-                        //         hidden: 'md',
-                        //         hidden: 'lg',
-                        //         hidden: 'xl'
-                        //     }
-                        // },
                         {
                             field: 'item_number',
                             title: '#',
@@ -253,9 +243,6 @@
                             width: 80,
                             textAlign: 'right',
                         },
-                    
-                    
-                      
                         {
                             field: 'id',
                             title: 'ID',
@@ -277,19 +264,20 @@
                             autoHide: false,
                             textAlign: 'center',
                             template: function() {
-                                return '\
-                                <div class="actions">\
-                                    <a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">\
-                                        <i class="la la-trash"></i>\
-                                    </a>\
-                                </div>\
-                            ';
+                                let actions = '\
+                                    <div class="actions">\
+                                        <a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">\
+                                            <i class="la la-trash"></i>\
+                                        </a>\
+                                    </div>\
+                                ';
+                                return actions;
                             },
                         },
                     ]
                 });
 
-                this.datatable.columns('id').visible(false);
+                // this.datatable.columns('id').visible(false);
             },
             manageActions: function(event) {
                 if ( $(event.target).hasClass('delete') ) {
@@ -321,6 +309,7 @@
                                 item.item_number = ++new_item_number;
                             });
                             this.datatable.destroy();
+                            console.log(this.datatable)
                             this.fillTableX();
 
                             EventBus.$emit('remove_article_id', id);
@@ -377,8 +366,6 @@
                         this.model.price_mes = '';
                         this.article_list = [];
                         $('#warehouse_account_id').val(null).trigger('change');
-
-                        this.datatable.destroy();
 
                         Swal.fire({
                             title: '¡Bien!',

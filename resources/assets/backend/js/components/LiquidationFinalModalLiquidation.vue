@@ -337,7 +337,6 @@
                     });
 				}
 
-               
 				if ( this.$store.state.sale.payment_id == 2 && accounting.unformat(this.addTotals) > accounting.unformat(this.$store.state.sale.total_perception)) {
 					error = 1;
 					Swal.fire({
@@ -374,7 +373,7 @@
                     });
                 }  else if ((this.$store.state.sale.total_perception - accounting.unformat(this.addTotals)) > this.$store.state.sale.credit_limit) {
                     error = 1;
-                     Swal.fire({
+                    Swal.fire({
                         title: '¡Error!',
                         text: 'La línea del crédito del cliente es insuficiente.',
                         type: "error",

@@ -16,6 +16,7 @@ class CreateSaleSeries extends Migration
         Schema::create('sale_series', function (Blueprint $table) {
             $table->bigIncrements('id');
 			$table->string('num_serie')->nullable();
+			$table->bigInteger('correlative')->nullable();
             $table->timestamps();
 			$table->string('created_at_user')->nullable();
             $table->string('updated_at_user')->nullable();

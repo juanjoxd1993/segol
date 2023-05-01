@@ -116,7 +116,6 @@ class GuidesReturnController extends Controller
 
     public function update(Request $request)
     {
-        $id = request('id');
         $articles = $request->articles;
 
         foreach ($articles as $article) {
@@ -275,23 +274,39 @@ class GuidesReturnController extends Controller
             }
             /**Off */
 
+            $articleDetail = Article::where('warehouse_type_id', 4)
+                ->where('code', $article['article_code'])
+                ->first();
 
-            //Actualizar new_stock_return
-            WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
-                ->where('article_code', $article['article_id'])
+            Article::where('warehouse_type_id', 4)
+                ->where('code', $article['article_code'])
                 ->update([
-                    'new_stock_return' =>  $article['retorno'] + $article['cambios'],
+                    'stock_good' => $articleDetail->stock_good + $article['retorno'],
                 ]);
 
-    
+            //Actualizar new_stock_return
+            if ($article['article']['group_id'] == 26) {
+                WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
+                    ->where('article_code', $article['article_id'])
+                    ->update([
+                        'new_stock_return' =>  $article['retorno'] + $article['cambios'],
+                    ]);
+            } else if ($article['article']['group_id'] == 7) {
+                WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
+                    ->where('article_code', $article['article_id'])
+                    ->update([
+                        'new_stock_return' =>  $article['converted_amount'] - $article['cesion'],
+                    ]);
+            }
 
+            $warehouse_movement_id = $article['warehouse_movement_id'];
+
+            //Actualizar estado
+            WarehouseMovement::where('id', $warehouse_movement_id)
+                ->update([
+                    'state' => 1,
+                ]);
         }
-
-        //Actualizar estado
-        // WarehouseMovement::where('id', $request->warehouse_movement_id)
-        //                 ->update([
-        //                     'state' => 1,
-        //                 ]);
 
         $data = new stdClass();
         $data->type = 1;

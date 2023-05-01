@@ -103,29 +103,33 @@ class AbastecimientoRegisterController extends Controller
 			
 		
 		
-			'warehouse_type_id.required'						=> 'Debe seleccionar un Almacén.',	
-			'since_date.required'								=> 'Debe seleccionar una Fecha.',
+			'warehouse_type_id.required'						=> 'Debe seleccionar un Almacén Proveedor.',
+			'warehouse_receiver.required'						=> 'Debe seleccionar un Almacén Receptor.',
+			'since_date.required'								=> 'Debe seleccionar una Fecha de Emision.',
+			'traslate_date.required'								=> 'Debe seleccionar una Fecha de Ingreso.',
 		//	'referral_guide_series.required_if'					=> 'Debe digitar la Serie de Guía de Remisión.',
 			'referral_guide_number.required_if'					=> 'Debe digitar el Número de Guía de Remisión.',
 			'referral_serie_number.required_if'					=> 'Debe digitar la Serie de Referencia.',
 			'referral_voucher_number.required_if'				=> 'Debe digitar el Número de Referencia.',
-			'scop_number.required_if'							=> 'Debe digitar el Número de SCOP.',
-			'license_plate.required_if'							=> 'Debe digitar el Número de Placa.',
-			'price_mes.required_if'							    => 'Debe seleccionar un costo mes',
+		//	'scop_number.required_if'							=> 'Debe digitar el Número de SCOP.',
+		//	'license_plate.required_if'							=> 'Debe digitar el Número de Placa.',
+		//	'price_mes.required_if'							    => 'Debe seleccionar un costo mes',
 		];
 
 		$rules = [
 		
 
 			'warehouse_type_id'						=> 'required',
+			'warehouse_receiver'					=> 'required',
 			'since_date'							=> 'required',
+			'traslate_date'							=> 'required',
 		//	'referral_guide_series'					=> 'required_if:movement_type_id,1,7,8,9,11,13,15,19,20',
 			'referral_guide_number'					=> 'required_if:movement_type_id,1,7,8,9,11,13,15,19,20',
 			'referral_serie_number'					=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
 			'referral_voucher_number'				=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
-			'scop_number'							=> 'required',
-			'license_plate'							=> 'required',
-			'price_mes'							    => 'required',
+		//	'scop_number'							=> 'required',
+		//	'license_plate'							=> 'required',
+		//	'price_mes'							    => 'required',
 		];
 
 		request()->validate($rules, $messages);
@@ -177,7 +181,10 @@ class AbastecimientoRegisterController extends Controller
 
 		if (request('movement_type_id') == 32) {
 			// Obtener artículos
-			$article = WarehouseMovementDetail::where('warehouse_movement_id', request('invoice'))->first()->article;
+			// $article = WarehouseMovementDetail::where('warehouse_movement_id', request('invoice'))
+			$article = WarehouseMovementDetail::where('warehouse_movement_id', 54534)
+				->first()
+				->article;
 			$article->sale_unit_id = $article->sale_unit->name;
 			$article->warehouse_unit_id = $article->warehouse_unit->name;
 
@@ -186,6 +193,7 @@ class AbastecimientoRegisterController extends Controller
 			// Obtener artículos
 			$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged','group_id')
 				->where('warehouse_type_id', $warehouse_type_id)
+				->whereIn('code', [1,2])
 				->orderBy('code', 'asc')
 				->get();
 
@@ -225,18 +233,16 @@ class AbastecimientoRegisterController extends Controller
 		$quantity = request('model.quantity');
 		$quantity_2 = request('model.quantity_2');
 		$quantity_3 = request('model.quantity_3');
-	//	$price = request('model.price');
-	//	$sale_value = request('model.sale_value');
-	//	$inaccurate_value = request('model.inaccurate_value');
-	//	$igv = request('model.igv');
-	//	$total = request('model.total');
-	//	$perception = request('model.perception');
-	//	$igv_percentage = request('igv_percentage');
-	//	$perception_percentage = request('perception_percentage');
+		//	$price = request('model.price');
+		//	$sale_value = request('model.sale_value');
+		//	$inaccurate_value = request('model.inaccurate_value');
+		//	$igv = request('model.igv');
+		//	$total = request('model.total');
+		//	$perception = request('model.perception');
+		//	$igv_percentage = request('igv_percentage');
+		//	$perception_percentage = request('perception_percentage');
 		$item_number = request('item_number');
 		$movement_type_id = request('movement_type_id');
-
-		
 
 		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
 			->where('articles.id', $article_id)
@@ -266,14 +272,14 @@ class AbastecimientoRegisterController extends Controller
 		    $article->old_stock_damaged = number_format($quantity_3, 4, '.', ',');
 		}
 
-	//	$article->price = number_format($price, 4, '.', ',');
-	//	$article->sale_value = number_format($sale_value, 4, '.', ',');
-	//	$article->inaccurate_value = number_format($inaccurate_value, 4, '.', ',');
-	//	$article->igv = number_format($igv, 4, '.', ',');
-	//	$article->total = number_format($total, 4, '.', ',');
-	//	$article->perception = number_format($perception, 4, '.', ',');
-	//	$article->igv_percentage = ( $igv == 0 ? 0 : $igv_percentage );
-	//	$article->perception_percentage = $perception_percentage;
+		//	$article->price = number_format($price, 4, '.', ',');
+		//	$article->sale_value = number_format($sale_value, 4, '.', ',');
+		//	$article->inaccurate_value = number_format($inaccurate_value, 4, '.', ',');
+		//	$article->igv = number_format($igv, 4, '.', ',');
+		//	$article->total = number_format($total, 4, '.', ',');
+		//	$article->perception = number_format($perception, 4, '.', ',');
+		//	$article->igv_percentage = ( $igv == 0 ? 0 : $igv_percentage );
+		//	$article->perception_percentage = $perception_percentage;
 
 		return $article;
 	}
@@ -310,16 +316,13 @@ class AbastecimientoRegisterController extends Controller
 		$movement_number = ( $movement_number ? $movement_number + 1 : 1 );
 
 		$license = WarehouseType::select('name')
-		->where('id', $plate)
-		->first();
+			->where('id', $plate)
+			->first();
 
 		$cost_glp=WarehouseMovement::select('cost_glp')
-		->where('referral_voucher_number',$referral_voucher_number)
-		->where('movement_type_id', 1)
-		->sum('cost_glp');
-
-
-
+			->where('referral_voucher_number',$referral_voucher_number)
+			->where('movement_type_id', 1)
+			->sum('cost_glp');
 
 		if ( $warehouse_account_type_id == 1 ) {
 			$account = Client::select('business_name', 'document_number')
@@ -381,19 +384,18 @@ class AbastecimientoRegisterController extends Controller
 
 		foreach ($articles as $item) {
 			$article = Article::where('warehouse_type_id', $movement->warehouse_type_id)
-				->where('id', $item['id'])
 				->firstOrFail();
 
 			$digit_amount = str_replace(',', '', $item['digit_amount']);
 			$converted_amount = str_replace(',', '', $item['converted_amount']);
 			$old_stock_return = str_replace(',', '', $item['old_stock_return']);
 			$old_stock_damaged = str_replace(',', '', $item['old_stock_damaged']);
-		//	$price = str_replace(',', '', $item['price']);
-		//	$sale_value = str_replace(',', '', $item['sale_value']);
-		//	$inaccurate_value = str_replace(',', '', $item['inaccurate_value']);
-		//	$igv = str_replace(',', '', $item['igv']);
-		//	$total = str_replace(',', '', $item['total']);
-		//	$igv_perception = str_replace(',', '', $item['perception']);
+			//	$price = str_replace(',', '', $item['price']);
+			//	$sale_value = str_replace(',', '', $item['sale_value']);
+			//	$inaccurate_value = str_replace(',', '', $item['inaccurate_value']);
+			//	$igv = str_replace(',', '', $item['igv']);
+			//	$total = str_replace(',', '', $item['total']);
+			//	$igv_perception = str_replace(',', '', $item['perception']);
 
 			$movementDetail = new WarehouseMovementDetail();
 			$movementDetail->warehouse_movement_id = $movement->id;
@@ -409,15 +411,15 @@ class AbastecimientoRegisterController extends Controller
 			$movementDetail->new_stock_repair = $article->stock_repair;
 			$movementDetail->new_stock_return = $article->stock_return;
 			$movementDetail->new_stock_damaged = $article->stock_damaged;
-		//	$movementDetail->price = $price;
-		//	$movementDetail->sale_value = $sale_value;
-		//	$movementDetail->exonerated_value = 0;
-		//	$movementDetail->inaccurate_value = $inaccurate_value;
-		//	$movementDetail->igv = $igv;
-		//	$movementDetail->total = $total;
-		//	$movementDetail->igv_perception = $igv_perception;
-		//	$movementDetail->igv_percentage = $item['igv_percentage'];
-		//	$movementDetail->igv_perception_percentage = $item['perception_percentage'];
+			//	$movementDetail->price = $price;
+			//	$movementDetail->sale_value = $sale_value;
+			//	$movementDetail->exonerated_value = 0;
+			//	$movementDetail->inaccurate_value = $inaccurate_value;
+			//	$movementDetail->igv = $igv;
+			//	$movementDetail->total = $total;
+			//	$movementDetail->igv_perception = $igv_perception;
+			//	$movementDetail->igv_percentage = $item['igv_percentage'];
+			//	$movementDetail->igv_perception_percentage = $item['perception_percentage'];
 			$movementDetail->created_at_user = Auth::user()->user;
 			$movementDetail->updated_at_user = Auth::user()->user;
 			
@@ -444,8 +446,8 @@ class AbastecimientoRegisterController extends Controller
 
 			if (request('model.movement_type_id') == 32) {
 				$tmpArticle = Article::where('warehouse_type_id', request('model.warehouse_type_id'))
-									->where('code', $item['code'])
-									->first();
+					->where('code', $item['code'])
+					->first();
 				if ($tmpArticle) {
 					$tmpArticle->stock_good += $converted_amount;
 					$tmpArticle->save();
@@ -504,7 +506,6 @@ class AbastecimientoRegisterController extends Controller
 
 			foreach ($articles as $item) {
 				$article = Article::where('warehouse_type_id', $movement->warehouse_type_id)
-					->where('id', $item['id'])
 					->firstOrFail();
 
 				$digit_amount = str_replace(',', '', $item['digit_amount']);
@@ -514,9 +515,9 @@ class AbastecimientoRegisterController extends Controller
 			
 
 				$article_code = Article::where('warehouse_type_id', $movementReceptor->warehouse_type_id)
-				->where('code', $item['code'])
-				->select('id')
-				->sum('id');
+					->where('code', $item['code'])
+					->select('id')
+					->sum('id');
 
 				$movementDetail = new WarehouseMovementDetail();
 				$movementDetail->warehouse_movement_id = $movementReceptor->id;
@@ -532,22 +533,22 @@ class AbastecimientoRegisterController extends Controller
 				$movementDetail->new_stock_repair = $article->stock_repair;
 				$movementDetail->new_stock_return = $article->stock_return;
 				$movementDetail->new_stock_damaged = $article->stock_damaged;
-			//	$movementDetail->price = $price;
-			//	$movementDetail->sale_value = $sale_value;
-			//	$movementDetail->exonerated_value = 0;
-			//	$movementDetail->inaccurate_value = $inaccurate_value;
-			//	$movementDetail->igv = $igv;
-			//	$movementDetail->total = $total;
-			//	$movementDetail->igv_perception = $igv_perception;
-			//	$movementDetail->igv_percentage = $item['igv_percentage'];
-			//	$movementDetail->igv_perception_percentage = $item['perception_percentage'];
+				//	$movementDetail->price = $price;
+				//	$movementDetail->sale_value = $sale_value;
+				//	$movementDetail->exonerated_value = 0;
+				//	$movementDetail->inaccurate_value = $inaccurate_value;
+				//	$movementDetail->igv = $igv;
+				//	$movementDetail->total = $total;
+				//	$movementDetail->igv_perception = $igv_perception;
+				//	$movementDetail->igv_percentage = $item['igv_percentage'];
+				//	$movementDetail->igv_perception_percentage = $item['perception_percentage'];
 				$movementDetail->created_at_user = Auth::user()->user;
 				$movementDetail->updated_at_user = Auth::user()->user;
 				
 				
 				$tmpArticle = Article::where('warehouse_type_id', request('model.warehouse_receiver'))
-									->where('code', $item['code'])
-									->first();
+								->where('code', $item['code'])
+								->first();
 
 				if ($tmpArticle) {
 					$tmpArticle->stock_good += $converted_amount;
@@ -560,6 +561,10 @@ class AbastecimientoRegisterController extends Controller
 				$article->save();
 			}
 		}
+
+		// foreach ($articles as $item) {
+		// 	$article_dismiss = Article::where('warehouse_type_id',)
+		// }
 
 		return $articles;
 	}

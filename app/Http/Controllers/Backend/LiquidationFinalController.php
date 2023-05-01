@@ -31,12 +31,17 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use DB;
 
+use stdClass;
 
 class LiquidationFinalController extends Controller
 {
 	public function index() {
         $companies = Company::select('id', 'name')->get();
-        $warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
+        $warehouse_document_types = WarehouseDocumentType::select('id', 'name')
+					->where('name', 'Factura Electrónica')
+					->orWhere('name', 'Boleta de Venta Electrónica')
+					->orWhere('name', 'Nota Interna')
+					->get();
         $payment_methods = PaymentMethod::select('id', 'name', 'payment_id')->get();
         $currencies = Currency::select('id', 'name')->get();
         $payments = Payment::all();
@@ -85,7 +90,7 @@ class LiquidationFinalController extends Controller
                     ->orWhere('action_type_id', 7)
                     ->orWhere('action_type_id', 8);
             })
-			->where('state', 0)
+			->where('state', 1)
             ->orderBy('movement_number', 'asc')
             ->get();
 
@@ -173,11 +178,21 @@ class LiquidationFinalController extends Controller
 		public function getSaleSeries() {
 			$warehouse_document_type_id = request('warehouse_document_type_id');
 
-			$sale_serie = SaleSeries::select('id', 'num_serie')
+			$sale_series = SaleSeries::select('id', 'num_serie', 'correlative')
 				->where('warehouse_document_type_id', $warehouse_document_type_id)
-				->first();
+				->get();
 
-			return $sale_serie;
+			$series = array();
+
+			foreach ($sale_series as $sale_serie) {
+				$obj = new stdClass();
+				$obj->id = $sale_serie->id;
+				$obj->num_serie = $sale_serie->num_serie;
+				$obj->correlative = $sale_serie->correlative + 1;
+				array_push($series, $obj);
+			}
+
+			return $series;
 		}
 
     public function getArticlePrice() {
@@ -304,10 +319,6 @@ class LiquidationFinalController extends Controller
 				->select('id', 'address')
 				->first();
 
-
-				
-
-			
 			$client->credit_limit_days = $client->credit_limit_days ? $client->credit_limit_days : 0;
 			$sale_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
 			$expiry_date = $sale_date;
@@ -371,7 +382,7 @@ class LiquidationFinalController extends Controller
 				$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
 				$voucher->issue_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
 				$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->traslate_date));
-                $voucher->expiry_date = $expiry_date;
+        		$voucher->expiry_date = $expiry_date;
 				$voucher->currency_id = $sale['currency_id'];
 				$voucher->payment_id = $sale['payment_id'];
 				$voucher->total = $sale['total'];
@@ -424,6 +435,11 @@ class LiquidationFinalController extends Controller
 
 				$sale_model->referral_serie_number = $sale['referral_serie_number'];
 				$sale_model->referral_voucher_number = $voucher->voucher_number;
+
+				SaleSeries::where('id', $sale['sale_serie_id'])
+					->update(
+						['correlative' => $sale['referral_serie_number']]
+					);
 			} else {
 				$referral_serie_number = CarbonImmutable::now()->format('Ym');
 				$last_voucher_number = Sale::where('company_id', $model['company_id'])
@@ -522,10 +538,14 @@ class LiquidationFinalController extends Controller
 			if ( array_key_exists('liquidations', $sale) ) {
 				if ( count($sale['liquidations']) > 0 ) {
 					foreach ($sale['liquidations'] as $liquidation) {
+						// liquidations['payment_method'] es un objeto al tratar de acceder a el genera el error
+						$payment_method_id = $liquidation['payment_method']['id'];
+						
 						$liquidation_model = new Liquidation();
 						$liquidation_model->sale_id = $sale_model->id;
 						$liquidation_model->company_id = $model['company_id'];
-						$liquidation_model->payment_method_id = $liquidation['payment_method'];
+						// $liquidation_model->payment_method_id = $liquidation['payment_method'];
+						$liquidation_model->payment_method_id = $payment_method_id;
 						$liquidation_model->currency_id = $liquidation['currency'];
 						$liquidation_model->exchange_rate = $liquidation['exchange_rate'];
 						$liquidation_model->bank_account_id = $liquidation['bank_account'];
@@ -535,24 +555,24 @@ class LiquidationFinalController extends Controller
 						$liquidation_model->updated_at_user = Auth::user()->user;
 						$liquidation_model->save();
 
-						if ($liquidation['payment_method'] == 7) {
+						if ($payment_method_id == 7) {
 							$sale_model->pend = $sale_model->pend + round($liquidation['amount'], 4);
 						}
 
-						if ($liquidation['payment_method'] == 7 || $liquidation['payment_method'] == 5) {
+						if ($payment_method_id == 7 || $payment_method_id == 5) {
 							$sale_model->balance = $sale_model->balance + round($liquidation['amount'], 4);
 						}
 
 						if ( $liquidation['payment_id'] == 1 ) {
-                            if ($liquidation['payment_method'] == 1) {
-                                $sale_model->payment_method_efective = 1;
-                                $sale_model->efective += round($liquidation['amount'], 4);
-                            } elseif ($liquidation['payment_method'] == 2) {
-                                $sale_model->payment_method_deposit = 4;
-                                $sale_model->deposit += round($liquidation['amount'], 4);
-                            }
+								if ($payment_method_id == 1) {
+										$sale_model->payment_method_efective = 1;
+										$sale_model->efective += round($liquidation['amount'], 4);
+								} elseif ($payment_method_id == 2) {
+										$sale_model->payment_method_deposit = 4;
+										$sale_model->deposit += round($liquidation['amount'], 4);
+								}
 
-                            $sale_model->save();
+								$sale_model->save();
 						}
 
 						if ( $sale['payment_id'] ==2 ) {
@@ -562,15 +582,16 @@ class LiquidationFinalController extends Controller
 							$sale_model->payment_method_credit = 3;
 							$sale_model->save();
 
-							DB::table('credits')->insert([
-                                'sale_id' => $sale_model->id,
-                                'company_id' => $model['company_id'],
-                                'client_id' => $sale['client_id'],
-                                'currency_id' =>  $liquidation['currency'],
-                                'amount' => round($sale_model['pre_balance'], 4),
-                                'created_at_user' => auth()->user()->name,
-                                'created_at' => Carbon::now(),
-                            ]);
+							DB::table('credits')
+								->insert([
+										'sale_id' => $sale_model->id,
+										'company_id' => $model['company_id'],
+										'client_id' => $sale['client_id'],
+										'currency_id' =>  $liquidation['currency'],
+										'amount' => round($sale_model['pre_balance'], 4),
+										'created_at_user' => auth()->user()->name,
+										'created_at' => Carbon::now(),
+								]);
 						}
 
 						$client->credit_balance -= $liquidation['amount'];
@@ -583,7 +604,7 @@ class LiquidationFinalController extends Controller
 		$warehouse_movement->state = 2;
 		$warehouse_movement->save();
 
-		// return request()->all();
+		return request()->all();
 	}
 
 	public function getOperationNumber() {

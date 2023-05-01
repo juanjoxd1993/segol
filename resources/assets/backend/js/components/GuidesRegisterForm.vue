@@ -51,7 +51,6 @@
 								zone="America/Lima"
                                 class="form-control"
                                 :max-datetime="this.max_datetime"
-                                 
                                 @focus="$parent.clearErrorMsg($event)">
                             </datetime>
                             <div id="since_date-error" class="error invalid-feedback"></div>
@@ -76,8 +75,6 @@
                             <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                 
-                
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Número de SCOP:</label>
@@ -119,10 +116,10 @@
                             </datetime>
                             <div id="traslate_date-error" class="error invalid-feedback"></div>
                         </div>
-                           <div class="col-lg-3">
+                            <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Serie de Guía de Remisión:</label>
-                             <select class="form-control" name="referral_guide_series" id="referral_guide_series" v-model="model.referral_guide_series" v-on:change="getNextCorrelative()" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control" name="referral_guide_series" id="referral_guide_series" v-model="model.referral_guide_series" v-on:change="getNextCorrelative()" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
                                 <option v-for="guide_serie in guide_series" :value="guide_serie.num_serie" v-bind:key="guide_serie.num_serie">{{ guide_serie.num_serie }}</option>
                             </select>    
@@ -219,12 +216,11 @@
                 type: String,
                 default: ''
             },
-                   
             guide_series: {
                 type: Array,
                 default: ''
             },
-             url_next_correlative: {
+            url_next_correlative: {
                 type: String,
                 default: ''
             },
