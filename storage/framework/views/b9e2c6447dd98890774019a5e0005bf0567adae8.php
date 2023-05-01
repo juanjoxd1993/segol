@@ -22,6 +22,7 @@
 		:url = "'<?php echo e(route('dashboard.voucher.liquidations_final.list')); ?>'"
 		:url_get_clients = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_clients')); ?>'"
 		:url_get_article_price = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_article_price')); ?>'"
+		:url_get_sale_series = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_sale_serie')); ?>'"
 		:url_verify_document_type = "'<?php echo e(route('dashboard.voucher.liquidations_final.verify_document_type')); ?>'"
 	></liquidation-final-modal-sale>
 
