@@ -58,7 +58,16 @@ class AdjustInventoryController extends Controller
 		$search = $q['generalSearch'];
 		request()->replace(['page' => $page]);
 
-		$elements = Inventory::select('id', 'company_id', 'warehouse_type_id', 'article_id', 'found_stock_good', 'found_stock_damaged', 'observations', 'state')
+		$elements = Inventory::select(
+				'id',
+				'company_id',
+				'warehouse_type_id',
+				'article_id',
+				'found_stock_good',
+				'found_stock_damaged',
+				'observations',
+				'state'
+			)
 			->where('company_id', $company_id)
 			->where('warehouse_type_id', $warehouse_type_id)
 			->where('creation_date', $creation_date)
@@ -287,6 +296,9 @@ class AdjustInventoryController extends Controller
 		foreach ($elements as $element) {
 		
 			$article = Article::find($element->article_id);
+
+			$converted_amount = $article->stock_good - $element->found_stock_good;
+
 			$article->stock_good = $element->found_stock_good;
 			$article->stock_damaged = $element->found_stock_damaged;
 			$article->save();
@@ -318,7 +330,7 @@ class AdjustInventoryController extends Controller
 					'article_code' => $article->id,
 					'new_stock_good' => $article->stock_good,
 					'new_stock_damaged' => $article->stock_damaged,
-					'converted_amount' => $diff,
+					'converted_amount' => $converted_amount,
 					'total' => $diff,
 					'created_at' => $creation_date ,
 					'updated_at' => $creation_date ,

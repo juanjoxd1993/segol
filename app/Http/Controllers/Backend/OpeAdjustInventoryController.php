@@ -287,6 +287,9 @@ class OpeAdjustInventoryController extends Controller
 		foreach ($elements as $element) {
 		
 			$article = Article::find($element->article_id);
+
+			$converted_amount = $article->stock_good - $element->found_stock_good;
+
 			$article->stock_good = $element->found_stock_good;
 			$article->stock_damaged = $element->found_stock_damaged;
 			$article->save();
@@ -318,7 +321,7 @@ class OpeAdjustInventoryController extends Controller
 					'article_code' => $article->id,
 					'new_stock_good' => $article->stock_good,
 					'new_stock_damaged' => $article->stock_damaged,
-					'converted_amount' => $diff,
+					'converted_amount' => $converted_amount,
 					'total' => $diff,
 					'created_at' => $creation_date ,
 					'updated_at' => $creation_date ,

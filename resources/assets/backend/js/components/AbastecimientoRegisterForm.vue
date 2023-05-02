@@ -8,23 +8,19 @@
                 </h3>
             </div>
         </div>
-
         <!--begin::Form-->
         <form class="kt-form" @submit.prevent="formController(url, $event)">
             <div class="kt-portlet__body">
                 <div class="row">
-                  
                     <div v-bind:class="'col-lg-3' + (' d-none')">
                         <div class="form-group">
                             <label class="form-control-label" readonly="">Tipo Movimiento:</label>
                             <select class="form-control readonly" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
-                              
-                                            <option select value="32">Transferencia de  GLP </option>            
+                                <option select value="32">Transferencia de  GLP </option>            
                             </select>
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                   
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Almacén Proveedor:</label>
@@ -121,14 +117,6 @@
                             <div id="referral_voucher_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Número de SCOP:</label>
-                            <input type="text" class="form-control" name="scop_number" id="scop_number" v-model="model.scop_number" @focus="$parent.clearErrorMsg($event)">
-                            <div id="scop_number-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-
                     <div v-bind:class="'col-lg-3' + (model.movement_type_id != 32 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Cisterna:</label>
@@ -136,7 +124,6 @@
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                   
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tracto:</label>
@@ -144,8 +131,7 @@
                             <div id="license_plate_2-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-
-                     <div class="form-group">
+                    <div class="form-group">
                             <label class="form-control-label">Fecha de Ingreso:</label>
                             <datetime
                                 v-model="model.traslate_date"
@@ -164,20 +150,17 @@
 
                         <div class="col-lg-3">
                         <div class="form-group">
-                         <label class="form-control-label">Mezcla:</label>
+                        <label class="form-control-label">Mezcla:</label>
                             <select class="form-control" name="mezcla" id="mezcla" v-model="model.mezcla" @focus="$parent.clearErrorMsg($event)">
-                               <option disabled value="">Seleccionar</option>
-                                            <option value="65/35">65/35</option>
-                                            <option value="60/40">60/40</option>
-                                            <option value="70/30">70/30</option>
-                                                                                       
+                                <option disabled value="">Seleccionar</option>
+                                <option value="65/35">65/35</option>
+                                <option value="60/40">60/40</option>
+                                <option value="70/30">70/30</option>
                             </select>
                             <div id="mezcla-error" class="error invalid-feedback"></div>
-                      </div>
                     </div>
-
-
-                      <div class="col-lg-3">
+                    </div>
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Gravedad:</label>
                             <input type="text" class="form-control" name="isla" id="isla" v-model="model.isla" @focus="$parent.clearErrorMsg($event)">
@@ -282,7 +265,7 @@
             return {
                 model: {
                     movement_class_id: '',
-                    movement_type_id: '32',
+                    movement_type_id: '31',
                     movement_stock_type_id: '',
                     warehouse_type_id: '',
                     company_id: '1',
@@ -459,11 +442,10 @@
                     }
                 }).then(response => {
                     EventBus.$emit('loading', false);
-                   
                     EventBus.$emit('show_table', response.data);
                     this.model = {
                         movement_class_id: '',
-                        movement_type_id: '32',
+                        movement_type_id: '31',
                         movement_stock_type_id: '',
                         warehouse_type_id: '',
                         company_id: '1',

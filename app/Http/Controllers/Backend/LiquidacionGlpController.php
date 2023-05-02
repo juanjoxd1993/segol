@@ -129,13 +129,10 @@ class LiquidacionGlpController extends Controller
 							$item->article_id = $item->article->id;
 							$item->article_code = $item->article->code;
 
-				$cantidad=article::select('warehouse_type_id', 'code', 'stock_good')
+				$cantidad=Article::select('warehouse_type_id', 'code', 'stock_good')
 				->where('warehouse_type_id', $warehouse_type_id)
 					->where('code', 1)
 					->sum('stock_good');
-
-
-	
 
 				if ($item->article_code != 3){
 					$item->article_stock_good = $item->article->stock_good;
@@ -153,10 +150,8 @@ class LiquidacionGlpController extends Controller
 					$item->sale_converted_amount = number_format(0, 2, '.', '');
 					$item->return_converted_amount = $item->new_stock_return;
 					$item->balance_converted_amount = number_format($item->warehouse_movement->stock_pend - $item->return_converted_amount, 2, '.', '');
-					$item->new_balance_converted_amount = number_format( $item->article_stock_good - $item->sale_converted_amount, 2, '.', '');
-					
-							
-					
+					// $item->new_balance_converted_amount = number_format( $item->article_stock_good - $item->sale_converted_amount, 2, '.', '');
+					$item->new_balance_converted_amount = "1.00";
 
 					unset($item->warehouse_movement_id);
 					unset($item->converted_amount);
@@ -228,11 +223,11 @@ class LiquidacionGlpController extends Controller
 			$current_date = date('Y-m-d', strtotime($warehouse_movement->created_at));
 
 
-			$article_det = WarehouseMovementDetail::select('article_num')
+			$article_det = WarehouseMovementDetail::select('article_code')
 			->where('warehouse_movement_id', $warehouse_movement_id)
 			->first();
 
-			$article_num = $article_det ? $article_det->article_num : '' ;
+			$article_num = $article_det ? $article_det->article_code : '' ;
 
 			$element = PriceList::select('id', 'article_id', 'price_igv')
 					->where('client_id', $client_id)
@@ -344,16 +339,27 @@ class LiquidacionGlpController extends Controller
 		$igv_percentage = ( $rate->value / 100 ) + 1;
 
 		foreach ($sales as $sale) {
-			$client = Client::find($sale['client_id'], ['id', 'code', 'business_name', 'link_client_id', 'payment_id', 'credit_limit_days','credit_limit', 'credit_balance','route_id']);
+			$scop = $sale['scop_number'];
+
+			$client = Client::find(
+				$sale['client_id'],
+				[
+					'id',
+					'code',
+					'business_name',
+					'link_client_id',
+					'payment_id',
+					'credit_limit_days',
+					'credit_limit',
+					'credit_balance',
+					'route_id'
+				]
+			);
 			$client_address = ClientAddress::where('client_id', $client->id)
 				->where('address_type_id', 1)
 				->select('id', 'address')
 				->first();
 
-
-				
-
-			
 			$client->credit_limit_days = $client->credit_limit_days ? $client->credit_limit_days : 0;
 			$sale_date = date('Y-m-d', strtotime($warehouse_movement->created_at));
 			$expiry_date = $sale_date;
@@ -425,6 +431,7 @@ class LiquidacionGlpController extends Controller
 				$voucher->total_perception = $sale['total_perception'];
 				$voucher->igv_percentage = $rate->value;
 				$voucher->igv_perception_percentage = $sale['perception_percentage'] / 100;
+				$voucher->scop = $scop;
 				if ( $voucher_type->id >= 1 && $voucher_type->id <= 4 ) {
 					$voucher->ose = 0;
 				} else {
@@ -453,6 +460,19 @@ class LiquidacionGlpController extends Controller
 					$voucher_detail->user = Auth::user()->user;
 					$voucher_detail->article_id = $article->id;
 					$voucher_detail->save();
+
+					//validar que se actualize el stock del article
+					Article::where('id', $article->article_id)
+					->update([
+						'stock_good' => DB::raw('stock_good + ' . $article->prestamo),
+						'stock_repair' => DB::raw('stock_repair - ' . $article->prestamo),
+						'stock_minimum' => DB::raw('stock_minimum + ' . $article->cesion),
+					]);
+
+					$article = Article::find($detail['article_id'], ['id','name', 'stock_good']);
+
+					$article->stock_good= $article->stock_good-$sale_detail->quantity;
+					$article->save();
 
 					if ( $detail['igv'] == 1 ) {
 						$taxed_operation += round($detail['sale_value'] / $igv_percentage, 4);
@@ -573,8 +593,8 @@ class LiquidacionGlpController extends Controller
 						$liquidation_model = new Liquidation();
 						$liquidation_model->sale_id = $sale_model->id;
 						$liquidation_model->company_id = $model['company_id'];
-						$liquidation_model->payment_method_id = $liquidation['payment_method']['id'];
-						$liquidation_model->currency_id = $liquidation['currency']['id'];
+						$liquidation_model->payment_method_id = $liquidation['payment_method'];
+						$liquidation_model->currency_id = $liquidation['currency'];
 						$liquidation_model->exchange_rate = $liquidation['exchange_rate'];
 						$liquidation_model->bank_account_id = $liquidation['bank_account'];
 						$liquidation_model->operation_number = $liquidation['operation_number'];
@@ -628,35 +648,17 @@ class LiquidacionGlpController extends Controller
 			}
 		}
 
-
-
-		Article::where('warehouse_type_id', $article->article_id)
-		->update([
-			'stock_good' => DB::raw('stock_good + ' . $article->prestamo),
-			'stock_repair' => DB::raw('stock_repair - ' . $article->prestamo),
-			'stock_minimum' => DB::raw('stock_minimum + ' . $article->cesion),
-		]);
-
-
-
-
-
-		$article = Article::find($detail['article_id'], ['id','name', 'stock_good']);
-
-		$article->stock_good= $article->stock_good-$sale_detail->quantity;
-		$article->save();
-
 		$warehouse_movement->stock_pend =$warehouse_movement->stock_pend-$detail['quantity'];
 		$warehouse_movement->save();
 
-        if ($warehouse_movement->stock_pend == 0 || $warehouse_movement->stock_pend < 0 ){
-		$warehouse_movement->state = 1;
-		$warehouse_movement->save();
-	    }
+		if ($warehouse_movement->stock_pend == 0 || $warehouse_movement->stock_pend < 0 ){
+			$warehouse_movement->state = 1;
+			$warehouse_movement->save();
+		}
 
 		
 
-		// return request()->all();
+		return request()->all();
 	}
 
 	public function getOperationNumber() {

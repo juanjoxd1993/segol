@@ -389,10 +389,16 @@
                     }).catch(error => {
                         EventBus.$emit('loading', false);
                         console.log(error);
-                        console.log(error.response);
+
+                        const response = error.response;
+                        console.log(response);
+
+                        const data = response.data;
+
+                        const message = data.message ? data.message : error;
                         Swal.fire({
                             title: '¡Error!',
-                            text: error,
+                            text: message,
                             type: "error",
                             heightAuto: false,
                         });
