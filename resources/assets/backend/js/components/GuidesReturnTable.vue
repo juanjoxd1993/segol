@@ -154,18 +154,10 @@ export default {
                 model: this.$store.state.model,
             }).then(response => {
                 const data = response.data;
-                // data.map(item => console.log(item.parent))
-                // console.log(data)
-                const filteredArticles = data.filter((article, index, arr) =>
-                    index === arr.findIndex((t) => t.article_name === article.article_name)
-                );
-                // const filteredArticles = data.filter(article => article.parent != null);
-                // console.log(filteredArticles);
-
-                this.$store.commit('addArticles', filteredArticles);
+                this.$store.commit('addArticles', data);
 
                 if (this.guides_return_datatable == undefined) {
-                    this.fillTableX(filteredArticles);
+                    this.fillTableX(data);
                 } else {
                     this.guides_return_datatable.originalDataSet = this.articlesState;
                     this.guides_return_datatable.load();

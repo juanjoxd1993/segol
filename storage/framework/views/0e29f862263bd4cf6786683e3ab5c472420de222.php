@@ -9,7 +9,6 @@
 		:movement_types = "<?php echo e($movement_types); ?>"
 		:movement_stock_types = "<?php echo e($movement_stock_types); ?>"
 		:currencies = "<?php echo e($currencies); ?>"
-		:client_routes = "<?php echo e($client_routes); ?>"
 		:guide_series = "<?php echo e($guide_series); ?>"
 		:current_date = "'<?php echo e($current_date); ?>'"
 		
@@ -17,7 +16,6 @@
 		:warehouse_types = "<?php echo e($warehouse_types); ?>"
 		:warehouse_account_types = "<?php echo e($warehouse_account_types); ?>"
 		:warehouse_document_types = "<?php echo e($warehouse_document_types); ?>"	
-		:vehicles = "<?php echo e($vehicles); ?>"
 		:url = "'<?php echo e(route('dashboard.operations.guides_register.list')); ?>'"
 		:url_get_accounts = "'<?php echo e(route('dashboard.operations.guides_register.get_accounts')); ?>'"
 		:url_get_articles = "'<?php echo e(route('dashboard.operations.guides_register.get_articles')); ?>'"
