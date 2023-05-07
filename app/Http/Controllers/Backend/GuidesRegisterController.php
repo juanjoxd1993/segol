@@ -608,9 +608,7 @@ class GuidesRegisterController extends Controller
 		$movement2->save();
 
 		foreach ($articles as $item) {
-			$article = Article::where('warehouse_type_id', $movement->warehouse_type_id)
-				->where('id', $item['id'])
-				->first();
+			$article = Article::find($item['id']);
 
 			if ($article) {
 
