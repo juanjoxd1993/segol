@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
+use App\Client;
+use App\ClientLiquidations;
+
 class GuidesReturnController extends Controller
 {
     public function index()
@@ -64,7 +67,15 @@ class GuidesReturnController extends Controller
             $item->creation_date = date('d-m-Y', strtotime($item->created_at));
         });
 
-        return $elements;
+        $array_movments = array();
+
+        foreach ($elements as $element) {
+            array_push($array_movments, $element);
+        };
+
+        $array_movments = array_reverse($array_movments);
+
+        return $array_movments;
     }
 
     public function list()
@@ -117,6 +128,8 @@ class GuidesReturnController extends Controller
     public function update(Request $request)
     {
         $articles = $request->articles;
+        $clients = $request->clients;
+        $warehouse_movement_id = $request->warehouse_movement_id;
 
         foreach ($articles as $article) {
 
@@ -281,7 +294,7 @@ class GuidesReturnController extends Controller
             Article::where('warehouse_type_id', 4)
                 ->where('code', $article['article_code'])
                 ->update([
-                    'stock_good' => $articleDetail->stock_good + $article['retorno'],
+                    'stock_good' => $articleDetail['stock_good']+ $article['retorno'],
                 ]);
 
             //Actualizar new_stock_return
@@ -306,7 +319,17 @@ class GuidesReturnController extends Controller
                 ->update([
                     'state' => 1,
                 ]);
+
         }
+
+        foreach ($clients as $client) {
+            $client_liquidation = new ClientLiquidations;
+            $client_liquidation->warehouse_movement_id = $warehouse_movement_id;
+            $client_liquidation->client_id = $client ['client_id'];
+            $client_liquidation->article_id = $client['article_id'];
+            $client_liquidation->quantity = $client['liquidation'];
+            $client_liquidation->save();
+        };
 
         $data = new stdClass();
         $data->type = 1;
@@ -315,4 +338,36 @@ class GuidesReturnController extends Controller
 
         return response()->json($data);
     }
+
+    public function getClients() {
+        $company_id = request('company_id');
+        $client_id = request('client_id');
+        $q = request('q');
+        if ( isset($client_id) ) {
+            $elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit')
+                ->where('id', $client_id)
+                ->first();
+            $elements->text = $elements->business_name;
+            unset($elements->business_name);
+        } else {
+            $elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id', 'credit_limit')
+                ->where('company_id', $company_id)
+                ->where('business_name', 'like', '%'.$q.'%') ->orWhere('id', 'like', '%'.$q.'%')
+                ->orderBy('business_name', 'asc')
+                ->with(['perception_percentage' => function ($query) {
+                    $query->select('id', 'value');
+                }])
+                ->get();
+            $elements->map(function($item, $index) {
+                $item->text = $item->id . ' - ' .$item->business_name;
+                unset($item->business_name);
+                unset($item->code);
+                return $item;
+            });
+        }
+
+        return $elements;
+    }
+
+
 }

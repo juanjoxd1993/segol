@@ -196,8 +196,12 @@ export default {
 
             EventBus.$emit('loading', true);
 
+            const warehouse_movement_id = this.$store.state.model.warehouse_movement_id;
+
             axios.post(this.url_store, {
-                articles: this.data
+                articles: this.data,
+                clients: this.$store.state.clients,
+                warehouse_movement_id,
             }).then(response => {
 
                 EventBus.$emit('loading', false);
@@ -234,7 +238,6 @@ export default {
             this.data[this.article.index] = this.article;
 
             let index = this.data.findIndex(el => el.article_id == this.article.article_id)
-            console.log(this.article.presale_converted_amount)
 
             //Cambiar en su conversión
             this.data[index].retorno = this.article.retorno;
@@ -243,6 +246,13 @@ export default {
             this.data[index].cesion = this.article.cesion;
             this.data[index].vacios = this.article.vacios;
             this.data[index].liquidar = this.article.liquidar;
+
+            this.$store.state.articles[index].retorno = this.article.retorno;
+            this.$store.state.articles[index].cambios = this.article.cambios;
+            this.$store.state.articles[index].prestamo = this.article.prestamo;
+            this.$store.state.articles[index].cesion = this.article.cesion;
+            this.$store.state.articles[index].vacios = this.article.vacios;
+            this.$store.state.articles[index].liquidar = this.article.liquidar;
 
             this.fillTableX(this.data);
 

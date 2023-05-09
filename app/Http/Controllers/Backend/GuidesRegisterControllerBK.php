@@ -767,7 +767,6 @@ class GuidesRegisterController extends Controller
 				//  		['stock_good' => $article->stock_good -  $converted_amount]
 				//  	);
 				$article->stock_good = $article->stock_good -  $converted_amount;
-				
 
 				$article->edit = 1;
 				$article->save();

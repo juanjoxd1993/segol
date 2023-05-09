@@ -20,6 +20,7 @@ export default {
 			payment_id: '',
 			currency_id: 1,
 		},
+		clients: []
 	},
 	mutations: {
 		addModel(state, model) {
@@ -84,7 +85,13 @@ export default {
 				payment_id: '',
 				currency_id: 1,
 			}
-		}
+		},
+		addClient(state, client) {
+				state.clients.push(client);
+		},
+		addClients(state, clients) {
+				state.clients = clients;
+		},
 	},
 	getters: {
 		editSale: (state) => (client_id) => {
