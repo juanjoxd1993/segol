@@ -59,7 +59,6 @@ class GuidesRegisterController extends Controller
 		return view('backend.guides_register')->with(compact('movement_classes', 'movement_types', 'movement_stock_types', 'warehouse_types', 'companies', 'currencies', 'current_date', 'min_datetime', 'max_datetime', 'warehouse_account_types', 'warehouse_document_types', 'igv', 'guide_series'));
 	}
 
-
 	public function getNextcorrelative()
 	{
 		$last_guide_serie = GuidesSerie::select('correlative')
@@ -235,7 +234,6 @@ class GuidesRegisterController extends Controller
 	{
 		// $this->validateModalForm();
 
-
 		$article_id = request('model.article_id');
 		$quantity = request('model.quantity');
 		$price = request('model.price');
@@ -254,7 +252,19 @@ class GuidesRegisterController extends Controller
 
 		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
 			->where('articles.id', $article_id)
-			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'business_type', 'convertion')
+			->select(
+				'articles.id',
+				'code',
+				'articles.name',
+				'package_sale',
+				'sale_unit_id',
+				'operation_type_id',
+				'factor',
+				'operation_types.name as operation_type_name',
+				'business_type',
+				'convertion',
+				'group_id'
+				)
 			->first();
 
 		$article->item_number = ++$item_number;
@@ -284,8 +294,9 @@ class GuidesRegisterController extends Controller
 		$article->perception_percentage = $perception_percentage;
 
 		array_push($articles, $article);
+
 		if ($article->group_id == 7) {
-				return response()->json(['isSuccess' => true, 'articles' => $articles]);
+			return response()->json(['isSuccess' => true, 'articles' => $articles]);
 		};
 
 		//Encontrar conversión

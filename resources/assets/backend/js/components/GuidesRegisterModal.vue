@@ -325,41 +325,62 @@
                     vm.model.article_id = parseInt(selected_element.val());
 
                     var current_article = vm.articles.find(article => article.id === vm.model.article_id);
+                    
+                    document.getElementById('add_article_2').disabled = false;
 
-                    if ( vm.article_list.includes(current_article.id) ) {
-                        Swal.fire({
-                            title: '¡Error!',
-                            text: 'Este artículo ya se encuentra en el registro.',
-                            type: "error",
-                            heightAuto: false,
-                        });
+                    vm.igv_flag = current_article.igv;
+                    vm.perception_flag = current_article.perception;
+                    vm.stock_good = current_article.stock_good;
+                    vm.stock_repair = current_article.stock_repair;
+                    vm.stock_return = current_article.stock_return;
+                    vm.stock_damaged = current_article.stock_damaged;
 
-                        vm.model.article_id = '';
-                        $('#article').val(null).trigger('change');
-
-                        document.getElementById('add_article_2').disabled = true;
-                    } else {
-                        document.getElementById('add_article_2').disabled = false;
-
-                        vm.igv_flag = current_article.igv;
-                        vm.perception_flag = current_article.perception;
-                        vm.stock_good = current_article.stock_good;
-                        vm.stock_repair = current_article.stock_repair;
-                        vm.stock_return = current_article.stock_return;
-                        vm.stock_damaged = current_article.stock_damaged;
-
-                        if ( vm.movement_class_id == 1 ) {
+                    if ( vm.movement_class_id == 1 ) {
+                        vm.stock = vm.stock_good;
+                    } else if ( vm.movement_class_id == 2 ) {
+                        if ( vm.movement_type_id == 15 ) {
+                            vm.stock = vm.stock_return;
+                        } else if ( vm.movement_type_id == 4 ) {
+                            vm.stock = vm.stock_repair;
+                        } else {
                             vm.stock = vm.stock_good;
-                        } else if ( vm.movement_class_id == 2 ) {
-                            if ( vm.movement_type_id == 15 ) {
-                                vm.stock = vm.stock_return;
-                            } else if ( vm.movement_type_id == 4 ) {
-                                vm.stock = vm.stock_repair;
-                            } else {
-                                vm.stock = vm.stock_good;
-                            }
                         }
-                    }
+                    };
+
+                    // if ( vm.article_list.includes(current_article.id) ) {
+                    //     Swal.fire({
+                    //         title: '¡Error!',
+                    //         text: 'Este artículo ya se encuentra en el registro.',
+                    //         type: "error",
+                    //         heightAuto: false,
+                    //     });
+
+                    //     vm.model.article_id = '';
+                    //     $('#article').val(null).trigger('change');
+
+                    //     document.getElementById('add_article_2').disabled = true;
+                    // } else {
+                    //     document.getElementById('add_article_2').disabled = false;
+
+                    //     vm.igv_flag = current_article.igv;
+                    //     vm.perception_flag = current_article.perception;
+                    //     vm.stock_good = current_article.stock_good;
+                    //     vm.stock_repair = current_article.stock_repair;
+                    //     vm.stock_return = current_article.stock_return;
+                    //     vm.stock_damaged = current_article.stock_damaged;
+
+                    //     if ( vm.movement_class_id == 1 ) {
+                    //         vm.stock = vm.stock_good;
+                    //     } else if ( vm.movement_class_id == 2 ) {
+                    //         if ( vm.movement_type_id == 15 ) {
+                    //             vm.stock = vm.stock_return;
+                    //         } else if ( vm.movement_type_id == 4 ) {
+                    //             vm.stock = vm.stock_repair;
+                    //         } else {
+                    //             vm.stock = vm.stock_good;
+                    //         }
+                    //     };
+                    // }
                 }).on('select2:unselect', function(e) {
                     vm.model.article_id = '';
                     vm.igv_flag = 0;
