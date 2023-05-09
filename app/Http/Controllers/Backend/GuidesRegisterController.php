@@ -235,6 +235,7 @@ class GuidesRegisterController extends Controller
 	{
 		// $this->validateModalForm();
 
+
 		$article_id = request('model.article_id');
 		$quantity = request('model.quantity');
 		$price = request('model.price');
@@ -251,29 +252,9 @@ class GuidesRegisterController extends Controller
 
 		$articles = array();
 
-		$article = Article::leftjoin(
-				'operation_types',
-				'operation_types.id',
-				'=',
-				'articles.operation_type_id'
-			)
-			->where(
-				'articles.id',
-				$article_id
-			)
-			->select(
-				'articles.id',
-				'code',
-				'articles.name',
-				'package_sale',
-				'sale_unit_id',
-				'operation_type_id',
-				'factor',
-				'operation_types.name as operation_type_name',
-				'business_type',
-				'convertion',
-				'group_id'
-			)
+		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
+			->where('articles.id', $article_id)
+			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'business_type', 'convertion')
 			->first();
 
 		$article->item_number = ++$item_number;
@@ -303,16 +284,15 @@ class GuidesRegisterController extends Controller
 		$article->perception_percentage = $perception_percentage;
 
 		array_push($articles, $article);
-
 		if ($article->group_id == 7) {
-			return response()->json(['isSuccess' => true, 'articles' => $articles]);
+				return response()->json(['isSuccess' => true, 'articles' => $articles]);
 		};
 
 		//Encontrar conversión
 		$article2 = Article::where(function ($query) {
-				$query->where('group_id', 7) //Envases
-					->orWhere('group_id', 26); //Artículos
-			})
+			$query->where('group_id', 7) //Envases
+				->orWhere('group_id', 26); //Artículos
+		})
 			->where('convertion', $article->convertion)
 			->first();
 
@@ -485,6 +465,7 @@ class GuidesRegisterController extends Controller
 			]);
 		}
 
+
 		return response()->json(['isSuccess' => true, 'articles' => $articles]);
 	}
 
@@ -608,7 +589,9 @@ class GuidesRegisterController extends Controller
 		$movement2->save();
 
 		foreach ($articles as $item) {
-			$article = Article::find($item['id']);
+			$article = Article::where('warehouse_type_id', 4)
+				->where('code', $item['code'])
+				->first();
 
 			if ($article) {
 
@@ -646,37 +629,6 @@ class GuidesRegisterController extends Controller
 				$movementDetail->igv_perception_percentage = $item['perception_percentage'];
 				$movementDetail->created_at_user = Auth::user()->user;
 				$movementDetail->updated_at_user = Auth::user()->user;
-
-				if ($movement->movement_class_id == 1) {
-					$article->stock_good += $movementDetail->converted_amount;
-					$movementDetail->new_stock_good += $movementDetail->converted_amount;
-
-					if ($movement->movement_type_id == 1 || $movement->movement_type_id == 2) {
-						$article->last_price = $movementDetail->price;
-					}
-				} elseif ($movement->movement_class_id == 2) {
-					if ($movement->movement_type_id == 15) {
-						$article->stock_return -= $movementDetail->converted_amount;
-						// $movementDetail->new_stock_return -= $movementDetail->converted_amount;
-					} elseif ($movement->movement_type_id == 4) {
-						$article->stock_repair -= $movementDetail->converted_amount;
-						// $movementDetail->new_stock_repair -= $movementDetail->converted_amount;
-					} else {
-						$article->stock_good -= $movementDetail->converted_amount;
-						$movementDetail->new_stock_good -= $movementDetail->converted_amount;
-
-						if ($movement->movement_type_id == 18 && $movement->movement_stock_type_id == 1) {
-							$article->stock_return += $movementDetail->converted_amount;
-							// $movementDetail->new_stock_return += $movementDetail->converted_amount;
-						} elseif ($movement->movement_type_id == 18 && $movement->movement_stock_type_id == 2) {
-							$article->stock_repair += $movementDetail->converted_amount;
-							// $movementDetail->new_stock_repair += $movementDetail->converted_amount;
-						} elseif ($movement->movement_type_id == 18 && $movement->movement_stock_type_id == 3) {
-							$article->stock_damaged += $movementDetail->converted_amount;
-							// $movementDetail->new_stock_damaged += $movementDetail->converted_amount;
-						}
-					}
-				}
 
 				$movementDetail->save();
 
@@ -760,13 +712,7 @@ class GuidesRegisterController extends Controller
 					}
 				}
 
-				// validar
-				// Article::where('warehouse_type_id', 4)
-				// 	->where('code', $article->code)
-				// 	->update(
-				// 		['stock_good' => $article->stock_good -  $converted_amount]
-				// 	);
-
+				$article->stock_good -= $converted_amount;
 				$article->edit = 1;
 				$article->save();
 
