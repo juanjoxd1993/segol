@@ -31,6 +31,8 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use DB;
 
+use App\ClientLiquidations;
+
 use stdClass;
 
 class LiquidationFinalController extends Controller
@@ -112,16 +114,24 @@ class LiquidationFinalController extends Controller
         //     ->first();
 
         $movementDetails = WarehouseMovementDetail::select(
-					'id',
-					'warehouse_movement_id',
-					'item_number',
-					'article_code',
-					'converted_amount',
-					'new_stock_return'
-				)
+				'id',
+				'warehouse_movement_id',
+				'item_number',
+				'article_code',
+				'converted_amount',
+				'new_stock_return'
+			)
             ->where('warehouse_movement_id', $warehouse_movement_id)
             ->orderBy('item_number', 'asc')
             ->get();
+
+		$clientLiquidations = ClientLiquidations::select(
+				'client_id',
+				'article_id',
+				'quantity'
+			)
+			->where('warehouse_movement_id', $warehouse_movement_id)
+			->get();
 
         $movementDetails->map(function ($item, $index)  {
             $item->sale_warehouse_movement_id = $item->warehouse_movement_id;
@@ -138,7 +148,29 @@ class LiquidationFinalController extends Controller
             unset($item->converted_amount);
         });
 
-        return $movementDetails;
+		$clients = array();
+		foreach ($clientLiquidations as $liquidation) {
+				$client = Client::select(
+						'id',
+						'code',
+						'business_name',
+						'payment_id',
+						'perception_percentage_id',
+						'credit_limit',
+						'document_number',
+						'document_type_id'
+				)
+						->where('id', $liquidation->client_id)
+						->first();
+				array_push($clients, $client);
+		}
+
+        return response()
+			->json([
+				'movement_details' => $movementDetails,
+				'clients' => $clients
+			]);
+
     }
 
     public function getClients() {
@@ -149,6 +181,9 @@ class LiquidationFinalController extends Controller
         if ( isset($client_id) ) {
             $elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit')
                 ->where('id', $client_id)
+				->with(['perception_percentage' => function ($query) {
+                    $query->select('id', 'value');
+                }])
                 ->first();
 
             $elements->text = $elements->business_name;
@@ -175,25 +210,54 @@ class LiquidationFinalController extends Controller
         return $elements;
     }
 
-		public function getSaleSeries() {
-			$warehouse_document_type_id = request('warehouse_document_type_id');
+	public function getArticles() {
+		$client_id = request('client_id');
+		$warehouse_movement_id = request('warehouse_movement_id');
+		$clientLiquidations = ClientLiquidations::select(
+				'client_id',
+				'article_id',
+				'quantity'
+			)
+			->where('warehouse_movement_id', $warehouse_movement_id)
+			->where('client_id', $client_id)
+			->get();
 
-			$sale_series = SaleSeries::select('id', 'num_serie', 'correlative')
-				->where('warehouse_document_type_id', $warehouse_document_type_id)
-				->get();
+		$articles = array();
 
-			$series = array();
+		foreach ($clientLiquidations as $liquidation) {
+			$article = Article::select(
+					'id',
+					'code',
+					'name'
+				)
+				->where('id', $liquidation->article_id)
+				->first();
 
-			foreach ($sale_series as $sale_serie) {
-				$obj = new stdClass();
-				$obj->id = $sale_serie->id;
-				$obj->num_serie = $sale_serie->num_serie;
-				$obj->correlative = $sale_serie->correlative + 1;
-				array_push($series, $obj);
-			}
+			array_push($articles, $article);
+		};
 
-			return $series;
+		return $articles;
+	}
+
+	public function getSaleSeries() {
+		$warehouse_document_type_id = request('warehouse_document_type_id');
+
+		$sale_series = SaleSeries::select('id', 'num_serie', 'correlative')
+			->where('warehouse_document_type_id', $warehouse_document_type_id)
+			->get();
+
+		$series = array();
+
+		foreach ($sale_series as $sale_serie) {
+			$obj = new stdClass();
+			$obj->id = $sale_serie->id;
+			$obj->num_serie = $sale_serie->num_serie;
+			$obj->correlative = $sale_serie->correlative + 1;
+			array_push($series, $obj);
 		}
+
+		return $series;
+	}
 
     public function getArticlePrice() {
         $article_id = request('article_id');
@@ -313,7 +377,8 @@ class LiquidationFinalController extends Controller
 		$igv_percentage = ( $rate->value / 100 ) + 1;
 
 		foreach ($sales as $sale) {
-			$client = Client::find($sale['client_id'], ['id', 'code', 'business_name', 'link_client_id', 'payment_id', 'credit_limit_days','credit_limit', 'credit_balance','route_id']);
+			$client = Client::find($sale['client_id'], ['id', 'code', 'business_name', 'link_client_id', 'payment_id', 'credit_limit_days','credit_limit', 'credit_balance','route_id', 'perception_percentage_id','document_type_id']);
+			$rates = Rate::find($client->perception_percentage_id,['id','value']);
 			$client_address = ClientAddress::where('client_id', $client->id)
 				->where('address_type_id', 1)
 				->select('id', 'address')
@@ -322,7 +387,11 @@ class LiquidationFinalController extends Controller
 			$client->credit_limit_days = $client->credit_limit_days ? $client->credit_limit_days : 0;
 			$sale_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
 			$expiry_date = $sale_date;
-			if ( $sale['payment_id'] == 2 ) {
+
+			// if ( $sale['payment_id'] == 2 ) {
+			// 	$expiry_date = CarbonImmutable::createFromFormat('Y-m-d', $sale_date)->addDays($client->credit_limit_days);
+			// }
+			if ( $client->payment_id == 2 ) {
 				$expiry_date = CarbonImmutable::createFromFormat('Y-m-d', $sale_date)->addDays($client->credit_limit_days);
 			}
 
@@ -334,7 +403,8 @@ class LiquidationFinalController extends Controller
 			$sale_model->client_id = $client->id;
 			$sale_model->client_code = $client->code;
 			$sale_model->route_id = $client->route_id;
-			$sale_model->payment_id =  $sale['payment_id'];
+			// $sale_model->payment_id =  $sale['payment_id'];
+			$sale_model->payment_id =  $client->payment_id;
 			$sale_model->currency_id = $sale['currency_id'];
 			$sale_model->guide_series = $warehouse_movement->referral_guide_series;
 			$sale_model->guide_number = $warehouse_movement->referral_guide_number;
@@ -384,12 +454,14 @@ class LiquidationFinalController extends Controller
 				$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->traslate_date));
         		$voucher->expiry_date = $expiry_date;
 				$voucher->currency_id = $sale['currency_id'];
-				$voucher->payment_id = $sale['payment_id'];
+				// $voucher->payment_id = $sale['payment_id'];
+				$voucher->payment_id = $client->payment_id;
 				$voucher->total = $sale['total'];
 				$voucher->igv_perception = $sale['perception'];
 				$voucher->total_perception = $sale['total_perception'];
 				$voucher->igv_percentage = $rate->value;
-				$voucher->igv_perception_percentage = $sale['perception_percentage'] / 100;
+				// $voucher->igv_perception_percentage = $sale['perception_percentage'] / 100;
+				$voucher->igv_perception_percentage = $rate->value / 100;
 				if ( $voucher_type->id >= 1 && $voucher_type->id <= 4 ) {
 					$voucher->ose = 0;
 				} else {
@@ -486,7 +558,13 @@ class LiquidationFinalController extends Controller
 			$pre_balance = 0;
 			$paid = $total_perception;
 
-			if ( $sale['payment_id'] == 2 ) {
+			// if ( $sale['payment_id'] == 2 ) {
+			// 	$balance = $total_perception;
+			// 	$pre_balance = $total_perception;
+			// 	$paid = 0;
+			// }
+
+			if ( $client->payment_id == 2 ) {
 				$balance = $total_perception;
 				$pre_balance = $total_perception;
 				$paid = 0;
@@ -527,7 +605,8 @@ class LiquidationFinalController extends Controller
 				$sale_detail->total = round($detail['sale_value'], 4);
 				$sale_detail->total_perception = round($detail['total_perception'], 4);
 				$sale_detail->igv_percentage = $rate->value;
-				$sale_detail->igv_perception_percentage = $sale['perception_percentage'];
+				// $sale_detail->igv_perception_percentage = $sale['perception_percentage'];
+				$sale_detail->igv_perception_percentage = $rate->value;
 				$sale_detail->referential_convertion = $article->convertion;
 				$sale_detail->kg = $detail['quantity'] * $sale_detail['referential_convertion'];
 				$sale_detail->created_at_user = Auth::user()->user;
@@ -575,7 +654,26 @@ class LiquidationFinalController extends Controller
 								$sale_model->save();
 						}
 
-						if ( $sale['payment_id'] ==2 ) {
+						// if ( $sale['payment_id'] ==2 ) {
+						// 	$sale_model->balance -= $liquidation['amount'];
+						// 	$sale_model->pre_balance -= $liquidation['amount'];
+						// 	$sale_model->paid += $liquidation['amount'];
+						// 	$sale_model->payment_method_credit = 3;
+						// 	$sale_model->save();
+
+						// 	DB::table('credits')
+						// 		->insert([
+						// 				'sale_id' => $sale_model->id,
+						// 				'company_id' => $model['company_id'],
+						// 				'client_id' => $sale['client_id'],
+						// 				'currency_id' =>  $liquidation['currency'],
+						// 				'amount' => round($sale_model['pre_balance'], 4),
+						// 				'created_at_user' => auth()->user()->name,
+						// 				'created_at' => Carbon::now(),
+						// 		]);
+						// }
+
+						if ( $client->payment_id ==2 ) {
 							$sale_model->balance -= $liquidation['amount'];
 							$sale_model->pre_balance -= $liquidation['amount'];
 							$sale_model->paid += $liquidation['amount'];

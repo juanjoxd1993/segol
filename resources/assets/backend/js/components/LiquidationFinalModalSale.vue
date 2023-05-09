@@ -12,11 +12,21 @@
                     <div class="modal-body">
                         <div class="kt-portlet__body">
                             <div class="row">
-                                <div class="col-lg-3">
+                                <!-- <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Cliente:</label>
                                         <select class="form-control kt-select2" name="client_id" id="client_id" v-model="sale.client_id" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
+                                        </select>
+                                        <div id="client_id-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div> -->
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Cliente:</label>
+                                        <select class="form-control" name="client_id" id="client_id" v-model="sale.client_id" @focus="$parent.clearErrorMsg($event)">
+                                            <option value="0">Seleccionar</option>
+                                            <option v-for="client in clients" v-bind:key="client.id" :value="client.id">{{ client.business_name }}</option>
                                         </select>
                                         <div id="client_id-error" class="error invalid-feedback"></div>
                                     </div>
@@ -90,12 +100,22 @@
                                         <div class="kt-section__title">Artículos</div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3">
+                                <!-- <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Artículo:</label>
                                         <select class="form-control" name="article_id" id="article_id" v-model="model.article_id" @change="getArticlePrice()" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
                                             <option v-for="article in filterArticles" :value="article.article_id" v-bind:key="article.article_id">{{ article.article_name }}</option>
+                                        </select>
+                                        <div id="article_id-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div> -->
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Artículo:</label>
+                                        <select class="form-control" name="article_id" id="article_id" v-model="model.article_id" @change="getArticlePrice()" @focus="$parent.clearErrorMsg($event)">
+                                            <option value="">Seleccionar</option>
+                                            <option v-for="article in filterArticles" :value="article.id" v-bind:key="article.id">{{ article.name }}</option>
                                         </select>
                                         <div id="article_id-error" class="error invalid-feedback"></div>
                                     </div>
@@ -203,6 +223,10 @@
                 type: String,
                 default: ''
             },
+            url_get_articles_clients: {
+                type: String,
+                default: ''
+            },
             url_verify_document_type: {
                 type: String,
                 default: ''
@@ -223,7 +247,7 @@
                     total_perception: '',
                 },
                 sale: {
-                    client_id: '',
+                    client_id: 0,
                     client_name: '',
                     document_type_id: '',
                     warehouse_document_type_id: '',
@@ -244,19 +268,22 @@
                 },
                 filterArticles: [],
                 edit_flag: false,
-                sale_series: []
+                sale_series: [],
+                clients: []
             }
         },
         created() {
         },
         mounted() {
-            this.newSelect2();
+            // this.newSelect2();
 
             EventBus.$on('create_modal', function() {
+                this.clients = this.$store.state.clients;
+
                 let vm = this;
 
                 this.button_text = 'Crear';
-                this.sale.client_id = '';
+                this.sale.client_id = 0;
                 this.sale.client_name = '';
                 this.sale.document_type_id = '';
                 this.sale.warehouse_document_type_id = '';
@@ -350,13 +377,44 @@
 				let sale_serie = this.sale_series.find(element => element.id == val);
 
                 this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : '';
-			}
+			},
+            'sale.client_id': function(val) {
+                const client_id = val;
+                const warehouse_movement_id = this.$store.state.model.warehouse_movement_id;
+                const client = this.clients.find(item => item.id === val);
+                if (client) {
+                    this.sale.client_id = client_id;
+                    this.sale.document_type_id = client.document_type_id;
+                    this.sale.client_name = client.business_name;
+                    this.sale.payment_id = client.payment_id;
+                    // solo tiene el perception percentage id
+                    // this.sale.perception_percentage = client.perception_percentage.value;
+                    this.sale.credit_limit = client.credit_limit;
+                } else {
+                    this.sale.client_id = 0;
+                    this.sale.document_type_id = '';
+                    this.sale.client_name = '';
+                    this.sale.payment_id = '';
+                    this.sale.credit_limit = '';
+                };
+                axios.post(this.url_get_articles_clients,{
+                    client_id,
+                    warehouse_movement_id
+                }).then(response => {
+                    const data = response.data;
+                    // this.filterArticles = data.filter(element => !sale_article_ids.includes(element.article_id));
+                    this.filterArticles = data;
+                }).catch(error => {
+                    console.log(error);
+                    console.log(error.response);
+                });
+            }
         },
         computed: {
             setDetails() {
                 let articles = this.$store.state.articles;
                 let sale_article_ids = this.sale.details.map(element => element.article_id);
-                this.filterArticles = articles.filter(element => !sale_article_ids.includes(element.article_id));
+                // this.filterArticles = articles.filter(element => !sale_article_ids.includes(element.article_id));
 
                 return this.sale.details;
             },
@@ -586,7 +644,7 @@
 							};
 
 							this.sale = {
-								client_id: '',
+								client_id: 0,
 								client_name: '',
 								document_type_id: '',
 								warehouse_document_type_id: '',
@@ -783,97 +841,97 @@
 
 				$('#modal-sale').modal('hide');
 			},
-            newSelect2: function() {
-                let vm = this;
-                let token = document.head.querySelector('meta[name="csrf-token"]').content;
-                $("#client_id").select2({
-                    placeholder: "Buscar",
-                    allowClear: true,
-                    language: {
-                        noResults: function() {
-                            return 'No hay resultados';
-                        },
-                        searching: function() {
-                            return 'Buscando...';
-                        },
-                        inputTooShort: function() {
-                            return 'Ingresa 1 o más caracteres';
-                        },
-                        errorLoading: function() {
-                            return 'No se pudo cargar la información'
-                        }
-                    },
-                    ajax: {
-                        url: this.url_get_clients,
-                        dataType: 'json',
-                        delay: 250,
-                        type: 'POST',
-                        data: function (params) {
-                            var queryParameters = {
-                                q: params.term,
-                                company_id: vm.$store.state.model.company_id,
-                                _token: token,
-                            }
+            // newSelect2: function() {
+            //     let vm = this;
+            //     let token = document.head.querySelector('meta[name="csrf-token"]').content;
+            //     $("#client_id").select2({
+            //         placeholder: "Buscar",
+            //         allowClear: true,
+            //         language: {
+            //             noResults: function() {
+            //                 return 'No hay resultados';
+            //             },
+            //             searching: function() {
+            //                 return 'Buscando...';
+            //             },
+            //             inputTooShort: function() {
+            //                 return 'Ingresa 1 o más caracteres';
+            //             },
+            //             errorLoading: function() {
+            //                 return 'No se pudo cargar la información'
+            //             }
+            //         },
+            //         ajax: {
+            //             url: this.url_get_clients,
+            //             dataType: 'json',
+            //             delay: 250,
+            //             type: 'POST',
+            //             data: function (params) {
+            //                 var queryParameters = {
+            //                     q: params.term,
+            //                     company_id: vm.$store.state.model.company_id,
+            //                     _token: token,
+            //                 }
 
-                            return queryParameters;
-                        },
-                        processResults: function(data, params) {
-                            params.page = params.page || 1;
+            //                 return queryParameters;
+            //             },
+            //             processResults: function(data, params) {
+            //                 params.page = params.page || 1;
 
-                            return {
-                                results: data,
-                                pagination: {
-                                    more: (params.page * 30) < data.total_count
-                                }
-                            };
-                        },
-                        cache: true
-                    },
-                    minimumInputLength: 1,
-                }).on('select2:select', function(e) {
-                    // var selected_element = $(e.currentTarget);
-                    // vm.sale.client_id = parseInt(selected_element.val());
-                    console.log(e.params.data)
-                    vm.sale.client_id = e.params.data.id;
-                    vm.sale.client_name = e.params.data.text;
-                    vm.sale.document_type_id = e.params.data.document_type_id;
-                    vm.sale.payment_id = e.params.data.payment_id;
-                    vm.sale.perception_percentage = e.params.data.perception_percentage.value;
-                    vm.sale.credit_limit = e.params.data.credit_limit;
+            //                 return {
+            //                     results: data,
+            //                     pagination: {
+            //                         more: (params.page * 30) < data.total_count
+            //                     }
+            //                 };
+            //             },
+            //             cache: true
+            //         },
+            //         minimumInputLength: 1,
+            //     }).on('select2:select', function(e) {
+            //         // var selected_element = $(e.currentTarget);
+            //         // vm.sale.client_id = parseInt(selected_element.val());
+            //         console.log(e.params.data)
+            //         vm.sale.client_id = e.params.data.id;
+            //         vm.sale.client_name = e.params.data.text;
+            //         vm.sale.document_type_id = e.params.data.document_type_id;
+            //         vm.sale.payment_id = e.params.data.payment_id;
+            //         vm.sale.perception_percentage = e.params.data.perception_percentage.value;
+            //         vm.sale.credit_limit = e.params.data.credit_limit;
 
-                    vm.model.article_id = '';
-                    vm.model.article_name = '';
-                    vm.model.price_igv = '';
-                    vm.model.quantity = '';
-                    vm.model.igv = '';
-                    vm.model.perception = '';
-                    vm.model.perception = '';
-                    vm.model.sale_value = '';
-                    vm.model.igv_perception = '';
-                    vm.model.total_perception = '';
-                }).on('select2:unselect', function(e) {
-                    vm.sale.client_id = '';
-                    vm.sale.client_name = '';
-                    vm.sale.document_type_id = '';
-                    vm.sale.payment_id = '';
-                    vm.sale.credit_limit = '';
-                    vm.sale.perception_percentage = 0;
-                    vm.sale.total = 0;
-                    vm.sale.perception = 0;
-                    vm.sale.total_perception = 0;
-                    vm.sale.details = [];
+            //         vm.model.article_id = '';
+            //         vm.model.article_name = '';
+            //         vm.model.price_igv = '';
+            //         vm.model.quantity = '';
+            //         vm.model.igv = '';
+            //         vm.model.perception = '';
+            //         vm.model.perception = '';
+            //         vm.model.sale_value = '';
+            //         vm.model.igv_perception = '';
+            //         vm.model.total_perception = '';
+            //     }).on('select2:unselect', function(e) {
+            //         vm.sale.client_id = '';
+            //         vm.sale.client_name = '';
+            //         vm.sale.document_type_id = '';
+            //         vm.sale.payment_id = '';
+            //         vm.sale.credit_limit = '';
+            //         vm.sale.perception_percentage = 0;
+            //         vm.sale.total = 0;
+            //         vm.sale.perception = 0;
+            //         vm.sale.total_perception = 0;
+            //         vm.sale.details = [];
 
-                    vm.model.article_id = '';
-                    vm.model.article_name = '';
-                    vm.model.price_igv = '';
-                    vm.model.quantity = '';
-                    vm.model.igv = '';
-                    vm.model.perception = '';
-                    vm.model.sale_value = '';
-                    vm.model.igv_perception = '';
-                    vm.model.total_perception = '';
-                });
-            },
+            //         vm.model.article_id = '';
+            //         vm.model.article_name = '';
+            //         vm.model.price_igv = '';
+            //         vm.model.quantity = '';
+            //         vm.model.igv = '';
+            //         vm.model.perception = '';
+            //         vm.model.sale_value = '';
+            //         vm.model.igv_perception = '';
+            //         vm.model.total_perception = '';
+            //     });
+            // },
         }
     };
 </script>

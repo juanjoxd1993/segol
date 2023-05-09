@@ -62,7 +62,11 @@
                 }).then(response => {
                     const data = response.data;
 
-                    this.$store.commit('addArticles', data);
+                    const movement_details = data.movement_details;
+                    const clients = data.clients;
+
+                    this.$store.commit('addClients', clients);
+                    this.$store.commit('addArticles', movement_details)
                     
                     if ( this.liquidation_datatable == undefined ) {
                         this.fillTableX();
