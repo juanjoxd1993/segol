@@ -636,79 +636,83 @@ class GuidesRegisterController extends Controller
 
 					$movementDetail->converted_amount = 0;
 
-					if ($item['press'] > 0) {
-
-						/********** Préstamos - Movimiento *********/
-		
-						//Generar Movimiento de Salida - Producción
-						$id = WarehouseMovement::insertGetId([
-							'company_id' => 1,
-							'warehouse_type_id' => 4, //Producción
-							'movement_class_id' => 2, //Salida
-							'movement_type_id' => 33, //Préstamos de Balones
-							'warehouse_account_type_id' => 1,
-							'total' => $item['press'],
-							'press' => 1,
-							'created_at' => date('Y-m-d'),
-							'updated_at' => date('Y-m-d'),
-						]);
-		
-						WarehouseMovementDetail::insert([
-							'warehouse_movement_id' => $id,
-							'item_number' => 1,
-							'article_code' => $item['id'],
-							'new_stock_good' => $item['press'],
-							'converted_amount' => $item['press'],
-							'total' => $item['press'],
-							'created_at' => date('Y-m-d'),
-							'updated_at' => date('Y-m-d'),
-						]);
-		
-						//Actualizar Stock por el Movimiento
-						// solo debe actualizar el stock_repair aumentandolo
-						Article::where('id', $item['id'])
-							->update([
-								'stock_repair' => DB::raw('stock_repair + ' . $item['press']),
+					if ( array_key_exists('press', $item) ) {
+						if ($item['press'] > 0) {
+	
+							/********** Préstamos - Movimiento *********/
+			
+							//Generar Movimiento de Salida - Producción
+							$id = WarehouseMovement::insertGetId([
+								'company_id' => 1,
+								'warehouse_type_id' => 4, //Producción
+								'movement_class_id' => 2, //Salida
+								'movement_type_id' => 33, //Préstamos de Balones
+								'warehouse_account_type_id' => 1,
+								'total' => $item['press'],
+								'press' => 1,
+								'created_at' => date('Y-m-d'),
+								'updated_at' => date('Y-m-d'),
 							]);
-					}	
-
-					if ($item['cesion'] > 0) {
-
-						$movementDetail->converted_amount = $item['cesion'];
-
-						/********** Cesión de uso - Movimiento *********/
-
-						//Generar Movimiento de Salida - Producción
-						$id = WarehouseMovement::insertGetId([
-							'company_id' => 1,
-							'warehouse_type_id' => 4, //Producción
-							'movement_class_id' => 2, //Salida
-							'movement_type_id' => 28, //Cesión de Uso
-							'warehouse_account_type_id' => 1,
-							'total' => $item['cesion'],
-							'created_at' => date('Y-m-d'),
-							'updated_at' => date('Y-m-d'),
-						]);
-
-						WarehouseMovementDetail::insert([
-							'warehouse_movement_id' => $id,
-							'item_number' => 1,
-							'article_code' => $item['id'],
-							'new_stock_good' => $item['cesion'],
-							'converted_amount' => $item['cesion'],
-							'total' => $item['cesion'],
-							'created_at' => date('Y-m-d'),
-							'updated_at' => date('Y-m-d'),
-						]);
-		
-						//Actualizar Stock por el Movimiento
-						// Solo deberia mover el stock_good descontandole y tambien el stock_minimum
-						Article::where('id', $item['id'])
-							->update([
-								'stock_good' => DB::raw('stock_good - ' . $item['cesion']),
-								'stock_minimum' => DB::raw('stock_minimum + ' . $item['cesion']),
+			
+							WarehouseMovementDetail::insert([
+								'warehouse_movement_id' => $id,
+								'item_number' => 1,
+								'article_code' => $item['id'],
+								'new_stock_good' => $item['press'],
+								'converted_amount' => $item['press'],
+								'total' => $item['press'],
+								'created_at' => date('Y-m-d'),
+								'updated_at' => date('Y-m-d'),
 							]);
-					}
+			
+							//Actualizar Stock por el Movimiento
+							// solo debe actualizar el stock_repair aumentandolo
+							Article::where('id', $item['id'])
+								->update([
+									'stock_repair' => DB::raw('stock_repair + ' . $item['press']),
+								]);
+						}	
+					};
+
+					if (array_key_exists('cesion', $item)) {
+						if ($item['cesion'] > 0) {
+	
+							$movementDetail->converted_amount = $item['cesion'];
+	
+							/********** Cesión de uso - Movimiento *********/
+	
+							//Generar Movimiento de Salida - Producción
+							$id = WarehouseMovement::insertGetId([
+								'company_id' => 1,
+								'warehouse_type_id' => 4, //Producción
+								'movement_class_id' => 2, //Salida
+								'movement_type_id' => 28, //Cesión de Uso
+								'warehouse_account_type_id' => 1,
+								'total' => $item['cesion'],
+								'created_at' => date('Y-m-d'),
+								'updated_at' => date('Y-m-d'),
+							]);
+	
+							WarehouseMovementDetail::insert([
+								'warehouse_movement_id' => $id,
+								'item_number' => 1,
+								'article_code' => $item['id'],
+								'new_stock_good' => $item['cesion'],
+								'converted_amount' => $item['cesion'],
+								'total' => $item['cesion'],
+								'created_at' => date('Y-m-d'),
+								'updated_at' => date('Y-m-d'),
+							]);
+			
+							//Actualizar Stock por el Movimiento
+							// Solo deberia mover el stock_good descontandole y tambien el stock_minimum
+							Article::where('id', $item['id'])
+								->update([
+									'stock_good' => DB::raw('stock_good - ' . $item['cesion']),
+									'stock_minimum' => DB::raw('stock_minimum + ' . $item['cesion']),
+								]);
+						}
+					};
 				}
 
 				// $movementDetail->old_stock_repair = $article->stock_repair;
