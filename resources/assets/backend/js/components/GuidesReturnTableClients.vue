@@ -118,15 +118,22 @@
                 const index = $(this).parents('tr').index();
 
                 const data = context.data;
-
                 const store_data = context.$store.state.clients;
+
+                const client = context.$store.state.clients[index];
+                const article_id = client.article_id;
+                const liquidation = client.liquidation;
+
+                const article_for_liquidation = context.$store.state.articles_for_liquidations.find(art => art.article_id === article_id);
+                const article_for_liquidation_index = context.$store.state.articles_for_liquidations.findIndex(art => art.article_id === article_id);
+
+                context.$store.state.articles_for_liquidations[article_for_liquidation_index].rest_liquidation = parseInt(article_for_liquidation.rest_liquidation) + parseInt(liquidation);
 
                 data.splice(index, 1);
                 store_data.splice(index, 1);
 
                 context.data = data;
                 context.$store.state.clients = store_data;
-                console.log(context.$store.state.clients)
 
                 context.datatable.destroy();
 
@@ -349,10 +356,11 @@
                 const id = this.data.length + 1;
                 const client_id = this.client_id;
                 const article_id = this.article_id;
-                const liquidation = +this.liquidation;
+                const liquidation = this.liquidation;
 
-                const article = this.$store.state.articles.find(art => art.article_id === article_id);
-                const liquidar = article.liquidar ? article.liquidar : 0;
+                const article_for_liquidations = this.$store.state.articles_for_liquidations.find(art => art.article_id === article_id);
+                const article_for_liquidations_index = this.$store.state.articles_for_liquidations.findIndex(art => art.article_id === article_id);
+                const liquidar = article_for_liquidations.rest_liquidation ? article_for_liquidations.rest_liquidation : 0;
 
                 if (Boolean(!client_id)) {
                     Swal.fire({
@@ -379,13 +387,15 @@
                 if (liquidation > liquidar) {
                     Swal.fire({
                         title: '¡Error!',
-                        text: 'El monto a digitado es mayor al monto a liquidar',
+                        text: 'El monto digitado es mayor al monto a liquidar',
                         type: "error",
                         heightAuto: false,
                     });
 
                     return;
                 };
+
+                this.$store.state.articles_for_liquidations[article_for_liquidations_index].rest_liquidation = liquidar - liquidation;
 
                 this.datatable.destroy();
 

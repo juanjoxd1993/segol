@@ -22,9 +22,15 @@
                                             <input type="text" class="form-control" v-model="article.retorno">
                                         </div>
                                     </div>
+                                    <div class="col-md-3" v-if="!Boolean(article_group_id === 26)">
+                                        <div class="form-group">
+                                            <label class="form-control-label">Retorno Prestamo:</label>
+                                            <input type="text" class="form-control" v-model="article.retorno_press">
+                                        </div>
+                                    </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="form-control-label">Cambios:</label>
+                                            <label class="form-control-label">Cambio Mal Estado:</label>
                                             <input type="text" class="form-control" v-model="article.cambios">
                                         </div>
                                     </div>
@@ -96,6 +102,7 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2';
 import EventBus from '../event-bus';
 
 export default {
@@ -121,6 +128,7 @@ export default {
                 code: '',
                 name: '',
                 retorno: '',
+                retorno_press: '',
                 cambios: '',
                 prestamo: '',
                 cesion: '',
@@ -178,7 +186,27 @@ export default {
         }.bind(this));
     },
     watch: {
+        data(val) {
+            const articles_for_liquidations = [];
+            const articles = val;
 
+            if (!Boolean(this.$store.state.articles_for_liquidations.length)) {
+                articles.map(article => {
+                    const article_id = article.article_id;
+                    const liquidation = article.liquidar;
+
+                    const item = {
+                        article_id,
+                        original_liquidation: liquidation,
+                        rest_liquidation: liquidation
+                    };
+
+                    articles_for_liquidations.push(item);
+                });
+
+                this.$store.commit('addArticlesForLiquidations', articles_for_liquidations);
+            };
+        }
     },
     computed: {
         articlesState: function () {
@@ -198,6 +226,41 @@ export default {
 
             const warehouse_movement_id = this.$store.state.model.warehouse_movement_id;
 
+            const clients = this.$store.state.clients;
+            const articles_for_liquidations = this.$store.state.articles_for_liquidations;
+
+            let rest_liquidation = 0;
+
+            articles_for_liquidations.map(art => {
+                rest_liquidation += art.rest_liquidation;
+            });
+
+            if (!Boolean(clients.length)) {
+                Swal.fire({
+                    title: '¡Error!',
+                    text: 'Se debe completar la lista de clientes para las liquidaciones',
+                    type: "error",
+                    heightAuto: false,
+                });
+
+                EventBus.$emit('loading', false);
+
+                return;
+            };
+
+            if (Boolean(rest_liquidation)) {
+                Swal.fire({
+                    title: '¡Error!',
+                    text: 'Restan ${ rest_liquidation } liquidaciones por asignar a clientes',
+                    type: "error",
+                    heightAuto: false,
+                });
+
+                EventBus.$emit('loading', false);
+
+                return;
+            };
+
             axios.post(this.url_store, {
                 articles: this.data,
                 clients: this.$store.state.clients,
@@ -205,7 +268,6 @@ export default {
             }).then(response => {
 
                 EventBus.$emit('loading', false);
-
 
                 Swal.fire({
                     title: '¡Ok!',
@@ -229,18 +291,59 @@ export default {
 
         },
         update() {
-            this.table.destroy();
 
-            this.article.vacios = this.article.presale_converted_amount - this.article.retorno - this.article.cambios - this.article.prestamo - this.article.cesion;
+            let liquidar = 0;
 
-            this.article.liquidar = this.article.presale_converted_amount - this.article.retorno - this.article.cambios;
+            if (Boolean(this.article_group_id === 26)) {
+                liquidar = this.article.presale_converted_amount - this.article.retorno - this.article.cambios;
+            } else {
+                liquidar = this.article.cesion;
+            };
 
             this.data[this.article.index] = this.article;
 
             let index = this.data.findIndex(el => el.article_id == this.article.article_id)
+            
+            const articles_for_liquidations = this.$store.state.articles_for_liquidations;
+            const article_id = this.article.article_id;
+            const liquidation = liquidar;
+            const name = this.article.article_name;
+
+            const article = this.$store.state.articles_for_liquidations.find(art => art.article_id === article_id);
+            const article_index = articles_for_liquidations.findIndex(art => art.article_id === article_id);
+
+            const original_liquidation = article.original_liquidation;
+            const rest_liquidation = parseInt(article.rest_liquidation);
+
+            if (original_liquidation != liquidation) {
+                const diferencia = liquidation - original_liquidation;
+                
+                if (rest_liquidation === 0 && diferencia < 0) {
+                    Swal.fire({
+                        title: '¡Error!',
+                        text: `Se esta descontando la cantidad a liquidar del articulo ${ name } debe eliminar un cliente de la lista a liqudiar antes de continuar`,
+                        type: "error",
+                        heightAuto: false,
+                    });
+                    
+                    return;
+                };
+
+                const new_rest_liquidation = rest_liquidation + diferencia;
+
+                this.$store.state.articles_for_liquidations[article_index].original_liquidation = liquidation;
+                this.$store.state.articles_for_liquidations[article_index].rest_liquidation = parseInt(new_rest_liquidation);
+            };
+
+            this.table.destroy();
+
+            this.article.vacios = this.article.presale_converted_amount - this.article.retorno - this.article.cambios - this.article.prestamo - this.article.cesion + parseInt(this.article.retorno_press);
+
+            this.article.liquidar = liquidar;
 
             //Cambiar en su conversión
             this.data[index].retorno = this.article.retorno;
+            this.data[index].retorno_press = this.article.retorno_press;
             this.data[index].cambios = this.article.cambios;
             this.data[index].prestamo = this.article.prestamo;
             this.data[index].cesion = this.article.cesion;
@@ -248,6 +351,7 @@ export default {
             this.data[index].liquidar = this.article.liquidar;
 
             this.$store.state.articles[index].retorno = this.article.retorno;
+            this.$store.state.articles[index].retorno_press = this.article.retorno_press;
             this.$store.state.articles[index].cambios = this.article.cambios;
             this.$store.state.articles[index].prestamo = this.article.prestamo;
             this.$store.state.articles[index].cesion = this.article.cesion;
@@ -333,8 +437,14 @@ export default {
                         textAlign: 'right',
                     },
                     {
+                        field: 'retorno_press',
+                        title: 'Retorno Prestamo',
+                        width: 90,
+                        textAlign: 'right',
+                    },
+                    {
                         field: 'cambios',
-                        title: 'Cambios',
+                        title: 'Cambio Mal Estado',
                         width: 90,
                         textAlign: 'right',
                     },
