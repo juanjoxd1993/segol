@@ -269,215 +269,226 @@ class GuidesRegisterController extends Controller
 
 		$article->item_number = ++$item_number;
 		$article->sale_unit_id = $article->sale_unit->name;
-		$article->digit_amount = number_format($quantity, 4, '.', ',');
+		// $article->digit_amount = number_format($quantity, 4, '.', ',');
+		$article->digit_amount = number_format($quantity, 0, '.', ',');
 		if ($movement_type_id == 1 || $movement_type_id == 2) {
 			if ($article->operation_type_name == 'Suma') {
-				$article->converted_amount = number_format($quantity + $article->factor, 4, '.', ',');
+				// $article->converted_amount = number_format($quantity + $article->factor, 4, '.', ',');
+				$article->converted_amount = number_format($quantity + $article->factor, 0, '.', ',');
 			} elseif ($article->operation_type_name == 'Resta') {
-				$article->converted_amount = number_format($quantity - $article->factor, 4, '.', ',');
+				// $article->converted_amount = number_format($quantity - $article->factor, 4, '.', ',');
+				$article->converted_amount = number_format($quantity - $article->factor, 0, '.', ',');
 			} elseif ($article->operation_type_name == 'Multiplica') {
-				$article->converted_amount = number_format($quantity * $article->factor, 4, '.', ',');
+				// $article->converted_amount = number_format($quantity * $article->factor, 4, '.', ',');
+				$article->converted_amount = number_format($quantity * $article->factor, 0, '.', ',');
 			} elseif ($article->operation_type_name == 'Divide') {
-				$article->converted_amount = number_format($quantity / $article->factor, 4, '.', ',');
+				// $article->converted_amount = number_format($quantity / $article->factor, 4, '.', ',');
+				$article->converted_amount = number_format($quantity / $article->factor, 0, '.', ',');
 			}
 		} else {
-			$article->converted_amount = number_format($quantity, 4, '.', ',');
+			// $article->converted_amount = number_format($quantity, 4, '.', ',');
+			$article->converted_amount = number_format($quantity, 0, '.', ',');
 		}
 
-		$article->price = number_format($price, 4, '.', ',');
-		$article->sale_value = number_format($sale_value, 4, '.', ',');
-		$article->inaccurate_value = number_format($inaccurate_value, 4, '.', ',');
-		$article->igv = number_format($igv, 4, '.', ',');
-		$article->total = number_format($total, 4, '.', ',');
-		$article->perception = number_format($perception, 4, '.', ',');
+		// $article->price = number_format($price, 4, '.', ',');
+		$article->price = number_format($price, 0, '.', ',');
+		// $article->sale_value = number_format($sale_value, 4, '.', ',');
+		$article->sale_value = number_format($sale_value, 0, '.', ',');
+		// $article->inaccurate_value = number_format($inaccurate_value, 4, '.', ',');
+		$article->inaccurate_value = number_format($inaccurate_value, 0, '.', ',');
+		// $article->igv = number_format($igv, 4, '.', ',');
+		$article->igv = number_format($igv, 0, '.', ',');
+		// $article->total = number_format($total, 4, '.', ',');
+		$article->total = number_format($total, 0, '.', ',');
+		// $article->perception = number_format($perception, 4, '.', ',');
+		$article->perception = number_format($perception, 0, '.', ',');
 		$article->igv_percentage = ($igv == 0 ? 0 : $igv_percentage);
 		$article->perception_percentage = $perception_percentage;
 
 		array_push($articles, $article);
 
-		if ($article->group_id == 7) {
-			return response()->json(['isSuccess' => true, 'articles' => $articles]);
-		};
-
-		//Encontrar conversión
-		$article2 = Article::where(function ($query) {
-			$query->where('group_id', 7) //Envases
-				->orWhere('group_id', 26); //Artículos
-		})
-			->where('convertion', $article->convertion)
-			->first();
-
-		if (!$article2) {
-			return response()->json(['isSuccess' => false]);
-		}
-
-		$article2->item_number = ++$item_number;
-		$article2->sale_unit_id = $article2->sale_unit->name;
-		$article2->digit_amount = number_format($quantity, 4, '.', ',');
-		if ($movement_type_id == 1 || $movement_type_id == 2) {
-			if ($article2->operation_type_name == 'Suma') {
-				$article2->converted_amount = number_format($quantity + $article2->factor, 4, '.', ',');
-			} elseif ($article2->operation_type_name == 'Resta') {
-				$article2->converted_amount = number_format($quantity - $article2->factor, 4, '.', ',');
-			} elseif ($article2->operation_type_name == 'Multiplica') {
-				$article2->converted_amount = number_format($quantity * $article2->factor, 4, '.', ',');
-			} elseif ($article->operation_type_name == 'Divide') {
-				$article2->converted_amount = number_format($quantity / $article2->factor, 4, '.', ',');
-			}
-		} else {
-			$article2->converted_amount = number_format($quantity, 4, '.', ',');
-		}
-
-		$article2->price = number_format($price, 4, '.', ',');
-		$article2->sale_value = number_format($sale_value, 4, '.', ',');
-		$article2->inaccurate_value = number_format($inaccurate_value, 4, '.', ',');
-		$article2->igv = number_format($igv, 4, '.', ',');
-		$article2->total = number_format($total, 4, '.', ',');
-		$article2->perception = number_format($perception, 4, '.', ',');
-		$article2->igv_percentage = ($igv == 0 ? 0 : $igv_percentage);
-		$article2->perception_percentage = $perception_percentage;
-
-		array_push($articles, $article2);
-
-		if ($movement_type_id == 11) {
-			/************ Pre-Venta ********/
-
-			//Actualizar stock good y repair
-			$m_article = Article::find($article_id);
-			$m_article->stock_good = $article->stock_good - $quantity;
-			$m_article->stock_repair = $article->stock_repair - $quantity;
-			$m_article->save();
-
-			//Generar Movimiento de salida - Mercaderías
-			$id = WarehouseMovement::insertGetId([
-				'company_id' => 1,
-				'warehouse_type_id' => 5, //Mercaderías
-				'movement_class_id' => 2, //Salida
-				'movement_type_id' => 5, //Compras
-				'warehouse_account_type_id' => $warehouse_account_type_id,
-				'total' => $quantity,
-				'created_at' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d'),
-			]);
-
-			WarehouseMovementDetail::insert([
-				'warehouse_movement_id' => $id,
-				'item_number' => 1,
-				'article_code' => $article->id,
-				'new_stock_good' => $quantity,
-				'converted_amount' => $quantity,
-				'total' => $quantity,
-				'created_at' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d'),
-			]);
-
-			//Restar stock artículo por la salida
-			$m_article->stock_good = $article->stock_good - $quantity;
-			$m_article->save();
-
-			//Generar Movimiento de ingreso - Producción
-			$id = WarehouseMovement::insertGetId([
-				'company_id' => 1,
-				'warehouse_type_id' => 4, //Producción ATE
-				'movement_class_id' => 1, //Salida
-				'movement_type_id' => 5,
-				'warehouse_account_type_id' => $warehouse_account_type_id,
-				'total' => $quantity,
-				'created_at' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d'),
-			]);
-
-			WarehouseMovementDetail::insert([
-				'warehouse_movement_id' => $id,
-				'item_number' => 1,
-				'article_code' => $article->id,
-				'new_stock_good' => $quantity,
-				'converted_amount' => $quantity,
-				'total' => $quantity,
-				'created_at' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d'),
-			]);
-
-			//Sumar stock artículo por la salida
-			$m_article->stock_good = $article->stock_good + $quantity;
-			$m_article->save();
-
-			//Salida Por Pre Venta
-			$id = WarehouseMovement::insertGetId([
-				'company_id' => 1,
-				'warehouse_type_id' => 4, //Producción
-				'movement_class_id' => 2, //Salida
-				'movement_type_id' => 11, //Pre-venta
-				'warehouse_account_type_id' => $warehouse_account_type_id,
-				'total' => $quantity,
-				'created_at' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d'),
-			]);
-
-			WarehouseMovementDetail::insert([
-				'warehouse_movement_id' => $id,
-				'item_number' => 1,
-				'article_code' => $article->id,
-				'new_stock_good' => $quantity,
-				'converted_amount' => $quantity,
-				'total' => $quantity,
-				'created_at' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d'),
-			]);
-
-			//Restar stock artículo por la salida
-			$m_article->stock_good = $article->stock_good - $quantity;
-			$m_article->save();
-		} else {
-			//Generar Movimiento de ingreso - Producción
-			$id = WarehouseMovement::insertGetId([
-				'company_id' => 1,
-				'warehouse_type_id' => 4, //Producción ATE
-				'movement_class_id' => 1, //Ingreso
-				'movement_type_id' => $movement_type_id,
-				'warehouse_account_type_id' => $warehouse_account_type_id,
-				'total' => $quantity,
-				'created_at' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d'),
-			]);
-
-			WarehouseMovementDetail::insert([
-				'warehouse_movement_id' => $id,
-				'item_number' => 1,
-				'article_code' => $article->id,
-				'new_stock_good' => $quantity,
-				'converted_amount' => $quantity,
-				'total' => $quantity,
-				'created_at' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d'),
-			]);
-
-			//Salida por Venta - Planta
-			$id = WarehouseMovement::insertGetId([
-				'company_id' => 1,
-				'warehouse_type_id' => 4, //Mercaderías
-				'movement_class_id' => 2, //Salida
-				'movement_type_id' => $movement_type_id,
-				'warehouse_account_type_id' => $warehouse_account_type_id,
-				'total' => $quantity,
-				'created_at' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d'),
-			]);
-
-			WarehouseMovementDetail::insert([
-				'warehouse_movement_id' => $id,
-				'item_number' => 1,
-				'article_code' => $article->id,
-				'new_stock_good' => $quantity,
-				'converted_amount' => $quantity,
-				'total' => $quantity,
-				'created_at' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d'),
-			]);
-		}
-
-
 		return response()->json(['isSuccess' => true, 'articles' => $articles]);
+		// if ($article->group_id == 7) {
+		// };
+
+		// //Encontrar conversión
+		// $article2 = Article::where(function ($query) {
+		// 	$query->where('group_id', 7) //Envases
+		// 		->orWhere('group_id', 26); //Artículos
+		// })
+		// 	->where('convertion', $article->convertion)
+		// 	->first();
+
+		// if (!$article2) {
+		// 	return response()->json(['isSuccess' => false]);
+		// }
+
+		// $article2->item_number = ++$item_number;
+		// $article2->sale_unit_id = $article2->sale_unit->name;
+		// $article2->digit_amount = number_format($quantity, 4, '.', ',');
+		// if ($movement_type_id == 1 || $movement_type_id == 2) {
+		// 	if ($article2->operation_type_name == 'Suma') {
+		// 		$article2->converted_amount = number_format($quantity + $article2->factor, 4, '.', ',');
+		// 	} elseif ($article2->operation_type_name == 'Resta') {
+		// 		$article2->converted_amount = number_format($quantity - $article2->factor, 4, '.', ',');
+		// 	} elseif ($article2->operation_type_name == 'Multiplica') {
+		// 		$article2->converted_amount = number_format($quantity * $article2->factor, 4, '.', ',');
+		// 	} elseif ($article->operation_type_name == 'Divide') {
+		// 		$article2->converted_amount = number_format($quantity / $article2->factor, 4, '.', ',');
+		// 	}
+		// } else {
+		// 	$article2->converted_amount = number_format($quantity, 4, '.', ',');
+		// }
+
+		// $article2->price = number_format($price, 4, '.', ',');
+		// $article2->sale_value = number_format($sale_value, 4, '.', ',');
+		// $article2->inaccurate_value = number_format($inaccurate_value, 4, '.', ',');
+		// $article2->igv = number_format($igv, 4, '.', ',');
+		// $article2->total = number_format($total, 4, '.', ',');
+		// $article2->perception = number_format($perception, 4, '.', ',');
+		// $article2->igv_percentage = ($igv == 0 ? 0 : $igv_percentage);
+		// $article2->perception_percentage = $perception_percentage;
+
+		// array_push($articles, $article2);
+
+		// if ($movement_type_id == 11) {
+		// 	/************ Pre-Venta ********/
+
+		// 	//Actualizar stock good y repair
+		// 	$m_article = Article::find($article_id);
+		// 	$m_article->stock_good = $article->stock_good - $quantity;
+		// 	$m_article->stock_repair = $article->stock_repair - $quantity;
+		// 	$m_article->save();
+
+		// 	//Generar Movimiento de salida - Mercaderías
+		// 	$id = WarehouseMovement::insertGetId([
+		// 		'company_id' => 1,
+		// 		'warehouse_type_id' => 5, //Mercaderías
+		// 		'movement_class_id' => 2, //Salida
+		// 		'movement_type_id' => 5, //Compras
+		// 		'warehouse_account_type_id' => $warehouse_account_type_id,
+		// 		'total' => $quantity,
+		// 		'created_at' => date('Y-m-d'),
+		// 		'updated_at' => date('Y-m-d'),
+		// 	]);
+
+		// 	WarehouseMovementDetail::insert([
+		// 		'warehouse_movement_id' => $id,
+		// 		'item_number' => 1,
+		// 		'article_code' => $article->id,
+		// 		'new_stock_good' => $quantity,
+		// 		'converted_amount' => $quantity,
+		// 		'total' => $quantity,
+		// 		'created_at' => date('Y-m-d'),
+		// 		'updated_at' => date('Y-m-d'),
+		// 	]);
+
+		// 	//Restar stock artículo por la salida
+		// 	$m_article->stock_good = $article->stock_good - $quantity;
+		// 	$m_article->save();
+
+		// 	//Generar Movimiento de ingreso - Producción
+		// 	$id = WarehouseMovement::insertGetId([
+		// 		'company_id' => 1,
+		// 		'warehouse_type_id' => 4, //Producción ATE
+		// 		'movement_class_id' => 1, //Salida
+		// 		'movement_type_id' => 5,
+		// 		'warehouse_account_type_id' => $warehouse_account_type_id,
+		// 		'total' => $quantity,
+		// 		'created_at' => date('Y-m-d'),
+		// 		'updated_at' => date('Y-m-d'),
+		// 	]);
+
+		// 	WarehouseMovementDetail::insert([
+		// 		'warehouse_movement_id' => $id,
+		// 		'item_number' => 1,
+		// 		'article_code' => $article->id,
+		// 		'new_stock_good' => $quantity,
+		// 		'converted_amount' => $quantity,
+		// 		'total' => $quantity,
+		// 		'created_at' => date('Y-m-d'),
+		// 		'updated_at' => date('Y-m-d'),
+		// 	]);
+
+		// 	//Sumar stock artículo por la salida
+		// 	$m_article->stock_good = $article->stock_good + $quantity;
+		// 	$m_article->save();
+
+		// 	//Salida Por Pre Venta
+		// 	$id = WarehouseMovement::insertGetId([
+		// 		'company_id' => 1,
+		// 		'warehouse_type_id' => 4, //Producción
+		// 		'movement_class_id' => 2, //Salida
+		// 		'movement_type_id' => 11, //Pre-venta
+		// 		'warehouse_account_type_id' => $warehouse_account_type_id,
+		// 		'total' => $quantity,
+		// 		'created_at' => date('Y-m-d'),
+		// 		'updated_at' => date('Y-m-d'),
+		// 	]);
+
+		// 	WarehouseMovementDetail::insert([
+		// 		'warehouse_movement_id' => $id,
+		// 		'item_number' => 1,
+		// 		'article_code' => $article->id,
+		// 		'new_stock_good' => $quantity,
+		// 		'converted_amount' => $quantity,
+		// 		'total' => $quantity,
+		// 		'created_at' => date('Y-m-d'),
+		// 		'updated_at' => date('Y-m-d'),
+		// 	]);
+
+		// 	//Restar stock artículo por la salida
+		// 	$m_article->stock_good = $article->stock_good - $quantity;
+		// 	$m_article->save();
+		// } else {
+		// 	//Generar Movimiento de ingreso - Producción
+		// 	$id = WarehouseMovement::insertGetId([
+		// 		'company_id' => 1,
+		// 		'warehouse_type_id' => 4, //Producción ATE
+		// 		'movement_class_id' => 1, //Ingreso
+		// 		'movement_type_id' => $movement_type_id,
+		// 		'warehouse_account_type_id' => $warehouse_account_type_id,
+		// 		'total' => $quantity,
+		// 		'created_at' => date('Y-m-d'),
+		// 		'updated_at' => date('Y-m-d'),
+		// 	]);
+
+		// 	WarehouseMovementDetail::insert([
+		// 		'warehouse_movement_id' => $id,
+		// 		'item_number' => 1,
+		// 		'article_code' => $article->id,
+		// 		'new_stock_good' => $quantity,
+		// 		'converted_amount' => $quantity,
+		// 		'total' => $quantity,
+		// 		'created_at' => date('Y-m-d'),
+		// 		'updated_at' => date('Y-m-d'),
+		// 	]);
+
+		// 	//Salida por Venta - Planta
+		// 	$id = WarehouseMovement::insertGetId([
+		// 		'company_id' => 1,
+		// 		'warehouse_type_id' => 4, //Mercaderías
+		// 		'movement_class_id' => 2, //Salida
+		// 		'movement_type_id' => $movement_type_id,
+		// 		'warehouse_account_type_id' => $warehouse_account_type_id,
+		// 		'total' => $quantity,
+		// 		'created_at' => date('Y-m-d'),
+		// 		'updated_at' => date('Y-m-d'),
+		// 	]);
+
+		// 	WarehouseMovementDetail::insert([
+		// 		'warehouse_movement_id' => $id,
+		// 		'item_number' => 1,
+		// 		'article_code' => $article->id,
+		// 		'new_stock_good' => $quantity,
+		// 		'converted_amount' => $quantity,
+		// 		'total' => $quantity,
+		// 		'created_at' => date('Y-m-d'),
+		// 		'updated_at' => date('Y-m-d'),
+		// 	]);
+		// }
+
+		// return response()->json(['isSuccess' => true, 'articles' => $articles]);
 	}
 
 	public function store()
@@ -509,10 +520,10 @@ class GuidesRegisterController extends Controller
 		}
 
 		$movement_number = WarehouseMovement::select('movement_number')
-			->where('movement_class_id', $movement_class_id)
-			->where('warehouse_type_id', $warehouse_type_id)
-			->where('company_id', $company_id)
-			->max('movement_number');
+						->where('movement_class_id', $movement_class_id)
+						->where('warehouse_type_id', $warehouse_type_id)
+						->where('company_id', $company_id)
+						->max('movement_number');
 
 		$movement_number = ($movement_number ? $movement_number + 1 : 1);
 
@@ -536,8 +547,6 @@ class GuidesRegisterController extends Controller
 		}
 
 		$movement_type = MoventType::find($movement_type_id);
-
-
 
 		$movement = new WarehouseMovement();
 		$movement->company_id = $company_id;
@@ -600,7 +609,7 @@ class GuidesRegisterController extends Controller
 		$movement2->save();
 
 		foreach ($articles as $item) {
-			$article = Article::where('warehouse_type_id', 4)
+			$article = Article::where('warehouse_type_id', 5)
 				->where('code', $item['code'])
 				->first();
 
@@ -622,12 +631,91 @@ class GuidesRegisterController extends Controller
 				$movementDetail->digit_amount = $digit_amount;
 				$movementDetail->converted_amount = $converted_amount;
 				$movementDetail->old_stock_good = $article->stock_good;
+
+				if ($movement_type_id == 12 && $article->group_id == 7) {
+
+					$movementDetail->converted_amount = 0;
+
+					if ($item['press'] > 0) {
+
+						/********** Préstamos - Movimiento *********/
+		
+						//Generar Movimiento de Salida - Producción
+						$id = WarehouseMovement::insertGetId([
+							'company_id' => 1,
+							'warehouse_type_id' => 4, //Producción
+							'movement_class_id' => 2, //Salida
+							'movement_type_id' => 33, //Préstamos de Balones
+							'warehouse_account_type_id' => 1,
+							'total' => $item['press'],
+							'press' => 1,
+							'created_at' => date('Y-m-d'),
+							'updated_at' => date('Y-m-d'),
+						]);
+		
+						WarehouseMovementDetail::insert([
+							'warehouse_movement_id' => $id,
+							'item_number' => 1,
+							'article_code' => $item['id'],
+							'new_stock_good' => $item['press'],
+							'converted_amount' => $item['press'],
+							'total' => $item['press'],
+							'created_at' => date('Y-m-d'),
+							'updated_at' => date('Y-m-d'),
+						]);
+		
+						//Actualizar Stock por el Movimiento
+						// solo debe actualizar el stock_repair aumentandolo
+						Article::where('id', $item['id'])
+							->update([
+								'stock_repair' => DB::raw('stock_repair + ' . $item['press']),
+							]);
+					}	
+
+					if ($item['cesion'] > 0) {
+
+						$movementDetail->converted_amount = $item['cesion'];
+
+						/********** Cesión de uso - Movimiento *********/
+
+						//Generar Movimiento de Salida - Producción
+						$id = WarehouseMovement::insertGetId([
+							'company_id' => 1,
+							'warehouse_type_id' => 4, //Producción
+							'movement_class_id' => 2, //Salida
+							'movement_type_id' => 28, //Cesión de Uso
+							'warehouse_account_type_id' => 1,
+							'total' => $item['cesion'],
+							'created_at' => date('Y-m-d'),
+							'updated_at' => date('Y-m-d'),
+						]);
+
+						WarehouseMovementDetail::insert([
+							'warehouse_movement_id' => $id,
+							'item_number' => 1,
+							'article_code' => $item['id'],
+							'new_stock_good' => $item['cesion'],
+							'converted_amount' => $item['cesion'],
+							'total' => $item['cesion'],
+							'created_at' => date('Y-m-d'),
+							'updated_at' => date('Y-m-d'),
+						]);
+		
+						//Actualizar Stock por el Movimiento
+						// Solo deberia mover el stock_good descontandole y tambien el stock_minimum
+						Article::where('id', $item['id'])
+							->update([
+								'stock_good' => DB::raw('stock_good - ' . $item['cesion']),
+								'stock_minimum' => DB::raw('stock_minimum + ' . $item['cesion']),
+							]);
+					}
+				}
+
 				// $movementDetail->old_stock_repair = $article->stock_repair;
 				// $movementDetail->old_stock_return = $article->stock_return;
 				// $movementDetail->old_stock_damaged = $article->stock_damaged;
 				$movementDetail->new_stock_good = $article->stock_good;
 				// $movementDetail->new_stock_repair = $article->stock_repair;
-				// $movementDetail->new_stock_return = '';
 				// $movementDetail->new_stock_damaged = $article->stock_damaged;
 				$movementDetail->price = $price;
 				$movementDetail->sale_value = $sale_value;
@@ -643,92 +731,92 @@ class GuidesRegisterController extends Controller
 
 				$movementDetail->save();
 
-				if ($movement_type_id == 11) {
-					$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 4)
-						->where('business_type', $item['business_type'])
-						->where('group_id', 7) // Sólo envases
-						->where('convertion', $item['convertion'])
-						->get();
+				// if ($movement_type_id == 11) {
+				// 	$relatedArticlesForIcreaseUnits = Article::where('warehouse_type_id', 4)
+				// 		->where('business_type', $item['business_type'])
+				// 		->where('group_id', 7) // Sólo envases
+				// 		->where('convertion', $item['convertion'])
+				// 		->get();
 
-					foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
-						$relatedArticle->stock_repair -= $item['digit_amount'];
-						$relatedArticle->stock_damaged += $item['digit_amount'];
-						$relatedArticle->save();
+				// 	foreach ($relatedArticlesForIcreaseUnits as $relatedArticle) {
+				// 		$relatedArticle->stock_repair -= $item['digit_amount'];
+				// 		$relatedArticle->stock_damaged += $item['digit_amount'];
+				// 		$relatedArticle->save();
 
-						$movementDetail2 = new WarehouseMovementDetail();
-						$movementDetail2->warehouse_movement_id = $movement2->id;
-						$movementDetail2->item_number = $item['item_number'];
-						$movementDetail2->article_code = $relatedArticle->id;
-						$movementDetail2->digit_amount = $digit_amount;
-						$movementDetail2->converted_amount = $converted_amount;
-						$movementDetail2->old_stock_good = $relatedArticle->stock_good;
-						// $movementDetail2->old_stock_repair = $relatedArticle->stock_repair;
-						// $movementDetail2->old_stock_return = $relatedArticle->stock_return;
-						// $movementDetail2->old_stock_damaged = $relatedArticle->stock_damaged;
-						$movementDetail2->new_stock_good = $relatedArticle->stock_good;
-						// $movementDetail2->new_stock_repair = $relatedArticle->stock_repair;
-						// $movementDetail2->new_stock_return = null;
-						// $movementDetail2->new_stock_damaged = $relatedArticle->stock_damaged;
-						$movementDetail2->price = $price;
-						$movementDetail2->sale_value = $sale_value;
-						$movementDetail2->exonerated_value = 0;
-						$movementDetail2->inaccurate_value = $inaccurate_value;
-						$movementDetail2->igv = $igv;
-						$movementDetail2->total = $total;
-						$movementDetail2->igv_perception = $igv_perception;
-						$movementDetail2->igv_percentage = $item['igv_percentage'];
-						$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
-						$movementDetail2->created_at_user = Auth::user()->user;
-						$movementDetail2->updated_at_user = Auth::user()->user;
-						$movementDetail2->save();
-					}
-				} else if ($movement_type_id == 12) {
-					$relatedArticles2 = Article::where('warehouse_type_id', 4)
-						->where('business_type', $item['business_type'])
-						->where('group_id', 7) // Sólo envases
-						->where('convertion', $item['convertion'])
-						->get();
+				// 		$movementDetail2 = new WarehouseMovementDetail();
+				// 		$movementDetail2->warehouse_movement_id = $movement2->id;
+				// 		$movementDetail2->item_number = $item['item_number'];
+				// 		$movementDetail2->article_code = $relatedArticle->id;
+				// 		$movementDetail2->digit_amount = $digit_amount;
+				// 		$movementDetail2->converted_amount = $converted_amount;
+				// 		$movementDetail2->old_stock_good = $relatedArticle->stock_good;
+				// 		// $movementDetail2->old_stock_repair = $relatedArticle->stock_repair;
+				// 		// $movementDetail2->old_stock_return = $relatedArticle->stock_return;
+				// 		// $movementDetail2->old_stock_damaged = $relatedArticle->stock_damaged;
+				// 		$movementDetail2->new_stock_good = $relatedArticle->stock_good;
+				// 		// $movementDetail2->new_stock_repair = $relatedArticle->stock_repair;
+				// 		// $movementDetail2->new_stock_return = null;
+				// 		// $movementDetail2->new_stock_damaged = $relatedArticle->stock_damaged;
+				// 		$movementDetail2->price = $price;
+				// 		$movementDetail2->sale_value = $sale_value;
+				// 		$movementDetail2->exonerated_value = 0;
+				// 		$movementDetail2->inaccurate_value = $inaccurate_value;
+				// 		$movementDetail2->igv = $igv;
+				// 		$movementDetail2->total = $total;
+				// 		$movementDetail2->igv_perception = $igv_perception;
+				// 		$movementDetail2->igv_percentage = $item['igv_percentage'];
+				// 		$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
+				// 		$movementDetail2->created_at_user = Auth::user()->user;
+				// 		$movementDetail2->updated_at_user = Auth::user()->user;
+				// 		$movementDetail2->save();
+				// 	}
+				// } else if ($movement_type_id == 12) {
+				// 	$relatedArticles2 = Article::where('warehouse_type_id', 4)
+				// 		->where('business_type', $item['business_type'])
+				// 		->where('group_id', 7) // Sólo envases
+				// 		->where('convertion', $item['convertion'])
+				// 		->get();
 
-					foreach ($relatedArticles2 as $relatedArticle) {
-						$relatedArticle->stock_repair -= $item['digit_amount'];
-						$relatedArticle->stock_good += $item['digit_amount'];
-						$relatedArticle->save();
+				// 	foreach ($relatedArticles2 as $relatedArticle) {
+				// 		$relatedArticle->stock_repair -= $item['digit_amount'];
+				// 		$relatedArticle->stock_good += $item['digit_amount'];
+				// 		$relatedArticle->save();
 
-						$movementDetail2 = new WarehouseMovementDetail();
-						$movementDetail2->warehouse_movement_id = $movement2->id;
-						$movementDetail2->item_number = $item['item_number'];
-						$movementDetail2->article_code = $relatedAticle->id;
-						$movementDetail2->digit_amount = $digit_amount;
-						$movementDetail2->converted_amount = $converted_amount;
-						$movementDetail2->old_stock_good = $relatedAticle->stock_good;
-						// $movementDetail2->old_stock_repair = $relatedAticle->stock_repair;
-						// $movementDetail2->old_stock_return = $relatedAticle->stock_return;
-						// $movementDetail2->old_stock_damaged = $relatedAticle->stock_damaged;
-						$movementDetail2->new_stock_good = $relatedAticle->stock_good;
-						// $movementDetail2->new_stock_repair = $relatedAticle->stock_repair;
-						// $movementDetail2->new_stock_return = $relatedAticle->stock_return;
-						// $movementDetail2->new_stock_damaged = $relatedAticle->stock_damaged;
-						$movementDetail2->price = $price;
-						$movementDetail2->sale_value = $sale_value;
-						$movementDetail2->exonerated_value = 0;
-						$movementDetail2->inaccurate_value = $inaccurate_value;
-						$movementDetail2->igv = $igv;
-						$movementDetail2->total = $total;
-						$movementDetail2->igv_perception = $igv_perception;
-						$movementDetail2->igv_percentage = $item['igv_percentage'];
-						$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
-						$movementDetail2->created_at_user = Auth::user()->user;
-						$movementDetail2->updated_at_user = Auth::user()->user;
-						$movementDetail2->save();
-					}
-				}
+				// 		$movementDetail2 = new WarehouseMovementDetail();
+				// 		$movementDetail2->warehouse_movement_id = $movement2->id;
+				// 		$movementDetail2->item_number = $item['item_number'];
+				// 		$movementDetail2->article_code = $relatedAticle->id;
+				// 		$movementDetail2->digit_amount = $digit_amount;
+				// 		$movementDetail2->converted_amount = $converted_amount;
+				// 		$movementDetail2->old_stock_good = $relatedAticle->stock_good;
+				// 		// $movementDetail2->old_stock_repair = $relatedAticle->stock_repair;
+				// 		// $movementDetail2->old_stock_return = $relatedAticle->stock_return;
+				// 		// $movementDetail2->old_stock_damaged = $relatedAticle->stock_damaged;
+				// 		$movementDetail2->new_stock_good = $relatedAticle->stock_good;
+				// 		// $movementDetail2->new_stock_repair = $relatedAticle->stock_repair;
+				// 		// $movementDetail2->new_stock_return = $relatedAticle->stock_return;
+				// 		// $movementDetail2->new_stock_damaged = $relatedAticle->stock_damaged;
+				// 		$movementDetail2->price = $price;
+				// 		$movementDetail2->sale_value = $sale_value;
+				// 		$movementDetail2->exonerated_value = 0;
+				// 		$movementDetail2->inaccurate_value = $inaccurate_value;
+				// 		$movementDetail2->igv = $igv;
+				// 		$movementDetail2->total = $total;
+				// 		$movementDetail2->igv_perception = $igv_perception;
+				// 		$movementDetail2->igv_percentage = $item['igv_percentage'];
+				// 		$movementDetail2->igv_perception_percentage = $item['perception_percentage'];
+				// 		$movementDetail2->created_at_user = Auth::user()->user;
+				// 		$movementDetail2->updated_at_user = Auth::user()->user;
+				// 		$movementDetail2->save();
+				// 	}
+				// }
 
 				$article->stock_good -= $converted_amount;
 				$article->edit = 1;
 				$article->save();
 
-
 				//Encontrar artículo de conversión
+				// Especificar que hace esta parte del codigo
 				$articleConversion = Article::where('warehouse_type_id', 4)
 									->where('business_type', $item['business_type'])
 									->where('group_id', 7) // Sólo envases
@@ -767,6 +855,14 @@ class GuidesRegisterController extends Controller
 					]);
 				}
 			}
+		}
+
+		if ($movement_type_id == 12) {
+			//Actualizar estado
+            WarehouseMovement::where('id', $movement->id)
+                ->update([
+                    'state' => 1,
+                ]);
 		}
 
 		return $this->generatePdf($movement);

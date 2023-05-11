@@ -37,5 +37,7 @@
 		:url_get_article = "'{{ route('dashboard.operations.guides_register.get_article') }}'"
 	></guides-register-modal>
 
+	<guides-register-modal-article></guides-register-modal-article>
+
 	<loading></loading>
 @endsection

@@ -91,6 +91,15 @@
                 this.addArticle(model, this.igv.value, this.perception_percentage);
             }.bind(this));
 
+            EventBus.$on('sendEditArticle', function(index, id, cesion, press) {
+                this.datatable.destroy();
+
+                this.article_list[index].cesion = cesion;
+                this.article_list[index].press = press;
+
+                this.fillTableX();
+            }.bind(this));
+
             EventBus.$on('reset_stock_register', function() {
                 this.show_table = 0;
                 this.datatable = undefined;
@@ -112,7 +121,14 @@
         },
         methods: {
             openModal: function() {
-                EventBus.$emit('guides_register_modal', this.articles, this.igv, this.perception_percentage, this.model.movement_class_id, this.model.movement_type_id);
+                EventBus.$emit(
+                        'guides_register_modal',
+                        this.articles,
+                        this.igv,
+                        this.perception_percentage,
+                        this.model.movement_class_id,
+                        this.model.movement_type_id
+                        );
             },
             addArticle: function(model, igv_percentage, perception_percentage) {
                 axios.post(this.url_get_article, {
@@ -270,6 +286,18 @@
                             width: 80,
                             textAlign: 'right',
                         },
+                        {
+                            field: 'cesion',
+                            title: 'Cesion',
+                            width: 80,
+                            textAlign: 'right',
+                        },
+                        {
+                            field: 'press',
+                            title: 'prestamo',
+                            width: 80,
+                            textAlign: 'right',
+                        },
                        // {
                         //    field: 'currency',
                        //     title: 'Moneda',
@@ -342,15 +370,32 @@
                             width: 120,
                             overflow: 'visible',
                             autoHide: false,
-                            textAlign: 'center',
-                            template: function() {
-                                return '\
-                                <div class="actions">\
-                                    <a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">\
-                                        <i class="la la-trash"></i>\
-                                    </a>\
-                                </div>\
-                            ';
+                            textAlign: 'right',
+                            class: 'td-sticky',
+                            template: function(val) {
+                                const group_id = val.group_id;
+                                const id = vm.$store.state.warehouse_account_type_id;
+
+                                if (id === 1 && group_id === 7) {
+                                    return '\
+                                        <div class="actions">\
+                                            <a style="cursor:pointer" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">\
+                                                <i class="la la-edit"></i>\
+                                            </a>\
+                                            <a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">\
+                                                <i class="la la-trash"></i>\
+                                            </a>\
+                                        </div>\
+                                        ';
+                                    } else {
+                                        return '\
+                                            <div class="actions">\
+                                                <a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">\
+                                                    <i class="la la-trash"></i>\
+                                                </a>\
+                                            </div>\
+                                            ';
+                                }
                             },
                         },
                     ]
@@ -393,6 +438,20 @@
                             EventBus.$emit('remove_article_id', id);
                         }
                     });
+                } else if ($(event.target).hasClass('edit')) {
+                    event.preventDefault();
+                    const item_number = $(event.target).parents('tr').find('td[data-field="item_number"] span').html();
+                    const id = $(event.target).parents('tr').find('td[data-field="id"] span').html();
+                    const index = this.article_list.findIndex((element) => element.item_number == item_number);
+
+                    const article = this.article_list[index];
+                    EventBus.$emit(
+                            'guides_register_modal_article',
+                            item_number,
+                            id,
+                            index,
+                            article
+                            );
                 }
             },
             formController: function(url, event) {
