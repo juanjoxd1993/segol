@@ -20,7 +20,10 @@ export default {
 			payment_id: '',
 			currency_id: 1,
 		},
-		clients: []
+		clients: [],
+		articles_for_liquidations: [],
+		warehouse_account_type_id: 0,
+		sale_series: [],
 	},
 	mutations: {
 		addModel(state, model) {
@@ -87,10 +90,19 @@ export default {
 			}
 		},
 		addClient(state, client) {
-				state.clients.push(client);
+			state.clients.push(client);
 		},
 		addClients(state, clients) {
-				state.clients = clients;
+			state.clients = clients;
+		},
+		addArticleForLiquidation(state, article) {
+			state.articles_for_liquidations.push(article);
+		},
+		addArticlesForLiquidations(state, articles) {
+			state.articles_for_liquidations = articles;
+		},
+		registerWarehouseAccountTypeId(state, id) {
+			state.warehouse_account_type_id = id;
 		},
 	},
 	getters: {
