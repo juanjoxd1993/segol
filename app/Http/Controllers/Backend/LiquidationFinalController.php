@@ -81,7 +81,7 @@ class LiquidationFinalController extends Controller
     public function getWarehouseMovements() {
         $company_id = request('company_id');
 
-        $elements = WarehouseMovement::select('id', 'movement_number', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'traslate_date')
+        $elements = WarehouseMovement::select('id', 'movement_number', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'traslate_date', 'movement_type_id')
             ->where('company_id', $company_id)
             ->where('warehouse_type_id', 5)
             ->where('sale_id', null)
@@ -108,10 +108,12 @@ class LiquidationFinalController extends Controller
         $warehouse_type_id = request('model.warehouse_type_id');
         $warehouse_movement_id = request('model.warehouse_movement_id');
 
-        // $saleWarehouseMovement = WarehouseMovement::select('id', 'referral_serie_number', 'referral_voucher_number')
-        //     ->where('id', $warehouse_movement_id)
-        //     ->where('company_id', $company_id)
-        //     ->first();
+        $saleWarehouseMovement = WarehouseMovement::select('id', 'referral_serie_number', 'referral_voucher_number', 'movement_type_id', 'company_id')
+            ->where('id', $warehouse_movement_id)
+            ->where('company_id', $company_id)
+            ->first();
+
+		$movement_type_id = $saleWarehouseMovement->movement_type_id;
 
         $movementDetails = WarehouseMovementDetail::select(
 				'id',
@@ -137,10 +139,10 @@ class LiquidationFinalController extends Controller
             $item->sale_warehouse_movement_id = $item->warehouse_movement_id;
             $item->article_id = $item->article->id;
             $item->article_code = $item->article->code;
-						$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
+			$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
             $item->presale_converted_amount = $item->converted_amount;
             $item->sale_converted_amount = number_format(0, 2, '.', '');
-						$item->return_converted_amount = $item->new_stock_return;
+			$item->return_converted_amount = $item->new_stock_return;
             $item->balance_converted_amount = number_format($item->converted_amount - $item->return_converted_amount, 2, '.', '');
             $item->new_balance_converted_amount = number_format($item->converted_amount - $item->return_converted_amount, 2, '.', '');
 
@@ -149,6 +151,7 @@ class LiquidationFinalController extends Controller
         });
 
 		$clients = array();
+
 		foreach ($clientLiquidations as $liquidation) {
 				$client = Client::select(
 						'id',
@@ -159,16 +162,40 @@ class LiquidationFinalController extends Controller
 						'credit_limit',
 						'document_number',
 						'document_type_id'
-				)
+						)
 						->where('id', $liquidation->client_id)
 						->first();
+
 				array_push($clients, $client);
+		};
+
+		$clients_parse = array_values(array_filter($clients, function ($client, $indice) use ($clients) {
+			return array_search($client->id, array_column($clients, 'id')) === $indice;
+		}, ARRAY_FILTER_USE_BOTH));
+
+		if ($movement_type_id == 12) {
+			$client = Client::select(
+				'id',
+				'code',
+				'business_name',
+				'payment_id',
+				'perception_percentage_id',
+				'credit_limit',
+				'document_number',
+				'document_type_id'
+				)
+				->where('id', $saleWarehouseMovement->company_id)
+				->first();
+
+			$clients_parse = array();
+
+			array_push($clients_parse, $client);
 		}
 
         return response()
 			->json([
 				'movement_details' => $movementDetails,
-				'clients' => $clients
+				'clients' => $clients_parse,
 			]);
 
     }
@@ -213,6 +240,13 @@ class LiquidationFinalController extends Controller
 	public function getArticles() {
 		$client_id = request('client_id');
 		$warehouse_movement_id = request('warehouse_movement_id');
+
+		$saleWarehouseMovement = WarehouseMovement::select('id', 'movement_type_id', 'company_id')
+            ->where('id', $warehouse_movement_id)
+            ->first();
+
+		$movement_type_id = $saleWarehouseMovement->movement_type_id;
+
 		$clientLiquidations = ClientLiquidations::select(
 				'client_id',
 				'article_id',
@@ -233,18 +267,52 @@ class LiquidationFinalController extends Controller
 				->where('id', $liquidation->article_id)
 				->first();
 
+			$article->quantity = $liquidation->quantity;
+
 			array_push($articles, $article);
 		};
+
+		if ($movement_type_id == 12) {
+
+			$articles = array();
+
+			$movementsDetails = WarehouseMovementDetail::select(
+				'id',
+				'article_code',
+				'converted_amount',
+				'new_stock_return'
+			)
+            ->where('warehouse_movement_id', $warehouse_movement_id)
+            ->orderBy('item_number', 'asc')
+            ->get();
+
+			foreach ($movementsDetails as $movementDetail) {
+				$article = Article::select(
+						'id',
+						'code',
+						'name'
+					)
+					->where('id', $movementDetail->article_code)
+					->first();
+	
+				$article->quantity = $movementDetail->converted_amount - $movementDetail->new_stock_return;
+	
+				array_push($articles, $article);
+			}
+		}
 
 		return $articles;
 	}
 
 	public function getSaleSeries() {
-		$warehouse_document_type_id = request('warehouse_document_type_id');
 
-		$sale_series = SaleSeries::select('id', 'num_serie', 'correlative')
-			->where('warehouse_document_type_id', $warehouse_document_type_id)
-			->get();
+		$sale_series = SaleSeries::select(
+					'id',
+					'num_serie',
+					'correlative',
+					'warehouse_document_type_id'
+					)
+					->get();
 
 		$series = array();
 
@@ -253,6 +321,7 @@ class LiquidationFinalController extends Controller
 			$obj->id = $sale_serie->id;
 			$obj->num_serie = $sale_serie->num_serie;
 			$obj->correlative = $sale_serie->correlative + 1;
+			$obj->warehouse_document_type_id = $sale_serie->warehouse_document_type_id;
 			array_push($series, $obj);
 		}
 

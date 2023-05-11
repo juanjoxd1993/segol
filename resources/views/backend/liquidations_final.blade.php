@@ -8,6 +8,7 @@
 		:companies = "{{ $companies }}"
 		:url = "'{{ route('dashboard.voucher.liquidations_final.validate_form') }}'"
 		:url_get_warehouse_movements = "'{{ route('dashboard.voucher.liquidations_final.get_warehouse_movements') }}'"
+		:url_get_sale_series = "'{{ route('dashboard.voucher.liquidations_final.get_sale_serie') }}'"
 	></liquidation-final-form>
 	
 	<liquidation-final-table

@@ -45,7 +45,7 @@
                                     <div class="form-group">
                                         <label class="form-control-label">Serie de Usuario:</label>
                                         <select class="form-control" name="sale_serie_id" id="sale_serie_id" v-model="sale.sale_serie_id" @focus="$parent.clearErrorMsg($event)">
-                                            <option value="">Seleccionar</option>
+                                            <option value="0">Seleccionar</option>
                                             <option v-for="sale_serie in sale_series" :value="sale_serie.id" v-bind:key="sale_serie.id">{{ sale_serie.num_serie }}</option>
                                         </select>
                                         <div id="sale_serie_id-error" class="error invalid-feedback"></div>
@@ -356,18 +356,10 @@
 			// },
 			'sale.warehouse_document_type_id': function(val) {
                 this.sale_series = [];
-                axios.post(this.url_get_sale_series, {
-                    warehouse_document_type_id: val
-                })
-                    .then(response => {
-                        const data = response.data;
-                        
-                        this.sale_series = data;
-                    })
-                    .catch(error => {
-                        this.sale_series = [];
-                        console.log(error);
-                    });
+
+                const data = this.$store.state.sale_series.filter(item => item.warehouse_document_type_id === val);
+                
+                this.sale_series = data;
 
 				let warehouse_document_type = this.warehouse_document_types.find(element => element.id == val);
 
@@ -376,7 +368,7 @@
 			'sale.sale_serie_id': function(val) {
 				let sale_serie = this.sale_series.find(element => element.id == val);
 
-                this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : '';
+                this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : 0;
 			},
             'sale.client_id': function(val) {
                 const client_id = val;
@@ -515,6 +507,12 @@
                     model.sale_value = sale_value;
                     model.igv_perception = igv_perception;
                     model.total_perception = total_perception;
+
+                    const sale_serie_id = this.sale.sale_serie_id;
+
+                    const sale_serie_index = this.$store.state.sale_series.findIndex(item => item.id == sale_serie_id);
+
+                    this.$store.state.sale_series[sale_serie_index].correlative += 1;
 
                     this.sale.details.push(model);
 
