@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\SaleSeries;
+use App\GlpSeries;
 
 use App\Article;
 use App\Bank;
@@ -52,14 +52,14 @@ class LiquidacionGlpController extends Controller
 
 			return view('backend.liquidations_glp')->with(
 					compact(
-							'companies',
-							'warehouse_document_types',
-							'payment_methods',
-							'currencies',
-							'payments',
-							'payment_cash',
-							'payment_credit',
-							'warehouse_types'
+						'companies',
+						'warehouse_document_types',
+						'payment_methods',
+						'currencies',
+						'payments',
+						'payment_cash',
+						'payment_credit',
+						'warehouse_types'
 					)
 			);
   }
@@ -150,8 +150,7 @@ class LiquidacionGlpController extends Controller
 					$item->sale_converted_amount = number_format(0, 2, '.', '');
 					$item->return_converted_amount = $item->new_stock_return;
 					$item->balance_converted_amount = number_format($item->warehouse_movement->stock_pend - $item->return_converted_amount, 2, '.', '');
-					// $item->new_balance_converted_amount = number_format( $item->article_stock_good - $item->sale_converted_amount, 2, '.', '');
-					$item->new_balance_converted_amount = "1.00";
+					$item->new_balance_converted_amount = number_format( $item->article_stock_good - $item->sale_converted_amount, 2, '.', '');
 
 					unset($item->warehouse_movement_id);
 					unset($item->converted_amount);
@@ -194,20 +193,21 @@ class LiquidacionGlpController extends Controller
 			return $elements;
 	}
 
-	public function getSaleSeries() {
+	public function getGlpSeries() {
 		$warehouse_document_type_id = request('warehouse_document_type_id');
 
-		$sale_series = SaleSeries::select('id', 'num_serie', 'correlative')
-			->where('warehouse_document_type_id', $warehouse_document_type_id)
+		$glp_series = GlpSeries::select('id', 'num_serie', 'correlative', 'warehouse_type_id', 'warehouse_document_type_id')
 			->get();
 
 		$series = array();
 
-		foreach ($sale_series as $sale_serie) {
+		foreach ($glp_series as $glp_serie) {
 			$obj = new stdClass();
-			$obj->id = $sale_serie->id;
-			$obj->num_serie = $sale_serie->num_serie;
-			$obj->correlative = $sale_serie->correlative + 1;
+			$obj->id = $glp_serie->id;
+			$obj->num_serie = $glp_serie->num_serie;
+			$obj->correlative = $glp_serie->correlative + 1;
+			$obj->warehouse_type_id = $glp_serie->warehouse_type_id;
+			$obj->warehouse_document_type_id = $glp_serie->warehouse_document_type_id;
 			array_push($series, $obj);
 		}
 
@@ -220,21 +220,22 @@ class LiquidacionGlpController extends Controller
 			$warehouse_movement_id = request('warehouse_movement_id');
 			$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'created_at']);
 			$today = Carbon::now()->startOfDay();
-			$current_date = date('Y-m-d', strtotime($warehouse_movement->created_at));
+			$current_date = date('Y-m-d', strtotime($today));
 
 
-			$article_det = WarehouseMovementDetail::select('article_code')
+			$article_det = WarehouseMovementDetail::select('article_code', 'article_num')
 			->where('warehouse_movement_id', $warehouse_movement_id)
+			->where('article_code', $article_id)
 			->first();
 
-			$article_num = $article_det ? $article_det->article_code : '' ;
+			$article_num = $article_det ? $article_det->article_num : '' ;
 
 			$element = PriceList::select('id', 'article_id', 'price_igv')
 					->where('client_id', $client_id)
 					->where('warehouse_type_id', 5)
 					->where('article_id', $article_num)
-					//->where('initial_effective_date', '<=', $current_date)
-					//->where('final_effective_date', '>=', $current_date)
+					->where('initial_effective_date', '<=', $current_date)
+					->where('final_effective_date', '>=', $current_date)
 					->where('state', 1)
 					->with(['article' => function ($query) {
 							$query->select('id', 'igv', 'perception');
@@ -462,16 +463,17 @@ class LiquidacionGlpController extends Controller
 					$voucher_detail->save();
 
 					//validar que se actualize el stock del article
-					Article::where('id', $article->article_id)
+				/*	Article::where('id', $article->article_id)
 					->update([
 						'stock_good' => DB::raw('stock_good + ' . $article->prestamo),
 						'stock_repair' => DB::raw('stock_repair - ' . $article->prestamo),
 						'stock_minimum' => DB::raw('stock_minimum + ' . $article->cesion),
 					]);
 
-					$article = Article::find($detail['article_id'], ['id','name', 'stock_good']);
 
-					$article->stock_good= $article->stock_good-$sale_detail->quantity;
+				    $article = Article::find($detail['article_id'], ['id','name', 'stock_good']);*/
+
+					$article->stock_good= $article->stock_good-$detail['quantity'];
 					$article->save();
 
 					if ( $detail['igv'] == 1 ) {
@@ -593,8 +595,8 @@ class LiquidacionGlpController extends Controller
 						$liquidation_model = new Liquidation();
 						$liquidation_model->sale_id = $sale_model->id;
 						$liquidation_model->company_id = $model['company_id'];
-						$liquidation_model->payment_method_id = $liquidation['payment_method'];
-						$liquidation_model->currency_id = $liquidation['currency'];
+						$liquidation_model->payment_method_id = $liquidation['payment_method']['id'];
+						$liquidation_model->currency_id = $liquidation['currency']['id'];
 						$liquidation_model->exchange_rate = $liquidation['exchange_rate'];
 						$liquidation_model->bank_account_id = $liquidation['bank_account'];
 						$liquidation_model->operation_number = $liquidation['operation_number'];

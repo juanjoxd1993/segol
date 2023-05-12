@@ -34,17 +34,14 @@
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Serie de Usuario:</label>
-                                        <select class="form-control" name="sale_serie_id" id="sale_serie_id" v-model="sale.sale_serie_id" @focus="$parent.clearErrorMsg($event)">
-                                            <option value="">Seleccionar</option>
-                                            <option v-for="sale_serie in sale_series" :value="sale_serie.id" v-bind:key="sale_serie.id">{{ sale_serie.num_serie }}</option>
-                                        </select>
-                                        <div id="sale_serie_id-error" class="error invalid-feedback"></div>
+                                        <input type="text" readonly class="form-control" name="sale_serie_num" id="sale_serie_num" v-model="sale.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
+                                        <div id="sale_serie_num-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Serie de Referencia:</label>
-                                        <input type="text" readonly class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="sale.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
+                                        <input type="text" readonly class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="sale.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
                                         <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -205,10 +202,6 @@
                 type: String,
                 default: ''
             },
-            url_get_sale_series: {
-                type: String,
-                default: ''
-            },
             url_verify_document_type: {
                 type: String,
                 default: ''
@@ -247,7 +240,8 @@
 					currency_id: 1,
                     credit_limit: '',
                     scop_number: '',
-                    sale_serie_id: ''
+                    sale_serie_id: '',
+                    sale_serie_num: '',
                 },
                 filterArticles: [],
                 edit_flag: false,
@@ -336,28 +330,24 @@
 			// 	}
 			// },
 			'sale.warehouse_document_type_id': function(val) {
-                axios.post(this.url_get_sale_series, {
-                    warehouse_document_type_id: val
-                })
-                    .then(response => {
-                        const data = response.data;
-                        
-                        this.sale_series = data;
-                    })
-                    .catch(error => {
-                        this.sale_series = [];
-                        console.log(error);
-                    });
+
+                const warehouse_type_id = this.$store.state.warehouse_type_id;
+                console.log(warehouse_type_id);
+
+                const data_filter = this.$store.state.sale_series.filter(item => item.warehouse_document_type_id === val && item.warehouse_type_id == warehouse_type_id)[0];
+
+                this.sale.sale_serie_id = data_filter.id;
+                this.sale.referral_serie_number = data_filter.num_serie;
+                this.sale.referral_voucher_number = data_filter.correlative;
 
                 let warehouse_document_type = this.warehouse_document_types.find(element => element.id == val);
 
-                this.sale.sale_serie_id = '';
                 this.sale.warehouse_document_type_name = warehouse_document_type ? warehouse_document_type.name : '';
 			},
-			'sale.sale_serie_id': function(val) {
-				let sale_serie = this.sale_series.find(element => element.id == val);
-				this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : '';
-			}
+			// 'sale.sale_serie_id': function(val) {
+			// 	let sale_serie = this.sale_series.find(element => element.id == val);
+			// 	this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : '';
+			// }
         },
         computed: {
             setDetails() {

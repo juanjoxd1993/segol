@@ -67,7 +67,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-glp/obtener-movimientos-almacen', 'LiquidacionGlpController@getWarehouseMovements')->name('dashboard.operations.voucher.liquidations_glp.get_warehouse_movements');
 	Route::post('/facturacion/liquidaciones-glp/listar', 'LiquidacionGlpController@list')->name('dashboard.voucher.liquidations_glp.list');
 	Route::post('/facturacion/liquidaciones-glp/obtener-clientes', 'LiquidacionGlpController@getClients')->name('dashboard.operations.voucher.liquidations_glp.get_clients');
-	Route::post('/facturacion/liquidaciones-glp/obtener-sale-serie', 'LiquidacionGlpController@getSaleSeries')->name('dashboard.voucher.liquidations_glp.get_sale_serie');
+	Route::post('/facturacion/liquidaciones-glp/obtener-glp-serie', 'LiquidacionGlpController@getGlpSeries')->name('dashboard.voucher.liquidations_glp.get_glp_serie');
 	Route::post('/facturacion/liquidaciones-glp/obtener-precio-articulo', 'LiquidacionGlpController@getArticlePrice')->name('dashboard.operations.voucher.liquidations_glp.get_article_price');
 	Route::post('/facturacion/liquidaciones-glp/obtener-cuentas-banco', 'LiquidacionGlpController@getBankAccounts')->name('dashboard.operations.voucher.liquidations_glp.get_bank_accounts');
 	Route::post('/facturacion/liquidaciones-glp/verificar-documento', 'LiquidacionGlpController@verifyDocumentType')->name('dashboard.operations.voucher.liquidations_glp.verify_document_type');
@@ -551,10 +551,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/placas/obtener-ubigeo', 'PlatesController@getUbigeo')->name('dashboard.plates.get_ubigeo');
 	Route::post('/placas/eliminar', 'PlatesController@delete')->name('dashboard.plates.delete'); 
 
-
-
-
-
 	 /** Compras GLP > Reporte de Compras GLP */
 	 Route::get('/controlglp/compras-registro', 'StockSalesRegisterReportController@index')->name('dashboard.report.stock_sales_register');
 	 Route::post('/controlglp/compras-registro/validar-formulario', 'StockSalesRegisterReportController@validateForm')->name('dashboard.report.stock_sales_register.validate_form');
@@ -570,7 +566,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	  Route::post('/control-glp/editor/listar', 'GlpFactReportController@list')->name('dashboard.report.glp_fact.list');
 	  Route::post('/control-glp/editor/detalle', 'GlpFactReportController@detail')->name('dashboard.report.glp_fact.detail');
 	  Route::post('/control-glp/editor/actualizar', 'GlpFactReportController@update')->name('dashboard.report.glp_fact.update');
-    
 
 	  /** Compras GLP > Stocks Artículos GLP */
 	Route::get('/control-glp', 'WarehouseGlpController@index')->name('dashboard.operations.warehouse_glp');

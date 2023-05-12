@@ -123,6 +123,8 @@
                 if ( val != '' ) {
                     EventBus.$emit('loading', true);
 
+                    this.$store.commit('setWarehouseTypeId', this.model.warehouse_type_id);
+
                     axios.post(this.url_get_warehouse_movements, {
                         company_id: this.model.company_id,
                         warehouse_type_id: this.model.warehouse_type_id,
@@ -137,6 +139,7 @@
                         console.log(error.response)
                     });
                 } else {
+                    this.$store.commit('setWarehouseTypeId', 0);
                     this.model.warehouse_movement_id = '';
                     this.warehouse_movements = '';
                 }

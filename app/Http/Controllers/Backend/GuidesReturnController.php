@@ -387,7 +387,7 @@ class GuidesReturnController extends Controller
 
         foreach ($clients as $client) {
             $client_liquidation = new ClientLiquidations;
-            $client_liquidation->warehouse_movement_id = $warehouse_movement_id;
+            $client_liquidation->warehouse_movement_id = $request->warehouse_movement_id;
             $client_liquidation->client_id = $client ['client_id'];
             $client_liquidation->article_id = $client['article_id'];
             $client_liquidation->quantity = $client['liquidation'];

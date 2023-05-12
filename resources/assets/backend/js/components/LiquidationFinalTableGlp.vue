@@ -41,7 +41,11 @@
 			url_store: {
 				type: String,
 				default: ''
-			}
+			},
+            url_get_glp_series: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -56,6 +60,36 @@
             EventBus.$on('show_table', function(response) {
                 this.show_table = true;
                 this.$store.commit('addModel', response);
+
+                axios.post(this.url, {
+                    model: this.$store.state.model,
+                }).then(response => {
+                    // console.log(response.data);
+                    this.$store.commit('addArticles', response.data);
+                    
+                    if ( this.liquidation_datatable == undefined ) {
+                        this.fillTableX();
+                    } else {
+                        this.liquidation_datatable.originalDataSet = this.articlesState;
+                        this.liquidation_datatable.load();
+                    }
+
+                    EventBus.$emit('loading', false);
+                }).catch(error => {
+                    console.log(error);
+                    console.log(error.response);
+                });
+
+                axios.post(this.url_get_glp_series)
+                .then(response => {
+                    // console.log(response.data);
+                    this.$store.state.sale_series = response.data;
+
+                    EventBus.$emit('loading', false);
+                }).catch(error => {
+                    console.log(error);
+                    console.log(error.response);
+                });
 
                 axios.post(this.url, {
                     model: this.$store.state.model,

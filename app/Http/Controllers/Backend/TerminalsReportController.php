@@ -60,7 +60,16 @@ class TerminalsReportController extends Controller
 		$company_id = request('model.company_id');
 		$initial_date = date_format($initial_date, 'Y-m-d H:i:s');
 		$final_date = date_format($final_date, 'Y-m-d H:i:s');
-	
+
+		$warehouse_type_ids = WarehouseType::select('id')
+		->where('type', 2)
+		->get();
+
+		$array_warehouse_type_ids = array();
+
+		foreach ($warehouse_type_ids as $warehouse_type_id) {
+			array_push($array_warehouse_type_ids, $warehouse_type_id->id);
+		}
 
 		$movements = WarehouseMovement::select('id', 
 		'company_id', 
@@ -82,20 +91,18 @@ class TerminalsReportController extends Controller
 		'referral_guide_number', 
 		'referral_voucher_number',
 		'traslate_date',
-		'scop_number', 'license_plate', 'state')
-		
-        ->whereIn('warehouse_type_id',[8,9,10,11,12])
+		'scop_number',
+		'license_plate',
+		'state')
+        // ->whereIn('warehouse_type_id',[8,9,10,11,12])
+        ->whereIn('warehouse_type_id',$array_warehouse_type_ids)
         ->where('movement_class_id', 2)
         ->whereIn('movement_type_id', [30,31])
-		
-			->where('created_at', '>=', $initial_date)
-			->where('created_at', '<=', $final_date)
-		
-			->orderBy('company_id', 'asc')
-			->orderBy('created_at', 'asc')
-			->get();
-
-
+		->where('created_at', '>=', $initial_date)
+		->where('created_at', '<=', $final_date)
+		->orderBy('company_id', 'asc')
+		->orderBy('created_at', 'asc')
+		->get();
 
 		$movement_details = collect([]);
 		$movements->map(function($item, $index) use($movement_details, $export) {

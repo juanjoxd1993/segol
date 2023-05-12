@@ -24,6 +24,7 @@ export default {
 		articles_for_liquidations: [],
 		warehouse_account_type_id: 0,
 		sale_series: [],
+		warehouse_type_id: 0,
 	},
 	mutations: {
 		addModel(state, model) {
@@ -104,6 +105,9 @@ export default {
 		registerWarehouseAccountTypeId(state, id) {
 			state.warehouse_account_type_id = id;
 		},
+		setWarehouseTypeId(state, id) {
+			state.warehouse_type_id = id;
+		}
 	},
 	getters: {
 		editSale: (state) => (client_id) => {

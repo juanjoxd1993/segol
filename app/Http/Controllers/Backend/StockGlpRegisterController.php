@@ -358,6 +358,8 @@ class StockGlpRegisterController extends Controller
 		$movement->created_at = date('Y-m-d', strtotime($since_date));
 		$movement->created_at_user = Auth::user()->user;
 		$movement->updated_at_user = Auth::user()->user;
+		$movement->stock_ini = array_sum(array_column($articles, 'converted_amount'));
+		$movement->stock_pend = $movement->stock_ini;
 		$movement->save();
 
 		foreach ($articles as $item) {
@@ -563,8 +565,8 @@ class StockGlpRegisterController extends Controller
 				'article_code' => 4856,
 				'article_num' => 4856,
 				'digit_amount' => $converted_amount,
-				'converted_amount' => ($converted_amount/($isla*3.7854)),
-				'sale_value'=>($isla*3.7854),
+				'converted_amount' => ($converted_amount/($isla*3.785412)),
+				'sale_value'=>($isla*3.785412),
 				'total' => $converted_amount,
 				'created_at' => date('Y-m-d H:i:s'),
 				'updated_at' => date('Y-m-d H:i:s'),

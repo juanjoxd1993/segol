@@ -120,6 +120,7 @@ class LiquidationFinalController extends Controller
 				'warehouse_movement_id',
 				'item_number',
 				'article_code',
+				'digit_amount',
 				'converted_amount',
 				'new_stock_return'
 			)
@@ -140,11 +141,11 @@ class LiquidationFinalController extends Controller
             $item->article_id = $item->article->id;
             $item->article_code = $item->article->code;
 			$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
-            $item->presale_converted_amount = $item->converted_amount;
+            $item->presale_converted_amount = $item->digit_amount;
             $item->sale_converted_amount = number_format(0, 2, '.', '');
 			$item->return_converted_amount = $item->new_stock_return;
-            $item->balance_converted_amount = number_format($item->converted_amount - $item->return_converted_amount, 2, '.', '');
-            $item->new_balance_converted_amount = number_format($item->converted_amount - $item->return_converted_amount, 2, '.', '');
+            $item->balance_converted_amount = number_format($item->digit_amount - $item->return_converted_amount, 2, '.', '');
+            $item->new_balance_converted_amount = number_format($item->digit_amount - $item->return_converted_amount, 2, '.', '');
 
             unset($item->warehouse_movement_id);
             unset($item->converted_amount);
@@ -279,6 +280,7 @@ class LiquidationFinalController extends Controller
 			$movementsDetails = WarehouseMovementDetail::select(
 				'id',
 				'article_code',
+				'digit_amount',
 				'converted_amount',
 				'new_stock_return'
 			)
@@ -295,7 +297,7 @@ class LiquidationFinalController extends Controller
 					->where('id', $movementDetail->article_code)
 					->first();
 	
-				$article->quantity = $movementDetail->converted_amount - $movementDetail->new_stock_return;
+				$article->quantity = $movementDetail->digit_amount - $movementDetail->new_stock_return;
 	
 				array_push($articles, $article);
 			}
@@ -754,7 +756,7 @@ class LiquidationFinalController extends Controller
 										'sale_id' => $sale_model->id,
 										'company_id' => $model['company_id'],
 										'client_id' => $sale['client_id'],
-										'currency_id' =>  $liquidation['currency'],
+										'currency_id' =>  $liquidation['currency']['id'],
 										'amount' => round($sale_model['pre_balance'], 4),
 										'created_at_user' => auth()->user()->name,
 										'created_at' => Carbon::now(),
