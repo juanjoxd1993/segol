@@ -300,7 +300,8 @@ class LiquidationFinalController extends Controller
 				'article_code',
 				'digit_amount',
 				'converted_amount',
-				'new_stock_return'
+				'new_stock_return',
+				'new_stock_cesion'
 			)
             ->where('warehouse_movement_id', $warehouse_movement_id)
             ->orderBy('item_number', 'asc')
@@ -311,7 +312,8 @@ class LiquidationFinalController extends Controller
 						'id',
 						'code',
 						'name',
-						'group_id'
+						'group_id',
+						'convertion'
 					)
 					->where('id', $movementDetail->article_code)
 					->first();
@@ -320,6 +322,16 @@ class LiquidationFinalController extends Controller
 
 				if ($article->group_id != 7) {
 					array_push($articles, $article);
+				}
+
+				if ($movementDetail->new_stock_cesion) {
+					$articleBalon = Article::where('warehouse_type_id', 5)
+						->where('convertion', $article->convertion)
+						->where('name', 'like', '%BALON%')
+						->first();
+
+					$articleBalon->quantity = $movementDetail->new_stock_cesion;
+					array_push($articles, $articleBalon);
 				}
 			}
 		}
