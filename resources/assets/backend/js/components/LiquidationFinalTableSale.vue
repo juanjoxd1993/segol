@@ -42,9 +42,7 @@
                 flag_add: false,
             }
         },
-        created() {
-
-        },
+        created() {},
         mounted() {
             EventBus.$on('show_table', () => {
                 this.show_table = true;
@@ -185,15 +183,15 @@
                             textAlign: 'right',
                             template: function(row) {
                                 let actions = '<div class="actions">';
-                                    // actions += '<a href="#" class="view btn btn-sm btn-clean btn-icon btn-icon-md" title="Ver">';
-                                    //     actions += '<i class="la la-eye"></i>';
-                                    // actions += '</a>';
-                                    // actions += '<a href="#" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">';
-                                    //     actions += '<i class="la la-edit"></i>';
-                                    // actions += '</a>';
-                                    // actions += '<a href="#" class="delete btn btn-sm btn-clean btn-icon btn-icon-md" title="Eliminar">';
-                                    //     actions += '<i class="la la-trash"></i>';
-                                    // actions += '</a>';
+                                // actions += '<a href="#" class="view btn btn-sm btn-clean btn-icon btn-icon-md" title="Ver">';
+                                //     actions += '<i class="la la-eye"></i>';
+                                // actions += '</a>';
+                                // actions += '<a href="#" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">';
+                                //     actions += '<i class="la la-edit"></i>';
+                                // actions += '</a>';
+                                actions += '<a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">';
+                                actions += '<i class="la la-trash"></i>';
+                                actions += '</a>';
                                 actions += '</div>';
 
                                 return actions;
@@ -222,13 +220,13 @@
 
                         if ( result.value ) {
                             
-                            this.sales.find(element => {
+                            this.$store.state.sales.find(element => {
                                 if ( element.client_id == client_id ) {
-                                    let index = this.sales.indexOf(element);
+                                    let index = this.$store.state.sales.indexOf(element);
                                     if ( index > -1 ) {
-                                        this.sales.splice(index, 1);
+                                        this.$store.state.sales.splice(index, 1);
 
-                                        this.sale_datatable.originalDataSet = this.sales;
+                                        this.sale_datatable.originalDataSet = this.$store.state.sales;
                                         this.sale_datatable.load();
 
                                         Swal.fire({

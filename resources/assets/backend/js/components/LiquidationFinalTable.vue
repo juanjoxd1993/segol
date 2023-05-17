@@ -110,11 +110,18 @@
 			saveLiquidation: function() {
 				// let zeroBalance = this.$store.state.articles.filter(element => element.new_balance_converted_amount > 0);
 				let zeroBalance = 0;
-
-				if ( zeroBalance.length > 0 ) {
+                const salesRegister = this.$store.state.sales.length;
+                if ( zeroBalance.length > 0 ) {
 					Swal.fire({
 						title: '¡Error!',
 						text: 'Tiene Artículos pendientes por liquidar.',
+						type: "error",
+						heightAuto: false,
+					});
+				} else if ( !salesRegister ) {
+					Swal.fire({
+						title: '¡Error!',
+						text: 'No ha registrado ninguna liquidacion.',
 						type: "error",
 						heightAuto: false,
 					});

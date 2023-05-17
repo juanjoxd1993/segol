@@ -806,7 +806,11 @@ class LiquidationFinalController extends Controller
 			}
 		}
 
-		$warehouse_movement->state = 2;
+		$guide_state = GuidesState::select('id')
+            ->where('name', 'Liquidada')
+            ->first();
+
+		$warehouse_movement->state = $guide_state->id;
 		$warehouse_movement->save();
 
 		return request()->all();
