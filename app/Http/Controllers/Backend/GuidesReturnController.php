@@ -251,7 +251,6 @@ class GuidesReturnController extends Controller
 
                 //Actualizar Stock por el Movimiento
                 // descuenta al stock_repair
-                $articleBalon->stock_good += $article['retorno_press'];
                 $articleBalon->stock_repair -= $article['retorno_press'];
                 // Article::where('id', $article['article_id'])
                 //     ->update([
