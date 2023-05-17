@@ -25,8 +25,7 @@
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    
-                 
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>

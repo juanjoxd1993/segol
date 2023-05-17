@@ -23,20 +23,6 @@
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-				 <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Serie de Guía de Remisión:</label>
-                            <input type="text" class="form-control" name="referral_guide_series" id="referral_guide_series" v-model="model.referral_guide_series" @focus="$parent.clearErrorMsg($event)">
-                            <div id="referral_guide_series-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Número de Guía de Remisión:</label>
-                            <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="model.referral_guide_number" @focus="$parent.clearErrorMsg($event)">
-                            <div id="referral_guide_number-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="kt-portlet__foot">
@@ -56,53 +42,36 @@
 
 <script>
     import EventBus from '../event-bus';
-	import Datetime from 'vue-datetime';
+    import Datetime from 'vue-datetime';
     // You need a specific loader for CSS files
     import 'vue-datetime/dist/vue-datetime.css';
 
+    Vue.use(Datetime);
+
     export default {
         props: {
-            companies: {
-                type: Array,
-                default: ''
-            },
             url: {
                 type: String,
                 default: ''
             },
-	    	
+            companies: {
+                type: Array,
+                default: ''
+            },
         },
         data() {
             return {
                 model: {
-                    company_id: '',
-                    referral_guide_series: '',
-                    referral_guide_number: '',
+                    company_id: ''
                 },
             }
         },
-        created() {
-
-        },
-        mounted() {
-           
-        
-        },
-        watch: {
-         /*   'model.company_id': function(val, old) {
-				if ( val != old ) {
-					this.model.referral_guide_number = '';
-					$('#referral_guide_number').val(null).trigger('change');
-              }
-			} */
-          
-        },
-        computed: {
-
-        },
+        created() {},
+        mounted() {},
+        watch: {},
+        computed: {},
         methods: {
-			
-             formController: function(url, event) {
+            formController: function(url, event) {
                 var vm = this;
 
                 var target = $(event.target);
@@ -110,12 +79,18 @@
                 var fd = new FormData(event.target);
 
                 EventBus.$emit('loading', true);
+				this.$store.commit('resetState');
 
                 axios.post(url, fd, { headers: {
                         'Content-type': 'application/x-www-form-urlencoded',
                     }
                 }).then(response => {
-                    console.log(response);
+                    // console.log(response);
+					target.find('input').prop('disabled', true);
+                    target.find('select').prop('disabled', true);
+                    target.find('button').prop('disabled', true);
+                    EventBus.$emit('loading', false);
+
                     EventBus.$emit('show_table', response.data);
                 }).catch(error => {
                     EventBus.$emit('loading', false);
@@ -125,7 +100,7 @@
                         scrollTop: 0
                     }, 500, 'swing');
                     $.each(obj, function(i, item) {
-                        console.log(target);
+                        // console.log(target);
                         let c_target = target.find("#" + i + "-error");
                         let p = c_target.parents('.form-group').find('#' + i);
                         p.addClass('is-invalid');

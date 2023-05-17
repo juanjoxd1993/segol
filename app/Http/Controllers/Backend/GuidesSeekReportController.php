@@ -49,10 +49,10 @@ class GuidesSeekReportController extends Controller
 		$referral_guide_series = request('model.referral_guide_series');
 		$referral_guide_number = request('model.referral_guide_number');
 		
-					$elements = WarehouseMovement::leftjoin('companies', 'warehouse_movements.company_id', '=', 'companies.id')
-					    ->leftjoin('warehouse_movement_details','warehouse_movements.id','=','warehouse_movement_details.warehouse_movement_id')
-						->leftjoin('articles','warehouse_movement_details.article_code','=','articles.id')
-                        ->leftjoin('movent_types', 'warehouse_movements.movement_type_id', '=', 'movent_types.id')
+		$elements = WarehouseMovement::leftjoin('companies', 'warehouse_movements.company_id', '=', 'companies.id')
+			->leftjoin('warehouse_movement_details','warehouse_movements.id','=','warehouse_movement_details.warehouse_movement_id')
+			->leftjoin('articles','warehouse_movement_details.article_code','=','articles.id')
+			->leftjoin('movent_types', 'warehouse_movements.movement_type_id', '=', 'movent_types.id')
 
 			           
 			->select('warehouse_movement_details.id', 'companies.short_name as company_short_name', DB::Raw('DATE_FORMAT(warehouse_movements.created_at, "%Y-%m-%d") as guide_date'),'traslate_date', DB::Raw('CONCAT("R-", warehouse_movements.route_id) as route_id'), 'movent_types.name as movement_type_name', DB::Raw('CONCAT(warehouse_movements.referral_guide_series, "-", warehouse_movements.referral_guide_number) as guide'),'warehouse_movements.state as state','warehouse_movements.license_plate as plate','warehouse_movement_details.article_code as article_code','articles.name as article_name','warehouse_movement_details.digit_amount as quantity','warehouse_movement_details.new_stock_return as return')
@@ -74,11 +74,8 @@ class GuidesSeekReportController extends Controller
 			->get();
 			$response=[];
 
-
 			foreach ($elements as $warehouse_movement) {
 
-
-         
 				$warehouse_movement->company_short_name = $warehouse_movement['company_short_name'];
 				$warehouse_movement->created_at = $warehouse_movement['guide_date'];
                 $warehouse_movement->traslate_date = $warehouse_movement['traslate_date'];
@@ -114,11 +111,6 @@ class GuidesSeekReportController extends Controller
 
 		$response[] = $totals;
 
-
-
-
-
-
 		if ( $export) {
 			$spreadsheet = new Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
@@ -133,7 +125,6 @@ class GuidesSeekReportController extends Controller
 					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
 				]
 			]);
-
 
 			$sheet->setCellValue('A3', '#');
 			$sheet->setCellValue('B3', 'Compañía');
@@ -170,9 +161,7 @@ class GuidesSeekReportController extends Controller
                 $sheet->setCellValue('K'.$row_number, $element->state);
 				$sheet->setCellValue('L'.$row_number, $element->guide);
 				$sheet->setCellValue('M'.$row_number, $element->plate);
-							
 
-		
 				$row_number++;
 			}
 
@@ -190,11 +179,10 @@ class GuidesSeekReportController extends Controller
 			$sheet->getColumnDimension('L')->setAutoSize(true);
 			$sheet->getColumnDimension('M')->setAutoSize(true);
 
-		
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');
 		} 
-		
+
 		    else {
 			return response()->json($response);
 		    }

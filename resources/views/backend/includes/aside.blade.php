@@ -365,7 +365,16 @@
 									<span class="kt-menu__link-text">Registro de Guías de Remisión</span>
 								</a>
 							</li>
-							
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_validate' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.guides_validate') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Validacion de Guías de Remisión</span>
+								</a>
+							</li>
+
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_return' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.guides_return') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">

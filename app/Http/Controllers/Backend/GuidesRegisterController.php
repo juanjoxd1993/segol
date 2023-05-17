@@ -74,6 +74,7 @@ class GuidesRegisterController extends Controller
 
 		return response()->json($next_correlative, 200);
 	}
+
 	public function getAccounts()
 	{
 		$company_id = request('company_id');
@@ -210,7 +211,6 @@ class GuidesRegisterController extends Controller
 		return response()->json([
 			'model'					=> $model,
 			'perception_percentage' => $perception_percentage,
-
 			'articles'				=> $articles
 		]);
 	}
@@ -543,10 +543,9 @@ class GuidesRegisterController extends Controller
 			$account = Employee::select('first_name', 'last_name')
 						->where('id', $warehouse_account_id)
 						->first();
-		}
 
-		$account->business_name = $account ? ($account->first_name . ' ' . $account->last_name) : '';
-		$account->document_number = $account ? $account->document_number : '';
+			$account->business_name = $account ? ($account->first_name . ' ' . $account->last_name) : '';
+		}
 
 		$movement_type = MoventType::find($movement_type_id);
 
@@ -633,6 +632,7 @@ class GuidesRegisterController extends Controller
 				$movementDetail->warehouse_movement_id = $movement->id;
 				$movementDetail->item_number = $item['item_number'];
 				$movementDetail->article_code = $item['id'];
+				$movementDetail->article_num = $article->id;
 				$movementDetail->digit_amount = $digit_amount;
 				$movementDetail->converted_amount = $converted_amount;
 				$movementDetail->old_stock_good = $article->stock_good;
@@ -756,10 +756,6 @@ class GuidesRegisterController extends Controller
 							$article_balon->save();
 						}
 					} elseif ($difference < 0) {
-						$article->stock_good = 0;
-						$article->edit = 1;
-						$article->save();
-
 						$article_balon = Article::where('warehouse_type_id', 4)
 										->where('convertion', $article->convertion)
 										->first();
@@ -768,38 +764,34 @@ class GuidesRegisterController extends Controller
 						$converted_amount = $difference_parse * $article->convertion;
 
 						if ($warehouse_account_type_id == 1) {
-
 							if ($search_stock_good != 0) {
-								$article_balon->stock_good += $search_stock_good;
+								$articleEnvasado = Article::find(4791);
+								$articleEnvasado->stock_good -= $converted_amount;
+								$articleEnvasado->save();
+		
+								//Movimiento por producción
+								$id = WarehouseMovement::insertGetId([
+									'company_id' => $company_id,
+									'warehouse_type_id' => 4, //Producción ATE
+									'movement_class_id' => 2,//Salida
+									'movement_type_id' => 5, //Producción
+									'warehouse_account_type_id' => 3, //Trabajador
+									'total' => $converted_amount,
+									'created_at' => date('Y-m-d H:i:s'),
+									'updated_at' => date('Y-m-d H:i:s'),
+								]);
+		
+								WarehouseMovementDetail::insert([
+									'warehouse_movement_id' => $id,
+									'item_number' => 1,
+									'article_code' => $articleEnvasado->id,
+									'converted_amount' => $converted_amount,
+									'total' => $converted_amount,
+									'created_at' => date('Y-m-d H:i:s'),
+									'updated_at' => date('Y-m-d H:i:s'),
+								]);
 							}
-
-							$articleEnvasado = Article::find(4791);
-							$articleEnvasado->stock_good -= $converted_amount;
-							$articleEnvasado->save();
-	
-							//Movimiento por producción
-							$id = WarehouseMovement::insertGetId([
-								'company_id' => $company_id,
-								'warehouse_type_id' => 4, //Producción ATE
-								'movement_class_id' => 2,//Salida
-								'movement_type_id' => 5, //Producción
-								'warehouse_account_type_id' => 3, //Trabajador
-								'total' => $converted_amount,
-								'created_at' => date('Y-m-d H:i:s'),
-								'updated_at' => date('Y-m-d H:i:s'),
-							]);
-	
-							WarehouseMovementDetail::insert([
-								'warehouse_movement_id' => $id,
-								'item_number' => 1,
-								'article_code' => $articleEnvasado->id,
-								'converted_amount' => $converted_amount,
-								'total' => $converted_amount,
-								'created_at' => date('Y-m-d H:i:s'),
-								'updated_at' => date('Y-m-d H:i:s'),
-							]);
 						} elseif ($warehouse_account_type_id == 3) {
-
 							$article_balon->stock_good -= $difference_parse;
 							$article_balon->stock_return += $difference_parse;
 
@@ -831,6 +823,10 @@ class GuidesRegisterController extends Controller
 						}
 
 						$article_balon->save();
+
+						$article->stock_good = 0;
+						$article->edit = 1;
+						$article->save();
 					} elseif ($difference == 0) {
 						$article->stock_good = 0;
 						$article->edit = 1;

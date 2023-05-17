@@ -285,6 +285,16 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/parte-almacen/exportar', 'OperationsPartController@export')->name('dashboard.operations.operations_part.export');
 	Route::get('/operaciones/parte-almacen/exportar-guia-remision', 'OperationsPartController@exportReferralGuide')->name('dashboard.operations.operations_part.export_referral_guide');
 
+	/** Operaciones > Validar Guías */
+	Route::get('/operaciones/validar-guias', 'GuidesValidateController@index')->name('dashboard.operations.guides_validate');
+	Route::post('/operaciones/validar-guias/validar-formulario', 'GuidesValidateController@validateForm')->name('dashboard.operations.guides_validate.validate_form');
+	Route::post('/operaciones/validar-guias/obtener-movimientos', 'GuidesValidateController@getWarehouseMovements')->name('dashboard.operations.guides_validate.get_warehouse_movements');
+	Route::post('/operaciones/validar-guias/listar-detalle-movimientos', 'GuidesValidateController@list')->name('dashboard.operations.guides_validate.list');
+	Route::post('/operaciones/validar-guias/remove-article', 'GuidesValidateController@removeArticle')->name('dashboard.operations.guides_validate.remove_article');
+	Route::post('/operaciones/validar-guias/update-articles', 'GuidesValidateController@updateArticles')->name('dashboard.operations.guides_validate.update_articles');
+	Route::post('/operaciones/validar-guias/get-articles', 'GuidesValidateController@getArticles')->name('dashboard.operations.guides_validate.get_articles');
+	Route::post('/operaciones/validar-guias/validate-guides', 'GuidesValidateController@validateGuides')->name('dashboard.operations.guides_validate.validate_guides');
+
    /** Operaciones > Retorno de Guías */
     Route::get('/operaciones/retorno-guias', 'GuidesReturnController@index')->name('dashboard.operations.guides_return');
 	Route::post('/operaciones/retorno-guias/validar-formulario', 'GuidesReturnController@validateForm')->name('dashboard.operations.guides_return.validate_form');

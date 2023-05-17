@@ -375,27 +375,13 @@
                             template: function(val) {
                                 const group_id = val.group_id;
                                 const id = vm.$store.state.warehouse_account_type_id;
-
-                                if (id === 1 && group_id === 7) {
-                                    return '\
-                                        <div class="actions">\
-                                            <a style="cursor:pointer" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">\
-                                                <i class="la la-edit"></i>\
-                                            </a>\
-                                            <a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">\
-                                                <i class="la la-trash"></i>\
-                                            </a>\
-                                        </div>\
-                                        ';
-                                    } else {
-                                        return '\
-                                            <div class="actions">\
-                                                <a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">\
-                                                    <i class="la la-trash"></i>\
-                                                </a>\
-                                            </div>\
-                                            ';
-                                }
+                                return '\
+                                    <div class="actions">\
+                                        <a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">\
+                                            <i class="la la-trash"></i>\
+                                        </a>\
+                                    </div>\
+                                    ';
                             },
                         },
                     ]
