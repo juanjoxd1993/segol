@@ -108,7 +108,8 @@
         },
         methods: {
 			saveLiquidation: function() {
-				let zeroBalance = this.$store.state.articles.filter(element => element.new_balance_converted_amount > 0);
+				// let zeroBalance = this.$store.state.articles.filter(element => element.new_balance_converted_amount > 0);
+				let zeroBalance = 0;
 
 				if ( zeroBalance.length > 0 ) {
 					Swal.fire({
@@ -252,6 +253,12 @@
                         {
                             field: 'return_converted_amount',
                             title: 'Retorno',
+                            width: 120,
+                            textAlign: 'right',
+                        },
+                        {
+                            field: 'cesion',
+                            title: 'Cesión de Uso',
                             width: 120,
                             textAlign: 'right',
                         },

@@ -130,7 +130,7 @@
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Cantidad:</label>
-                                        <input type="number" class="form-control" name="quantity" id="quantity" v-model="model.quantity" @focus="$parent.clearErrorMsg($event)">
+                                        <input type="number" class="form-control" name="quantity" id="quantity" v-model="model.quantity" @focus="$parent.clearErrorMsg($event)" readonly>
                                         <div id="quantity-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -374,21 +374,28 @@
                 const client_id = val;
                 const warehouse_movement_id = this.$store.state.model.warehouse_movement_id;
                 const client = this.clients.find(item => item.id === val);
-                if (client) {
-                    this.sale.client_id = client_id;
-                    this.sale.document_type_id = client.document_type_id;
-                    this.sale.client_name = client.business_name;
-                    this.sale.payment_id = client.payment_id;
-                    // solo tiene el perception percentage id
-                    // this.sale.perception_percentage = client.perception_percentage.value;
-                    this.sale.credit_limit = client.credit_limit;
-                } else {
-                    this.sale.client_id = 0;
-                    this.sale.document_type_id = '';
-                    this.sale.client_name = '';
-                    this.sale.payment_id = '';
-                    this.sale.credit_limit = '';
-                };
+                this.$store.state.articles_filter = [];
+
+                this.sale.client_id = client_id;
+                this.sale.document_type_id = client.document_type_id;
+                this.sale.client_name = client.business_name;
+                this.sale.payment_id = client.payment_id;
+                this.sale.credit_limit = client.credit_limit;
+                // if (client) {
+                //     this.sale.client_id = client_id;
+                //     this.sale.document_type_id = client.document_type_id;
+                //     this.sale.client_name = client.business_name;
+                //     this.sale.payment_id = client.payment_id;
+                //     // solo tiene el perception percentage id
+                //     // this.sale.perception_percentage = client.perception_percentage.value;
+                //     this.sale.credit_limit = client.credit_limit;
+                // } else {
+                //     this.sale.client_id = 0;
+                //     this.sale.document_type_id = '';
+                //     this.sale.client_name = '';
+                //     this.sale.payment_id = '';
+                //     this.sale.credit_limit = '';
+                // };
                 axios.post(this.url_get_articles_clients,{
                     client_id,
                     warehouse_movement_id
@@ -396,10 +403,16 @@
                     const data = response.data;
                     // this.filterArticles = data.filter(element => !sale_article_ids.includes(element.article_id));
                     this.filterArticles = data;
+                    this.$store.state.articles_filter = data;
                 }).catch(error => {
                     console.log(error);
                     console.log(error.response);
                 });
+            },
+            'model.article_id': function(val) {
+                const article = this.filterArticles.find(item => item.id === val);
+
+                this.model.quantity = article.quantity;
             }
         },
         computed: {
@@ -444,7 +457,8 @@
                 }
             },
             addArticle: function() {
-                let article = this.$store.state.articles.find(element => element.article_id == this.model.article_id)
+                let article = this.$store.state.articles.find(element => element.article_id == this.model.article_id);
+                const articleQuantity = this.filterArticles.find(item => item.id === this.model.article_id);
 
                 if ( this.sale.client_id == '' ) {
                     Swal.fire({
@@ -482,10 +496,10 @@
                         showCancelButton: false,
                         confirmButtonText: 'Ok',
                     });
-                } else if ( this.model.quantity > Number(article.new_balance_converted_amount) ) {
+                } else if ( this.model.quantity > articleQuantity.quantity ) {
                     Swal.fire({
                         title: '¡Error!',
-                        text: 'La Cantidad supera el Saldo del Artículo (' + article.new_balance_converted_amount + ').',
+                        text: `La Cantidad supera el Saldo del Artículo ( ${articleQuantity.quantity} ).`,
                         type: "error",
                         heightAuto: false,
                         showCancelButton: false,
@@ -501,7 +515,7 @@
                     let igv_perception = accounting.toFixed(sale_value * perception_percentage, 4);
 					let total_perception = accounting.toFixed(Number(sale_value) + Number(igv_perception), 4);
 
-                    model.article_name = article.article_name;
+                    model.article_name = articleQuantity.name;
                     model.price_igv = price_igv;
                     model.quantity = quantity;
                     model.sale_value = sale_value;
@@ -641,25 +655,25 @@
 								total_perception: '',
 							};
 
-							this.sale = {
-								client_id: 0,
-								client_name: '',
-								document_type_id: '',
-								warehouse_document_type_id: '',
-								warehouse_document_type_name: '',
-								referral_serie_number: '',
-								referral_voucher_number: '',
-								referral_guide_series: '',
-								referral_guide_number: '',
-								details: [],
-								perception_percentage: '',
-								total: '',
-								perception: '',
-								total_perception: '',
-								payment_id: '',
-								currency_id: 1,
-                                credit_limit: '',
-							};
+							// this.sale = {
+							// 	client_id: 0,
+							// 	client_name: '',
+							// 	document_type_id: '',
+							// 	warehouse_document_type_id: '',
+							// 	warehouse_document_type_name: '',
+							// 	referral_serie_number: '',
+							// 	referral_voucher_number: '',
+							// 	referral_guide_series: '',
+							// 	referral_guide_number: '',
+							// 	details: [],
+							// 	perception_percentage: '',
+							// 	total: '',
+							// 	perception: '',
+							// 	total_perception: '',
+							// 	payment_id: '',
+							// 	currency_id: 1,
+                            //     credit_limit: '',
+							// };
 						}
 					}).catch(error => {
 						console.log(error);
@@ -776,25 +790,25 @@
 								total_perception: '',
 							};
 
-							this.sale = {
-								client_id: '',
-								client_name: '',
-								document_type_id: '',
-								warehouse_document_type_id: '',
-								warehouse_document_type_name: '',
-								referral_serie_number: '',
-								referral_voucher_number: '',
-								referral_guide_series: '',
-								referral_guide_number: '',
-								details: [],
-								perception_percentage: '',
-								total: '',
-								perception: '',
-								total_perception: '',
-								payment_id: '',
-								currency_id: 1,
-                                credit_limit: '',
-							};
+							// this.sale = {
+							// 	client_id: '',
+							// 	client_name: '',
+							// 	document_type_id: '',
+							// 	warehouse_document_type_id: '',
+							// 	warehouse_document_type_name: '',
+							// 	referral_serie_number: '',
+							// 	referral_voucher_number: '',
+							// 	referral_guide_series: '',
+							// 	referral_guide_number: '',
+							// 	details: [],
+							// 	perception_percentage: '',
+							// 	total: '',
+							// 	perception: '',
+							// 	total_perception: '',
+							// 	payment_id: '',
+							// 	currency_id: 1,
+                            //     credit_limit: '',
+							// };
 
 							$('#modal-sale').modal('hide');
 

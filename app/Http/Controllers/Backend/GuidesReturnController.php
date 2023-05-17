@@ -171,6 +171,10 @@ class GuidesReturnController extends Controller
             ->first();
 
         foreach ($articles as $article) {
+            $warehouse_movement_detail_id = $article['id'];
+
+            $warehouse_movement_detail = WarehouseMovementDetail::find($warehouse_movement_detail_id);
+
             $articleGeneral = Article::where('warehouse_type_id', 5)
                 ->where('id', $article['article_id'])
                 ->first();
@@ -366,6 +370,10 @@ class GuidesReturnController extends Controller
                 //         'stock_good' => DB::raw('stock_good - ' . $article['cesion']),
                 //         'stock_minimum' => DB::raw('stock_minimum + ' . $article['cesion']),
                 //     ]);
+
+                $warehouse_movement_detail->old_stock_cesion = $warehouse_movement_detail->new_stock_cesion;
+                $warehouse_movement_detail->new_stock_cesion = $article['cesion'];
+
                 $articleBalon->stock_return -= $article['cesion'];
                 $articleBalon->stock_minimum += $article['cesion'];
             }
@@ -381,6 +389,7 @@ class GuidesReturnController extends Controller
 
             $articleWT->save();
             $articleBalon->save();
+            $warehouse_movement_detail->save();
             /**Off */
 
             $articleDetail = Article::where('warehouse_type_id', 4)

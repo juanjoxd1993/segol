@@ -67,6 +67,23 @@
                                         <div id="operation_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
+                                <div class="col-lg-3" v-if="model.payment_method == 9">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Fecha Final:</label>
+                                        <datetime
+                                            v-model="model.payment_date"
+                                            placeholder="Selecciona una Fecha"
+                                            :format="'dd-LL-yyyy'"
+                                            input-id="since_date"
+                                            name="since_date"
+                                            value-zone="America/Lima"
+                                            zone="America/Lima"
+                                            class="form-control"
+                                            @focus="$parent.clearErrorMsg($event)">
+                                        </datetime>
+                                        <div id="payment_date-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Monto:</label>
@@ -178,6 +195,7 @@
                     bank_account: '',
                     operation_number: '',
                     amount: '',
+                    payment_date: ''
                 },
                 liquidations: [],
                 bank_accounts: [],
@@ -268,9 +286,6 @@
                 } else if (this.$store.state.sale.payment_id != this.payment_credit && liquidation.payment_id == this.payment_credit) {
                     text = 'El cliente no cuenta con crédito disponible';
                 }
-                
-               
-				
 
                 if ( text != '' ) {
                     Swal.fire({
@@ -309,6 +324,7 @@
                     this.model.bank_account = '';
                     this.model.operation_number = '';
                     this.model.amount = '';
+                    this.model.payment_date = '';
                 }
             },
             resetLiquidation: function() {
@@ -325,63 +341,64 @@
             addLiquidations: function() {
 				let error = 0;
 
-				if ( this.$store.state.sale.payment_id !== 2 && accounting.unformat(this.addTotals) !== accounting.unformat(this.$store.state.sale.total_perception)) {
-					error = 1;
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'Debe liquidar por el total de la Venta.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				}
+                // fix
+				// if ( this.$store.state.sale.payment_id !== 2 && accounting.unformat(this.addTotals) !== accounting.unformat(this.$store.state.sale.total_perception)) {
+				// 	error = 1;
+				// 	Swal.fire({
+                //         title: '¡Error!',
+                //         text: 'Debe liquidar por el total de la Venta.',
+                //         type: "error",
+                //         heightAuto: false,
+                //         showCancelButton: false,
+                //         confirmButtonText: 'Ok',
+                //     });
+				// }
 
-				if ( this.$store.state.sale.payment_id == 2 && accounting.unformat(this.addTotals) > accounting.unformat(this.$store.state.sale.total_perception)) {
-					error = 1;
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'El Pago a cuenta no puede exceder el Total de la Venta.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				}
+				// if ( this.$store.state.sale.payment_id == 2 && accounting.unformat(this.addTotals) > accounting.unformat(this.$store.state.sale.total_perception)) {
+				// 	error = 1;
+				// 	Swal.fire({
+                //         title: '¡Error!',
+                //         text: 'El Pago a cuenta no puede exceder el Total de la Venta.',
+                //         type: "error",
+                //         heightAuto: false,
+                //         showCancelButton: false,
+                //         confirmButtonText: 'Ok',
+                //     });
+				// }
 				
-				if ( this.$store.state.sale.payment_id !== 2 && this.liquidations < 1 ) {
-					error = 1;
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'Debe agregar al menos 1 Forma de Pago.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-                }
+				// if ( this.$store.state.sale.payment_id !== 2 && this.liquidations < 1 ) {
+				// 	error = 1;
+                //     Swal.fire({
+                //         title: '¡Error!',
+                //         text: 'Debe agregar al menos 1 Forma de Pago.',
+                //         type: "error",
+                //         heightAuto: false,
+                //         showCancelButton: false,
+                //         confirmButtonText: 'Ok',
+                //     });
+                // }
 
-                if ( this.model.payment_id == this.payment_credit && (this.$store.state.sale.total_perception - accounting.unformat(this.addTotals))> this.$store.state.sale.credit_limit ) {
-                    error = 1;
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'La línea del crédito del cliente es insuficiente.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-                }  else if ((this.$store.state.sale.total_perception - accounting.unformat(this.addTotals)) > this.$store.state.sale.credit_limit) {
-                    error = 1;
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'La línea del crédito del cliente es insuficiente.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-                }
+                // if ( this.model.payment_id == this.payment_credit && (this.$store.state.sale.total_perception - accounting.unformat(this.addTotals))> this.$store.state.sale.credit_limit ) {
+                //     error = 1;
+                //     Swal.fire({
+                //         title: '¡Error!',
+                //         text: 'La línea del crédito del cliente es insuficiente.',
+                //         type: "error",
+                //         heightAuto: false,
+                //         showCancelButton: false,
+                //         confirmButtonText: 'Ok',
+                //     });
+                // }  else if ((this.$store.state.sale.total_perception - accounting.unformat(this.addTotals)) > this.$store.state.sale.credit_limit) {
+                //     error = 1;
+                //     Swal.fire({
+                //         title: '¡Error!',
+                //         text: 'La línea del crédito del cliente es insuficiente.',
+                //         type: "error",
+                //         heightAuto: false,
+                //         showCancelButton: false,
+                //         confirmButtonText: 'Ok',
+                //     });
+                // }
 
 				if ( error == 0 ) {
 					let liquidations = JSON.parse(JSON.stringify(this.liquidations));

@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Auth;
 use DB;
 
 use App\ClientLiquidations;
+use App\GuidesState;
 
 use stdClass;
 
@@ -81,6 +82,10 @@ class LiquidationFinalController extends Controller
     public function getWarehouseMovements() {
         $company_id = request('company_id');
 
+		$guide_state = GuidesState::select('id')
+						->where('name', 'Por Liquidar')
+						->first();
+
         $elements = WarehouseMovement::select('id', 'movement_number', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'traslate_date', 'movement_type_id')
             ->where('company_id', $company_id)
             ->where('warehouse_type_id', 5)
@@ -92,7 +97,7 @@ class LiquidationFinalController extends Controller
                     ->orWhere('action_type_id', 7)
                     ->orWhere('action_type_id', 8);
             })
-			->where('state', 1)
+			->where('state', $guide_state->id)
             ->orderBy('movement_number', 'asc')
             ->get();
 
@@ -122,7 +127,8 @@ class LiquidationFinalController extends Controller
 				'article_code',
 				'digit_amount',
 				'converted_amount',
-				'new_stock_return'
+				'new_stock_return',
+				'new_stock_cesion'
 			)
             ->where('warehouse_movement_id', $warehouse_movement_id)
             ->orderBy('item_number', 'asc')
@@ -146,9 +152,21 @@ class LiquidationFinalController extends Controller
 			$item->return_converted_amount = $item->new_stock_return;
             $item->balance_converted_amount = number_format($item->digit_amount - $item->return_converted_amount, 2, '.', '');
             $item->new_balance_converted_amount = number_format($item->digit_amount - $item->return_converted_amount, 2, '.', '');
+			$item->cesion = $item->new_stock_cesion;
+            $item->group_id = $item->article->group_id;
 
             unset($item->warehouse_movement_id);
             unset($item->converted_amount);
+        });
+
+        $elements = array();
+
+        foreach ($movementDetails as $val) {
+            array_push($elements, $val);
+        };
+
+        $elements = array_filter($elements, function($val) {
+            return $val->group_id != 7;
         });
 
 		$clients = array();
@@ -195,7 +213,7 @@ class LiquidationFinalController extends Controller
 
         return response()
 			->json([
-				'movement_details' => $movementDetails,
+				'movement_details' => $elements,
 				'clients' => $clients_parse,
 			]);
 
@@ -292,14 +310,17 @@ class LiquidationFinalController extends Controller
 				$article = Article::select(
 						'id',
 						'code',
-						'name'
+						'name',
+						'group_id'
 					)
 					->where('id', $movementDetail->article_code)
 					->first();
 	
 				$article->quantity = $movementDetail->digit_amount - $movementDetail->new_stock_return;
-	
-				array_push($articles, $article);
+
+				if ($article->group_id != 7) {
+					array_push($articles, $article);
+				}
 			}
 		}
 
@@ -701,6 +722,9 @@ class LiquidationFinalController extends Controller
 						$liquidation_model->bank_account_id = $liquidation['bank_account'];
 						$liquidation_model->operation_number = $liquidation['operation_number'];
 						$liquidation_model->amount = round($liquidation['amount'], 4);
+						if ($liquidation['payment_date']) {
+							$liquidation_model->rem_date = $liquidation['payment_date'];
+						}
 						$liquidation_model->created_at_user = Auth::user()->user;
 						$liquidation_model->updated_at_user = Auth::user()->user;
 						$liquidation_model->save();

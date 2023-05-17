@@ -25,6 +25,7 @@ export default {
 		warehouse_account_type_id: 0,
 		sale_series: [],
 		warehouse_type_id: 0,
+		articles_filter: []
 	},
 	mutations: {
 		addModel(state, model) {
@@ -64,8 +65,8 @@ export default {
 		},
 		changeBalanceValue(state, data) {
 			let article = state.articles.find(element => data.article_id == element.article_id);
-			article.new_balance_converted_amount = accounting.toFixed(accounting.unformat(article.new_balance_converted_amount) - accounting.unformat(data.quantity), 4);
-			article.sale_converted_amount = accounting.toFixed(accounting.unformat(article.sale_converted_amount) + accounting.unformat(data.quantity), 4);
+			// article.new_balance_converted_amount = accounting.toFixed(accounting.unformat(article.new_balance_converted_amount) - accounting.unformat(data.quantity), 4);
+			// article.sale_converted_amount = accounting.toFixed(accounting.unformat(article.sale_converted_amount) + accounting.unformat(data.quantity), 4);
 		},
 		resetState(state) {
 			state.articles = [];
