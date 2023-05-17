@@ -144,19 +144,20 @@
             this.newSelect2();
             EventBus.$on('show_table', () => {
                 this.show_table = true;
+                this.articles = this.$store.state.articles;
 
-                axios.post(this.url_list, {
-                    model: this.$store.state.model,
-                }).then(response => {
-                    const data = response.data;
+                // axios.post(this.url_list, {
+                //     model: this.$store.state.model,
+                // }).then(response => {
+                //     const data = response.data;
 
-                    this.articles = data;
+                //     this.articles = data;
 
-                    EventBus.$emit('loading', false);
-                }).catch(error => {
-                    console.log(error);
-                    console.log(error.response);
-                });
+                //     EventBus.$emit('loading', false);
+                // }).catch(error => {
+                //     console.log(error);
+                //     console.log(error.response);
+                // });
 
                 this.$nextTick(function() {
                     if ( this.datatable == undefined ) {
@@ -190,6 +191,7 @@
         },
         methods: {
             openModal: function() {
+                this.articles = this.$store.state.articles;
                 this.newSelect2();
                 $("#modalClients").modal('show');
             },

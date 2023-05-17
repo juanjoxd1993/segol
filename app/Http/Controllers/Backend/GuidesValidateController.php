@@ -248,16 +248,16 @@ class GuidesValidateController extends Controller
 
             if ($id != 0) {
                 $stock_movement_detail = $movementDetail->digit_amount;
-    
+
                 $article = Article::where('warehouse_type_id', 4)
                     ->where('id', $movementDetail->article_num)
                     ->first();
-    
+
                 $articleBalon = Article::where('warehouse_type_id', 4)
                     ->where('convertion', $article->convertion)
                     ->where('name', 'like', '%BALON%')
                     ->first();
-    
+
                 $articleEnvasado = Article::find(4791);
     
                 if ($presale != $stock_movement_detail) {

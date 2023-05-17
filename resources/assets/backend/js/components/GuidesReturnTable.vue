@@ -22,7 +22,7 @@
                                             <input type="text" class="form-control" v-model="article.retorno">
                                         </div>
                                     </div>
-                                    <div class="col-md-3" v-if="!Boolean(article_group_id === 26)">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="form-control-label">Retorno Prestamo:</label>
                                             <input type="text" class="form-control" v-model="article.retorno_press">
@@ -34,13 +34,13 @@
                                             <input type="text" class="form-control" v-model="article.cambios">
                                         </div>
                                     </div>
-                                    <div class="col-md-3" v-if="!Boolean(article_group_id === 26)">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="form-control-label">Préstamo:</label>
                                             <input type="text" class="form-control" v-model="article.prestamo">
                                         </div>
                                     </div>
-                                    <div class="col-md-3" v-if="!Boolean(article_group_id === 26)">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="form-control-label">Cesión de Uso:</label>
                                             <input type="text" class="form-control" v-model="article.cesion">
@@ -112,6 +112,10 @@ export default {
             default: ''
         },
         url_store: {
+            type: String,
+            default: ''
+        },
+        url_get_balon: {
             type: String,
             default: ''
         }
@@ -251,7 +255,7 @@ export default {
             if (Boolean(rest_liquidation)) {
                 Swal.fire({
                     title: '¡Error!',
-                    text: 'Restan ${ rest_liquidation } liquidaciones por asignar a clientes',
+                    text: `Restan ${ rest_liquidation } liquidaciones por asignar a clientes`,
                     type: "error",
                     heightAuto: false,
                 });
@@ -294,11 +298,7 @@ export default {
 
             let liquidar = 0;
 
-            if (Boolean(this.article_group_id === 26)) {
-                liquidar = this.article.presale_converted_amount - this.article.retorno - this.article.cambios;
-            } else {
-                liquidar = this.article.cesion;
-            };
+            liquidar = this.article.presale - this.article.retorno - this.article.cambios;
 
             this.data[this.article.index] = this.article;
 
@@ -335,9 +335,65 @@ export default {
                 this.$store.state.articles_for_liquidations[article_index].rest_liquidation = parseInt(new_rest_liquidation);
             };
 
+            if (parseInt(this.article.cesion)) {
+                EventBus.$emit('loading', true);
+
+                axios.post(this.url_get_balon,{
+                    article: this.article
+                }).then(response => {
+                    EventBus.$emit('loading', false);
+                    const data = response.data;
+
+                    const id_balon = this.$store.state.articles.findIndex(item => item.article_id == data.article_id);
+
+                    if (id_balon >= 0) {
+                        const article = this.$store.state.articles_for_liquidations.find(art => art.article_id === data.article_id);
+                        const article_index = articles_for_liquidations.findIndex(art => art.article_id === data.article_id);
+
+                        const liquidation = parseInt(data.liquidar);
+                        const original_liquidation = article.original_liquidation;
+                        const rest_liquidation = parseInt(article.rest_liquidation);
+
+                        if (original_liquidation != liquidation) {
+                            const diferencia = liquidation - original_liquidation;
+                            
+                            if (rest_liquidation === 0 && diferencia < 0) {
+                                Swal.fire({
+                                    title: '¡Error!',
+                                    text: `Se esta descontando la cantidad a liquidar del articulo ${ data.article_name } debe eliminar un cliente de la lista a liqudiar antes de continuar`,
+                                    type: "error",
+                                    heightAuto: false,
+                                });
+                                
+                                return;
+                            };
+
+                            this.$store.state.articles[id_balon].cesion = data.cesion;
+                            this.$store.state.articles[id_balon].liquidar = data.liquidar;
+
+                            const new_rest_liquidation = rest_liquidation + diferencia;
+
+                            this.$store.state.articles_for_liquidations[article_index].original_liquidation = liquidation;
+                            this.$store.state.articles_for_liquidations[article_index].rest_liquidation = parseInt(new_rest_liquidation);
+                        };
+                    } else {
+                        this.$store.state.articles.push(data);
+                        this.$store.state.articles_for_liquidations.push({
+                            article_id: data.article_id,
+                            original_liquidation: parseInt(data.liquidar),
+                            rest_liquidation: parseInt(data.liquidar)
+                        })
+                    }
+                }).catch(error => {
+                    EventBus.$emit('loading', false);
+                    console.log(error);
+                    console.log(error.response);
+                });
+            };
+
             this.table.destroy();
 
-            this.article.vacios = this.article.presale_converted_amount - this.article.retorno - this.article.cambios - this.article.prestamo - this.article.cesion + parseInt(this.article.retorno_press);
+            this.article.vacios = this.article.presale - this.article.retorno - this.article.cambios - this.article.prestamo - this.article.cesion + parseInt(this.article.retorno_press);
 
             this.article.liquidar = liquidar;
 
@@ -425,7 +481,7 @@ export default {
                         width: 300,
                     },
                     {
-                        field: 'presale_converted_amount',
+                        field: 'presale',
                         title: 'Pre-Venta',
                         width: 120,
                         textAlign: 'right',

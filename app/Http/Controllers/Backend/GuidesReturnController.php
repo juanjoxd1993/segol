@@ -17,6 +17,7 @@ use stdClass;
 
 use App\Client;
 use App\ClientLiquidations;
+use App\GuidesState;
 
 class GuidesReturnController extends Controller
 {
@@ -48,10 +49,18 @@ class GuidesReturnController extends Controller
     {
         $company_id = request('company_id');
 
-        $elements = WarehouseMovement::select('id', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'created_at')
+		$guide_state = GuidesState::select('id')
+						->where('name', 'Validada')
+						->first();
+
+        $elements = WarehouseMovement::select(
+            'id',
+            'referral_guide_series',
+            'referral_guide_number',
+            'license_plate',
+            'created_at')
             ->where('company_id', $company_id)
             ->where('warehouse_type_id', 5)
-
             ->where(function ($query) {
                 $query->where('action_type_id', 3)
                     ->orWhere('action_type_id', 4)
@@ -59,7 +68,7 @@ class GuidesReturnController extends Controller
                     ->orWhere('action_type_id', 7)
                     ->orWhere('action_type_id', 8);
             })
-            ->where('state', 0)
+            ->where('state', $guide_state->id)
             ->orderBy('movement_number', 'asc')
             ->get();
 
@@ -89,6 +98,7 @@ class GuidesReturnController extends Controller
             'warehouse_movement_id',
             'item_number',
             'article_code',
+            'digit_amount',
             'converted_amount'
             )
             ->where('warehouse_movement_id', $warehouse_movement_id)
@@ -98,13 +108,14 @@ class GuidesReturnController extends Controller
         $movementDetails->map(function ($item, $index) {
 
             $parse_converted_amount = intval(floatval($item->converted_amount));
+            $parse_digit_amount = intval(floatval($item->digit_amount));
 
             $item->parent = null;
             $item->article_id = $item->article->id;
             $item->article_code = $item->article->code;
             $item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
+            $item->presale = $parse_digit_amount;
             $item->presale_converted_amount = $parse_converted_amount;
-            $item->converted_amount = $parse_converted_amount;
             $item->retorno = 0;
             $item->retorno_press = 0;
             $item->cambios = 0;
@@ -114,7 +125,7 @@ class GuidesReturnController extends Controller
             $item->group_id = $item->article->group_id;
 
             if ($item->article->group_id == 26) {
-                $item->liquidar = $parse_converted_amount;
+                $item->liquidar = $parse_digit_amount;
             } else {
                 $item->liquidar = 0;
             };
@@ -124,10 +135,19 @@ class GuidesReturnController extends Controller
             $item->prestamo = 0;
             $item->cesion = 0;
             $item->vacios = 0;
-            // $item->liquidar = 0;
         });
 
-        return $movementDetails;
+        $elements = array();
+
+        foreach ($movementDetails as $val) {
+            array_push($elements, $val);
+        };
+
+        $elements = array_filter($elements, function($val) {
+            return $val->group_id != 7;
+        });
+
+        return $elements;
     }
 
     public function detail()
@@ -146,7 +166,25 @@ class GuidesReturnController extends Controller
         $clients = $request->clients;
         $warehouse_movement_id = $request->warehouse_movement_id;
 
+		$guide_state = GuidesState::select('id')
+            ->where('name', 'Por Liquidar')
+            ->first();
+
         foreach ($articles as $article) {
+            $articleGeneral = Article::where('warehouse_type_id', 5)
+                ->where('id', $article['article_id'])
+                ->first();
+
+            $articleWT = Article::where('warehouse_type_id', 4)
+                ->where('code', $articleGeneral->code)
+                ->first();
+
+            $articleBalon = Article::where('warehouse_type_id', 4)
+                ->where('convertion', $articleWT->convertion)
+                ->where('name', 'like', '%BALON%')
+                ->first();
+
+            $articleEnvasado = Article::find(4791);
 
             if ($article['retorno'] > 0) {
 
@@ -178,12 +216,11 @@ class GuidesReturnController extends Controller
                 // actualiza el stock_return
                 // Article::where('id', $article['article_id'])
                 //     ->update([
-                //         'stock_repair' => DB::raw('stock_repair + ' . $article['retorno'])
+                //         'stock_good' => DB::raw('stock_good + ' . $article['retorno'])
                 //     ]);
-                Article::where('id', $article['article_id'])
-                    ->update([
-                        'stock_return' => DB::raw('stock_return + ' . $article['retorno'])
-                    ]);
+
+                $articleWT->stock_good += $article['retorno'];
+                $articleBalon->stock_return -= $article['retorno'];
             }
 
             if ($article['retorno_press'] > 0) {
@@ -196,7 +233,7 @@ class GuidesReturnController extends Controller
                     'movement_class_id' => 1, //Ingreso
                     'movement_type_id' => 19, //Retorno de Pre-Venta
                     'warehouse_account_type_id' => 1,
-                    'total' => $article['retorno'],
+                    'total' => $article['retorno_press'],
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
                 ]);
@@ -204,9 +241,9 @@ class GuidesReturnController extends Controller
                 WarehouseMovementDetail::insert([
                     'warehouse_movement_id' => $id,
                     'item_number' => 1,
-                    'article_code' => $article['article_id'],
-                    'new_stock_good' => $article['retorno'],
-                    'converted_amount' => $article['retorno'],
+                    'article_code' => $articleBalon->id,
+                    'new_stock_good' => $article['retorno_press'],
+                    'converted_amount' => $article['retorno_press'],
                     'total' => $article['retorno'],
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
@@ -214,10 +251,12 @@ class GuidesReturnController extends Controller
 
                 //Actualizar Stock por el Movimiento
                 // descuenta al stock_repair
-                Article::where('id', $article['article_id'])
-                    ->update([
-                        'stock_repair' => DB::raw('stock_repair - ' . $article['retorno_press'])
-                    ]);
+                $articleBalon->stock_good += $article['retorno_press'];
+                $articleBalon->stock_repair -= $article['retorno_press'];
+                // Article::where('id', $article['article_id'])
+                //     ->update([
+                //         'stock_repair' => DB::raw('stock_repair - ' . $article['retorno_press'])
+                //     ]);
             }
 
             if ($article['cambios'] > 0) {
@@ -239,7 +278,7 @@ class GuidesReturnController extends Controller
                 WarehouseMovementDetail::insert([
                     'warehouse_movement_id' => $id,
                     'item_number' => 1,
-                    'article_code' => $article['article_id'],
+                    'article_code' => $articleBalon->id,
                     'new_stock_good' => $article['cambios'],
                     'converted_amount' => $article['cambios'],
                     'total' => $article['cambios'],
@@ -250,13 +289,9 @@ class GuidesReturnController extends Controller
                 //Actualizar Stock damaged por el Movimiento
                 // Article::where('id', $article['article_id'])
                 //     ->update([
-                //         'stock_repair' => DB::raw('stock_repair - ' . ($article['cambios'] + $article['retorno'])),
-                //         'stock_return' => DB::raw('stock_return + ' . ($article['cambios'] + $article['retorno'])),
+                //         'stock_damaged' => DB::raw('stock_damaged + ' . $article['cambios']),
                 //     ]);
-                Article::where('id', $article['article_id'])
-                    ->update([
-                        'stock_damaged' => DB::raw('stock_damaged + ' . $article['cambios']),
-                    ]);
+                $articleBalon->stock_damaged += $article['cambios'];
             }
 
             /**here && $article['parent'] */
@@ -280,7 +315,7 @@ class GuidesReturnController extends Controller
                 WarehouseMovementDetail::insert([
                     'warehouse_movement_id' => $id,
                     'item_number' => 1,
-                    'article_code' => $article['article_id'],
+                    'article_code' => $articleBalon->id,
                     'new_stock_good' => $article['prestamo'],
                     'converted_amount' => $article['prestamo'],
                     'total' => $article['prestamo'],
@@ -290,12 +325,12 @@ class GuidesReturnController extends Controller
 
                 //Actualizar Stock por el Movimiento
                 // solo debe actualizar el stock_repair aumentandolo
-                Article::where('id', $article['article_id'])
-                    ->update([
-                        'stock_repair' => DB::raw('stock_repair + ' . $article['prestamo']),
-                    ]);
+                // Article::where('id', $article['article_id'])
+                //     ->update([
+                //         'stock_repair' => DB::raw('stock_repair + ' . $article['prestamo']),
+                //     ]);
+                $articleBalon->stock_repair += $article['prestamo'];
             }
-
 
             if ($article['cesion'] > 0) {
 
@@ -316,7 +351,7 @@ class GuidesReturnController extends Controller
                 WarehouseMovementDetail::insert([
                     'warehouse_movement_id' => $id,
                     'item_number' => 1,
-                    'article_code' => $article['article_id'],
+                    'article_code' => $articleBalon->id,
                     'new_stock_good' => $article['cesion'],
                     'new_stock_return' => $article['presale_converted_amount'] - $article['cesion'],
                     'converted_amount' => $article['cesion'],
@@ -327,32 +362,37 @@ class GuidesReturnController extends Controller
 
                 //Actualizar Stock por el Movimiento
                 // Solo deberia mover el stock_good descontandole y tambien el stock_minimum
-                Article::where('id', $article['article_id'])
-                    ->update([
-                        'stock_good' => DB::raw('stock_good - ' . $article['cesion']),
-                        'stock_minimum' => DB::raw('stock_minimum + ' . $article['cesion']),
-                    ]);
+                // Article::where('id', $article['article_id'])
+                //     ->update([
+                //         'stock_good' => DB::raw('stock_good - ' . $article['cesion']),
+                //         'stock_minimum' => DB::raw('stock_minimum + ' . $article['cesion']),
+                //     ]);
+                $articleBalon->stock_return -= $article['cesion'];
+                $articleBalon->stock_minimum += $article['cesion'];
             }
-
 
             if($article['vacios']){
                 // Solo debe actualizar el stock _good
-                Article::where('id', $article['article_id'])
-                    ->update([
-                        'stock_good' => DB::raw('stock_good + ' .$article['vacios']),
-                    ]);
+                // Article::where('id', $article['article_id'])
+                //     ->update([
+                //         'stock_good' => DB::raw('stock_good + ' .$article['vacios']),
+                //     ]);
+                $articleBalon->stock_good += $article['vacios'];
             }
+
+            $articleWT->save();
+            $articleBalon->save();
             /**Off */
 
             $articleDetail = Article::where('warehouse_type_id', 4)
                 ->where('code', $article['article_code'])
                 ->first();
 
-            Article::where('warehouse_type_id', 4)
-                ->where('code', $article['article_code'])
-                ->update([
-                    'stock_good' => $articleDetail['stock_good'] + $article['retorno'],
-                ]);
+            // Article::where('warehouse_type_id', 4)
+            //     ->where('code', $article['article_code'])
+            //     ->update([
+            //         'stock_good' => $articleDetail['stock_good'] + $article['retorno'],
+            //     ]);
 
             //Actualizar new_stock_return
             if ($article['article']['group_id'] == 26) {
@@ -380,7 +420,7 @@ class GuidesReturnController extends Controller
             //Actualizar estado
             WarehouseMovement::where('id', $warehouse_movement_id)
                 ->update([
-                    'state' => 1,
+                    'state' => $guide_state->id,
                 ]);
 
         }
@@ -402,7 +442,8 @@ class GuidesReturnController extends Controller
         return response()->json($data);
     }
 
-    public function getClients() {
+    public function getClients()
+    {
         $company_id = request('company_id');
         $client_id = request('client_id');
         $q = request('q');
@@ -432,5 +473,35 @@ class GuidesReturnController extends Controller
         return $elements;
     }
 
+    public function getBalon()
+    {
+        $article = request('article');
 
+        $article_id = $article['article_id'];
+        $article_cesion = $article['cesion'];
+
+        $articleGeneral = Article::find($article_id);
+
+        $articleBalon = Article::where('warehouse_type_id', 5)
+            ->where('convertion', $articleGeneral->convertion)
+            ->where('name', 'like', '%BALON%')
+            ->first();
+
+        $articleBalon->parent = null;
+        $articleBalon->article_id = $articleBalon->id;
+        $articleBalon->article_code = $articleBalon->code;
+        $articleBalon->article_name = $articleBalon->name . ' ' . $articleBalon->warehouse_unit->name . ' x ' . $articleBalon->package_warehouse;
+        $articleBalon->presale = 0;
+        $articleBalon->presale_converted_amount = 0;
+        $articleBalon->retorno = 0;
+        $articleBalon->retorno_press = 0;
+        $articleBalon->cambios = 0;
+        $articleBalon->prestamo = 0;
+        $articleBalon->cesion = $article_cesion;
+        $articleBalon->vacios = 0;
+        $articleBalon->liquidar = $article_cesion;
+        $articleBalon->group_id = $articleBalon->group_id;
+
+        return $articleBalon;
+    }
 }

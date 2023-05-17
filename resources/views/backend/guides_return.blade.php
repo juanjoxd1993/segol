@@ -13,6 +13,7 @@
 	<guides-return-table
 		:url = "'{{ route('dashboard.operations.guides_return.list') }}'"
 		:url_store = "'{{ route('dashboard.operations.guides_return.update') }}'"
+		:url_get_balon = "'{{ route('dashboard.operations.guides_return.get_balon') }}'"
 	></guides-return-table>
 
 	<guides-return-table-clients

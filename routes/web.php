@@ -302,6 +302,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/retorno-guias/listar', 'GuidesReturnController@list')->name('dashboard.operations.guides_return.list');
 	Route::post('/operaciones/retorno-guias/actualizar', 'GuidesReturnController@update')->name('dashboard.operations.guides_return.update');
 	Route::post('/operaciones/retorno-guias/obtener-clientes', 'GuidesReturnController@getClients')->name('dashboard.operations.guides_return.get_clients');
+	Route::post('/operaciones/retorno-guias/obtener-balon', 'GuidesReturnController@getBalon')->name('dashboard.operations.guides_return.get_balon');
 
 	/** Operaciones > Registro de producción */
 	Route::get('/logistica/registro-produccion', 'ProductionController@index')->name('dashboard.logistics.production_register');
