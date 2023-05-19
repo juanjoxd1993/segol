@@ -46,10 +46,10 @@
                                                         <input type="text" class="form-control" name="presale" id="presale" v-model="item.presale" @focus="$parent.clearErrorMsg($event)">
                                                     </td>
                                                     <td style="text-align:right;width:110px;" v-if="account_type_id == 1">
-                                                        <input type="text" class="form-control" name="prestamo" id="prestamo" v-model="item.prestamo" @focus="$parent.clearErrorMsg($event)">
+                                                        <input type="text" class="form-control" name="prestamo" id="prestamo" v-model="item.prestamo" @focus="$parent.clearErrorMsg($event)" v-if="item.group_id != 7">
                                                     </td>
                                                     <td style="text-align:right;width:110px;" v-if="account_type_id == 1">
-                                                        <input type="text" class="form-control" name="cesion" id="cesion" v-model="item.cesion" @focus="$parent.clearErrorMsg($event)">
+                                                        <input type="text" class="form-control" name="cesion" id="cesion" v-model="item.cesion" @focus="$parent.clearErrorMsg($event)" v-if="item.group_id != 7">
                                                     </td>
                                                     <td style="text-align:right;width:80px;">
                                                         <a href="#" class="btn-sm btn btn-label-danger btn-bold" @click.prevent="removeArticle(index)">
@@ -221,14 +221,14 @@
                         context.articles = articles;
                         context.account_type_id = account_type_id;
                         EventBus.$emit('loading', false);
+
+                        $("#modal").modal('show')
                     })
                     .catch(error => {
                         console.log(error);
                         console.log(error.response);
                         EventBus.$emit('loading', false);
                     });
-
-                $("#modal").modal('show')
             })
         },
         mounted() {

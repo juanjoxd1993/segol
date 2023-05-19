@@ -159,9 +159,9 @@ class GuidesValidateController extends Controller
             array_push($elements, $val);
         };
 
-        $elements = array_filter($elements, function($val) {
-            return $val->group_id != 7;
-        });
+        // $elements = array_filter($elements, function($val) {
+        //     return $val->group_id != 7;
+        // });
 
         return [
             'articles' => $elements,
@@ -202,17 +202,19 @@ class GuidesValidateController extends Controller
             ->where('id', $movementDetail->article_num)
             ->first();
 
-        $articleBalon = Article::where('warehouse_type_id', 4)
-            ->where('convertion', $article->convertion)
-            ->where('name', 'like', '%BALON%')
-            ->first();
-
-        $article->stock_good += $stock_movement_detail;
-        $article->save();
-
-        if ($account_type_id == 3) {
-            $articleBalon->stock_return -= $stock_movement_detail;
-            $articleBalon->save();
+        if ($article->group_id != 7) {
+            $articleBalon = Article::where('warehouse_type_id', 4)
+                ->where('convertion', $article->convertion)
+                ->where('name', 'like', '%BALON%')
+                ->first();
+    
+            $article->stock_good += $stock_movement_detail;
+            $article->save();
+    
+            if ($account_type_id == 3) {
+                $articleBalon->stock_return -= $stock_movement_detail;
+                $articleBalon->save();
+            }
         }
 
         $data = [
@@ -255,7 +257,7 @@ class GuidesValidateController extends Controller
 
                 $articleBalon = Article::where('warehouse_type_id', 4)
                     ->where('convertion', $article->convertion)
-                    ->where('name', 'like', '%BALON%')
+                    ->where('group_id', 7)
                     ->first();
 
                 $articleEnvasado = Article::find(4791);
@@ -266,29 +268,31 @@ class GuidesValidateController extends Controller
     
                     $movementDetail->digit_amount = $presale;
                     $movementDetail->converted_amount = $presale * $article->convertion;
-    
-                    if ($difference < 0) {
-                        $differenceParse = $difference * -1;
-    
-                        if ($article->stock_good != 0) {                        
-                            $article->stock_good -= $differenceParse;
+
+                    if ($article->group_id != 7) {
+                        if ($difference < 0) {
+                            $differenceParse = $difference * -1;
+        
+                            if ($article->stock_good != 0) {                        
+                                $article->stock_good -= $differenceParse;
+                                $article->save();
+                            } else {
+                                $articleEnvasado->stock_good -= $article->convertion * $differenceParse;
+                                $articleEnvasado->save();
+                            }
+            
+                            if ($account_type_id == 3) {
+                                $articleBalon->stock_good -= $differenceParse;
+                                $articleBalon->stock_return += $differenceParse;
+                            }
+                        } elseif ($difference > 0) {
+                            $article->stock_good += $difference;
                             $article->save();
-                        } else {
-                            $articleEnvasado->stock_good -= $article->convertion * $differenceParse;
-                            $articleEnvasado->save();
-                        }
-        
-                        if ($account_type_id == 3) {
-                            $articleBalon->stock_good -= $differenceParse;
-                            $articleBalon->stock_return += $differenceParse;
-                        }
-                    } elseif ($difference > 0) {
-                        $article->stock_good += $difference;
-                        $article->save();
-        
-                        if ($account_type_id == 3) {
-                            $articleBalon->stock_return -= $difference;
-                            $articleBalon->save();
+            
+                            if ($account_type_id == 3) {
+                                $articleBalon->stock_return -= $difference;
+                                $articleBalon->save();
+                            }
                         }
                     }
                 }
