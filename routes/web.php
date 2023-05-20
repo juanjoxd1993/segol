@@ -183,7 +183,13 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/relacion-de-documentos-por-cobrar/validar-formulario', 'UncollectedDocumentReportController@validateForm')->name('dashboard.report.uncollected_document_report.validate_form');
 	Route::post('/reporte/relacion-de-documentos-por-cobrar/listar', 'UncollectedDocumentReportController@list')->name('dashboard.report.uncollected_document_report.list');
 
-	
+	/** Reportes > GLP COSTO*/
+	Route::get('/reporte/glp-diaria', 'DaysGlpReportController@index')->name('dashboard.report.days_glp');
+	Route::post('/reporte/glp-diaria/validar-formulario', 'DaysGlpReportController@validateForm')->name('dashboard.report.days_glp.validate_form');
+	Route::post('/reporte/glp-diaria/listar', 'DaysGlpReportController@list')->name('dashboard.report.days_glp.list');
+
+	/** Reportes > GLP Global*/
+	Route::get('/reporte/report-glp-global', 'ReportsGlpGlobalController@index')->name('dashboard.report.report_glp_global');
 
 	/** Logística > Registro Movimiento de Existencias */
 	Route::get('/logistica/registro-movimiento-existencias', 'StockRegisterController@index')->name('dashboard.logistics.stock_register');
@@ -411,11 +417,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/comercial/venta-canal-resumido/validar-formulario', 'LiquidationChannelTotalReportController@validateForm')->name('dashboard.commercial.liquidations_channel_total.validate_form');
 	Route::post('/comercial/venta-canal-resumido/obtener-clientes', 'LiquidationChannelTotalReportController@getClients')->name('dashboard.commercial.liquidations_channel_total.get_clients');
 	Route::post('/comercial/venta-canal-resumido/listar', 'LiquidationChannelTotalReportController@list')->name('dashboard.commercial.liquidations_channel_total.list');
-
-	/** Reportes > GLP COSTO*/
-	Route::get('/reporte/glp-diaria', 'DaysGlpReportController@index')->name('dashboard.report.days_glp');
-	Route::post('/reporte/glp-diaria/validar-formulario', 'DaysGlpReportController@validateForm')->name('dashboard.report.days_glp.validate_form');
-	Route::post('/reporte/glp-diaria/listar', 'DaysGlpReportController@list')->name('dashboard.report.days_glp.list');
 
 	/** Creditos y Cobranzas> Liquidaciones */
 
