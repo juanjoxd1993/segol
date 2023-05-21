@@ -24,6 +24,7 @@ use App\ClientRoute;
 use App\GuidesSerie;
 use App\Vehicle;
 use App\GuidesState;
+use App\WarehouseTypeInUser;
 use Auth;
 use Carbon\CarbonImmutable;
 use Exception;
@@ -41,13 +42,14 @@ class GuidesValidateController extends Controller
         ));
 	}
 
-	public function validateForm() {
+	public function validateForm()
+    {
         $messages = [
-            'company_id.required'               => 'Debe seleccionar una Compañía.',
+            'company_id.required' => 'Debe seleccionar una Compañía.',
         ];
 
         $rules = [
-            'company_id'            => 'required',
+            'company_id'          => 'required',
         ];
 
         request()->validate($rules, $messages);
@@ -171,6 +173,13 @@ class GuidesValidateController extends Controller
 
     public function removeArticle()
     {
+		$user_id = Auth::user()->id;
+
+		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+			->where('user_id', $user_id)
+			->first();
+
+        $warehouse_type_id = $warehouse_type_user->warehouse_type_id;
         $warehouse_movement_id = request('model.warehouse_movement_id');
         $id = request('article.id');
         $actualDate = date("Y-m-d");
@@ -198,14 +207,14 @@ class GuidesValidateController extends Controller
         $movementDetail->deleted_at = $actualDate;
         $movementDetail->save();
 
-        $article = Article::where('warehouse_type_id', 4)
+        $article = Article::where('warehouse_type_id', $warehouse_type_id)
             ->where('id', $movementDetail->article_num)
             ->first();
 
         if ($article->group_id != 7) {
-            $articleBalon = Article::where('warehouse_type_id', 4)
+            $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
                 ->where('convertion', $article->convertion)
-                ->where('name', 'like', '%BALON%')
+                ->where('group_id', 7)
                 ->first();
     
             $article->stock_good += $stock_movement_detail;
@@ -228,6 +237,13 @@ class GuidesValidateController extends Controller
 
     public function updateArticles()
     {
+		$user_id = Auth::user()->id;
+
+		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+			->where('user_id', $user_id)
+			->first();
+
+        $warehouse_type_id = $warehouse_type_user->warehouse_type_id;
         $warehouse_movement_id = request('model.warehouse_movement_id');
         $articles = request('articles');
 
@@ -251,16 +267,18 @@ class GuidesValidateController extends Controller
             if ($id != 0) {
                 $stock_movement_detail = $movementDetail->digit_amount;
 
-                $article = Article::where('warehouse_type_id', 4)
+                $article = Article::where('warehouse_type_id', $warehouse_type_id)
                     ->where('id', $movementDetail->article_num)
                     ->first();
 
-                $articleBalon = Article::where('warehouse_type_id', 4)
+                $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
                     ->where('convertion', $article->convertion)
                     ->where('group_id', 7)
                     ->first();
 
-                $articleEnvasado = Article::find(4791);
+                $articleEnvasado = Article::where('warehouse_type_id', $warehouse_type_id)
+                    ->where('code', 2)
+                    ->first();
     
                 if ($presale != $stock_movement_detail) {
     
@@ -367,16 +385,18 @@ class GuidesValidateController extends Controller
                     ->where('id', $item['article_id'])
                     ->first();
 
-                $article = Article::where('warehouse_type_id', 4)
+                $article = Article::where('warehouse_type_id', $warehouse_type_id)
                     ->where('code', $articleGeneral->code)
                     ->first();
-    
-                $articleBalon = Article::where('warehouse_type_id', 4)
+
+                $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
                     ->where('convertion', $article->convertion)
                     ->where('name', 'like', '%BALON%')
                     ->first();
-    
-                $articleEnvasado = Article::find(4791);
+
+                $articleEnvasado = Article::where('warehouse_type_id', $warehouse_type_id)
+                    ->where('code', 2)
+                    ->first();
 
                 if ($presale) {
                     $movementDetail = new WarehouseMovementDetail();
