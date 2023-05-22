@@ -260,6 +260,15 @@
 								</a>
 							</li>
 
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.report_envases_general' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.report_envases_general') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte Envases General</span>
+								</a>
+							</li>
+
 						</ul>
 					</div>
 				</li>

@@ -79,11 +79,16 @@ class StockSalesRegisterReportController extends Controller
 		$initial_date = date_format($initial_date, 'Y-m-d H:i:s');
 		$final_date = date_format($final_date, 'Y-m-d H:i:s');
 		$warehouse_movement_id = request('model.warehouse_movement_id');
-		
 
+		$warehouse_types = WarehouseType::select('id')
+			->where('type', 2)
+			->get();
 
+		$warehouse_types_ids = array();
 
-	
+		foreach ($warehouse_types as $warehouse_type) {
+			array_push($warehouse_types_ids, $warehouse_type->id);
+		};
 
 		$movements = WarehouseMovement::select('id', 
 		'company_id', 
@@ -111,32 +116,22 @@ class StockSalesRegisterReportController extends Controller
 		'referral_voucher_number',
 		'traslate_date',
 		'scop_number', 'license_plate', 'state')
-		
-        ->whereIn('warehouse_type_id',[8,9,10,11,12])
+        ->whereIn('warehouse_type_id', $warehouse_types_ids)
         ->where('movement_class_id', 1)
         ->whereIn('movement_type_id', [1])
-		
-			->where('created_at', '>=', $initial_date)
-			->where('created_at', '<=', $final_date)
-
-		
-			->when($warehouse_movement_id, function($query, $warehouse_movement_id) {
-				return $query->where('id', $warehouse_movement_id);
-			})
-		
-			->orderBy('company_id', 'asc')
-			->orderBy('created_at', 'asc')
-			->get();
-
-
+		->where('created_at', '>=', $initial_date)
+		->where('created_at', '<=', $final_date)
+		->when($warehouse_movement_id, function($query, $warehouse_movement_id) {
+			return $query->where('id', $warehouse_movement_id);
+		})
+		->orderBy('company_id', 'asc')
+		->orderBy('created_at', 'asc')
+		->get();
 
 		$movement_details = collect([]);
 		$movements->map(function($item, $index) use($movement_details, $export) {
 			$item->warehouse_movement_details;
-			
-			
 
-			
 			$item->warehouse_movement_details->map(function($detail, $detailIndex) use($item, $movement_details, $export) {
 				
                 $despacho = WarehouseMovement::join('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')
@@ -175,15 +170,11 @@ class StockSalesRegisterReportController extends Controller
                 $detail->stock=$detail->quantity-$detail->despacho;
 				$detail->concat=$detail->warehouse_name."_". $detail->warehouse_short_name. $detail->article_name;
 
-
-
 				if ( Auth::user()->user == 'comercial4' || Auth::user()->user == 'admin' || Auth::user()->user == 'sistemas1') {
 					$detail->state = $item->state;
 				} else {
 					$detail->state = 1;
 				}
-
-			
 
 				$movement_details->push($detail);
 			});
