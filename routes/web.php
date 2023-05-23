@@ -644,5 +644,11 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/administracion/liquidacion-detallado-resumido/obtener-clientes', 'LiquidationDetailTotalReportController@getClients')->name('dashboard.report.liquidations_detail_total.get_clients');
 	Route::post('/administracion/liquidacion-detallado-resumido/listar', 'LiquidationDetailTotalReportController@list')->name('dashboard.report.liquidations_detail_total.list');
 
+	/** Reportes > Liquidación Detallado Resumido*/ 
+	Route::get('/administracion/finanzas-detallado-resumido', 'FinanzasDetailTotalReportController@index')->name('dashboard.report.finanzas_detail_total');
+	Route::post('/administracion/finanzas-detallado-resumido/validar-formulario', 'FinanzasDetailTotalReportController@validateForm')->name('dashboard.report.finanzas_detail_total.validate_form');
+	Route::post('/administracion/finanzas-detallado-resumido/obtener-clientes', 'FinanazasDetailTotalReportController@getClients')->name('dashboard.report.finanzas_detail_total.get_clients');
+	Route::post('/administracion/finanzas-detallado-resumido/listar', 'FinanzasDetailTotalReportController@list')->name('dashboard.report.finanzas_detail_total.list');
+
 
 });

@@ -18,6 +18,7 @@ use stdClass;
 use App\Client;
 use App\ClientLiquidations;
 use App\GuidesState;
+use App\WarehouseTypeInUser;
 
 class GuidesReturnController extends Controller
 {
@@ -162,9 +163,16 @@ class GuidesReturnController extends Controller
 
     public function update(Request $request)
     {
+		$user_id = Auth::user()->id;
+
+		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+			->where('user_id', $user_id)
+			->first();
+
         $articles = $request->articles;
         $clients = $request->clients;
         $warehouse_movement_id = $request->warehouse_movement_id;
+		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 
 		$guide_state = GuidesState::select('id')
             ->where('name', 'Por Liquidar')
@@ -179,16 +187,18 @@ class GuidesReturnController extends Controller
                 ->where('id', $article['article_id'])
                 ->first();
 
-            $articleWT = Article::where('warehouse_type_id', 4)
+            $articleWT = Article::where('warehouse_type_id', $warehouse_type_id)
                 ->where('code', $articleGeneral->code)
                 ->first();
 
-            $articleBalon = Article::where('warehouse_type_id', 4)
+            $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
                 ->where('convertion', $articleWT->convertion)
                 ->where('name', 'like', '%BALON%')
                 ->first();
 
-            $articleEnvasado = Article::find(4791);
+            $articleEnvasado = Article::where('warehouse_type_id', $warehouse_type_id)
+                ->where('code', 2)
+                ->first();
 
             if ($article['retorno'] > 0) {
 
@@ -392,7 +402,7 @@ class GuidesReturnController extends Controller
             $warehouse_movement_detail->save();
             /**Off */
 
-            $articleDetail = Article::where('warehouse_type_id', 4)
+            $articleDetail = Article::where('warehouse_type_id', $warehouse_type_id)
                 ->where('code', $article['article_code'])
                 ->first();
 
@@ -492,7 +502,7 @@ class GuidesReturnController extends Controller
 
         $articleBalon = Article::where('warehouse_type_id', 5)
             ->where('convertion', $articleGeneral->convertion)
-            ->where('name', 'like', '%BALON%')
+            ->where('group_id', 7)
             ->first();
 
         $articleBalon->parent = null;
