@@ -9,53 +9,25 @@ use App\Article;
 
 class ReportsEnvasesGeneralController extends Controller {
     public function index() {
-		return view('backend.reports_envases_general');
+		$plantas = WarehouseType::select('id', 'name')
+			->where('type', 5)
+			->get();
+
+		return view('backend.reports_envases_general')->with(compact('plantas'));
 	}
 
 	public function getStockArticles() {
-		$types_array = request('warehouse_types_array');
+		$warehouse_type_id = request('warehouse_type_index');
 
-		$warehouse_type_ids = WarehouseType::select('id')
-			->whereIn('type', $types_array)
-			->get();
-
-		$array_warehouse_type_ids = [];
-
-		foreach ($warehouse_type_ids as $warehouse_type_id) {
-			array_push($array_warehouse_type_ids, $warehouse_type_id->id);
+		if ($warehouse_type_id) {
+			$warehouse_type_ids = WarehouseType::select('id')
+				->where('id', $warehouse_type_id)
+				->get();
+		} else {
+			$warehouse_type_ids = WarehouseType::select('id')
+				->where('type', 5)
+				->get();
 		}
-
-		$cisternas = WarehouseType::select('id')
-			->whereIn('type', [3, 4])
-			->get();
-
-		$cisternas_array = [];
-
-		foreach ($cisternas as $cisterna) {
-			array_push($cisternas_array, $cisterna->id);
-		}
-
-		$proovedores = WarehouseType::select('id')
-			->whereIn('type', [2])
-			->get();
-
-		$proovedores_array = [];
-
-		foreach ($proovedores as $proovedor) {
-			array_push($proovedores_array, $proovedor->id);
-		}
-
-		$plantas = WarehouseType::select('id')
-			->whereIn('type', [5])
-			->get();
-
-		$plantas_array = [];
-
-		foreach ($plantas as $planta) {
-			array_push($plantas_array, $planta->id);
-		}
-
-		$all = array_merge($cisternas_array, $proovedores_array, $plantas_array);
 
 		$articles = Article::select(
 			'id',

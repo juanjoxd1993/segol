@@ -18,9 +18,7 @@
                             <label class="form-control-label">Tipos:</label>
                             <select class="form-control" name="movement_type_id" id="movement_type_id" v-model="warehouse_type_index" @focus="$parent.clearErrorMsg($event)">
                                 <option selected="true" value="0">Todos</option>
-                                <option value="1">Cisternas</option>
-                                <option value="2">Provedores</option>
-                                <option value="3">Planta</option>
+                                <option v-for="planta in plantas" v-bind:value="planta.id">{{ planta.name }}</option>
                             </select>
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -54,40 +52,29 @@
                 type: String,
                 default: ''
             },
+            plantas: {
+                type: Array,
+                default: []
+            }
         },
         data() {
             return {
-                warehouse_type_index: null,
-                array_warehouse_types_ids: [
-                    [2, 3, 4, 5],
-                    [3, 4],
-                    [2],
-                    [5]
-                ],
-                warehouse_types_array: []
+                warehouse_type_index: 0,
             }
         },
         created() {},
         mounted() {},
-        watch: {
-            warehouse_type_index(val) {
-                const index = parseInt(val);
-
-                const array = this.array_warehouse_types_ids[index];
-
-                this.warehouse_types_array = array;
-            }
-        },
+        watch: {},
         computed: {},
         methods: {
             formController: function(url, event) {
                 const target = $(event.target);
-                const warehouse_types_array = this.warehouse_types_array;
+                const warehouse_type_index = this.warehouse_type_index;
 
                 EventBus.$emit('loading', true);
 
                 axios.post(url, {
-                    warehouse_types_array
+                    warehouse_type_index
                 }).then(response => {
                     const data = response.data;
                     EventBus.$emit('show_table', data);
