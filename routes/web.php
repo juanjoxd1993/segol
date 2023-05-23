@@ -190,6 +190,11 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 
 	/** Reportes > GLP Global*/
 	Route::get('/reporte/report-glp-global', 'ReportsGlpGlobalController@index')->name('dashboard.report.report_glp_global');
+	Route::post('/reporte/report-glp-global/get-stocks', 'ReportsGlpGlobalController@getStockArticles')->name('dashboard.report.report_glp_global.get_stocks_articles');
+
+	/** Reportes > Envases General*/
+	Route::get('/reporte/report-envase-general', 'ReportsEnvasesGeneralController@index')->name('dashboard.report.report_envases_general');
+	Route::post('/reporte/report-envase-general/get-stocks', 'ReportsEnvasesGeneralController@getStockArticles')->name('dashboard.report.report_envases_general.get_stocks_articles');
 
 	/** Logística > Registro Movimiento de Existencias */
 	Route::get('/logistica/registro-movimiento-existencias', 'StockRegisterController@index')->name('dashboard.logistics.stock_register');

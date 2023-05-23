@@ -24,6 +24,7 @@ use App\ClientRoute;
 use App\GuidesSerie;
 use App\Vehicle;
 use App\GuidesState;
+use App\WarehouseTypeInUser;
 use Auth;
 use Carbon\CarbonImmutable;
 use Exception;
@@ -57,7 +58,20 @@ class GuidesRegisterController extends Controller
 			->where('state', 1)
 			->first();
 
-		return view('backend.guides_register')->with(compact('movement_classes', 'movement_types', 'movement_stock_types', 'warehouse_types', 'companies', 'currencies', 'current_date', 'min_datetime', 'max_datetime', 'warehouse_account_types', 'warehouse_document_types', 'igv', 'guide_series'));
+		return view('backend.guides_register')->with(compact(
+			'movement_classes',
+			'movement_types',
+			'movement_stock_types',
+			'warehouse_types',
+			'companies',
+			'currencies',
+			'current_date',
+			'min_datetime',
+			'max_datetime',
+			'warehouse_account_types',
+			'warehouse_document_types',
+			'igv',
+			'guide_series'));
 	}
 
 	public function getNextcorrelative()
@@ -205,8 +219,6 @@ class GuidesRegisterController extends Controller
 			$item->sale_unit_id = $item->sale_unit['name'];
 			$item->warehouse_unit_id = $item->warehouse_unit['name'];
 		});
-
-
 
 		return response()->json([
 			'model'					=> $model,
@@ -494,10 +506,16 @@ class GuidesRegisterController extends Controller
 
 	public function store()
 	{
+		$user_id = Auth::user()->id;
+
+		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+			->where('user_id', $user_id)
+			->first();
+
 		$movement_class_id = 2;
 		$movement_type_id = request('model.movement_type_id');
 		// Este valor debe ser dependiendo del almacen que tenga asignado el usuario
-		$warehouse_type_id = 4;
+		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 		$company_id = request('model.company_id');
 		$since_date = request('model.since_date');
 		$traslate_date = request('model.traslate_date');
@@ -612,7 +630,7 @@ class GuidesRegisterController extends Controller
 		$movement2->save();
 
 		foreach ($articles as $item) {
-			$article = Article::where('warehouse_type_id', 4)
+			$article = Article::where('warehouse_type_id', $warehouse_type_id)
 						->where('code', $item['code'])
 						->first();
 
@@ -738,7 +756,7 @@ class GuidesRegisterController extends Controller
 
 				if ($group_id != 7) {
 
-					$search_stock_good = $article->stock_good;
+					$search_stock_good = intval(floatval($article->stock_good));
 					$difference = $article->stock_good - $digit_amount;
 					$converted_amount = $digit_amount * $article->convertion;
 
@@ -747,16 +765,19 @@ class GuidesRegisterController extends Controller
 						$article->edit = 1;
 						$article->save();
 
-						if ($warehouse_account_type_id == 1) {
-							$article_balon = Article::where('warehouse_type_id', 4)
-											->where('convertion', $article->convertion)
-											->first();
+						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
+										->where('convertion', $article->convertion)
+										->first();
 
+						if ($warehouse_account_type_id == 1) {
 							$article_balon->stock_good += $digit_amount;
+							$article_balon->save();
+						} elseif ($warehouse_account_type_id == 3) {
+							$article_balon->stock_return += $digit_amount;
 							$article_balon->save();
 						}
 					} elseif ($difference < 0) {
-						$article_balon = Article::where('warehouse_type_id', 4)
+						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
 										->where('convertion', $article->convertion)
 										->first();
 
@@ -764,45 +785,51 @@ class GuidesRegisterController extends Controller
 						$converted_amount = $difference_parse * $article->convertion;
 
 						if ($warehouse_account_type_id == 1) {
-							if ($search_stock_good != 0) {
-								$articleEnvasado = Article::find(4791);
-								$articleEnvasado->stock_good -= $converted_amount;
-								$articleEnvasado->save();
-		
-								//Movimiento por producción
-								$id = WarehouseMovement::insertGetId([
-									'company_id' => $company_id,
-									'warehouse_type_id' => 4, //Producción ATE
-									'movement_class_id' => 2,//Salida
-									'movement_type_id' => 5, //Producción
-									'warehouse_account_type_id' => 3, //Trabajador
-									'total' => $converted_amount,
-									'created_at' => date('Y-m-d H:i:s'),
-									'updated_at' => date('Y-m-d H:i:s'),
-								]);
-		
-								WarehouseMovementDetail::insert([
-									'warehouse_movement_id' => $id,
-									'item_number' => 1,
-									'article_code' => $articleEnvasado->id,
-									'converted_amount' => $converted_amount,
-									'total' => $converted_amount,
-									'created_at' => date('Y-m-d H:i:s'),
-									'updated_at' => date('Y-m-d H:i:s'),
-								]);
-							}
-						} elseif ($warehouse_account_type_id == 3) {
-							$article_balon->stock_good -= $difference_parse;
-							$article_balon->stock_return += $difference_parse;
-
-							$articleEnvasado = Article::find(4791);
+							$articleEnvasado = Article::where('warehouse_type_id', $warehouse_type_id)
+								->where('code', 2)
+								->first();
 							$articleEnvasado->stock_good -= $converted_amount;
 							$articleEnvasado->save();
 	
 							//Movimiento por producción
 							$id = WarehouseMovement::insertGetId([
 								'company_id' => $company_id,
-								'warehouse_type_id' => 4, //Producción ATE
+								'warehouse_type_id' => $warehouse_type_id, //Producción ATE
+								'movement_class_id' => 2,//Salida
+								'movement_type_id' => 5, //Producción
+								'warehouse_account_type_id' => 3, //Trabajador
+								'total' => $converted_amount,
+								'created_at' => date('Y-m-d H:i:s'),
+								'updated_at' => date('Y-m-d H:i:s'),
+							]);
+	
+							WarehouseMovementDetail::insert([
+								'warehouse_movement_id' => $id,
+								'item_number' => 1,
+								'article_code' => $articleEnvasado->id,
+								'converted_amount' => $converted_amount,
+								'total' => $converted_amount,
+								'created_at' => date('Y-m-d H:i:s'),
+								'updated_at' => date('Y-m-d H:i:s'),
+							]);
+
+							if ($search_stock_good != 0) {
+								$article_balon->stock_good += $search_stock_good;
+							}
+						} elseif ($warehouse_account_type_id == 3) {
+							$article_balon->stock_good -= $difference_parse;
+							$article_balon->stock_return += $difference_parse;
+
+							$articleEnvasado = Article::where('warehouse_type_id', $warehouse_type_id)
+								->where('code', 2)
+								->first();
+							$articleEnvasado->stock_good -= $converted_amount;
+							$articleEnvasado->save();
+	
+							//Movimiento por producción
+							$id = WarehouseMovement::insertGetId([
+								'company_id' => $company_id,
+								'warehouse_type_id' => $warehouse_type_id, //Producción ATE
 								'movement_class_id' => 2,//Salida
 								'movement_type_id' => 5, //Producción
 								'warehouse_account_type_id' => 3, //Trabajador
@@ -832,12 +859,15 @@ class GuidesRegisterController extends Controller
 						$article->edit = 1;
 						$article->save();
 
-						if ($warehouse_account_type_id == 1) {
-							$article_balon = Article::where('warehouse_type_id', 4)
-											->where('convertion', $article->convertion)
-											->first();
+						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
+										->where('convertion', $article->convertion)
+										->first();
 
+						if ($warehouse_account_type_id == 1) {
 							$article_balon->stock_good += $digit_amount;
+							$article_balon->save();
+						} elseif ($warehouse_account_type_id == 3) {
+							$article_balon->stock_return += $digit_amount;
 							$article_balon->save();
 						}
 					}

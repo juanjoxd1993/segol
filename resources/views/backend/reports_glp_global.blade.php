@@ -4,19 +4,8 @@
 @section('subtitle', 'Reporte GLP Global')
 
 @section('content')
-    <form-general
-        title_header = "Buscar"
-    >
-        <div slot = "body_content">hola</div>
-        <form-actions
-            slot = "foot_content"
-            :buttons = "[
-                {
-                    type: 'submit',
-                    class: 'btn btn-primary',
-                    text: 'Buscar'
-                }
-            ]"
-        ></form-actions>
-    </form-general>
+    <reports-glp-global-form
+		:url = "'{{ route('dashboard.report.report_glp_global.get_stocks_articles') }}'"
+    ></reports-glp-global-form>
+    <reports-glp-global-table></reports-glp-global-table>
 @endsection
