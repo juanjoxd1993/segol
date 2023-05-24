@@ -63,7 +63,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$export = request('export');
 
-	    $initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d H:i:s');
+	    $initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d');
 
 		$elements = PaymentReport::select('id as payment_id','payment_reports.name as payment_name' )
             ->groupBy('payment_name')
