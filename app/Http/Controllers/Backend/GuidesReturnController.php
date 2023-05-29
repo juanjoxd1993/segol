@@ -19,13 +19,15 @@ use App\Client;
 use App\ClientLiquidations;
 use App\GuidesState;
 use App\WarehouseTypeInUser;
+use PDF;
+use App\ControlSerie;
+use Exception;
 
 class GuidesReturnController extends Controller
 {
     public function index()
     {
         $companies = Company::select('id', 'name')->get();
-
 
         return view('backend.guides_return')->with(compact('companies'));
     }
@@ -193,7 +195,7 @@ class GuidesReturnController extends Controller
 
             $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
                 ->where('convertion', $articleWT->convertion)
-                ->where('name', 'like', '%BALON%')
+                ->where('group_id', 7)
                 ->first();
 
             $articleEnvasado = Article::where('warehouse_type_id', $warehouse_type_id)
@@ -406,12 +408,6 @@ class GuidesReturnController extends Controller
                 ->where('code', $article['article_code'])
                 ->first();
 
-            // Article::where('warehouse_type_id', 4)
-            //     ->where('code', $article['article_code'])
-            //     ->update([
-            //         'stock_good' => $articleDetail['stock_good'] + $article['retorno'],
-            //     ]);
-
             //Actualizar new_stock_return
             if ($article['article']['group_id'] == 26) {
                 WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
@@ -457,7 +453,7 @@ class GuidesReturnController extends Controller
         $data->title = '¡Ok!';
         $data->msg = 'Registro actualizado exitosamente.';
 
-        return response()->json($data);
+        return $this->generatePdf($warehouse_movement_id, $articles);
     }
 
     public function getClients()
@@ -522,4 +518,123 @@ class GuidesReturnController extends Controller
 
         return $articleBalon;
     }
+
+    public function generatePdf($warehouse_movement_id, $elements)
+	{
+		$user_id = Auth::user()->id;
+
+		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+			->where('user_id', $user_id)
+			->first();
+
+        $warehouse_type_id = $warehouse_type_user->warehouse_type_id;
+
+        $warehouse_movement = WarehouseMovement::find($warehouse_movement_id);
+
+        $current_date = CarbonImmutable::now()->startOfDay()->format('d/m/Y');
+        $current_time = CarbonImmutable::now()->format('h:i A');
+
+        $number_page = 1;
+
+        $control_serie = ControlSerie::select('num_serie', 'correlative')
+                                    ->where('num_serie', $warehouse_movement->referral_guide_series)
+                                    ->first();
+
+        $control_serie_number = $control_serie->num_serie;
+        $control_serie_correlative = $control_serie->correlative;
+
+        $name_full_data = $warehouse_movement->account_name;
+
+        $state = 'ACTIVO';
+
+        $number_placa = $warehouse_movement->license_plate;
+
+        $guide_remision = 'GR/' . $warehouse_movement->referral_guide_series . '-' . $warehouse_movement->referral_guide_number;
+
+        $turno = 'MAÑANA';
+
+        $articles = array();
+
+        $total_quantity = 0;
+        $total_return = 0;
+        $total_vacios = 0;
+        $total_damaged = 0;
+        $total_transito = 0;
+        $total_consignacion = 0;
+        $total_devolucion = 0;
+        $total_observador = 0;
+        $total_deposito = 0;
+        $total = 0;
+
+        foreach ($elements as $element) {
+            $articleGeneral = Article::where('warehouse_type_id', 5)
+                ->where('id', $element['article_id'])
+                ->first();
+
+            $articleWT = Article::where('warehouse_type_id', $warehouse_type_id)
+                ->where('code', $articleGeneral->code)
+                ->first();
+
+            $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
+                ->where('convertion', $articleWT->convertion)
+                ->where('group_id', 7)
+                ->first();
+
+            $article = new stdClass();
+
+            $article->name = $articleBalon->name;
+            $article->quantity = $element['presale'];
+            $article->return = $element['retorno'];
+            $article->vacios = $element['presale'] - $element['retorno'] - $element['cambios'];
+            $article->damaged = $element['cambios'];
+            $article->transito = 0;
+            $article->consignacion = 0;
+            $article->devolucion = 0;
+            $article->observador = 0;
+            $article->deposito = 0;
+            $article->total = $article->quantity + $article->return + $article->vacios + $article->damaged + $article->transito + $article->consignacion + $article->devolucion + $article->observador + $article->deposito;
+
+            array_push($articles, $article);
+
+            $total_quantity += $article->quantity;
+            $total_return += $article->return;
+            $total_vacios += $article->vacios;
+            $total_damaged += $article->damaged;
+            $total_transito += $article->transito;
+            $total_consignacion += $article->consignacion;
+            $total_devolucion += $article->devolucion;
+            $total_observador += $article->observador;
+            $total_deposito += $article->deposito;
+            $total += $article->total;
+        };
+
+		try{
+			$pdf = PDF::loadView('backend.pdf.return_guide',
+                                compact('current_date',
+                                        'current_time',
+                                        'number_page',
+                                        'control_serie_number',
+                                        'control_serie_correlative',
+                                        'name_full_data',
+                                        'state',
+                                        'number_placa',
+                                        'guide_remision',
+                                        'turno',
+                                        'articles',
+                                        'total_quantity',
+                                        'total_return',
+                                        'total_vacios',
+                                        'total_damaged',
+                                        'total_transito',
+                                        'total_consignacion',
+                                        'total_devolucion',
+                                        'total_observador',
+                                        'total_deposito',
+                                        'total'));
+
+			return $pdf->download('guia-de-retorno-N°-' . $warehouse_movement->referral_guide_series . '-' . $warehouse_movement->referral_guide_number . '.pdf');
+		}catch(Exception $e){
+			return '';
+		}
+	}
 }
