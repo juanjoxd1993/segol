@@ -569,20 +569,22 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/placas/eliminar', 'PlatesController@delete')->name('dashboard.plates.delete'); 
 
 	 /** Compras GLP > Reporte de Compras GLP */
-	 Route::get('/controlglp/compras-registro', 'StockSalesRegisterReportController@index')->name('dashboard.report.stock_sales_register');
-	 Route::post('/controlglp/compras-registro/validar-formulario', 'StockSalesRegisterReportController@validateForm')->name('dashboard.report.stock_sales_register.validate_form');
-	 Route::post('/controlglp/compras-registro/obtener-guias', 'StockSalesRegisterReportController@getWarehouseMovements')->name('dashboard.report.stock_sales_register.get_warehouse_movements');
-	 Route::post('/controlglp/compras-registro/listar', 'StockSalesRegisterReportController@list')->name('dashboard.report.stock_sales_register.list');
-	 Route::post('/controlglp/compras-registro/detalle', 'StockSalesRegisterReportController@detail')->name('dashboard.report.stock_sales_register.detail');
-	 Route::post('/controlglp/compras-registro/actualizar', 'StockSalesRegisterReportController@update')->name('dashboard.report.stock_sales_register.update');
+	Route::get('/controlglp/compras-registro', 'StockSalesRegisterReportController@index')->name('dashboard.report.stock_sales_register');
+	Route::post('/controlglp/compras-registro/validar-formulario', 'StockSalesRegisterReportController@validateForm')->name('dashboard.report.stock_sales_register.validate_form');
+	Route::post('/controlglp/compras-registro/obtener-guias', 'StockSalesRegisterReportController@getWarehouseMovements')->name('dashboard.report.stock_sales_register.get_warehouse_movements');
+	Route::post('/controlglp/compras-registro/listar', 'StockSalesRegisterReportController@list')->name('dashboard.report.stock_sales_register.list');
+	Route::post('/controlglp/compras-registro/detalle', 'StockSalesRegisterReportController@detail')->name('dashboard.report.stock_sales_register.detail');
+	Route::post('/controlglp/compras-registro/actualizar', 'StockSalesRegisterReportController@update')->name('dashboard.report.stock_sales_register.update');
+	Route::post('/controlglp/compras-registro/get-warehouse-type-two', 'StockSalesRegisterReportController@getWarehouseTypeTwo')->name('dashboard.report.stock_sales_register.get_warehouse_type_two');
+	Route::post('/controlglp/compras-registro/get-articles', 'StockSalesRegisterReportController@getArticles')->name('dashboard.report.stock_sales_register.get_articles');
 
-	  /** Compras GLP > Edición de Facturas */
-	  Route::get('/control-glp/editor', 'GlpFactReportController@index')->name('dashboard.report.glp_fact');
-	  Route::post('/control-glp/editor/validar-formulario', 'GlpFactReportController@validateForm')->name('dashboard.report.glp_fact.validate_form');
-	  Route::post('/control-glp/editor/obtener-guias', 'GlpFactReportController@getWarehouseMovements')->name('dashboard.report.glp_fact.get_warehouse_movements');
-	  Route::post('/control-glp/editor/listar', 'GlpFactReportController@list')->name('dashboard.report.glp_fact.list');
-	  Route::post('/control-glp/editor/detalle', 'GlpFactReportController@detail')->name('dashboard.report.glp_fact.detail');
-	  Route::post('/control-glp/editor/actualizar', 'GlpFactReportController@update')->name('dashboard.report.glp_fact.update');
+	/** Compras GLP > Edición de Facturas */
+	Route::get('/control-glp/editor', 'GlpFactReportController@index')->name('dashboard.report.glp_fact');
+	Route::post('/control-glp/editor/validar-formulario', 'GlpFactReportController@validateForm')->name('dashboard.report.glp_fact.validate_form');
+	Route::post('/control-glp/editor/obtener-guias', 'GlpFactReportController@getWarehouseMovements')->name('dashboard.report.glp_fact.get_warehouse_movements');
+	Route::post('/control-glp/editor/listar', 'GlpFactReportController@list')->name('dashboard.report.glp_fact.list');
+	Route::post('/control-glp/editor/detalle', 'GlpFactReportController@detail')->name('dashboard.report.glp_fact.detail');
+	Route::post('/control-glp/editor/actualizar', 'GlpFactReportController@update')->name('dashboard.report.glp_fact.update');
 
 	  /** Compras GLP > Stocks Artículos GLP */
 	Route::get('/control-glp', 'WarehouseGlpController@index')->name('dashboard.operations.warehouse_glp');

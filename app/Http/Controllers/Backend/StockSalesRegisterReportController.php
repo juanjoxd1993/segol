@@ -26,10 +26,8 @@ use stdClass;
 class StockSalesRegisterReportController extends Controller
 {
 	public function index() {
-	
 		$companies = Company::select('id','name')->get();
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
-
 
 		return view('backend.stock_sales_register_report')->with(compact('companies', 'current_date'));
 	}
@@ -50,7 +48,6 @@ class StockSalesRegisterReportController extends Controller
 		return $warehouse_movements;
 	}
 
-
 	public function validateForm() {
 		$messages = [
 	
@@ -67,8 +64,6 @@ class StockSalesRegisterReportController extends Controller
 		request()->validate($rules, $messages);
 		return request()->all();
 	}
-
-
 
 	public function list() {
 		$export = request('export');
@@ -193,43 +188,61 @@ class StockSalesRegisterReportController extends Controller
 	public function detail() {
 		$id = request('id');
 
-		$element = WarehouseMovement::select('id', 'movement_type_id','warehouse_type_id', 'account_id', 'account_name', 'referral_guide_number', 'referral_serie_number', 'referral_voucher_number', 'scop_number', 'created_at', 'traslate_date','total','price_mes','tc')
-			->findOrFail($id);
+		$element = WarehouseMovement::select('id',
+										'movement_type_id',
+										'warehouse_type_id',
+										'account_id',
+										'account_name',
+										'referral_guide_number',
+										'referral_serie_number',
+										'referral_voucher_number',
+										'scop_number',
+										'created_at',
+										'traslate_date',
+										'total',
+										'price_mes',
+										'tc')
+									->findOrFail($id);
 
-     //   $cantidad=WarehouseMovementDetail::where('warehouse_movement_id', $id)
-	//	->select('converted_amount')
-	//	->sum('converted_amount');
+		// $cantidad=WarehouseMovementDetail::where('warehouse_movement_id', $id)
+		// 	->select('converted_amount')
+		// 	->sum('converted_amount');
 
-    //    $element->cantidad += $cantidad;
+        // $element->cantidad += $cantidad;
 		$date = CarbonImmutable::createFromDate(date('Y-m-d', strtotime($element->traslate_date)));
 		$fecha= CarbonImmutable::createFromDate(date('Y-m-d', strtotime($element->created_at)));
 		$element->date = $date->startOfDay()->toAtomString();
 		$element->fecha =$element->created_at;
 		$element->min_datetime = $date->startOfDay()->subDays(2)->toAtomString();
 		$element->max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
-	//	$element->typing_error = $element->movement_type_id == 29 ? 1 : 0;
-	$details = [];
+		// $element->typing_error = $element->movement_type_id == 29 ? 1 : 0;
+		$details = [];
 
-	foreach($element->warehouse_movement_details as $detail){
+		foreach($element->warehouse_movement_details as $detail){
+			array_push($details, [
+				'id' => $detail->id,
+				'article_id' => $detail->article_code,
+				'old_article_code' => $detail->article->code,
+				'article_code' => $detail->article->code,
+				'code' => $detail->article->code,
+				'name' => $detail->article->name,
+				'old_converted_amount' => intval(floatval($detail->digit_amount)),
+				'converted_amount' => intval(floatval($detail->digit_amount)),
+			]);
+		}
 
-		array_push($details, [
-			'id' => $detail->id,
-			'code' => $detail->article->code,
-			'name' => $detail->article->name,
-			'converted_amount' => $detail->converted_amount,
-		]);
+		$element->details = $details;
+		$element->old_warehouse_type_id = $element->warehouse_type_id;
 
-	   }
-	   $element->details = $details;
-	
-	    return $element;
+		return $element;
 	}
 
 	public function update() {
 		$id = request('id');
 		$account_id = request('account_id');
 		$account_name = request('account_name');
-		$warehouse_type_id= request('warehouse_type_id');
+		$old_warehouse_type_id = request('old_warehouse_type_id');
+		$warehouse_type_id = request('warehouse_type_id');
 		$referral_guide_number = request('referral_guide_number');
 		$referral_serie_number = request('referral_serie_number');
 		$referral_voucher_number = request('referral_voucher_number');
@@ -237,11 +250,11 @@ class StockSalesRegisterReportController extends Controller
 		$fecha = request('fecha');
 		$total = request('total');
 		$date = request('date');
-	//	$cantidad=request('cantidad');
+		// $cantidad=request('cantidad');
 		$tc = request('tc');
 		$price_mes = request('price_mes');
+		$details = request('details');
 
-	
 		$element = WarehouseMovement::findOrFail($id);
 		$element->account_name = $account_name;
 		$element->warehouse_type_id = $warehouse_type_id;
@@ -252,19 +265,46 @@ class StockSalesRegisterReportController extends Controller
 		$element->created_at = date('Y-m-d', strtotime($fecha));
 		$element->traslate_date = date('Y-m-d', strtotime($date));
 		$element->total = $total;
+		$element->soles = $total * $tc;
 		$element->tc = $tc;
 		$element->price_mes = $price_mes;
-		$element->save();
 
-		if(isset(request()->details)){
-			foreach(request()->details as $detail){
+		foreach($details as $detail) {
+			$old_converted_amount = $detail['old_converted_amount'];
+			$converted_amount = $detail['converted_amount'];
 
-				WarehouseMovementDetail::where('id', $detail['id'])
-									->update([
-										'converted_amount' => $detail['converted_amount']
-									]);
-			}
+			$old_article_code = $detail['old_article_code'];
+			$article_code = $detail['article_code'];
+
+			$difference = $element->stock_ini - $element->stock_pend;
+
+			$element->stock_ini = $converted_amount;
+			$element->stock_pend = $converted_amount - $difference;
+			$element->cost_glp = $total / $converted_amount;
+
+			$old_article = Article::where('code', $old_article_code)
+								->where('warehouse_type_id', $old_warehouse_type_id)
+								->first();
+
+			$old_article->stock_good -= $old_converted_amount;
+			$old_article->save();
+
+			$article = Article::where('code', $article_code)
+								->where('warehouse_type_id', $warehouse_type_id)
+								->first();
+
+			$article->stock_good += $converted_amount;
+			$article->save();
+
+			WarehouseMovementDetail::where('id', $detail['id'])
+								->update([
+									'article_code' => $article->id,
+									'digit_amount' => $converted_amount,
+									'converted_amount' => $converted_amount - $difference
+								]);
 		}
+
+		$element->save();
 
 		$data = new stdClass();
 		$data->type = 1;
@@ -274,6 +314,21 @@ class StockSalesRegisterReportController extends Controller
 		return response()->json($data);
 	}
 
-	
-	
+	public function getWarehouseTypeTwo() {
+		$warehouse_types = WarehouseType::select('name', 'id')
+										->where('type', 2)
+										->get();
+
+		return $warehouse_types;
+	}
+
+	public function getArticles() {
+		$articles = Article::select('name', 'code', 'warehouse_type_id')
+							->where('warehouse_type_id', 5)
+							->whereIn('code', [1, 2])
+							->get();
+
+		return $articles;
+	}
+
 }

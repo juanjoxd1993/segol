@@ -35,8 +35,9 @@
                 </div>
             </div>
         </div>
-       <div class="kt-portlet__body kt-portlet__body--fit" @click="manageActions">
-       <!--    begin: Datatable  -->
+
+        <div class="kt-portlet__body kt-portlet__body--fit" @click="manageActions">
+        <!--    begin: Datatable  -->
             <div class="kt-datatable"></div>
         <!--    end: Datatable -->
         </div>
@@ -174,7 +175,6 @@
                             width: 60,
                             textAlign: 'left',
                         },
-                   
                         {
                             field: 'date',
                             title: 'Fecha de Emisión',
@@ -217,26 +217,25 @@
                             width: 40,
                             textAlign: 'left',
                         },
-                         {
+                        {
                             field: 'tc',
                             title: 'TC',
                             width: 60,
                             textAlign: 'left',
                         },
-
                         {
                             field: 'total',
                             title: 'Valor Venta',
                             width: 60,
                             textAlign: 'left',
                         },
-                          {
+                        {
                             field: 'conv_soles',
                             title: 'Conversión Soles',
                             width: 60,
                             textAlign: 'left',
                         },
-                         {
+                        {
                             field: 'kg_soles',
                             title: 'Precio kg Soles',
                             width: 60,
@@ -260,7 +259,7 @@
                             width: 60,
                             textAlign: 'left',
                         },
-                         {
+                        {
                             field: 'despacho',
                             title: 'Despachado',
                             width: 60,
@@ -272,14 +271,12 @@
                             width: 60,
                             textAlign: 'left',
                         },
-                         {
+                        {
                             field: 'tm',
                             title: 'TM',
                             width: 40,
                             textAlign: 'left',
                         },
-					
-						
 						{
 							field: 'order_sale',
 							title: 'N° Orden Venta',
@@ -292,7 +289,6 @@
 							width: 120,
 							textAlign: 'left',
 						},
-
                         {
                             field: 'id',
                             title: 'ID',
@@ -305,10 +301,7 @@
                                 hidden: 'xl'
                             }
                         },
-                       
-						
-						
-                       {
+                        {
                             field: 'warehouse_movement_id',
                             title: 'ID Movimiento de Almacén',
                             width: 0,
