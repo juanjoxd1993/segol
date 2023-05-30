@@ -13,9 +13,8 @@
         <form class="kt-form" @submit.prevent="formController(url, $event)">
             <div class="kt-portlet__body">
                 <div class="row">
-                  
-                
-                  <div v-bind:class="'col-lg-3' + (' d-none')">
+
+                <div v-bind:class="'col-lg-3' + (' d-none')">
                         <div class="form-group">
                             <label class="form-control-label" readonly="">Tipo Movimiento:</label>
                             <select class="form-control readonly" name="movement_type_id" id="movement_type_id" v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
@@ -25,7 +24,7 @@
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                   
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Almacén Proveedor:</label>
@@ -86,8 +85,7 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Choferes:</label>
-                            <select class="form-control kt-select2" name="warehouse_account_id" id="warehouse_account_id"
-                             v-model="model.warehouse_account_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control kt-select2" name="warehouse_account_id" id="warehouse_account_id" v-model="model.warehouse_account_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
                             </select>
                             <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
@@ -137,7 +135,7 @@
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                   
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tracto:</label>
@@ -148,44 +146,40 @@
 
                     <div class="col-lg-3">
                         <div class="form-group">
-                         <label class="form-control-label">Costo Mes:</label>
+                            <label class="form-control-label">Costo Mes:</label>
                             <select class="form-control" name="price_mes" id="price_mes" v-model="model.price_mes" @focus="$parent.clearErrorMsg($event)">
-                               <option disabled value="">Seleccionar</option>
-                                            <option value="01">ENERO</option>
-                                            <option value="02">FEBRERO</option>
-                                            <option value="03">MARZO</option>    
-                                            <option value="04">ABRIL</option> 
-                                            <option value="05">MAYO</option>
-                                            <option value="06">JUNIO</option>
-                                            <option value="07">JULIO</option>    
-                                            <option value="08">AGOSTO</option> 
-                                            <option value="09">SEPTIEMBRE</option> 
-                                            <option value="10">OCTUBRE</option> 
-                                            <option value="11">NOVIEMBRE</option> 
-                                            <option value="12">DICIEMBRE</option>                                         
+                                <option disabled value="">Seleccionar</option>
+                                <option value="01">ENERO</option>
+                                <option value="02">FEBRERO</option>
+                                <option value="03">MARZO</option>    
+                                <option value="04">ABRIL</option> 
+                                <option value="05">MAYO</option>
+                                <option value="06">JUNIO</option>
+                                <option value="07">JULIO</option>    
+                                <option value="08">AGOSTO</option> 
+                                <option value="09">SEPTIEMBRE</option> 
+                                <option value="10">OCTUBRE</option> 
+                                <option value="11">NOVIEMBRE</option> 
+                                <option value="12">DICIEMBRE</option>                                         
                             </select>
                             <div id="price_mes-error" class="error invalid-feedback"></div>
-                      </div>
+                        </div>
                     </div>
 
-                  
-
-                        <div class="col-lg-3">
+                    <div class="col-lg-3">
                         <div class="form-group">
-                         <label class="form-control-label">Mezcla:</label>
+                            <label class="form-control-label">Mezcla:</label>
                             <select class="form-control" name="mezcla" id="mezcla" v-model="model.mezcla" @focus="$parent.clearErrorMsg($event)">
-                               <option disabled value="">Seleccionar</option>
-                                            <option value="65/35">65/35</option>
-                                            <option value="60/40">60/40</option>
-                                            <option value="70/30">70/30</option>
-                                                                                       
+                                <option disabled value="">Seleccionar</option>
+                                <option value="65/35">65/35</option>
+                                <option value="60/40">60/40</option>
+                                <option value="70/30">70/30</option>
                             </select>
                             <div id="mezcla-error" class="error invalid-feedback"></div>
-                      </div>
+                        </div>
                     </div>
 
-
-                      <div class="col-lg-3">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Gravedad:</label>
                             <input type="text" class="form-control" name="isla" id="isla" v-model="model.isla" @focus="$parent.clearErrorMsg($event)">
@@ -460,37 +454,33 @@
                     }
                 }).then(response => {
                     EventBus.$emit('loading', false);
-                 
-                   
-                    
+                    this.$store.commit('setWarehouseTypeIdReceiver', this.model.warehouse_receiver);
                     EventBus.$emit('show_table', response.data);
                     this.model = {
-                    movement_class_id: '',
-                movement_type_id: '30',
-                movement_stock_type_id: '',
-                warehouse_type_id: '',
-                company_id: '1',
-                //   currency: 1,
-                traslate_date: this.min_datetime,
-                since_date: this.current_date,
-                warehouse_account_type_id: '3',
-                warehouse_account_id: '',
-                referral_guide_series: '',
-                referral_guide_number: '',
-                referral_warehouse_document_type_id: '',
-                referral_serie_number: '',
-                referral_voucher_number: '',
-                scop_number: '',
-                license_plate: '',
-                license_plate_2: '',
-                price_mes: '',
-                mezcla: '',
-                isla: '',
-                warehouse_receiver: '',
-                invoices: [],
-                }
-
-                  
+                        movement_class_id: '',
+                        movement_type_id: '30',
+                        movement_stock_type_id: '',
+                        warehouse_type_id: '',
+                        company_id: '1',
+                        //   currency: 1,
+                        traslate_date: this.min_datetime,
+                        since_date: this.current_date,
+                        warehouse_account_type_id: '3',
+                        warehouse_account_id: '',
+                        referral_guide_series: '',
+                        referral_guide_number: '',
+                        referral_warehouse_document_type_id: '',
+                        referral_serie_number: '',
+                        referral_voucher_number: '',
+                        scop_number: '',
+                        license_plate: '',
+                        license_plate_2: '',
+                        price_mes: '',
+                        mezcla: '',
+                        isla: '',
+                        warehouse_receiver: '',
+                        invoices: [],
+                    }
                     // console.log(response);
                 }).catch(error => {
                     EventBus.$emit('loading', false);

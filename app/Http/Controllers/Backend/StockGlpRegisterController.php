@@ -100,32 +100,35 @@ class StockGlpRegisterController extends Controller
 
 	public function validateForm() {
 		$messages = [
-			
-		
-		
-			'warehouse_type_id.required'						=> 'Debe seleccionar un Almacén.',	
+			'warehouse_type_id.required'						=> 'Debe seleccionar un Almacén Proveedor.',
+			'warehouse_receiver.required'						=> 'Debe seleccionar un Almacén Receptor.',
+			'invoice.required'									=> 'Debe seleccionar una Factura.',
 			'since_date.required'								=> 'Debe seleccionar una Fecha.',
-		//	'referral_guide_series.required_if'					=> 'Debe digitar la Serie de Guía de Remisión.',
+			// 'referral_guide_series.required_if'					=> 'Debe digitar la Serie de Guía de Remisión.',
 			'referral_guide_number.required_if'					=> 'Debe digitar el Número de Guía de Remisión.',
 			'referral_serie_number.required_if'					=> 'Debe digitar la Serie de Referencia.',
 			'referral_voucher_number.required_if'				=> 'Debe digitar el Número de Referencia.',
 			'scop_number.required_if'							=> 'Debe digitar el Número de SCOP.',
-		//	'license_plate.required_if'							=> 'Debe digitar el Número de Placa.',
+			// 'license_plate.required_if'							=> 'Debe digitar el Número de Placa.',
 			'price_mes.required_if'							    => 'Debe seleccionar un costo mes',
+			'isla.required'							    		=> 'Debe digitar la gravedad',
 		];
 
 		$rules = [
 		
 
 			'warehouse_type_id'						=> 'required',
+			'warehouse_receiver'					=> 'required',
+			'invoice'								=> 'required',
 			'since_date'							=> 'required',
-		//	'referral_guide_series'					=> 'required_if:movement_type_id,1,7,8,9,11,13,15,19,20',
+			// 'referral_guide_series'					=> 'required_if:movement_type_id,1,7,8,9,11,13,15,19,20',
 			'referral_guide_number'					=> 'required_if:movement_type_id,1,7,8,9,11,13,15,19,20',
 			'referral_serie_number'					=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
 			'referral_voucher_number'				=> 'required_if:movement_type_id,1,2,3,4,5,6,10,11,13,15,16,17,18,19,20,21,22',
 			'scop_number'							=> 'required',
-		//	'license_plate'							=> 'required',
+			// 'license_plate'							=> 'required',
 			'price_mes'							    => 'required',
+			'isla'							    	=> 'required',
 		];
 
 		request()->validate($rules, $messages);
@@ -255,19 +258,44 @@ class StockGlpRegisterController extends Controller
 		} else {
 			$article->converted_amount = number_format($quantity, 4, '.', ',');
 			$article->old_stock_return = number_format($quantity_2, 4, '.', ',');
-		    $article->old_stock_damaged = number_format($quantity_3, 4, '.', ',');
+			$article->old_stock_damaged = number_format($quantity_3, 4, '.', ',');
 		}
 
-	//	$article->price = number_format($price, 4, '.', ',');
-	//	$article->sale_value = number_format($sale_value, 4, '.', ',');
-	//	$article->inaccurate_value = number_format($inaccurate_value, 4, '.', ',');
-	//	$article->igv = number_format($igv, 4, '.', ',');
-	//	$article->total = number_format($total, 4, '.', ',');
-	//	$article->perception = number_format($perception, 4, '.', ',');
-	//	$article->igv_percentage = ( $igv == 0 ? 0 : $igv_percentage );
-	//	$article->perception_percentage = $perception_percentage;
+		// $article->price = number_format($price, 4, '.', ',');
+		// $article->sale_value = number_format($sale_value, 4, '.', ',');
+		// $article->inaccurate_value = number_format($inaccurate_value, 4, '.', ',');
+		// $article->igv = number_format($igv, 4, '.', ',');
+		// $article->total = number_format($total, 4, '.', ',');
+		// $article->perception = number_format($perception, 4, '.', ',');
+		// $article->igv_percentage = ( $igv == 0 ? 0 : $igv_percentage );
+		// $article->perception_percentage = $perception_percentage;
 
 		return $article;
+	}
+
+	public function getArticleReceiver() {
+		$warehouse_type_id = request('warehouse_type_id');
+		$article_id = request('article_id');
+
+		$item = Article::where('id', $article_id)
+						->select('code')
+						->first();
+
+		$article = Article::where('warehouse_type_id', $warehouse_type_id)
+							->where('code', $item->code)
+							->select('id')
+							->first();
+
+		if ($article) {
+			return response()->json([
+				'msg' => 'Producto encontrado'
+			]);
+		} else {
+			return response()->json([
+				'msg' => 'Producto no encontrado en el almacen receptor'
+			], 400);
+		}
+		
 	}
 
 	public function store() {
@@ -472,13 +500,11 @@ class StockGlpRegisterController extends Controller
 				$converted_amount = str_replace(',', '', $item['converted_amount']);
 				$old_stock_return = str_replace(',', '', $item['old_stock_return']);
 				$old_stock_damaged = str_replace(',', '', $item['old_stock_damaged']);
-			
-
 
 				$article_code = Article::where('warehouse_type_id', $movementReceptor->warehouse_type_id)
-				->where('code', $item['code'])
-				->select('id')
-				->sum('id');
+										->where('code', $item['code'])
+										->select('id')
+										->sum('id');
 
 				$movementDetail = new WarehouseMovementDetail();
 				$movementDetail->warehouse_movement_id = $movementReceptor->id;
@@ -505,8 +531,7 @@ class StockGlpRegisterController extends Controller
 			//	$movementDetail->igv_perception_percentage = $item['perception_percentage'];
 				$movementDetail->created_at_user = Auth::user()->user;
 				$movementDetail->updated_at_user = Auth::user()->user;
-				
-				
+
 				$tmpArticle = Article::where('warehouse_type_id', request('model.warehouse_receiver'))
 									->where('code', $item['code'])
 									->first();
@@ -571,10 +596,16 @@ class StockGlpRegisterController extends Controller
 				'created_at' => date('Y-m-d H:i:s'),
 				'updated_at' => date('Y-m-d H:i:s'),
 			]);
+
+			$tmpArticle = Article::where('warehouse_type_id', request('model.warehouse_receiver'))
+									->where('code', 3)
+									->first();
+
+			if ($tmpArticle) {
+				$tmpArticle->stock_good += ($converted_amount/($isla*3.785412));
+				$tmpArticle->save();
+			}
 		}
-
-
-
 
 		return $articles;
 	}
