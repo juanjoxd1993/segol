@@ -15,17 +15,15 @@
 		
 	></terminals-report-form>
 
-	
-		<terminals-report-table
-			:url = "'{{ route('dashboard.report.terminals.list') }}'"
-			:url_detail = "'{{ route('dashboard.report.terminals.detail') }}'"
-			
-		></terminals-report-table>
+	<terminals-report-table
+		:url = "'{{ route('dashboard.report.terminals.list') }}'"
+		:url_detail = "'{{ route('dashboard.report.terminals.detail') }}'"
+		:url_delete = "'{{ route('dashboard.report.terminals.delete') }}'"
+	></terminals-report-table>
 
-		<terminals-report-modal
+	<terminals-report-modal
 		:url = "'{{ route('dashboard.report.terminals.update') }}'"
 	></terminals-report-modal>
 
-	
 	<loading></loading>
 @endsection

@@ -35,8 +35,8 @@
                 </div>
             </div>
         </div>
-       <div class="kt-portlet__body kt-portlet__body--fit" @click="manageActions">
-       <!--    begin: Datatable  -->
+        <div class="kt-portlet__body kt-portlet__body--fit" @click="manageActions">
+        <!--    begin: Datatable  -->
             <div class="kt-datatable"></div>
         <!--    end: Datatable -->
         </div>
@@ -56,7 +56,10 @@
                 type: String,
                 default: ''
             },
-		
+            url_delete: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -209,7 +212,7 @@
                             width: 80,
                             textAlign: 'right'
                         },
-                         {
+                        {
                             field: 'total_dol',
                             title: 'Dolares',
                             width: 80,
@@ -289,7 +292,7 @@
                             field: 'options',
                             title: 'Opciones',
                             sortable: false,
-                            width: 60,
+                            width: 80,
                             overflow: 'visible',
                             autoHide: false,
                             textAlign: 'right',
@@ -297,11 +300,13 @@
                             template: function(row) {
 								if ( row.state == 0 ) {
 									let actions = '<div class="actions">';
-										actions += '<a href="#" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">';
-											actions += '<i class="la la-edit"></i>';
-										actions += '</a>';
+                                    actions += '<a href="#" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">';
+                                    actions += '<i class="la la-edit"></i>';
+                                    actions += '</a>';
+                                    actions += '<a href="#" class="delete btn btn-sm btn-clean btn-icon btn-icon-md" title="Eliminar">';
+                                    actions += '<i class="la la-trash"></i>';
+                                    actions += '</a>';
 									actions += '</div>';
-                                
 									return actions;
 								} else {
 									return '';
@@ -324,6 +329,20 @@
                         id: id,
                     }).then(response => {
                         EventBus.$emit('edit_modal', response.data);
+                        EventBus.$emit('loading', false);
+                    }).catch(error => {
+                        console.log(error);
+                        console.log(error.response);
+                    });
+                } else if ( $(event.target).hasClass('delete') ) {
+                    event.preventDefault();
+                    let id = $(event.target).parents('tr').find('td[data-field="warehouse_movement_id"] span').html();
+                    EventBus.$emit('loading', true);
+
+                    axios.post(this.url_delete, {
+                        id: id,
+                    }).then(response => {
+                        EventBus.$emit('refresh_table');
                         EventBus.$emit('loading', false);
                     }).catch(error => {
                         console.log(error);

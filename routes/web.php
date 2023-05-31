@@ -604,6 +604,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/movimiento-abastecimiento/listar', 'TerminalsReportController@list')->name('dashboard.report.terminals.list');
 	Route::post('/controlglp/movimiento-abastecimiento/detalle', 'TerminalsReportController@detail')->name('dashboard.report.terminals.detail');
 	Route::post('/controlglp/movimiento-abastecimiento/actualizar', 'TerminalsReportController@update')->name('dashboard.report.terminals.update');
+	Route::post('/controlglp/movimiento-abastecimiento/delete', 'TerminalsReportController@delete')->name('dashboard.report.terminals.delete');
 
    /** Compras GLP  > Reporte Control GLP */
 	Route::get('/controlglp/reporte-movimientos-glp', 'ControlGlpReportController@index')->name('dashboard.operations.control_glp');
