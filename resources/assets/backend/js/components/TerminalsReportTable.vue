@@ -337,16 +337,36 @@
                 } else if ( $(event.target).hasClass('delete') ) {
                     event.preventDefault();
                     let id = $(event.target).parents('tr').find('td[data-field="warehouse_movement_id"] span').html();
-                    EventBus.$emit('loading', true);
 
-                    axios.post(this.url_delete, {
-                        id: id,
-                    }).then(response => {
-                        EventBus.$emit('refresh_table');
-                        EventBus.$emit('loading', false);
-                    }).catch(error => {
-                        console.log(error);
-                        console.log(error.response);
+                    Swal.fire({
+                        title: '¡Cuidado!',
+                        text: '¿Seguro que desea eliminar el artículo?',
+                        type: "warning",
+                        heightAuto: false,
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí',
+                        cancelButtonText: 'No'
+                    }).then(result => {
+                        if ( result.value ) {
+                            EventBus.$emit('loading', true);
+
+                            axios.post(this.url_delete, {
+                                id: id,
+                            }).then(response => {
+                                EventBus.$emit('refresh_table');
+                                EventBus.$emit('loading', false);
+                            }).catch(error => {
+                                console.log(error);
+                                console.log(error.response);
+                            });
+
+                            Swal.fire({
+                                title: 'Ok!',
+                                text: 'Se ha eliminado el artículo',
+                                type: "success",
+                                heightAuto: false,
+                            });
+                        }
                     });
                 }
             },
