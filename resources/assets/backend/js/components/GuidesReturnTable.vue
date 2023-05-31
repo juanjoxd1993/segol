@@ -269,6 +269,8 @@ export default {
                 articles: this.data,
                 clients: this.$store.state.clients,
                 warehouse_movement_id,
+            }, {
+                responseType: 'blob'
             }).then(response => {
 
                 EventBus.$emit('loading', false);
@@ -279,7 +281,13 @@ export default {
                     type: "success",
                     heightAuto: false,
                 });
-                
+
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'retorno-de-guia-'+Date.now()+'.pdf');
+                document.body.appendChild(link);
+                link.click();
             }).catch(error => {
                 EventBus.$emit('loading', false);
                 console.log(error);

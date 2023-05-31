@@ -25,7 +25,8 @@ export default {
 		warehouse_account_type_id: 0,
 		sale_series: [],
 		warehouse_type_id: 0,
-		articles_filter: []
+		articles_filter: [],
+		warehouse_type_id_receiver: 0
 	},
 	mutations: {
 		addModel(state, model) {
@@ -108,7 +109,10 @@ export default {
 		},
 		setWarehouseTypeId(state, id) {
 			state.warehouse_type_id = id;
-		}
+		},
+		setWarehouseTypeIdReceiver(state, id) {
+			state.warehouse_type_id_receiver = id;
+		},
 	},
 	getters: {
 		editSale: (state) => (client_id) => {

@@ -37,42 +37,44 @@ use stdClass;
 class LiquidacionGlpController extends Controller
 {
 	public function index() {
-			$companies = Company::select('id', 'name')->get();
-			$warehouse_document_types = WarehouseDocumentType::select('id', 'name')
-				->where('name', 'Factura Electrónica')
-				->orWhere('name', 'Boleta de Venta Electrónica')
-				->orWhere('name', 'Nota Interna')
-				->get();
-			$warehouse_types = WarehouseType::select('id', 'name')->get();
-			$payment_methods = PaymentMethod::select('id', 'name', 'payment_id')->get();
-			$currencies = Currency::select('id', 'name')->get();
-			$payments = Payment::all();
-			$payment_cash = Payment::CASH;
-			$payment_credit = Payment::CREDIT;
+		$companies = Company::select('id', 'name')->get();
+		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')
+			->where('name', 'Factura Electrónica')
+			->orWhere('name', 'Boleta de Venta Electrónica')
+			->orWhere('name', 'Nota Interna')
+			->get();
+		$warehouse_types = WarehouseType::select('id', 'name')
+										->whereIn('type', [3, 4])
+										->get();
+		$payment_methods = PaymentMethod::select('id', 'name', 'payment_id')->get();
+		$currencies = Currency::select('id', 'name')->get();
+		$payments = Payment::all();
+		$payment_cash = Payment::CASH;
+		$payment_credit = Payment::CREDIT;
 
-			return view('backend.liquidations_glp')->with(
-					compact(
-						'companies',
-						'warehouse_document_types',
-						'payment_methods',
-						'currencies',
-						'payments',
-						'payment_cash',
-						'payment_credit',
-						'warehouse_types'
-					)
-			);
-  }
+		return view('backend.liquidations_glp')->with(
+				compact(
+					'companies',
+					'warehouse_document_types',
+					'payment_methods',
+					'currencies',
+					'payments',
+					'payment_cash',
+					'payment_credit',
+					'warehouse_types'
+				)
+		);
+	}
 
-  public function validateForm() {
+	public function validateForm() {
 		$messages = [
 			'company_id.required'               => 'Debe seleccionar una Compañía.',
-			'warehouse_movement_id.required'    => 'El Nº de Parte es obligatorio.',
+			// 'warehouse_movement_id.required'    => 'El Nº de Parte es obligatorio.',
 		];
 
 		$rules = [
 			'company_id'            => 'required',
-			'warehouse_movement_id' => 'required',
+			// 'warehouse_movement_id' => 'required',
 		];
 
 		request()->validate($rules, $messages);
@@ -109,54 +111,72 @@ class LiquidacionGlpController extends Controller
 	}
 
 	public function list() {
-			$company_id = request('model.company_id');
-			$warehouse_type_id = request('model.warehouse_type_id');
-			$warehouse_movement_id = request('model.warehouse_movement_id');
+		$company_id = request('model.company_id');
+		$warehouse_type_id = request('model.warehouse_type_id');
+		// $warehouse_movement_id = request('model.warehouse_movement_id');
 
-			$saleWarehouseMovement = WarehouseMovement::select('id', 'referral_serie_number', 'referral_voucher_number','stock_pend')
-					->where('id', $warehouse_movement_id)
-					->where('company_id', $company_id)
-					->first();
+		// $saleWarehouseMovement = WarehouseMovement::select('id', 'referral_serie_number', 'referral_voucher_number','stock_pend')
+		// 										->where('id', $warehouse_movement_id)
+		// 										->where('company_id', $company_id)
+		// 										->first();
 
-			$movementDetails = WarehouseMovementDetail::select('id', 'warehouse_movement_id', 'item_number', 'article_code', 'converted_amount','new_stock_return','article_num','sale_value')
-					->where('warehouse_movement_id', $warehouse_movement_id)
-					->orderBy('item_number', 'asc')
-					->get();
+		// $movementDetails = WarehouseMovementDetail::select('id',
+		// 										'warehouse_movement_id',
+		// 										'item_number',
+		// 										'article_code',
+		// 										'converted_amount',
+		// 										'new_stock_return',
+		// 										'article_num',
+		// 										'sale_value')
+		// 										->where('warehouse_movement_id', $warehouse_movement_id)
+		// 										->orderBy('item_number', 'asc')
+		// 										->get();
 
-			$movementDetails->map(function ($item, $index)  {
-				$warehouse_type_id = request('model.warehouse_type_id');
-							$item->sale_warehouse_movement_id = $item->warehouse_movement_id;
-							$item->article_id = $item->article->id;
-							$item->article_code = $item->article->code;
+		// $movementDetails->map(function ($item, $index)  {
+		// 	$warehouse_type_id = request('model.warehouse_type_id');
+		// 				$item->sale_warehouse_movement_id = $item->warehouse_movement_id;
+		// 				$item->article_id = $item->article->id;
+		// 				$item->article_code = $item->article->code;
 
-				$cantidad=Article::select('warehouse_type_id', 'code', 'stock_good')
-				->where('warehouse_type_id', $warehouse_type_id)
-					->where('code', 1)
-					->sum('stock_good');
+		// 	$cantidad=Article::select('warehouse_type_id', 'code', 'stock_good')
+		// 	->where('warehouse_type_id', $warehouse_type_id)
+		// 		->where('code', 1)
+		// 		->sum('stock_good');
 
-				if ($item->article_code != 3){
-					$item->article_stock_good = $item->article->stock_good;
-				}
-				elseif($item->article_code == 3){
-					if ($item->sale_value) {
-						$item->article_stock_good = $cantidad/$item->sale_value;
-					} else {
-						$item->article_stock_good = 0;
-					}
-				}
+		// 	if ($item->article_code != 3){
+		// 		$item->article_stock_good = $item->article->stock_good;
+		// 	}
+		// 	elseif($item->article_code == 3){
+		// 		if ($item->sale_value) {
+		// 			$item->article_stock_good = $cantidad/$item->sale_value;
+		// 		} else {
+		// 			$item->article_stock_good = 0;
+		// 		}
+		// 	}
 
-					$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
-					$item->presale_converted_amount = $item->converted_amount;
-					$item->sale_converted_amount = number_format(0, 2, '.', '');
-					$item->return_converted_amount = $item->new_stock_return;
-					$item->balance_converted_amount = number_format($item->warehouse_movement->stock_pend - $item->return_converted_amount, 2, '.', '');
-					$item->new_balance_converted_amount = number_format( $item->article_stock_good - $item->sale_converted_amount, 2, '.', '');
+		// 		$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
+		// 		$item->presale_converted_amount = $item->converted_amount;
+		// 		$item->sale_converted_amount = number_format(0, 2, '.', '');
+		// 		$item->return_converted_amount = $item->new_stock_return;
+		// 		$item->balance_converted_amount = number_format($item->warehouse_movement->stock_pend - $item->return_converted_amount, 2, '.', '');
+		// 		$item->new_balance_converted_amount = number_format( $item->article_stock_good - $item->sale_converted_amount, 2, '.', '');
 
-					unset($item->warehouse_movement_id);
-					unset($item->converted_amount);
-			});
+		// 		unset($item->warehouse_movement_id);
+		// 		unset($item->converted_amount);
+		// });
 
-			return $movementDetails;
+		$stocks = Article::select('id',
+						'code',
+						'name',
+						'stock_good')
+						->where('warehouse_type_id', $warehouse_type_id)
+						->get();
+
+		$stocks->map(function ($item, $index) {
+			$item->stock_good = floatval($item->stock_good);
+		});
+
+		return $stocks;
 	}
 
 	public function getClients() {
@@ -194,10 +214,11 @@ class LiquidacionGlpController extends Controller
 	}
 
 	public function getGlpSeries() {
-		$warehouse_document_type_id = request('warehouse_document_type_id');
+		$warehouse_type_id = request('warehouse_type_id');
 
 		$glp_series = GlpSeries::select('id', 'num_serie', 'correlative', 'warehouse_type_id', 'warehouse_document_type_id')
-			->get();
+								->where('warehouse_type_id', $warehouse_type_id)
+								->get();
 
 		$series = array();
 
@@ -214,7 +235,7 @@ class LiquidacionGlpController extends Controller
 		return $series;
 	}
 
-  public function getArticlePrice() {
+	public function getArticlePrice() {
 			$article_id = request('article_id');
 			$client_id = request('client_id');
 			$warehouse_movement_id = request('warehouse_movement_id');
@@ -223,27 +244,29 @@ class LiquidacionGlpController extends Controller
 			$current_date = date('Y-m-d', strtotime($today));
 
 
-			$article_det = WarehouseMovementDetail::select('article_code', 'article_num')
-			->where('warehouse_movement_id', $warehouse_movement_id)
-			->where('article_code', $article_id)
-			->first();
+			$article = Article::select('code')
+							->where('id', $article_id)
+							->first();
 
-			$article_num = $article_det ? $article_det->article_num : '' ;
+			$article_det = Article::select('id')
+								->where('code', $article->code)
+								->where('warehouse_type_id', 5)
+								->first();
 
 			$element = PriceList::select('id', 'article_id', 'price_igv')
-					->where('client_id', $client_id)
-					->where('warehouse_type_id', 5)
-					->where('article_id', $article_num)
-					->where('initial_effective_date', '<=', $current_date)
-					->where('final_effective_date', '>=', $current_date)
-					->where('state', 1)
-					->with(['article' => function ($query) {
-							$query->select('id', 'igv', 'perception');
-					}])
-					->first();
+								->where('client_id', $client_id)
+								->where('warehouse_type_id', 5)
+								->where('article_id', $article_det->id)
+								->where('initial_effective_date', '<=', $current_date)
+								->where('final_effective_date', '>=', $current_date)
+								->where('state', 1)
+								->with(['article' => function ($query) {
+									$query->select('id', 'igv', 'perception');
+								}])
+								->first();
 
-      return $element;
-  }
+		return $element;
+	}
 
     public function getBankAccounts() {
         $company_id = request('company_id');
@@ -267,7 +290,6 @@ class LiquidacionGlpController extends Controller
 
 	public function verifyDocumentType() {
 		$company_id = request('model.company_id');
-		$warehouse_movement_id = request('model.warehouse_movement_id');
 		$warehouse_document_type_id = request('warehouse_document_type_id');
 		$referral_serie_number = request('referral_serie_number');
 		$referral_voucher_number = request('referral_voucher_number');
@@ -282,8 +304,9 @@ class LiquidacionGlpController extends Controller
 				$serie_number = $voucher_type->serie_type . sprintf('%03d', $referral_serie_number);
 			}
 		}
-		$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'traslate_date']);
-		$warehouse_movement_traslate_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
+
+		$today = Carbon::now()->startOfDay();
+		$warehouse_movement_traslate_date = date('Y-m-d', strtotime($today));
 
 		if ( $warehouse_document_type->previous_date_flag ) {
 			$voucher = Voucher::where('company_id', $company_id)
@@ -331,7 +354,6 @@ class LiquidacionGlpController extends Controller
 		$model = request('model');
 		$sales = request('sales');
 
-		$warehouse_movement = WarehouseMovement::find($model['warehouse_movement_id'], ['id', 'referral_guide_series', 'referral_guide_number', 'scop_number', 'license_plate', 'state', 'created_at','stock_pend']);
 		$rate = Rate::where('description', 'IGV')
 			->where('state', 1)
 			->select('id', 'value')
@@ -362,7 +384,7 @@ class LiquidacionGlpController extends Controller
 				->first();
 
 			$client->credit_limit_days = $client->credit_limit_days ? $client->credit_limit_days : 0;
-			$sale_date = date('Y-m-d', strtotime($warehouse_movement->created_at));
+			$sale_date = date('Y-m-d', strtotime($sale['sale_date']));
 			$expiry_date = $sale_date;
 			if ( $sale['payment_id'] == 2 ) {
 				$expiry_date = CarbonImmutable::createFromFormat('Y-m-d', $sale_date)->addDays($client->credit_limit_days);
@@ -372,14 +394,13 @@ class LiquidacionGlpController extends Controller
 			$sale_model->company_id = $model['company_id'];
 			$sale_model->sale_date = $sale_date;
 			$sale_model->expiry_date = $expiry_date;
-			$sale_model->warehouse_movement_id = $warehouse_movement->id;
 			$sale_model->client_id = $client->id;
 			$sale_model->client_code = $client->code;
 			$sale_model->route_id = $client->route_id;
 			$sale_model->payment_id =  $sale['payment_id'];
 			$sale_model->currency_id = $sale['currency_id'];
-			$sale_model->guide_series = $warehouse_movement->referral_guide_series;
-			$sale_model->guide_number = $warehouse_movement->referral_guide_number;
+			$sale_model->guide_series = $sale['referral_guide_series'];
+			$sale_model->guide_number = $sale['referral_guide_number'];
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
 
 			if ( $sale['warehouse_document_type_id'] >= 4 && $sale['warehouse_document_type_id'] <= 9 ) {
@@ -424,7 +445,7 @@ class LiquidacionGlpController extends Controller
 				$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
 				$voucher->issue_date = date('Y-m-d', strtotime($warehouse_movement->created_at));
 				$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->created_at));
-        $voucher->expiry_date = $expiry_date;
+				$voucher->expiry_date = $expiry_date;
 				$voucher->currency_id = $sale['currency_id'];
 				$voucher->payment_id = $sale['payment_id'];
 				$voucher->total = $sale['total'];
@@ -433,11 +454,13 @@ class LiquidacionGlpController extends Controller
 				$voucher->igv_percentage = $rate->value;
 				$voucher->igv_perception_percentage = $sale['perception_percentage'] / 100;
 				$voucher->scop = $scop;
+
 				if ( $voucher_type->id >= 1 && $voucher_type->id <= 4 ) {
 					$voucher->ose = 0;
 				} else {
 					$voucher->ose = 1;
 				}
+
 				$voucher->user = Auth::user()->user;
 				$voucher->save();
 
@@ -463,15 +486,15 @@ class LiquidacionGlpController extends Controller
 					$voucher_detail->save();
 
 					//validar que se actualize el stock del article
-				/*	Article::where('id', $article->article_id)
-					->update([
-						'stock_good' => DB::raw('stock_good + ' . $article->prestamo),
-						'stock_repair' => DB::raw('stock_repair - ' . $article->prestamo),
-						'stock_minimum' => DB::raw('stock_minimum + ' . $article->cesion),
-					]);
+					// Article::where('id', $article->article_id)
+					// ->update([
+					// 	'stock_good' => DB::raw('stock_good + ' . $article->prestamo),
+					// 	'stock_repair' => DB::raw('stock_repair - ' . $article->prestamo),
+					// 	'stock_minimum' => DB::raw('stock_minimum + ' . $article->cesion),
+					// ]);
 
 
-				    $article = Article::find($detail['article_id'], ['id','name', 'stock_good']);*/
+				    // $article = Article::find($detail['article_id'], ['id','name', 'stock_good']);
 
 					$article->stock_good= $article->stock_good-$detail['quantity'];
 					$article->save();
@@ -495,9 +518,9 @@ class LiquidacionGlpController extends Controller
 			} else {
 				$referral_serie_number = CarbonImmutable::now()->format('Ym');
 				$last_voucher_number = Sale::where('company_id', $model['company_id'])
-					->where('warehouse_document_type_id', $sale['warehouse_document_type_id'])
-					->where('referral_serie_number', $referral_serie_number)
-					->max('referral_voucher_number');
+											->where('warehouse_document_type_id', $sale['warehouse_document_type_id'])
+											->where('referral_serie_number', $referral_serie_number)
+											->max('referral_voucher_number');
 
 				if ( $sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 6 || $sale['warehouse_document_type_id'] == 8 ) {
 					$sale_model->referral_serie_number = $sale['referral_serie_number'];
@@ -510,11 +533,11 @@ class LiquidacionGlpController extends Controller
 
 			}
 
-			$sale_model->scop_number = $warehouse_movement->scop_number;
-			$sale_model->license_plate = $warehouse_movement->license_plate;
+			$sale_model->scop_number = $sale['scop_number'];
 
 			$sale_value = 0;
 			$igv = 0;
+
 			foreach ($sale['details'] as $detail) {
 				if ( $detail['igv'] == 1 ) {
 					$sale_value += round($detail['sale_value'] / $igv_percentage, 4);
@@ -564,7 +587,52 @@ class LiquidacionGlpController extends Controller
 			// }
 
 			foreach ($sale['details'] as $index => $detail) {
-				$article = Article::find($detail['article_id'], ['convertion']);
+				$article = Article::find($detail['article_id']);
+
+				$article_galon = Article::where('warehouse_type_id', $model['warehouse_type_id'])
+										->where('code', 3)
+										->first();
+
+				$factor = 0.533 * 3.785412;
+
+				if ($article->code != 3) {
+					$article->stock_good -= $detail['quantity'];
+					$article->save();
+
+					$article_galon->stock_good -= ($detail['quantity'] / $factor);
+					$article_galon->save();
+				} else {
+					$article_galon->stock_good -= $detail['quantity'];
+					$article_galon->save();
+
+					$article_granel = Article::where('warehouse_type_id', $model['warehouse_type_id'])
+											->where('code', 1)
+											->first();
+
+					$article_envasado = Article::where('warehouse_type_id', $model['warehouse_type_id'])
+											->where('code', 2)
+											->first();
+
+					$convertion = $detail['quantity'] * $factor;
+
+					if ($article_granel->stock_good != 0) {
+						if ($article_granel->stock_good < $convertion) {
+							$difference = $convertion - $article_granel->stock_good;
+
+							$article_granel->stock_good = 0;
+							$article_granel->save();
+
+							$article_envasado->stock_good -= $difference;
+							$article_envasado->save();
+						} else {
+							$article_granel->stock_good -= $convertion;
+							$article_granel->save();
+						};
+					} else {
+						$article_envasado->stock_good -= $convertion;
+						$article_envasado->save();
+					};
+				};
 
 				$sale_detail = new SaleDetail();
 				$sale_detail->sale_id = $sale_model->id;
@@ -585,8 +653,6 @@ class LiquidacionGlpController extends Controller
 				$sale_detail->created_at_user = Auth::user()->user;
 				$sale_detail->updated_at_user = Auth::user()->user;
 				$sale_detail->save();
-
-				
 			}
 
 			if ( array_key_exists('liquidations', $sale) ) {
@@ -649,16 +715,6 @@ class LiquidacionGlpController extends Controller
 				}
 			}
 		}
-
-		$warehouse_movement->stock_pend =$warehouse_movement->stock_pend-$detail['quantity'];
-		$warehouse_movement->save();
-
-		if ($warehouse_movement->stock_pend == 0 || $warehouse_movement->stock_pend < 0 ){
-			$warehouse_movement->state = 1;
-			$warehouse_movement->save();
-		}
-
-		
 
 		return request()->all();
 	}

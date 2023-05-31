@@ -16,8 +16,9 @@
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label class="form-control-label">Artículo:</label>
-                                        <select class="form-control kt-select2" name="article" id="article" v-model="model.article_id" @focus="$parent.clearErrorMsg($event)">
-                                            <option disabled value="">Seleccionar</option>
+                                        <input type="tel" class="form-control" name="article" id="article" v-model="model.article_name" @focus="$parent.clearErrorMsg($event)" readonly>
+                                        <!-- <select class="form-control kt-select2" name="article" id="article" v-model="model.article_id" @focus="$parent.clearErrorMsg($event)">
+                                            <option disabled value="">seleccionar</option>
                                             <option 
 												v-for="article in filterArticles"
 												:value="article.id"
@@ -25,7 +26,7 @@
 												>
 												{{ article.full_name }}
 											</option>
-                                        </select>
+                                        </select> -->
                                         <div id="article-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -43,14 +44,14 @@
                                         <div id="quantity_2-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                 <div class="col-lg-3">
+                                <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Cantidad: (Peso Bruto: {{ Number(stock) }})</label>
                                         <input type="tel" class="form-control" name="quantity_3" id="quantity_3" placeholder="0" v-model="model.quantity_3" @focus="$parent.clearErrorMsg($event)">
                                         <div id="quantity_3-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                               
+
                             </div>
                         </div>
                     </div>
@@ -76,16 +77,20 @@
             url_get_article: {
                 type: String,
                 default: ''
+            },
+            url_get_article_receiver: {
+                type: String,
+                default: ''
             }
         },
         data() {
             return {
                 model: {
                     article_id: '',
+                    article_name: '',
                     quantity: '',
                     quantity_2: '',
                     quantity_3: '',
-              
                 },
                 articles: [],
                 article_list: [],
@@ -164,6 +169,8 @@
         created() {
             EventBus.$on('stock-glp-register-modal', function(articles, movement_class_id, movement_type_id) {
                 this.articles = articles;
+                this.model.article_id = articles[0].id;
+                this.model.article_name = articles[0].name;
                 this.movement_class_id = movement_class_id;
                 this.movement_type_id = movement_type_id;
                 $('#stock-glp-register-modal').modal('show');
@@ -217,7 +224,7 @@
             }.bind(this));
         },
         mounted() {
-            this.newSelect2();
+            // this.newSelect2();
 
             $('#stock-glp-register-modal').on('hide.bs.modal', function(e) {
                 this.model.article_id = '';
@@ -280,28 +287,22 @@
                 });
             },
             sendForm: function() {
-                // axios.post(this.url_get_article, {
-                //     model: model,
-                //     igv_percentage: igv_percentage,
-                //     perception_percentage: perception_percentage,
-                //     currency: this.currency.id,
-                //     item_number: this.article_list.length,
-                // }).then(response => {
-                //     console.log(response.data);
-                //     this.article_list.push(response.data);
-                //     this.datatable.destroy();
-                //     this.fillTableX();
-                //     EventBus.$emit('loading', false);
-                //     EventBus.$emit('stock_register_modal_hide');
-                //     EventBus.$emit('add_article_id', response.data.id);
-                // }).catch(error => {
-                //     console.log(error);
-                //     console.log(error.response);
-                // });
-
-				document.getElementById('add_article_2').disabled = true;
-
-                EventBus.$emit('sendForm', this.model);
+                axios.post(this.url_get_article_receiver, {
+                    warehouse_type_id: this.$store.state.warehouse_type_id_receiver,
+                    article_id: this.model.article_id,
+                }).then(response => {
+                    document.getElementById('add_article_2').disabled = true;
+                    EventBus.$emit('sendForm', this.model);
+                }).catch(error => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Producto no encontrado en almacen receptor',
+                        type: "error",
+                        heightAuto: false,
+                    });
+                    console.log(error);
+                    console.log(error.response);
+                });
             }
         }
     };

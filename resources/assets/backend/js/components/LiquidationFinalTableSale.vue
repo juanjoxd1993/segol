@@ -44,7 +44,7 @@
         },
         created() {},
         mounted() {
-            EventBus.$on('show_table', () => {
+            EventBus.$on('show_table', (response) => {
                 this.show_table = true;
                 this.flag_add = true;
 

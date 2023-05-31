@@ -45,6 +45,23 @@
                                         <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Fecha de Factura:</label>
+                                        <datetime
+                                            v-model="sale.sale_date"
+                                            placeholder="Selecciona una Fecha"
+                                            :format="'dd-LL-yyyy'"
+                                            input-id="final_effective_date"
+                                            name="final_effective_date"
+                                            value-zone="America/Lima"
+											zone="America/Lima"
+                                            class="form-control"
+                                            @focus="$parent.clearErrorMsg($event)">
+                                        </datetime>
+                                        <div id="sale_date-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
                                 <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id == 4 || this.sale.warehouse_document_type_id == 6 || this.sale.warehouse_document_type_id == 8">
                                     <div class="form-group">
                                         <label class="form-control-label">Número de Referencia:</label>
@@ -98,7 +115,7 @@
                                         <label class="form-control-label">Artículo:</label>
                                         <select class="form-control" name="article_id" id="article_id" v-model="model.article_id" @change="getArticlePrice()" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
-                                            <option v-for="article in filterArticles" :value="article.article_id" v-bind:key="article.article_id">{{ article.article_name }}</option>
+                                            <option v-for="article in filterArticles" :value="article.id" v-bind:key="article.id">{{ article.name }}</option>
                                         </select>
                                         <div id="article_id-error" class="error invalid-feedback"></div>
                                     </div>
@@ -184,6 +201,10 @@
 
 <script>
     import EventBus from '../event-bus';
+    import Datetime from 'vue-datetime';
+    // You need a specific loader for CSS files
+    import 'vue-datetime/dist/vue-datetime.css';
+
     export default {
         props: {
             warehouse_document_types: {
@@ -255,6 +276,7 @@
             this.newSelect2();
 
             EventBus.$on('create_modal', function() {
+                this.filterArticles = this.$store.state.articles;
                 let vm = this;
 
                 this.button_text = 'Crear';
@@ -331,10 +353,7 @@
 			// },
 			'sale.warehouse_document_type_id': function(val) {
 
-                const warehouse_type_id = this.$store.state.warehouse_type_id;
-                console.log(warehouse_type_id);
-
-                const data_filter = this.$store.state.sale_series.filter(item => item.warehouse_document_type_id === val && item.warehouse_type_id == warehouse_type_id)[0];
+                const data_filter = this.$store.state.sale_series.filter(item => item.warehouse_document_type_id === val)[0];
 
                 this.sale.sale_serie_id = data_filter.id;
                 this.sale.referral_serie_number = data_filter.num_serie;
@@ -353,7 +372,7 @@
             setDetails() {
                 let articles = this.$store.state.articles;
                 let sale_article_ids = this.sale.details.map(element => element.article_id);
-                this.filterArticles = articles.filter(element => !sale_article_ids.includes(element.article_id));
+                // this.filterArticles = articles.filter(element => !sale_article_ids.includes(element.article_id));
 
                 return this.sale.details;
             },
@@ -391,7 +410,7 @@
                 }
             },
             addArticle: function() {
-                let article = this.$store.state.articles.find(element => element.article_id == this.model.article_id)
+                let article = this.$store.state.articles.find(element => element.id == this.model.article_id)
 
                 if ( this.sale.client_id == '' ) {
                     Swal.fire({

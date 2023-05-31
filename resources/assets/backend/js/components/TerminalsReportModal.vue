@@ -15,6 +15,7 @@
                             <div class="row">
                                 <input type="hidden" name="id" id="id" v-model="model.id">
                                 <input type="hidden" name="account_id" id="account_id" v-model="model.account_id">
+
                                 <div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Numero de Pedido:</label>
@@ -22,6 +23,7 @@
 										<div id="referral_guide_series-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label"> Guía de Remisión:</label>
@@ -29,6 +31,7 @@
 										<div id="referral_guide_number-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
                                 <div class="col-lg-4">    
 									<div class="form-group">
 										<label class="form-control-label">Fecha de Emisión:</label>
@@ -47,6 +50,7 @@
 										<div id="date_emi-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Serie de Factura:</label>
@@ -54,6 +58,7 @@
 										<div id="referral_serie_number-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Número de Factura:</label>
@@ -61,6 +66,7 @@
 										<div id="referral_voucher_number-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Número de SCOP:</label>
@@ -68,6 +74,7 @@
 										<div id="scop_number-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Placa:</label>
@@ -75,7 +82,6 @@
 										<div id="license_plate-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
-								
 
                                 <div class="col-lg-4">
 									<div class="form-group">
@@ -111,6 +117,15 @@
 										<div id="date-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Cantidad:</label>
+                                        <input type="text" class="form-control" name="quantity" id="quantity" v-model="model.quantity" @focus="$parent.clearErrorMsg($event)">
+                                        <div id="price_mes-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Cambiar tipo de Movimiento:</label>
@@ -120,6 +135,7 @@
 										</label>
 									</div>
 								</div>
+
                             </div>
                         </div>
                     </div>
@@ -168,6 +184,7 @@
                     min_datetime: '',
                     max_datetime: '',
                     typing_error: '',
+                    quantity: 0,
                 },
                 button_text: ''
             }
@@ -196,6 +213,7 @@
 					min_datetime: '',
                     max_datetime: '',
 					typing_error: '',
+                    quantity: 0,
                 };
 
                 $('#modal').modal('show');
@@ -242,8 +260,9 @@
 						date: '',
                         date_emi: '',
 						min_datetime: '',
-                    	max_datetime: '',
+                        max_datetime: '',
 						typing_error: '',
+                        quantity: 0,
 					};
 
                     EventBus.$emit('refresh_table');

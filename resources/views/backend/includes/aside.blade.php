@@ -870,13 +870,6 @@
 								</span>
 							</li>
 
-
-
-
-
-
-
-
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.administration.cobranzas_detail_total' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.administration.cobranzas_detail_total') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -886,9 +879,6 @@
 								</a>
 							</li>
 
-
-
-							
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.liquidations_detail_total' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.liquidations_detail_total') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -898,12 +888,14 @@
 								</a>
 							</li>
 
-
-
-
-
-							
-						    	
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.finanzas_detail_total' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.finanzas_detail_total') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte de Cierre de Caja</span>
+								</a>
+							</li>
 
 					  </ul>
 					</div>
