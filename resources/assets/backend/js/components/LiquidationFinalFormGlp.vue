@@ -34,24 +34,6 @@
                             <div id="warehouse_Type-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Nº de Parte:</label>
-                            <select class="form-control" name="warehouse_movement_id" id="warehouse_movement_id" v-model="model.warehouse_movement_id" @focus="$parent.clearErrorMsg($event)" @change="onChange">
-                                <option value="">Seleccionar</option>
-                                <!-- Algunos scop_number eran null -->
-                                <!-- <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id" v-bind:key="warehouse_movement.id">#{{ warehouse_movement.movement_number }} | {{ warehouse_movement.referral_guide_series }}-{{ warehouse_movement.referral_guide_number }} | {{ warehouse_movement.stock_pend}} | {{ warehouse_movement.created_at }}</option> -->
-                                <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id" v-bind:key="warehouse_movement.id">#{{ warehouse_movement.movement_number }} | {{ warehouse_movement.scop_number }} | {{ warehouse_movement.stock_pend}} | {{ warehouse_movement.created_at }}</option>
-                            </select>
-                            <div id="warehouse_movement_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Tracto:</label>
-                            <input type="text" class="form-control" name="referral_tracto" id="referral_tracto" v-model="license_plate_2" @focus="$parent.clearErrorMsg($event)">
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="kt-portlet__foot">
@@ -119,31 +101,31 @@
             }.bind(this));
         },
         watch: {
-            'model.warehouse_type_id': function(val) {
-                if ( val != '' ) {
-                    EventBus.$emit('loading', true);
+            // 'model.warehouse_type_id': function(val) {
+            //     if ( val != '' ) {
+            //         EventBus.$emit('loading', true);
 
-                    this.$store.commit('setWarehouseTypeId', this.model.warehouse_type_id);
+            //         this.$store.commit('setWarehouseTypeId', this.model.warehouse_type_id);
 
-                    axios.post(this.url_get_warehouse_movements, {
-                        company_id: this.model.company_id,
-                        warehouse_type_id: this.model.warehouse_type_id,
-                    }).then(response => {
-                        // console.log(response);
-                        this.model.warehouse_movement_id = '';
-                        this.warehouse_movements = response.data;
+            //         axios.post(this.url_get_warehouse_movements, {
+            //             company_id: this.model.company_id,
+            //             warehouse_type_id: this.model.warehouse_type_id,
+            //         }).then(response => {
+            //             // console.log(response);
+            //             this.model.warehouse_movement_id = '';
+            //             this.warehouse_movements = response.data;
 
-                        EventBus.$emit('loading', false);
-                    }).catch(error => {
-                        console.log(error);
-                        console.log(error.response)
-                    });
-                } else {
-                    this.$store.commit('setWarehouseTypeId', 0);
-                    this.model.warehouse_movement_id = '';
-                    this.warehouse_movements = '';
-                }
-            }
+            //             EventBus.$emit('loading', false);
+            //         }).catch(error => {
+            //             console.log(error);
+            //             console.log(error.response)
+            //         });
+            //     } else {
+            //         this.$store.commit('setWarehouseTypeId', 0);
+            //         this.model.warehouse_movement_id = '';
+            //         this.warehouse_movements = '';
+            //     }
+            // }
         },
         computed: {
 

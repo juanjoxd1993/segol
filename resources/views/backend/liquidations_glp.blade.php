@@ -10,7 +10,7 @@
 		:url = "'{{ route('dashboard.operations.voucher.liquidations_glp.validate_form') }}'"
 		:url_get_warehouse_movements = "'{{ route('dashboard.operations.voucher.liquidations_glp.get_warehouse_movements') }}'"
 	></liquidation-final-form-glp>
-	
+
 	<liquidation-final-table-glp
 		:url = "'{{ route('dashboard.voucher.liquidations_glp.list') }}'"
 		:url_store = "'{{ route('dashboard.operations.voucher.liquidations_glp.store') }}'"
