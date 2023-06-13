@@ -239,7 +239,7 @@ class LiquidacionGlpController extends Controller
 			$article_id = request('article_id');
 			$client_id = request('client_id');
 			$warehouse_movement_id = request('warehouse_movement_id');
-			$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'created_at']);
+	    //	$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'created_at']);
 			$today = Carbon::now()->startOfDay();
 			$current_date = date('Y-m-d', strtotime($today));
 
@@ -351,6 +351,9 @@ class LiquidacionGlpController extends Controller
 	}
 
 	public function store() {
+
+		$today = Carbon::now()->startOfDay();
+		$current_date = date('Y-m-d', strtotime($today));
 		$model = request('model');
 		$sales = request('sales');
 
@@ -443,8 +446,8 @@ class LiquidacionGlpController extends Controller
 				$voucher->voucher_number = ++$last_voucher_number;
 				$voucher->referral_guide_series = ( $sale['referral_guide_series'] ? $sale['referral_guide_series'] : $warehouse_movement->referral_guide_series );
 				$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
-				$voucher->issue_date = date('Y-m-d', strtotime($warehouse_movement->created_at));
-				$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->created_at));
+				$voucher->issue_date = $current_date;
+			//	$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->created_at));
 				$voucher->expiry_date = $expiry_date;
 				$voucher->currency_id = $sale['currency_id'];
 				$voucher->payment_id = $sale['payment_id'];
