@@ -701,15 +701,6 @@ class LiquidacionGlpController extends Controller
 							$sale_model->payment_method_credit = 3;
 							$sale_model->save();
 
-							DB::table('credits')->insert([
-                                'sale_id' => $sale_model->id,
-                                'company_id' => $model['company_id'],
-                                'client_id' => $sale['client_id'],
-                                'currency_id' =>  $liquidation['currency'],
-                                'amount' => round($sale_model['pre_balance'], 4),
-                           //     'created_at_user' => auth()->user()->name,
-                           //     'created_at' => Carbon::now(),
-                            ]);
 						}
 
 						$client->credit_balance -= $liquidation['amount'];
