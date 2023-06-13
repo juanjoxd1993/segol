@@ -707,8 +707,8 @@ class LiquidacionGlpController extends Controller
                                 'client_id' => $sale['client_id'],
                                 'currency_id' =>  $liquidation['currency'],
                                 'amount' => round($sale_model['pre_balance'], 4),
-                                'created_at_user' => auth()->user()->name,
-                                'created_at' => Carbon::now(),
+                           //     'created_at_user' => auth()->user()->name,
+                           //     'created_at' => Carbon::now(),
                             ]);
 						}
 
