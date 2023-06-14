@@ -226,6 +226,7 @@ class LiquidacionGlpController extends Controller
 			$obj = new stdClass();
 			$obj->id = $glp_serie->id;
 			$obj->num_serie = $glp_serie->num_serie;
+			$obj->last_correlative = 0;
 			$obj->correlative = $glp_serie->correlative + 1;
 			$obj->warehouse_type_id = $glp_serie->warehouse_type_id;
 			$obj->warehouse_document_type_id = $glp_serie->warehouse_document_type_id;
@@ -367,6 +368,11 @@ class LiquidacionGlpController extends Controller
 		foreach ($sales as $sale) {
 			$scop = $sale['scop_number'];
 
+			GlpSeries::where('id', $sale['sale_serie_id'])
+					->update(
+						['correlative' => $sale['referral_serie_number']]
+					);
+
 			$client = Client::find(
 				$sale['client_id'],
 				[
@@ -446,7 +452,7 @@ class LiquidacionGlpController extends Controller
 				$voucher->voucher_number = ++$last_voucher_number;
 				$voucher->referral_guide_series = ( $sale['referral_guide_series'] ? $sale['referral_guide_series'] : $warehouse_movement->referral_guide_series );
 				$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
-				$voucher->issue_date = $current_date;
+				$voucher->issue_date = $sale_date;
 			//	$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->created_at));
 				$voucher->expiry_date = $expiry_date;
 				$voucher->currency_id = $sale['currency_id'];

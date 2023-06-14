@@ -557,6 +557,14 @@
                     });
                 } else {
 					EventBus.$emit('loading', true);
+                    
+
+                    this.$store.state.sale_series.map(item => {
+                        if (item.id === this.sale.sale_serie_id) {
+                            item.last_correlative = item.correlative;
+                            item.correlative = item.correlative + 1;
+                        };
+                    });
 
 					axios.post(this.url_verify_document_type, {
 						'model': this.$store.state.model,
