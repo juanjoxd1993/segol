@@ -40,7 +40,7 @@
                                 </div>
                                 <div class="col-lg-3">
                                     <div class="form-group">
-                                        <label class="form-control-label">Serie de Referencia:</label>
+                                        <label class="form-control-label">Correlativo:</label>
                                         <input type="text" readonly class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="sale.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
                                         <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                                     </div>
