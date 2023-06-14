@@ -355,10 +355,6 @@
 
                 const data_filter = this.$store.state.sale_series.filter(item => item.warehouse_document_type_id === val)[0];
 
-                if (data_filter.last_correlative > 0) {
-                    data_filter.correlative = data_filter.correlative + 1;
-                };
-
                 this.sale.sale_serie_id = data_filter.id;
                 this.sale.referral_serie_number = data_filter.num_serie;
                 this.sale.referral_voucher_number = data_filter.correlative;
