@@ -732,4 +732,32 @@ class LiquidacionGlpController extends Controller
 
 		return response()->json([], 200);
 	}
+
+	public function getGuideNumber() {
+		$guide_serie = request('serie_number');
+		$guide_number = request('guide_number');
+
+		$count = Voucher::where('referral_guide_series', $guide_serie)
+							->where('referral_guide_number', $guide_number)
+							->count();
+
+		if ($count > 0) {
+			return response()->json([], 422);
+		};
+
+		return response()->json([], 200);
+	}
+
+	public function getScopNumber() {
+		$scop_number = request('scop_number');
+
+		$count = Voucher::where('scop', $scop_number)
+							->count();
+
+		if ($count > 0) {
+			return response()->json([], 422);
+		};
+
+		return response()->json([], 200);
+	}
 }

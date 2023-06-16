@@ -72,7 +72,9 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-glp/obtener-cuentas-banco', 'LiquidacionGlpController@getBankAccounts')->name('dashboard.operations.voucher.liquidations_glp.get_bank_accounts');
 	Route::post('/facturacion/liquidaciones-glp/verificar-documento', 'LiquidacionGlpController@verifyDocumentType')->name('dashboard.operations.voucher.liquidations_glp.verify_document_type');
 	Route::post('/facturacion/liquidaciones-glp/guardar', 'LiquidacionGlpController@store')->name('dashboard.operations.voucher.liquidations_glp.store');
-	
+	Route::post('/facturacion/liquidaciones-glp/get-guide-number', 'LiquidacionGlpController@getGuideNumber')->name('dashboard.operations.voucher.liquidations_glp.get_guide_number');
+	Route::post('/facturacion/liquidaciones-glp/get-scop-number', 'LiquidacionGlpController@getScopNumber')->name('dashboard.operations.voucher.liquidations_glp.get_scop_number');
+
 	/** Reportes > Cuentas Corrientes Clientes */
 	Route::get('/reporte/cuentas-corrientes-clientes', 'CheckingAccountReportController@index')->name('dashboard.report.checking_account_report');
 	Route::post('/reporte/cuentas-corrientes-clientes/obtener-clientes', 'CheckingAccountReportController@getClients')->name('dashboard.report.checking_account_report.get_clients');

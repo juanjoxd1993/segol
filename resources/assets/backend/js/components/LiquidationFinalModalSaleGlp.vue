@@ -79,7 +79,7 @@
                                 <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id == 5 || this.sale.warehouse_document_type_id == 7 || this.sale.warehouse_document_type_id == 9 || this.sale.warehouse_document_type_id == 17">
                                     <div class="form-group">
                                         <label class="form-control-label">Número de Guía:</label>
-                                        <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)">
+                                        <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageNumberGuide">
                                         <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -96,8 +96,8 @@
 								<div class="col-lg-3" v-if="this.sale.warehouse_document_type_id === 4 || this.sale.warehouse_document_type_id === 5 || this.sale.warehouse_document_type_id === 18">
 									<div class="form-group">
                                         <label class="form-control-label">Nº SCOP:</label>
-                                        <input type="text" class="form-control"  v-model="sale.scop_number" name="scop_number" id="scop_number" @focus="$parent.clearErrorMsg($event)">
-                                        <!-- <div id="scop_number-error" class="error invalid-feedback"></div> -->
+                                        <input type="text" class="form-control"  v-model="sale.scop_number" name="scop_number" id="scop_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageScopNumber">
+                                        <div id="scop_number-error" class="error invalid-feedback"></div>
                                     </div>
 								</div>
                             </div>
@@ -188,7 +188,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success" @click.prevent="liquidationModal()">Liquidar</button>
+                        <button id="liquidar" type="submit" class="btn btn-success" @click.prevent="liquidationModal()">Liquidar</button>
                         <!-- <button type="submit" class="btn btn-success" v-if="sale.payment_id == 2" @click.prevent="addSale()">{{ button_text }}</button> -->
                         <button type="button" class="btn btn-secondary" @click.prevent="closeModal()">Cerrar</button>
                     </div>
@@ -276,7 +276,17 @@
             this.newSelect2();
 
             EventBus.$on('create_modal', function() {
-                this.filterArticles = this.$store.state.articles;
+                const envasado = this.$store.state.articles.filter((item) => item.code === "2");
+                const granelKgs = this.$store.state.articles.filter((item) => item.code === "1");
+
+                this.filterArticles = this.$store.state.articles.filter((item) => item.code != "2");
+
+                this.filterArticles.map((item) => {
+                    if (item.code === "1") {
+                        item.stock_good = granelKgs.stock_good + envasado.stock_good;
+                    };
+                });
+
                 let vm = this;
 
                 this.button_text = 'Crear';
@@ -895,6 +905,66 @@
                     vm.model.igv_perception = '';
                     vm.model.total_perception = '';
                 });
+            },
+            manageNumberGuide() {
+                if (
+                    this.sale.warehouse_document_type_id == 5 ||
+                    this.sale.warehouse_document_type_id == 7 ||
+                    this.sale.warehouse_document_type_id == 9 ||
+                    this.sale.warehouse_document_type_id == 17
+                ) {
+                    EventBus.$emit('loading', true);
+                    $('#liquidar').prop('disabled', true);
+                    $('#referral_guide_number-error').hide();
+                    $('#referral_guide_number-error').text('');
+
+                    axios.post('/facturacion/liquidaciones-glp/get-guide-number', {
+                        params: {
+                            serie_number: this.sale.referral_guide_series,
+                            guide_number: this.sale.referral_guide_number,
+                        }
+                    }).then(response => {
+                        console.log('bien');
+                        EventBus.$emit('loading', false);
+                        $('#liquidar').prop('disabled', false);
+                        $('#referral_guide_number-error').text('');
+                        $('#referral_guide_number-error').hide();
+                    }).catch(error => {
+                        EventBus.$emit('loading', false);
+                        $('#liquidar').prop('disabled', true);
+                        $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                        $('#referral_guide_number-error').show();
+                    });
+                }
+            },
+            manageScopNumber() {
+                if (
+                    this.sale.warehouse_document_type_id === 4 ||
+                    this.sale.warehouse_document_type_id === 5 ||
+                    this.sale.warehouse_document_type_id === 18
+                ) {
+                    EventBus.$emit('loading', true);
+                    $('#liquidar').prop('disabled', true);
+                    $('#scop_number-error').hide();
+                    $('#scop_number-error').text('');
+
+                    axios.post('/facturacion/liquidaciones-glp/get-scop-number', {
+                        params: {
+                            scop_number: this.sale.scop_number,
+                        }
+                    }).then(response => {
+                        console.log('bien');
+                        EventBus.$emit('loading', false);
+                        $('#liquidar').prop('disabled', false);
+                        $('#scop_number-error').text('');
+                        $('#scop_number-error').hide();
+                    }).catch(error => {
+                        EventBus.$emit('loading', false);
+                        $('#liquidar').prop('disabled', true);
+                        $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                        $('#scop_number-error').show();
+                    });
+                }
             },
         }
     };
