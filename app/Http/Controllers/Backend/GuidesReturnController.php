@@ -536,12 +536,12 @@ class GuidesReturnController extends Controller
 
         $number_page = 1;
 
-        $control_serie = ControlSerie::select('num_serie', 'correlative')
-                                    ->where('num_serie', $warehouse_movement->referral_guide_series)
-                                    ->first();
+        // $control_serie = ControlSerie::select('num_serie', 'correlative')
+        //                             ->where('num_serie', $warehouse_movement->referral_guide_series)
+        //                             ->first();
 
-        $control_serie_number = $control_serie->num_serie;
-        $control_serie_correlative = $control_serie->correlative;
+        // $control_serie_number = $control_serie->num_serie;
+        // $control_serie_correlative = $control_serie->correlative;
 
         $name_full_data = $warehouse_movement->account_name;
 
