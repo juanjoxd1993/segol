@@ -16,6 +16,7 @@
                         <div class="modal-body">
                             <div class="kt-portlet__body">
                                 <div class="row">
+
                                     <div class="col-lg-3">
                                         <div class="form-group">
                                             <label class="form-control-label">Cliente:</label>
@@ -25,6 +26,7 @@
                                             <div id="client_id-error" class="error invalid-feedback"></div>
                                         </div>
                                     </div>
+
                                     <div class="col-lg-3">
                                         <div class="form-group">
                                             <label class="form-control-label">Articulo:</label>
@@ -35,12 +37,21 @@
                                             <div id="warehouse_movement_id-error" class="error invalid-feedback"></div>
                                         </div>
                                     </div>
+
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="form-control-label">Monto a Liquidar:</label>
                                             <input type="number" class="form-control" v-model="liquidation">
                                         </div>
                                     </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="form-control-label">Stock Pendiente:</label>
+                                            <input type="number" class="form-control" v-model="liquidar" readonly>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -107,6 +118,7 @@
                 article_name: '',
                 show_table: false,
                 liquidation: 0,
+                liquidar: 0,
                 data: [],
                 articles: [],
                 datatable: undefined,
@@ -178,11 +190,15 @@
         watch: {
             article_id(value, last) {
                 const article = this.articles.find(article => article.article_id === value);
+                const article_for_liquidations = this.$store.state.articles_for_liquidations.find(art => art.article_id === value);
+                const liquidar = article_for_liquidations.rest_liquidation ? article_for_liquidations.rest_liquidation : 0;
 
                 if (article) {
                     this.article_name = article.article_name;
+                    this.liquidar = liquidar;
                 } else {
                     this.article_name = '';
+                    this.liquidar = 0;
                 };
             }
         },
