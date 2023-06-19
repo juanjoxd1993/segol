@@ -19,7 +19,7 @@
                 </div>
             </div>
 
-            <div class="kt-portlet__body kt-portlet__body--fit">
+            <div class="kt-portlet__body kt-portlet__body--fit" @click="manageActions">
                 <!--begin: Datatable -->
                 <div class="kt-datatable"></div>
                 <!--end: Datatable -->
@@ -38,7 +38,14 @@
                 type: String,
                 default: ''
             },
-
+            url_detail: {
+                type: String,
+                default: ''
+            },
+            url_delete: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -73,9 +80,9 @@
 
             EventBus.$on('refresh_table', function() {
                 if ( this.facturations_sales_report_datatable != undefined ) {
-                  this.facturations_sales_report_datatable.setDataSourceParam('model', this.model);
-                   this.facturations_sales_report_datatable.load();
-               }
+                    this.facturations_sales_report_datatable.setDataSourceParam('model', this.model);
+                    this.facturations_sales_report_datatable.load();
+                }
             }.bind(this));
         },
         watch: {
@@ -108,16 +115,17 @@
                                     if (typeof raw.data !== 'undefined') {
                                         dataSet = raw.data;
                                         }
-                                dataSet.map(element => {
-                                element.total = accounting.toFixed(element.total, 2);
-                                });
 
-                                   return dataSet;
+                                    dataSet.map(element => {
+                                        element.total = accounting.toFixed(element.total, 2);
+                                    });
+
+                                    return dataSet;
 								
                                 }
 
                             },
- 
+
                         },
                         pageSize: 10,
                     },
@@ -312,7 +320,7 @@
                                 actions += '<i class="la la-edit"></i>';
                                 actions += '</a>';
                                 actions += '</a>';
-                                actions += `<a style="cursor:pointer; color:#dc3545" class="btn btn-sm btn-icon btn-icon-md" title="Eliminar">`;
+                                actions += `<a style="cursor:pointer; color:#dc3545" class="delete btn btn-sm btn-icon btn-icon-md" title="Eliminar">`;
                                     actions += '<i class="la la-trash-o"></i>';
                                 actions += '</a>';
                                 actions += '</div>';
@@ -352,6 +360,65 @@
                     console.log(error.response);
                     EventBus.$emit('loading', false);
                 });
+            },
+            manageActions: function(event) {
+                if ( $(event.target).hasClass('delete') ) {
+                    event.preventDefault();
+                    let id = $(event.target).parents('tr').find('td[data-field="id"] span').html();
+
+                    Swal.fire({
+                        title: '¡Cuidado!',
+                        text: '¿Seguro que desea eliminar la factura?',
+                        type: "warning",
+                        heightAuto: false,
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí',
+                        cancelButtonText: 'No'
+                    }).then(result => {
+                        EventBus.$emit('loading', true);
+
+                        if ( result.value ) {
+                            axios.post(this.url_delete, {
+                                id: id,
+                            }).then(response => {
+								// this.datatable.load();
+                                EventBus.$emit('loading', false);
+                                Swal.fire({
+                                    title: '¡Ok!',
+                                    text: 'Se ha eliminado correctamente',
+                                    type: "success",
+                                    heightAuto: false,
+                                });
+                            }).catch(error => {
+                                EventBus.$emit('loading', false);
+                                Swal.fire({
+                                    title: '¡Error!',
+                                    text: 'Ha ocurrido un error',
+                                    type: "error",
+                                    heightAuto: false,
+                                });
+                                console.log(error);
+                                console.log(error.response);
+                            });
+                        } else if ( result.dismiss == Swal.DismissReason.cancel ) {
+                            EventBus.$emit('loading', false);
+                        }
+                    });
+                } else if ( $(event.target).hasClass('edit') ) {
+                    event.preventDefault();
+                    let id = $(event.target).parents('tr').find('td[data-field="id"] span').html();
+                    EventBus.$emit('loading', true);
+
+                    axios.post(this.url_detail, {
+                        id: id,
+                    }).then(response => {
+                        // console.log(response.data);
+                        EventBus.$emit('edit_modal', response.data);
+                    }).catch(error => {
+                        console.log(error);
+                        console.log(error.response);
+                    });
+                }
             },
         }
     };

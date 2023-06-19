@@ -3,10 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Voucher extends Model
 {
 	protected $fillable = ['ose'];
+
+	use SoftDeletes;
+	protected $dates = ['deleted_at'];
 	
 	public function company() {
 		return $this->belongsTo(Company::class);

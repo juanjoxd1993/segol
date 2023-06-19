@@ -121,6 +121,9 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/facturas-emitidas/validar-formulario', 'FacturationSalesReportController@validateForm')->name('dashboard.report.facturations_sales.validate_form');
 	Route::post('/reporte/facturas-emitidas/obtener-clientes', 'FacturationSalesReportController@getClients')->name('dashboard.report.facturations_sales.get_clients');
 	Route::post('/reporte/facturas-emitidas/listar', 'FacturationSalesReportController@list')->name('dashboard.report.facturations_sales.list');
+	Route::post('/reporte/facturas-emitidas/obtener-voucher', 'FacturationSalesReportController@getVoucher')->name('dashboard.report.facturations_sales.get_voucher');
+	Route::post('/reporte/facturas-emitidas/actualizar-voucher', 'FacturationSalesReportController@updateVoucher')->name('dashboard.report.facturations_sales.update_voucher');
+	Route::post('/reporte/facturas-emitidas/eliminar-voucher', 'FacturationSalesReportController@deleteVoucher')->name('dashboard.report.facturations_sales.delete_voucher');
 
 	/** Reportes > Boletas emitidas */
 	Route::get('/reporte/boletas-emitidas', 'FacturationBoletasReportController@index')->name('dashboard.report.facturation_boletas');
