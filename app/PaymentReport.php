@@ -9,5 +9,4 @@ class PaymentReport extends Model
 {
     use SoftDeletes;
     protected $dates = ['deleted_at'];
-   
 }
