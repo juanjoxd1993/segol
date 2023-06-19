@@ -59,10 +59,10 @@
             return {
                 warehouse_type_index: null,
                 array_warehouse_types_ids: [
-                    [2, 3, 4, 5],
-                    [3, 4],
+                    [2, 3, 4],
+                    [4],
                     [2],
-                    [5]
+                    [3]
                 ],
                 warehouse_types_array: []
             }

@@ -8,9 +8,9 @@ use App\WarehouseType;
 use App\Article;
 
 class ReportsEnvasesGeneralController extends Controller {
-    public function index() {
+  public function index() {
 		$plantas = WarehouseType::select('id', 'name')
-			->where('type', 5)
+			->where('type', 3)
 			->get();
 
 		return view('backend.reports_envases_general')->with(compact('plantas'));
@@ -25,7 +25,7 @@ class ReportsEnvasesGeneralController extends Controller {
 				->get();
 		} else {
 			$warehouse_type_ids = WarehouseType::select('id')
-				->where('type', 5)
+				->where('type', 3)
 				->get();
 		}
 
