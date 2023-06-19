@@ -583,6 +583,8 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/compras-registro/actualizar', 'StockSalesRegisterReportController@update')->name('dashboard.report.stock_sales_register.update');
 	Route::post('/controlglp/compras-registro/get-warehouse-type-two', 'StockSalesRegisterReportController@getWarehouseTypeTwo')->name('dashboard.report.stock_sales_register.get_warehouse_type_two');
 	Route::post('/controlglp/compras-registro/get-articles', 'StockSalesRegisterReportController@getArticles')->name('dashboard.report.stock_sales_register.get_articles');
+	Route::post('/controlglp/compras-registro/validate-stock', 'StockSalesRegisterReportController@validateStock')->name('dashboard.report.stock_sales_register.validate_stock');
+	Route::post('/controlglp/compras-registro/delete', 'StockSalesRegisterReportController@delete')->name('dashboard.report.stock_sales_register.delete');
 
 	/** Compras GLP > Edición de Facturas */
 	Route::get('/control-glp/editor', 'GlpFactReportController@index')->name('dashboard.report.glp_fact');

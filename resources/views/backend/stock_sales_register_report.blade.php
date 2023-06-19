@@ -21,6 +21,8 @@
 		<stock-sales-register-report-table
 			:url = "'{{ route('dashboard.report.stock_sales_register.list') }}'"
 			:url_detail = "'{{ route('dashboard.report.stock_sales_register.detail') }}'"
+			:url_validate_stock = "'{{ route('dashboard.report.stock_sales_register.validate_stock') }}'"
+			:url_delete = "'{{ route('dashboard.report.stock_sales_register.delete') }}'"
 		></stock-sales-register-report-table>
 	@endif
 

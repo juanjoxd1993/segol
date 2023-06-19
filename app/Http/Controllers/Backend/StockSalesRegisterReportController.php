@@ -331,4 +331,45 @@ class StockSalesRegisterReportController extends Controller
 		return $articles;
 	}
 
+	public function validateStock() {
+		$id = request('id');
+
+		$element = WarehouseMovement::findOrFail($id);
+
+		$difference = $element->stock_ini - $element->stock_pend;
+
+		if ($difference > 0) {
+			return response()->json([
+				'msg' => 'Existe un abastecimiento de ' . $difference,
+			],400);
+		};
+
+		return response()->json([],200);
+	}
+
+	public function delete() {
+		$id = request('id');
+		$current_date = CarbonImmutable::now()->format('Y-m-d H:i:s');
+
+		$element = WarehouseMovement::findOrFail($id);
+
+		$detail = WarehouseMovementDetail::where('warehouse_movement_id', $element->id)
+																		->first();
+
+		$article = Article::findOrFail($detail->article_code);
+
+		$article->stock_good += $element->stock_pend;
+		$article->save();
+
+		$detail->deleted_at = $current_date;
+		$detail->save();
+
+		$element->deleted_at = $current_date;
+		$element->save();
+
+		return response()->json([
+			'msg' => 'Movimiento eliminado correctamente',
+		],200);
+	}
+
 }
