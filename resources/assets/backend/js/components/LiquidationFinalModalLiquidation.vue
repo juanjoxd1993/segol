@@ -401,12 +401,9 @@
                 // }
 
 				if ( error == 0 ) {
-					let liquidations = JSON.parse(JSON.stringify(this.liquidations));
-					let sale = JSON.parse(JSON.stringify(this.$store.state.sale));
+					let liquidations = this.liquidations;
+					let sale = this.$store.state.sale;
 
-					this.$store.commit('addLiquidations', liquidations);
-					this.$store.commit('addSales');
-					
 					sale.details.forEach(element => {
 						let article_id = element.article_id;
 						let quantity = element.quantity;
@@ -417,7 +414,12 @@
 						});
 					});
 
+					this.$store.commit('addLiquidations', liquidations);
+					this.$store.commit('addSales');
+
 					EventBus.$emit('refresh_table_sale');
+
+                    this.$store.state.article_id = 0;
 
 					this.liquidations = [];
 					this.title_text = '';

@@ -97,10 +97,10 @@
 			articlesState: function() {
 				let articles = this.$store.state.articles;
 				articles.map(element => {
-					element.presale_converted_amount = accounting.toFixed(element.presale_converted_amount, 4);
-					element.sale_converted_amount = accounting.toFixed(element.sale_converted_amount, 4);
-					element.return_converted_amount = accounting.toFixed(element.return_converted_amount, 4);
-					element.new_balance_converted_amount = accounting.toFixed(element.new_balance_converted_amount, 4);
+					element.presale_converted_amount = accounting.toFixed(element.presale_converted_amount, 2);
+					element.sale_converted_amount = accounting.toFixed(element.sale_converted_amount, 2);
+					element.return_converted_amount = accounting.toFixed(element.return_converted_amount, 2);
+					element.new_balance_converted_amount = accounting.toFixed(element.new_balance_converted_amount, 2);
 				});
 				
 				return articles;

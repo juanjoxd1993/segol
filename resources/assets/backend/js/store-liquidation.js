@@ -26,7 +26,7 @@ export default {
 		sale_series: [],
 		warehouse_type_id: 0,
 		articles_filter: [],
-		warehouse_type_id_receiver: 0
+		warehouse_type_id_receiver: 0,
 	},
 	mutations: {
 		addModel(state, model) {
@@ -66,8 +66,14 @@ export default {
 		},
 		changeBalanceValue(state, data) {
 			let article = state.articles.find(element => data.article_id == element.article_id);
-			// article.new_balance_converted_amount = accounting.toFixed(accounting.unformat(article.new_balance_converted_amount) - accounting.unformat(data.quantity), 4);
-			// article.sale_converted_amount = accounting.toFixed(accounting.unformat(article.sale_converted_amount) + accounting.unformat(data.quantity), 4);
+			let article_index = state.articles.findIndex(element => data.article_id == element.article_id);
+
+			if (article) {
+				article.new_balance_converted_amount = accounting.toFixed(accounting.unformat(article.new_balance_converted_amount) - accounting.unformat(data.quantity), 4);
+				article.sale_converted_amount = accounting.toFixed(accounting.unformat(article.sale_converted_amount) + accounting.unformat(data.quantity), 4);
+	
+				state.articles[article_index] = article;
+			}
 		},
 		resetState(state) {
 			state.articles = [];

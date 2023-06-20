@@ -12,15 +12,6 @@
                     <div class="modal-body">
                         <div class="kt-portlet__body">
                             <div class="row">
-                                <!-- <div class="col-lg-3">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Cliente:</label>
-                                        <select class="form-control kt-select2" name="client_id" id="client_id" v-model="sale.client_id" @focus="$parent.clearErrorMsg($event)">
-                                            <option value="">Seleccionar</option>
-                                        </select>
-                                        <div id="client_id-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div> -->
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Cliente:</label>
@@ -100,16 +91,6 @@
                                         <div class="kt-section__title">Artículos</div>
                                     </div>
                                 </div>
-                                <!-- <div class="col-lg-3">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Artículo:</label>
-                                        <select class="form-control" name="article_id" id="article_id" v-model="model.article_id" @change="getArticlePrice()" @focus="$parent.clearErrorMsg($event)">
-                                            <option value="">Seleccionar</option>
-                                            <option v-for="article in filterArticles" :value="article.article_id" v-bind:key="article.article_id">{{ article.article_name }}</option>
-                                        </select>
-                                        <div id="article_id-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div> -->
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Artículo:</label>
@@ -278,6 +259,7 @@
             // this.newSelect2();
 
             EventBus.$on('create_modal', function() {
+                document.getElementById('client_id').disabled = false;
                 this.clients = this.$store.state.clients;
 
                 let vm = this;
@@ -342,18 +324,6 @@
             });
         },
         watch: {
-            // 'sale.warehouse_document_type_id': function(val) {
-			// 	if ( val != 4 && val != 5 ) {
-			// 		console.log(val);
-			// 		this.sale.perception = 0;
-			// 		this.sale.perception_percentage = 0;
-			// 		this.sale.total_perception = this.sale.total;
-			// 		this.sale.details.map(element => {
-			// 			element.igv_perception = '0.0000';
-			// 			element.total_perception = element.sale_value;
-			// 		});
-			// 	}
-			// },
 			'sale.warehouse_document_type_id': function(val) {
                 this.sale_series = [];
 
@@ -381,27 +351,13 @@
                 this.sale.client_name = client.business_name;
                 this.sale.payment_id = client.payment_id;
                 this.sale.credit_limit = client.credit_limit;
-                // if (client) {
-                //     this.sale.client_id = client_id;
-                //     this.sale.document_type_id = client.document_type_id;
-                //     this.sale.client_name = client.business_name;
-                //     this.sale.payment_id = client.payment_id;
-                //     // solo tiene el perception percentage id
-                //     // this.sale.perception_percentage = client.perception_percentage.value;
-                //     this.sale.credit_limit = client.credit_limit;
-                // } else {
-                //     this.sale.client_id = 0;
-                //     this.sale.document_type_id = '';
-                //     this.sale.client_name = '';
-                //     this.sale.payment_id = '';
-                //     this.sale.credit_limit = '';
-                // };
+
                 axios.post(this.url_get_articles_clients,{
                     client_id,
                     warehouse_movement_id
                 }).then(response => {
+                    document.getElementById('client_id').disabled = true;
                     const data = response.data;
-                    // this.filterArticles = data.filter(element => !sale_article_ids.includes(element.article_id));
                     this.filterArticles = data;
                     this.$store.state.articles_filter = data;
                 }).catch(error => {
@@ -412,7 +368,9 @@
             'model.article_id': function(val) {
                 const article = this.filterArticles.find(item => item.id === val);
 
-                this.model.quantity = article.quantity;
+                if (article) {
+                    this.model.quantity = article.quantity;
+                }
             }
         },
         computed: {
@@ -506,7 +464,7 @@
                         confirmButtonText: 'Ok',
                     });
                 } else {
-					let model = JSON.parse(JSON.stringify(this.model));
+					let model = this.model;
 
                     let price_igv = accounting.toFixed(model.price_igv, 4);
                     let quantity = accounting.toFixed(model.quantity, 4);
@@ -633,7 +591,7 @@
 						} else {
 							EventBus.$emit('loading', false);
 							
-							let sale = JSON.parse(JSON.stringify(this.sale));
+							let sale = this.sale;
 
 							this.$store.commit('addSale', sale);
 							$('#modal-sale').modal('hide');
@@ -655,25 +613,6 @@
 								total_perception: '',
 							};
 
-							// this.sale = {
-							// 	client_id: 0,
-							// 	client_name: '',
-							// 	document_type_id: '',
-							// 	warehouse_document_type_id: '',
-							// 	warehouse_document_type_name: '',
-							// 	referral_serie_number: '',
-							// 	referral_voucher_number: '',
-							// 	referral_guide_series: '',
-							// 	referral_guide_number: '',
-							// 	details: [],
-							// 	perception_percentage: '',
-							// 	total: '',
-							// 	perception: '',
-							// 	total_perception: '',
-							// 	payment_id: '',
-							// 	currency_id: 1,
-                            //     credit_limit: '',
-							// };
 						}
 					}).catch(error => {
 						console.log(error);
@@ -760,12 +699,11 @@
 						} else {
 							EventBus.$emit('loading', false);
 							
-							let sale = JSON.parse(JSON.stringify(this.sale));
+							let sale = this.sale;
 							this.$store.commit('addSale', sale);
 
-							let store_sale = JSON.parse(JSON.stringify(this.$store.state.sale));
-							this.$store.commit('addSales');
-								
+							let store_sale = this.$store.state.sale;
+
 							store_sale.details.forEach(element => {
 								let article_id = element.article_id;
 								let quantity = element.quantity;
@@ -789,26 +727,6 @@
 								igv_perception: '',
 								total_perception: '',
 							};
-
-							// this.sale = {
-							// 	client_id: '',
-							// 	client_name: '',
-							// 	document_type_id: '',
-							// 	warehouse_document_type_id: '',
-							// 	warehouse_document_type_name: '',
-							// 	referral_serie_number: '',
-							// 	referral_voucher_number: '',
-							// 	referral_guide_series: '',
-							// 	referral_guide_number: '',
-							// 	details: [],
-							// 	perception_percentage: '',
-							// 	total: '',
-							// 	perception: '',
-							// 	total_perception: '',
-							// 	payment_id: '',
-							// 	currency_id: 1,
-                            //     credit_limit: '',
-							// };
 
 							$('#modal-sale').modal('hide');
 
@@ -853,97 +771,6 @@
 
 				$('#modal-sale').modal('hide');
 			},
-            // newSelect2: function() {
-            //     let vm = this;
-            //     let token = document.head.querySelector('meta[name="csrf-token"]').content;
-            //     $("#client_id").select2({
-            //         placeholder: "Buscar",
-            //         allowClear: true,
-            //         language: {
-            //             noResults: function() {
-            //                 return 'No hay resultados';
-            //             },
-            //             searching: function() {
-            //                 return 'Buscando...';
-            //             },
-            //             inputTooShort: function() {
-            //                 return 'Ingresa 1 o más caracteres';
-            //             },
-            //             errorLoading: function() {
-            //                 return 'No se pudo cargar la información'
-            //             }
-            //         },
-            //         ajax: {
-            //             url: this.url_get_clients,
-            //             dataType: 'json',
-            //             delay: 250,
-            //             type: 'POST',
-            //             data: function (params) {
-            //                 var queryParameters = {
-            //                     q: params.term,
-            //                     company_id: vm.$store.state.model.company_id,
-            //                     _token: token,
-            //                 }
-
-            //                 return queryParameters;
-            //             },
-            //             processResults: function(data, params) {
-            //                 params.page = params.page || 1;
-
-            //                 return {
-            //                     results: data,
-            //                     pagination: {
-            //                         more: (params.page * 30) < data.total_count
-            //                     }
-            //                 };
-            //             },
-            //             cache: true
-            //         },
-            //         minimumInputLength: 1,
-            //     }).on('select2:select', function(e) {
-            //         // var selected_element = $(e.currentTarget);
-            //         // vm.sale.client_id = parseInt(selected_element.val());
-            //         console.log(e.params.data)
-            //         vm.sale.client_id = e.params.data.id;
-            //         vm.sale.client_name = e.params.data.text;
-            //         vm.sale.document_type_id = e.params.data.document_type_id;
-            //         vm.sale.payment_id = e.params.data.payment_id;
-            //         vm.sale.perception_percentage = e.params.data.perception_percentage.value;
-            //         vm.sale.credit_limit = e.params.data.credit_limit;
-
-            //         vm.model.article_id = '';
-            //         vm.model.article_name = '';
-            //         vm.model.price_igv = '';
-            //         vm.model.quantity = '';
-            //         vm.model.igv = '';
-            //         vm.model.perception = '';
-            //         vm.model.perception = '';
-            //         vm.model.sale_value = '';
-            //         vm.model.igv_perception = '';
-            //         vm.model.total_perception = '';
-            //     }).on('select2:unselect', function(e) {
-            //         vm.sale.client_id = '';
-            //         vm.sale.client_name = '';
-            //         vm.sale.document_type_id = '';
-            //         vm.sale.payment_id = '';
-            //         vm.sale.credit_limit = '';
-            //         vm.sale.perception_percentage = 0;
-            //         vm.sale.total = 0;
-            //         vm.sale.perception = 0;
-            //         vm.sale.total_perception = 0;
-            //         vm.sale.details = [];
-
-            //         vm.model.article_id = '';
-            //         vm.model.article_name = '';
-            //         vm.model.price_igv = '';
-            //         vm.model.quantity = '';
-            //         vm.model.igv = '';
-            //         vm.model.perception = '';
-            //         vm.model.sale_value = '';
-            //         vm.model.igv_perception = '';
-            //         vm.model.total_perception = '';
-            //     });
-            // },
         }
     };
 </script>
