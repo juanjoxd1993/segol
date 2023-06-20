@@ -750,7 +750,8 @@ class LiquidacionGlpController extends Controller
 	}
 
 	public function getScopNumber() {
-		$scop_number = request('scop_number');
+		$params = request('params');
+		$scop_number = $params['scop_number'];
 
 		$count = Voucher::where('scop', $scop_number)
 							->count();
