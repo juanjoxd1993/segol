@@ -35,6 +35,7 @@
 		:payments = "{{ $payments }}"
 		:currencies = "{{ $currencies }}"                                
 		:url_get_bank_accounts = "'{{ route('dashboard.voucher.liquidations_final.get_bank_accounts') }}'"
+		:url_get_saldo_favor = "'{{ route('dashboard.voucher.liquidations_final.get_saldo_favor') }}'"
 		:payment_cash = "{{ $payment_cash }}"
 		:payment_credit = "{{ $payment_credit }}"
 	></liquidation-final-modal-liquidation>

@@ -156,7 +156,8 @@
 </template>
 
 <script>
-    import EventBus from '../event-bus';
+    import Swal from 'sweetalert2';
+import EventBus from '../event-bus';
     export default {
         props: {
             payment_methods: {
@@ -168,6 +169,10 @@
                 default: '',
             },
             url_get_bank_accounts: {
+                type: String,
+                default: ''
+            },
+            url_get_saldo_favor: {
                 type: String,
                 default: ''
             },
@@ -206,6 +211,7 @@
 
         },
         mounted() {
+            document.getElementById('amount').disabled = false;
             EventBus.$on('liquidation_modal', function() {
                 let vm = this;
 
@@ -242,6 +248,7 @@
                 }
             },
             'model.payment_method': function(val) {
+                document.getElementById('amount').disabled = false;
                 if ( val.id == 2 || val.id == 3 ) {
                     EventBus.$emit('loading', true);
 
@@ -257,6 +264,30 @@
                     }).catch(error => {
                         console.log(error);
                         console.log(error.response);
+                    });
+                }
+            },
+            'model.currency': function(val) {
+                if (this.model.payment_method === 10) {
+                    axios.post(this.url_get_saldo_favor, {
+                        client_id: this.$store.state.sale.client_id,
+                        currency_id: val
+                    }).then(res => {
+                        const { data } = res;
+                        const { sale_value } = data;
+
+                        this.model.amount = sale_value;
+                        document.getElementById('amount').disabled = true;
+                    }).catch(err => {
+                        Swal.fire({
+                            title: '¡Error!',
+                            text: 'El cliente no cuenta con saldo a favor.',
+                            type: "error",
+                            heightAuto: false,
+                        });
+
+                        console.log(err)
+                        console.log(err.response)
                     });
                 }
             }

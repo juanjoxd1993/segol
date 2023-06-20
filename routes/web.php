@@ -60,6 +60,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-final/obtener-cuentas-banco', 'LiquidationFinalController@getBankAccounts')->name('dashboard.voucher.liquidations_final.get_bank_accounts');
 	Route::post('/facturacion/liquidaciones-final/verificar-documento', 'LiquidationFinalController@verifyDocumentType')->name('dashboard.voucher.liquidations_final.verify_document_type');
 	Route::post('/facturacion/liquidaciones-final/guardar', 'LiquidationFinalController@store')->name('dashboard.voucher.liquidations_final.store');
+	Route::post('/facturacion/liquidaciones-final/obtener-saldo-favor', 'LiquidationFinalController@getSaldoFavor')->name('dashboard.voucher.liquidations_final.get_saldo_favor');
 
    	/** Facturación > Liquidaciones Glp */
 	Route::get('/facturacion/liquidaciones-glp', 'LiquidacionGlpController@index')->name('dashboard.operations.voucher.liquidations_glp');
