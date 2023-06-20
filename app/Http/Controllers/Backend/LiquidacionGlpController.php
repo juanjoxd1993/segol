@@ -734,8 +734,9 @@ class LiquidacionGlpController extends Controller
 	}
 
 	public function getGuideNumber() {
-		$guide_serie = request('serie_number');
-		$guide_number = request('guide_number');
+		$params = request('params');
+		$guide_serie = $params['serie_number'];
+		$guide_number = $params['guide_number'];
 
 		$count = Voucher::where('referral_guide_series', $guide_serie)
 							->where('referral_guide_number', $guide_number)
