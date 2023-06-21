@@ -81,7 +81,14 @@ class LiquidationFinalController extends Controller
 	}
 
 	public function getWarehouseMovements() {
-			$company_id = request('company_id');
+		$user_id = Auth::user()->id;
+
+		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+                                              ->where('user_id', $user_id)
+                                              ->first();
+
+		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
+		$company_id = request('company_id');
 
 			$guide_state = GuidesState::select('id')
 																->where('name', 'Por Liquidar')
@@ -89,7 +96,7 @@ class LiquidationFinalController extends Controller
 
 			$elements = WarehouseMovement::select('id', 'movement_number', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'traslate_date', 'movement_type_id')
 					->where('company_id', $company_id)
-					->where('warehouse_type_id', 5)
+					->where('warehouse_type_id', $warehouse_type_id)
 					->where('sale_id', null)
 					->where(function ($query) {
 							$query->where('action_type_id', 3)
@@ -795,24 +802,41 @@ class LiquidationFinalController extends Controller
 			}
 
 			if ($total_sale_amount < 0) {
-				$saldo_favor_search = Sale::where('client_id', $client->id)
-																	->where('currency_id', $sale['currency_id'])
-																	->where('total', null)
-																	->first();
+				$sale_saldo_favor = new Sale();
+				$sale_saldo_favor->company_id = $model['company_id'];
+				$sale_saldo_favor->sale_date = $sale_date;
+				$sale_saldo_favor->expiry_date = $sale_date;
+				$sale_saldo_favor->client_id = $client->id;
+				$sale_saldo_favor->client_code = $client->code;
+				$sale_saldo_favor->payment_id =  1;
+				$sale_saldo_favor->currency_id = $sale['currency_id'];
+				$sale_saldo_favor->warehouse_document_type_id = 30;
+				$sale_saldo_favor->referral_serie_number = $sale['referral_serie_number'];
+				$sale_saldo_favor->referral_voucher_number = $sale['referral_voucher_number'];
+				$sale_saldo_favor->sale_value = 0;
+				$sale_saldo_favor->exonerated_value = 0;
+				$sale_saldo_favor->inaccurate_value = $total_sale_amount * -1;
+				$sale_saldo_favor->igv = 0;
+				$sale_saldo_favor->total = $total_sale_amount * -1;
+				$sale_saldo_favor->total_perception = $total_sale_amount * -1;
+				$sale_saldo_favor->balance = $total_sale_amount * -1;
+				$sale_saldo_favor->paid = 0;
+				$sale_saldo_favor->save();
 
-				if ($saldo_favor_search) {
-					$saldo_favor_search->sale_value += $total_sale_amount * -1;
-				} else {
-					$sale_saldo_favor = new Sale();
-					$sale_saldo_favor->company_id = $model['company_id'];
-					$sale_saldo_favor->sale_date = $sale_date;
-					$sale_saldo_favor->client_id = $client->id;
-					$sale_saldo_favor->client_code = $client->code;
-					$sale_saldo_favor->payment_id =  $sale['payment_id'];
-					$sale_saldo_favor->currency_id = $sale['currency_id'];
-					$sale_saldo_favor->sale_value = $total_sale_amount * -1;
-					$sale_saldo_favor->save();
-				}
+				$newSaleDetail = new SaleDetail();
+				$newSaleDetail->sale_id = $sale_saldo_favor->id;
+				$newSaleDetail->concept = 'Exceso cobrado';
+				$newSaleDetail->price_igv = 0;
+				$newSaleDetail->sale_value = 0;
+				$newSaleDetail->inaccurate_value = $total_sale_amount * -1;
+				$newSaleDetail->exonerated_value = 0;
+				$newSaleDetail->igv = 0;
+				$newSaleDetail->total = $total_sale_amount * -1;
+				$newSaleDetail->total_perception = $total_sale_amount * -1;
+				$newSaleDetail->igv_percentage = 0;
+				$newSaleDetail->igv_perception_percentage = 0;
+				$newSaleDetail->igv_percentage = 0;
+				$newSaleDetail->save();
 			}
 
 			SaleSeries::where('id', $sale['sale_serie_id'])
@@ -847,19 +871,24 @@ class LiquidationFinalController extends Controller
 
 	public function getSaldoFavor() {
 		$client_id = request('client_id');
-		$currency_id = request('currency_id');
 
-		$saldo_favor = Sale::where('client_id', $client_id)
-											->where('currency_id', $currency_id)
-											->where('sale_value', '>', '0')
-											->where('total', null)
-											->select('currency_id', 'sale_value')
-											->first();
+		$saldos_favor = Sale::where('warehouse_document_type_id', 30)
+												->where('client_id', $client_id)
+												->where('total_perception', '>', 0)
+												->select('id',
+																'sale_date',
+																'referral_serie_number',
+																'referral_voucher_number',
+																'currency_id',
+																'total_perception')
+												->get();
 
-		if ($saldo_favor) {
-			return response()->json($saldo_favor, 200);
-		}
+		$saldos_favor->map(function($item, $index) {
+			$item->name = $item->sale_date . ' | ' . $item->referral_serie_number . '-' . $item->referral_voucher_number . ' | ' . $item->total_perception;
 
-		return response()->json([], 400);
+			return $item;
+		});
+
+		return response()->json($saldos_favor, 200);
 	}
 }

@@ -52,6 +52,13 @@ class GuidesReturnController extends Controller
 
     public function getWarehouseMovements()
     {
+		$user_id = Auth::user()->id;
+
+		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+                                                ->where('user_id', $user_id)
+                                                ->first();
+
+		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
         $company_id = request('company_id');
 
 		$guide_state = GuidesState::select('id')
@@ -65,7 +72,7 @@ class GuidesReturnController extends Controller
             'license_plate',
             'created_at')
             ->where('company_id', $company_id)
-            ->where('warehouse_type_id', 5)
+            ->where('warehouse_type_id', $warehouse_type_id)
             ->where(function ($query) {
                 $query->where('action_type_id', 3)
                     ->orWhere('action_type_id', 4)
@@ -178,6 +185,7 @@ class GuidesReturnController extends Controller
         $warehouse_movement_id = $request->warehouse_movement_id;
 		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 
+        echo count($prestamos);
         if (count($prestamos)) {
             $guide_state = GuidesState::select('id')
                                     ->where('name', 'Por Autorizar')

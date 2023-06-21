@@ -334,7 +334,7 @@ class CollectionRegisterController extends Controller
 												->get();
 
 		$saldos_favor->map(function($item, $index) {
-			$item->name = $item->sale_date . ' | ' . $item->referral_serie_number . '-' . $item->referral_voucher_number;
+			$item->name = $item->sale_date . ' | ' . $item->referral_serie_number . '-' . $item->referral_voucher_number . ' | ' . $item->total_perception;
 
 			return $item;
 		});

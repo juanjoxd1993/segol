@@ -530,9 +530,9 @@ class GuidesRegisterController extends Controller
 		$articles = request('article_list');
 
 		$tmpGuideSerie = GuidesSerie::where('company_id', $company_id)
-						->where('num_serie', $referral_guide_series)
-						->orderBy('correlative', 'desc')
-						->first();
+																->where('num_serie', $referral_guide_series)
+																->orderBy('correlative', 'desc')
+																->first();
 
 		if ($tmpGuideSerie) {
 			$tmpGuideSerie->correlative = $tmpGuideSerie->correlative ? ($tmpGuideSerie->correlative + 1) : 1;
@@ -540,10 +540,10 @@ class GuidesRegisterController extends Controller
 		}
 
 		$movement_number = WarehouseMovement::select('movement_number')
-						->where('movement_class_id', $movement_class_id)
-						->where('warehouse_type_id', $warehouse_type_id)
-						->where('company_id', $company_id)
-						->max('movement_number');
+																				->where('movement_class_id', $movement_class_id)
+																				->where('warehouse_type_id', $warehouse_type_id)
+																				->where('company_id', $company_id)
+																				->max('movement_number');
 
 		$movement_number = ($movement_number ? $movement_number + 1 : 1);
 
@@ -569,7 +569,7 @@ class GuidesRegisterController extends Controller
 
 		$movement = new WarehouseMovement();
 		$movement->company_id = $company_id;
-		$movement->warehouse_type_id = 5;
+		$movement->warehouse_type_id = $warehouse_type_id;
 		$movement->movement_class_id = $movement_class_id;
 		$movement->movement_type_id = $movement_type_id;
 		$movement->movement_number = $movement_number;
@@ -593,6 +593,7 @@ class GuidesRegisterController extends Controller
 		$movement->updated_at_user = Auth::user()->user;
 		$movement->traslate_date = date('Y-m-d', strtotime($traslate_date));
 		$movement->fac_date = date('Y-m-d', strtotime($traslate_date));
+		$movement->state = 1;
 		//	$movement->route_id = $route_id;
 
 		$movement->save();

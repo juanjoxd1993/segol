@@ -28,9 +28,19 @@
                                         <label class="form-control-label">Forma de Pago:</label>
                                         <select class="form-control" name="payment_method_id" id="payment_method_id" v-model="model.payment_method" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
-                                            <option v-for="payment_method in payment_methods" :value="payment_method.id" v-bind:key="model.payment_method.id">{{ payment_method.name }}</option>
+                                            <option v-for="payment_method in payment_methods" :value="payment_method.id" v-bind:key="payment_method.id">{{ payment_method.name }}</option>
                                         </select>
                                         <div id="payment_method_id-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3" v-if="model.payment_method == 10">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Saldo a Favor:</label>
+                                        <select class="form-control" name="saldo_favor_id" id="saldo_favor_id" v-model="model.saldo_favor_id" @focus="$parent.clearErrorMsg($event)">
+                                            <option value="">Seleccionar</option>
+                                            <option v-for="saldo_favor in saldos_favor" :value="saldo_favor.id" v-bind:key="saldo_favor.id">{{ saldo_favor.name }}</option>
+                                        </select>
+                                        <div id="saldo_favor_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
@@ -200,10 +210,12 @@ import EventBus from '../event-bus';
                     bank_account: '',
                     operation_number: '',
                     amount: '',
-                    payment_date: ''
+                    payment_date: '',
+                    saldo_favor_id: 0
                 },
                 liquidations: [],
                 bank_accounts: [],
+                saldos_favor: [],
                 total: '',
             }
         },
@@ -267,17 +279,18 @@ import EventBus from '../event-bus';
                     });
                 }
             },
-            'model.currency': function(val) {
-                if (this.model.payment_method === 10) {
+            'model.payment_method': function(val) {
+                document.getElementById('amount').disabled = false;
+                document.getElementById('currency_id').disabled = false;
+
+                this.model.saldo_favor_id = 0;
+                if (val == 10) {
                     axios.post(this.url_get_saldo_favor, {
                         client_id: this.$store.state.sale.client_id,
-                        currency_id: val
                     }).then(res => {
                         const { data } = res;
-                        const { sale_value } = data;
 
-                        this.model.amount = sale_value;
-                        document.getElementById('amount').disabled = true;
+                        this.saldos_favor = data;
                     }).catch(err => {
                         Swal.fire({
                             title: '¡Error!',
@@ -289,6 +302,16 @@ import EventBus from '../event-bus';
                         console.log(err)
                         console.log(err.response)
                     });
+                }
+            },
+            'model.saldo_favor_id': function(val) {
+                const saldo = this.saldos_favor.find(item => item.id == val);
+
+                if (saldo) {
+                    this.model.amount = saldo.total_perception;
+                    this.model.currency = saldo.currency_id;
+                    document.getElementById('amount').disabled = true;
+                    document.getElementById('currency_id').disabled = true;
                 }
             }
         },
