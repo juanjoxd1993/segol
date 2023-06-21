@@ -366,6 +366,7 @@ class LiquidacionGlpController extends Controller
 		$igv_percentage = ( $rate->value / 100 ) + 1;
 
 		foreach ($sales as $sale) {
+			$total_sale_amount = $sale['total'];
 			$scop = $sale['scop_number'];
 
 			GlpSeries::where('id', $sale['sale_serie_id'])
@@ -411,6 +412,7 @@ class LiquidacionGlpController extends Controller
 			$sale_model->guide_series = $sale['referral_guide_series'];
 			$sale_model->guide_number = $sale['referral_guide_number'];
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
+			$sale_model->cede = 1;
 
 			if ( $sale['warehouse_document_type_id'] >= 4 && $sale['warehouse_document_type_id'] <= 9 ) {
 				switch ($sale['warehouse_document_type_id']) {
@@ -453,7 +455,7 @@ class LiquidacionGlpController extends Controller
 				$voucher->referral_guide_series = ( $sale['referral_guide_series'] ? $sale['referral_guide_series'] : $warehouse_movement->referral_guide_series );
 				$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
 				$voucher->issue_date = $sale_date;
-			//	$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->created_at));
+				// $voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->created_at));
 				$voucher->expiry_date = $expiry_date;
 				$voucher->currency_id = $sale['currency_id'];
 				$voucher->payment_id = $sale['payment_id'];
@@ -667,6 +669,8 @@ class LiquidacionGlpController extends Controller
 			if ( array_key_exists('liquidations', $sale) ) {
 				if ( count($sale['liquidations']) > 0 ) {
 					foreach ($sale['liquidations'] as $liquidation) {
+						$total_sale_amount -= $liquidation['amount'];
+
 						$liquidation_model = new Liquidation();
 						$liquidation_model->sale_id = $sale_model->id;
 						$liquidation_model->company_id = $model['company_id'];
@@ -678,6 +682,7 @@ class LiquidacionGlpController extends Controller
 						$liquidation_model->amount = round($liquidation['amount'], 4);
 						$liquidation_model->created_at_user = Auth::user()->user;
 						$liquidation_model->updated_at_user = Auth::user()->user;
+						$liquidation_model->cede = 1;
 						$liquidation_model->save();
 
 						if ($liquidation['payment_method'] == 7) {
@@ -712,6 +717,27 @@ class LiquidacionGlpController extends Controller
 						$client->credit_balance -= $liquidation['amount'];
 						$client->save();
 					}
+				}
+			}
+
+			if ($total_sale_amount < 0) {
+				$saldo_favor_search = Sale::where('client_id', $client->id)
+																	->where('currency_id', $sale['currency_id'])
+																	->where('total', null)
+																	->first();
+
+				if ($saldo_favor_search) {
+					$saldo_favor_search->sale_value += $total_sale_amount * -1;
+				} else {
+					$sale_saldo_favor = new Sale();
+					$sale_saldo_favor->company_id = $model['company_id'];
+					$sale_saldo_favor->sale_date = $sale_date;
+					$sale_saldo_favor->client_id = $client->id;
+					$sale_saldo_favor->client_code = $client->code;
+					$sale_saldo_favor->payment_id =  $sale['payment_id'];
+					$sale_saldo_favor->currency_id = $sale['currency_id'];
+					$sale_saldo_favor->sale_value = $total_sale_amount * -1;
+					$sale_saldo_favor->save();
 				}
 			}
 		}

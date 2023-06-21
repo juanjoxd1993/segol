@@ -33,6 +33,7 @@ use DB;
 
 use App\ClientLiquidations;
 use App\GuidesState;
+use App\WarehouseTypeInUser;
 
 use stdClass;
 
@@ -466,6 +467,15 @@ class LiquidationFinalController extends Controller
 	}
 
 	public function store() {
+		$user_id = Auth::user()->id;
+
+		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+																							->where('user_id', $user_id)
+																							->first();
+
+		// Este valor debe ser dependiendo del almacen que tenga asignado el usuario
+		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
+
 		$model = request('model');
 		$sales = request('sales');
 
@@ -508,6 +518,7 @@ class LiquidationFinalController extends Controller
 			$sale_model->guide_series = $warehouse_movement->referral_guide_series;
 			$sale_model->guide_number = $warehouse_movement->referral_guide_number;
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
+			$sale_model->cede = $warehouse_type_id;
 
 			if ( $sale['warehouse_document_type_id'] >= 4 && $sale['warehouse_document_type_id'] <= 9 ) {
 				switch ($sale['warehouse_document_type_id']) {
@@ -720,6 +731,7 @@ class LiquidationFinalController extends Controller
 						}
 						$liquidation_model->created_at_user = Auth::user()->user;
 						$liquidation_model->updated_at_user = Auth::user()->user;
+						$liquidation_model->cede = $warehouse_type_id;
 						$liquidation_model->save();
 
 						if ($payment_method_id == 7) {
