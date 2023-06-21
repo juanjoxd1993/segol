@@ -51,7 +51,7 @@
 								<option value="">Seleccionar</option>
 								<option v-for="saldo_favor in saldos_favor" :value="saldo_favor.id" v-bind:key="saldo_favor.id">{{ saldo_favor.name }}</option>
 							</select>
-                            <div id="referral_warehouse_document_type_id-error" class="error invalid-feedback"></div>
+                            <div id="saldo_favor_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
 					<div class="col-lg-3">
@@ -98,11 +98,21 @@
 					<div class="col-lg-3" v-if="model.payment_method_id === 6">
                         <div class="form-group">
                             <label class="form-control-label">Tipo de Documento Aplicación/Canje:</label>
-							<select class="form-control" name="referral_warehouse_document_type_id" id="referral_warehouse_document_type_id" v-model="model.referral_warehouse_document_type_id" @focus="$parent.clearErrorMsg($event)">
+							<select class="form-control" name="referral_warehouse_document_type_id" id="referral_warehouse_document_type_id" v-model="model.referral_warehouse_document_type_id" @focus="$parent.clearErrorMsg($event)" v-on:change="changeDocumentType">
 								<option value="">Seleccionar</option>
 								<option v-for="warehouse_document_type in warehouse_document_types" :value="warehouse_document_type.id" v-bind:key="warehouse_document_type.id">{{ warehouse_document_type.name }}</option>
 							</select>
                             <div id="referral_warehouse_document_type_id-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+					<div class="col-lg-3" v-if="model.payment_method_id === 6">
+                        <div class="form-group">
+                            <label class="form-control-label">Documentos:</label>
+							<select class="form-control" name="document_id" id="document_id" v-model="model.document_id" @focus="$parent.clearErrorMsg($event)" v-on:change="changeDocument">
+								<option value="">Seleccionar</option>
+								<option v-for="document in documents" :value="document.id" v-bind:key="document.id">{{ document.name }}</option>
+							</select>
+                            <div id="document-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
 					<div class="col-lg-3">
@@ -161,6 +171,10 @@
                 type: String,
                 default: ''
             },
+            url_get_documents: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -182,6 +196,7 @@
 					amount: '',
                 },
                 saldos_favor: [],
+                documents: []
             }
         },
         created() {
@@ -292,6 +307,20 @@
                     });
                 };
             },
+            changeDocumentType(e) {
+                const value = e.target.value;
+
+                axios.post(this.url_get_documents,{
+                    client_id: this.model.client_id,
+                    warehouse_document_type_id: value,
+                }).then(res => {
+                    const { data } = res;
+                    this.documents = data;
+                }).catch(err => {
+                    console.log(err);
+                    console.log(err.response);
+                });
+            },
             changeSaldo(e) {
                 const value = e.target.value;
 
@@ -303,7 +332,19 @@
                     document.getElementById('amount').disabled = true;
                     document.getElementById('currency_id').disabled = true;
                 };
-            }
+            },
+            changeDocument(e) {
+                const value = e.target.value;
+
+                const item = this.documents.find(element => element.id == value);
+
+                if (item) {
+                    this.model.amount = item.total_perception;
+                    this.model.currency_id = item.currency_id;
+                    document.getElementById('amount').disabled = true;
+                    document.getElementById('currency_id').disabled = true;
+                };
+            },
         }
     };
 </script>

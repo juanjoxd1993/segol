@@ -359,6 +359,7 @@
                 }
             },
 			saveCollectionRegister: function() {
+                console.log(this.model)
 				if ( this.total_paid == 0 ) {
 					this.$parent.alertMsg({
 						type: 5,

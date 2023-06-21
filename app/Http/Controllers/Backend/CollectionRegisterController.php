@@ -72,8 +72,6 @@ class CollectionRegisterController extends Controller
 			'operation_number.required_if'						=> 'El Nº de Operación es obligatorio.',
 			'detraction_number.required_if'						=> 'El Nº de Detracción es obligatorio.',
 			'referral_warehouse_document_type_id.required_if'	=> 'Debe seleccionar un Tipo de Documento Aplicación/Canje.',
-			'referral_serie_number.required_if'					=> 'La Serie de Documento Aplicación/Canje es obligatoria.',
-			'referral_voucher_number.required_if'				=> 'El Nº de Documento Aplicación/Canje es obligatorio.',
 			'amount.required'									=> 'El Total es obligatorio.',
 		];
 
@@ -86,8 +84,6 @@ class CollectionRegisterController extends Controller
 			'operation_number'						=> 'required_if:payment_method_id,2,3',
 			'detraction_number'						=> 'required_if:bank_id,4',
 			'referral_warehouse_document_type_id'	=> 'required_if:payment_method_id,4,5,6',
-			'referral_serie_number'					=> 'required_if:payment_method_id,4,5,6',
-			'referral_voucher_number'				=> 'required_if:payment_method_id,4,5,6',
 			'amount'								=> 'required',
 		];
 
@@ -155,6 +151,8 @@ class CollectionRegisterController extends Controller
 		$operation_number = request('model.operation_number');
 		$detraction_number = request('model.detraction_number');
 		$amount = request('model.amount');
+		$saldo_favor_id = request('model.saldo_favor_id');
+		$document_id = request('model.document_id');
 		$items = request('items');
 		$total_paid = request('total_paid');
 		$to_be_assigned = request('to_be_assigned');
@@ -198,11 +196,39 @@ class CollectionRegisterController extends Controller
 			$client->save();
 		}
 
+		if ($saldo_favor_id) {
+			$saldo = Sale::find($saldo_favor_id);
+
+			$rest = $saldo->total_perception - $total_paid;
+
+			if ($rest < 0) {
+				$saldo->total_perception = 0;
+			} else {
+				$saldo->total_perception = $rest;
+			}
+
+			$saldo->save();
+		};
+
+		if ($document_id) {
+			$saldo = Sale::find($document_id);
+
+			$rest = $saldo->total_perception - $total_paid;
+
+			if ($rest < 0) {
+				$saldo->total_perception = 0;
+			} else {
+				$saldo->total_perception = $rest;
+			}
+
+			$saldo->save();
+		};
+
 		if ( $total_paid > 0 && $to_be_assigned > 0 ) {
 			$referral_serie_number = date('Ym', strtotime($sale_date));
 			$last_referral_voucher_number = Sale::where('company_id', $company_id)
-					->where('referral_serie_number', $referral_serie_number)
-					->max('referral_voucher_number');
+																					->where('referral_serie_number', $referral_serie_number)
+																					->max('referral_voucher_number');
 
 			$newSale = new Sale();
 			$newSale->company_id = $company_id;
@@ -212,46 +238,33 @@ class CollectionRegisterController extends Controller
 			$newSale->client_code = $client->code;
 			$newSale->payment_id = 1;
 			$newSale->currency_id = $currency_id;
-			$newSale->warehouse_document_type_id = 22;
+			$newSale->warehouse_document_type_id = 30;
 			$newSale->referral_serie_number = $referral_serie_number;
 			$newSale->referral_voucher_number = ++$last_referral_voucher_number;
 			$newSale->sale_value = 0;
 			$newSale->exonerated_value = 0;
-			$newSale->inaccurate_value = $to_be_assigned * -1;
+			$newSale->inaccurate_value = $to_be_assigned;
 			$newSale->igv = 0;
-			$newSale->total = $to_be_assigned * -1;
-			$newSale->total_perception = $to_be_assigned * -1;
-			$newSale->balance = $to_be_assigned * -1;
+			$newSale->total = $to_be_assigned;
+			$newSale->total_perception = $to_be_assigned;
+			$newSale->balance = $to_be_assigned;
 			$newSale->paid = 0;
 			$newSale->save();
 
-			$newSale = new Sale();
-			$newSale->company_id = $company_id;
-			$newSale->sale_date = $sale_date;
-			$newSale->client_id = $client_id;
-			$newSale->client_code = $client->code;
-			$newSale->payment_id = 1;
-			$newSale->currency_id = $currency_id;
-			$newSale->warehouse_document_type_id = 30;
-			$newSale->referral_serie_number = $referral_serie_number;
-			$newSale->referral_voucher_number = ++$last_referral_voucher_number;
-			$newSale->total_perception = $to_be_assigned;
-			$newSale->save();
-
-			/*$newSaleDetail = new SaleDetail();
+			$newSaleDetail = new SaleDetail();
 			$newSaleDetail->sale_id = $newSale->id;
 			$newSaleDetail->concept = 'Exceso cobrado';
 			$newSaleDetail->price_igv = 0;
 			$newSaleDetail->sale_value = 0;
-			$newSaleDetail->inaccurate_value = gmp_neg($to_be_assigned);
+			$newSaleDetail->inaccurate_value = $to_be_assigned;
 			$newSaleDetail->exonerated_value = 0;
 			$newSaleDetail->igv = 0;
-			$newSaleDetail->total = gmp_neg($to_be_assigned);
-			$newSaleDetail->total_perception = gmp_neg($to_be_assigned);
+			$newSaleDetail->total = $to_be_assigned;
+			$newSaleDetail->total_perception = $to_be_assigned;
 			$newSaleDetail->igv_percentage = 0;
 			$newSaleDetail->igv_perception_percentage = 0;
 			$newSaleDetail->igv_percentage = 0;
-			$newSaleDetail->save();*/
+			$newSaleDetail->save();
 			
 			$last_collection_number = Liquidation::max('collection_number');
 			$collection_number = $last_collection_number ? ++$last_collection_number : 1;
@@ -327,5 +340,29 @@ class CollectionRegisterController extends Controller
 		});
 
 		return response()->json($saldos_favor, 200);
+	}
+
+	public function getDocuments() {
+		$client_id = request('client_id');
+		$warehouse_document_type_id = request('warehouse_document_type_id');
+
+		$documents = Sale::where('warehouse_document_type_id', $warehouse_document_type_id)
+												->where('client_id', $client_id)
+												->where('total_perception', '>', 0)
+												->select('id',
+																'sale_date',
+																'referral_serie_number',
+																'referral_voucher_number',
+																'currency_id',
+																'total_perception')
+												->get();
+
+		$documents->map(function($item, $index) {
+			$item->name = $item->sale_date . ' | ' . $item->referral_serie_number . '-' . $item->referral_voucher_number;
+
+			return $item;
+		});
+
+		return response()->json($documents, 200);
 	}
 }
