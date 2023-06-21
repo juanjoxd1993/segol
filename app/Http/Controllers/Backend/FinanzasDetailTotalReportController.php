@@ -32,12 +32,10 @@ class FinanzasDetailTotalReportController extends Controller
 	public function validateForm() {
 		$messages = [
 			'initial_date.required'	=> 'Debe seleccionar una Fecha inicial.',
-			
 		];
 
 		$rules = [
 			'initial_date'	=> 'required',
-		
 		];
 
 		request()->validate($rules, $messages);
@@ -60,9 +58,10 @@ class FinanzasDetailTotalReportController extends Controller
 	}
 
 	public function list() {
-
+		// $this->validateForm();
 		$export = request('export');
 
+		$warehouse_types = request('model.warehouse_types');
 		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d');
 
 		$response=[];
@@ -74,6 +73,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$total_venta_del_dia = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 															->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
+															->whereIn('sales.cede', $warehouse_types)
 															->whereNotIn('sales.client_id', $client_ids)
 															->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',  $initial_date)
 															->select('sales.total_perception')
@@ -81,6 +81,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$efective = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
+										->whereIn('sales.cede', $warehouse_types)
 										->whereNotIn('sales.client_id', $client_ids)
 										->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',  $initial_date)
 										->select('sales.efective')
@@ -88,6 +89,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$deposit = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 									->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
+									->whereIn('sales.cede', $warehouse_types)
 									->whereNotIn('sales.client_id', $client_ids)
 									->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
 									->select('sales.deposit')
@@ -95,6 +97,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$credit = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 								->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
+								->whereIn('sales.cede', $warehouse_types)
 								->whereNotIn('sales.client_id', $client_ids)
 								->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
 								->select('sales.pre_balance')
@@ -107,6 +110,7 @@ class FinanzasDetailTotalReportController extends Controller
 		$cobranza_efective =Liquidation::leftjoin('sales','liquidations.sale_id','=','sales.id')
 																	->leftjoin('clients', 'sales.client_id', '=', 'clients.id')				
 																	->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $initial_date)
+																	->whereIn('liquidations.cede', $warehouse_types)
 																	->whereNotIn('sales.client_id', $client_ids)	 
 																	->where('liquidations.payment_method_id',[1])
 																	->Where('liquidations.collection',[1])
@@ -116,6 +120,7 @@ class FinanzasDetailTotalReportController extends Controller
 		$cobranza_deposit =Liquidation::leftjoin('sales','liquidations.sale_id','=','sales.id')
 																	->leftjoin('clients', 'sales.client_id', '=', 'clients.id')	
 																	->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $initial_date)
+																	->whereIn('liquidations.cede', $warehouse_types)
 																	->whereNotIn('sales.client_id', $client_ids)	 
 																	->where('liquidations.payment_method_id',[2])
 																	->Where('liquidations.collection',[1])
@@ -126,6 +131,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$cesion_uso_efective = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 															->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
+															->whereIn('sales.cede', $warehouse_types)
 															->whereNotIn('sales.client_id', $client_ids)
 															->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
 															->where('liquidations.payment_method_id',[1])	
@@ -135,6 +141,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$cesion_uso_deposit = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 															->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
+															->whereIn('sales.cede', $warehouse_types)
 															->whereNotIn('sales.client_id', $client_ids)
 															->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
 															->where('liquidations.payment_method_id',[2])	
@@ -144,6 +151,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$otros_efective = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 												->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
+												->whereIn('sales.cede', $warehouse_types)
 												->whereNotIn('sales.client_id', $client_ids)
 												->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
 												->where('liquidations.payment_method_id',[1])	
@@ -153,6 +161,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$otros_deposit = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 												->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
+												->whereIn('sales.cede', $warehouse_types)
 												->whereNotIn('sales.client_id', $client_ids)
 												->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
 												->where('liquidations.payment_method_id',[2])	
@@ -166,6 +175,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$egresos_caja = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 											->whereNotIn('sales.client_id', $client_ids)
+											->whereIn('sales.cede', $warehouse_types)
 											->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)	
 											->where('sales.warehouse_document_type_id',[23])			
 											->select('sales.total_perception')

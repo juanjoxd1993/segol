@@ -55,14 +55,16 @@
             EventBus.$on('show_table', function(response) {
 				let vm = this;
                 this.show_table = true;
-				this.model = response;
+				this.model = response.model;
 
 				Vue.nextTick(function() {
 					if ( vm.finanzas_detail_total_report_datatable == undefined ) {
-						vm.fillTableX();
+						vm.fillTableX(response.data);
+						EventBus.$emit('loading', false);
 					} else {
 						vm.finanzas_detail_total_report_datatable.setDataSourceParam('model', vm.model);
 						vm.finanzas_detail_total_report_datatable.load();
+						EventBus.$emit('loading', false);
 					}
 				
 					vm.finanzas_detail_total_report_datatable.on('kt-datatable--on-ajax-done', function() {
@@ -85,41 +87,15 @@
 			
         },
         methods: {
-            fillTableX: function() {
+            fillTableX: function(data) {
                 let vm = this;
                 let token = document.head.querySelector('meta[name="csrf-token"]').content;
 
                 this.finanzas_detail_total_report_datatable = $('.kt-datatable').KTDatatable({
                     // datasource definition
                     data: {
-                        type: 'remote',
-                        source: {
-                            read: {
-                                url: vm.url,
-                                params: {
-                                    _token: token,
-                                    model: vm.model,
-                                    export:vm.export,
-			
-                                },
-
-                                map: function(raw) {
-                                    var dataSet = raw;
-                                    if (typeof raw.data !== 'undefined') {
-                                        dataSet = raw.data;
-                                        }
-                                dataSet.map(element => {
-                                element.total = accounting.formatMoney(element.total, "s./", 2, ",", ".");
-                                element.sum_total = accounting.toFixed(element.sum_total, 2);
-                                });
-
-                                   return dataSet;
-								
-                                }
-
-                            },
- 
-                        },
+                        type: 'local',
+                        source: data,
                         pageSize: 10,
                     },
 

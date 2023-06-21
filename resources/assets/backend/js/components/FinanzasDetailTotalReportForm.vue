@@ -92,6 +92,12 @@
                     initial_date: '',
                     warehouse_type_index: 0,
                 },
+                warehouse_types: [
+                    [1,4,13],
+                    [4],
+                    [13],
+                    [1],
+                ]
             }
         },
         created() {
@@ -171,12 +177,20 @@
 
                 EventBus.$emit('loading', true);
 
-                axios.post(url, fd, { headers: {
-                        'Content-type': 'application/x-www-form-urlencoded',
+                axios.post(url,{
+                    model: {
+                        initial_date: vm.model.initial_date,
+                        warehouse_types: vm.warehouse_types[vm.model.warehouse_type_index]
                     }
                 }).then(response => {
                     // console.log(response);
-                    EventBus.$emit('show_table', response.data);
+                    EventBus.$emit('show_table', {
+                        data: response.data,
+                        model: {
+                            initial_date: vm.model.initial_date,
+                            warehouse_types: vm.warehouse_types[vm.model.warehouse_type_index]
+                        }
+                    });
                 }).catch(error => {
                     console.log(error.response);
                     EventBus.$emit('loading', false);
