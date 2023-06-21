@@ -14,12 +14,17 @@
 		:url = "'{{ route('dashboard.operations.guides_return.list') }}'"
 		:url_store = "'{{ route('dashboard.operations.guides_return.update') }}'"
 		:url_get_balon = "'{{ route('dashboard.operations.guides_return.get_balon') }}'"
+		:url_get_balons = "'{{ route('dashboard.operations.guides_return.get_balons') }}'"
 	></guides-return-table>
 
 	<guides-return-table-clients
 		:url_list = "'{{ route('dashboard.operations.guides_return.list') }}'"
 		:url_get_clients = "'{{ route('dashboard.operations.guides_return.get_clients') }}'"
 	></guides-return-table-clients>
+
+	<guides-return-table-press
+		:url_get_clients = "'{{ route('dashboard.operations.guides_return.get_clients') }}'"
+	></guides-return-table-press>
 		
 	{{-- <guides-return-modal
 		:url_store = "'{{ route('dashboard.operations.guides_return.update') }}'"

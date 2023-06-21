@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
+use App\Container;
+use App\ContainerDetail;
 use App\Client;
 use App\ClientLiquidations;
 use App\GuidesState;
@@ -96,17 +98,15 @@ class GuidesReturnController extends Controller
         $company_id = request('model.company_id');
         $warehouse_movement_id = request('model.warehouse_movement_id');
 
-        $movementDetails = WarehouseMovementDetail::select(
-            'id',
-            'warehouse_movement_id',
-            'item_number',
-            'article_code',
-            'digit_amount',
-            'converted_amount'
-            )
-            ->where('warehouse_movement_id', $warehouse_movement_id)
-            ->orderBy('item_number', 'asc')
-            ->get();
+        $movementDetails = WarehouseMovementDetail::select('id',
+                                                        'warehouse_movement_id',
+                                                        'item_number',
+                                                        'article_code',
+                                                        'digit_amount',
+                                                        'converted_amount')
+                                                ->where('warehouse_movement_id', $warehouse_movement_id)
+                                                ->orderBy('item_number', 'asc')
+                                                ->get();
 
         $movementDetails->map(function ($item, $index) {
 
@@ -166,19 +166,27 @@ class GuidesReturnController extends Controller
     public function update(Request $request)
     {
 		$user_id = Auth::user()->id;
+		$date = date('Y-m-d');
 
 		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-			->where('user_id', $user_id)
-			->first();
+                                                ->where('user_id', $user_id)
+                                                ->first();
 
         $articles = $request->articles;
         $clients = $request->clients;
+        $prestamos = $request->prestamos;
         $warehouse_movement_id = $request->warehouse_movement_id;
 		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 
-		$guide_state = GuidesState::select('id')
-            ->where('name', 'Por Liquidar')
-            ->first();
+        if (count($prestamos)) {
+            $guide_state = GuidesState::select('id')
+                                    ->where('name', 'Por Autorizar')
+                                    ->first();
+        } else {
+            $guide_state = GuidesState::select('id')
+                                    ->where('name', 'Por Liquidar')
+                                    ->first();
+        }
 
         foreach ($articles as $article) {
             $warehouse_movement_detail_id = $article['id'];
@@ -247,7 +255,7 @@ class GuidesReturnController extends Controller
                     'company_id' => 1,
                     'warehouse_type_id' => 4, //Producción
                     'movement_class_id' => 1, //Ingreso
-                    'movement_type_id' => 19, //Retorno de Pre-Venta
+                    'movement_type_id' => 34, //Retorno de Prestamo de Balon
                     'warehouse_account_type_id' => 1,
                     'total' => $article['retorno_press'],
                     'created_at' => date('Y-m-d'),
@@ -405,16 +413,16 @@ class GuidesReturnController extends Controller
             /**Off */
 
             $articleDetail = Article::where('warehouse_type_id', $warehouse_type_id)
-                ->where('code', $article['article_code'])
-                ->first();
+                                    ->where('code', $article['article_code'])
+                                    ->first();
 
             //Actualizar new_stock_return
             if ($article['article']['group_id'] == 26) {
                 WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
-                    ->where('article_code', $article['article_id'])
-                    ->update([
-                        'new_stock_return' =>  $article['retorno'] + $article['cambios'],
-                    ]);
+                                        ->where('article_code', $article['article_id'])
+                                        ->update([
+                                            'new_stock_return' =>  $article['retorno'] + $article['cambios'],
+                                        ]);
             } else if ($article['article']['group_id'] == 7) {
                 // el new_stock_return deberia solo registrar los blones en buen estado y no los prestamos ni los mal estado
                 // WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
@@ -423,19 +431,19 @@ class GuidesReturnController extends Controller
                 //         'new_stock_return' =>  $article['converted_amount'] - $article['cesion'],
                 //     ]);
                 WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
-                    ->where('article_code', $article['article_id'])
-                    ->update([
-                        'new_stock_return' =>  $article['converted_amount'] - $article['cesion'] - $article['prestamo'] - $article['cambios'],
-                    ]);
+                                    ->where('article_code', $article['article_id'])
+                                    ->update([
+                                        'new_stock_return' =>  $article['converted_amount'] - $article['cesion'] - $article['prestamo'] - $article['cambios'],
+                                    ]);
             }
 
             $warehouse_movement_id = $article['warehouse_movement_id'];
 
             //Actualizar estado
             WarehouseMovement::where('id', $warehouse_movement_id)
-                ->update([
-                    'state' => $guide_state->id,
-                ]);
+                            ->update([
+                                'state' => $guide_state->id,
+                            ]);
 
         }
 
@@ -447,6 +455,21 @@ class GuidesReturnController extends Controller
             $client_liquidation->quantity = $client['liquidation'];
             $client_liquidation->save();
         };
+
+        foreach ($prestamos as $prestamo) {
+            $press = new Container;
+            $press->client_id = $prestamo['client_id'];
+            $press->warehouse_movement_id = $request->warehouse_movement_id;
+            $press->if_devol = $prestamo['if_devol'];
+            $press->date = $date;
+            $press->save();
+
+            $press_detail = new ContainerDetail;
+            $press_detail->article_id = $prestamo['article_id'];
+            $press_detail->devol = $prestamo['press'];
+            $press_detail->container_id = $press->id;
+            $press_detail->save();
+        }
 
         $data = new stdClass();
         $data->type = 1;
@@ -517,6 +540,44 @@ class GuidesReturnController extends Controller
         $articleBalon->group_id = $articleBalon->group_id;
 
         return $articleBalon;
+    }
+
+    public function getBalons()
+    {
+        $articles = request('articles');
+
+        $articles_balons = [];
+
+        foreach ($articles as $article) {
+            $article_id = $article['article_id'];
+            $article_prestamo = $article['prestamo'];
+            $article_retorno_prestamo = $article['retorno_press'];
+
+            if ($article_prestamo || $article_retorno_prestamo) {
+
+                $articleGeneral = Article::find($article_id);
+
+                $articleBalon = Article::where('warehouse_type_id', 5)
+                                    ->where('convertion', $articleGeneral->convertion)
+                                    ->where('group_id', 7)
+                                    ->first();
+
+                $article_balon = [
+                    'article_id' => $articleBalon->id,
+                    'article_code' => $articleBalon->code,
+                    'article_name' => $articleBalon->name . ' ' . $articleBalon->warehouse_unit->name . ' x ' . $articleBalon->package_warehouse,
+                    'last_retorno_press' => $article_retorno_prestamo,
+                    'last_prestamo' => $article_prestamo,
+                    'retorno_press' => $article_retorno_prestamo,
+                    'prestamo' => $article_prestamo,
+                    'group_id' => $articleBalon->group_id,
+                ];
+
+                $articles_balons[] = $article_balon;
+            }
+        }
+
+        return $articles_balons;
     }
 
     public function generatePdf($warehouse_movement_id, $elements)

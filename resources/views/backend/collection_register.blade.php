@@ -19,6 +19,7 @@
 		:warehouse_document_types = "{{ $warehouse_document_types }}"
 		:url = "'{{ route('dashboard.voucher.collection_register.validate_second_step') }}'"
 		:url_get_saldos = "'{{ route('dashboard.voucher.collection_register.get_saldos_favor') }}'"
+		:url_get_documents = "'{{ route('dashboard.voucher.collection_register.get_documents') }}'"
 	></collection-register-second-step>
 
 	<collection-register-third-step

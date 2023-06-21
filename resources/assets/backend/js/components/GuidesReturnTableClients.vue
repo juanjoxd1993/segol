@@ -72,7 +72,7 @@
                 <div class="kt-portlet__head">
                     <div class="kt-portlet__head-label">
                         <h3 class="kt-portlet__head-title">
-                            Clientes
+                            Venta a Clientes
                         </h3>
                     </div>
                     <div class="kt-portlet__head-toolbar">

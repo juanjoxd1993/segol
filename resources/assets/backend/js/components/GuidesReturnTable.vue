@@ -118,7 +118,11 @@ export default {
         url_get_balon: {
             type: String,
             default: ''
-        }
+        },
+        url_get_balons: {
+            type: String,
+            default: ''
+        },
     },
     data() {
         return {
@@ -210,7 +214,7 @@ export default {
 
                 this.$store.commit('addArticlesForLiquidations', articles_for_liquidations);
             };
-        }
+        },
     },
     computed: {
         articlesState: function () {
@@ -233,11 +237,21 @@ export default {
             const clients = this.$store.state.clients;
             const articles_for_liquidations = this.$store.state.articles_for_liquidations;
 
+            const prestamos = this.$store.state.prestamos;
+            const balones = this.$store.state.balones;
+
             let rest_liquidation = 0;
+            let rest_press = 0;
+            let rest_retorno_press = 0;
 
             articles_for_liquidations.map(art => {
                 rest_liquidation += art.rest_liquidation;
             });
+
+            balones.map(item => {
+                rest_press += item.prestamo;
+                rest_retorno_press += item.retorno_press;
+            })
 
             if (!Boolean(clients.length)) {
                 Swal.fire({
@@ -265,9 +279,49 @@ export default {
                 return;
             };
 
+            // if (!Boolean(prestamos.length)) {
+            //     Swal.fire({
+            //         title: '¡Error!',
+            //         text: 'Se debe completar la lista de clientes para los prestamos',
+            //         type: "error",
+            //         heightAuto: false,
+            //     });
+
+            //     EventBus.$emit('loading', false);
+
+            //     return;
+            // };
+
+            if (Boolean(rest_press)) {
+                Swal.fire({
+                    title: '¡Error!',
+                    text: `Restan ${ rest_press } prestamos por asignar a clientes`,
+                    type: "error",
+                    heightAuto: false,
+                });
+
+                EventBus.$emit('loading', false);
+
+                return;
+            };
+
+            if (Boolean(rest_retorno_press)) {
+                Swal.fire({
+                    title: '¡Error!',
+                    text: `Restan ${ rest_retorno_press } retorno de prestamos por asignar a clientes`,
+                    type: "error",
+                    heightAuto: false,
+                });
+
+                EventBus.$emit('loading', false);
+
+                return;
+            };
+
             axios.post(this.url_store, {
                 articles: this.data,
-                clients: this.$store.state.clients,
+                clients,
+                prestamos,
                 warehouse_movement_id,
             }, {
                 responseType: 'blob'
@@ -398,6 +452,16 @@ export default {
                     console.log(error.response);
                 });
             };
+
+            axios.post(this.url_get_balons, {
+                articles: this.$store.state.articles
+            }).then(res => {
+                const { data } = res;
+                this.$store.commit('addBalones', data);
+            }).catch(err => {
+                console.log(err);
+                console.log(err.response);
+            });
 
             this.table.destroy();
 
