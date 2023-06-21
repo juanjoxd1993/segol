@@ -386,7 +386,7 @@
             heightAuto: false,
           })
         }
-
+        else {
         this.$store.commit('changeStockBalon', {
           article_id: this.model.article_id,
           amount: this.model.press,
@@ -404,6 +404,8 @@
 
         this.fillTableX();
         $("#modalPress").modal('hide');
+
+        }
       },
       close() {},
       changeArticleId(val) {
