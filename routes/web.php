@@ -62,7 +62,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-final/guardar', 'LiquidationFinalController@store')->name('dashboard.voucher.liquidations_final.store');
 	Route::post('/facturacion/liquidaciones-final/obtener-saldo-favor', 'LiquidationFinalController@getSaldoFavor')->name('dashboard.voucher.liquidations_final.get_saldo_favor');
 
-   	/** Facturación > Liquidaciones Glp */
+	/** Facturación > Liquidaciones Glp */
 	Route::get('/facturacion/liquidaciones-glp', 'LiquidacionGlpController@index')->name('dashboard.operations.voucher.liquidations_glp');
 	Route::post('/facturacion/liquidaciones-glp/validar-formulario', 'LiquidacionGlpController@validateForm')->name('dashboard.operations.voucher.liquidations_glp.validate_form');
 	Route::post('/facturacion/liquidaciones-glp/obtener-movimientos-almacen', 'LiquidacionGlpController@getWarehouseMovements')->name('dashboard.operations.voucher.liquidations_glp.get_warehouse_movements');
@@ -75,6 +75,10 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-glp/guardar', 'LiquidacionGlpController@store')->name('dashboard.operations.voucher.liquidations_glp.store');
 	Route::post('/facturacion/liquidaciones-glp/get-guide-number', 'LiquidacionGlpController@getGuideNumber')->name('dashboard.operations.voucher.liquidations_glp.get_guide_number');
 	Route::post('/facturacion/liquidaciones-glp/get-scop-number', 'LiquidacionGlpController@getScopNumber')->name('dashboard.operations.voucher.liquidations_glp.get_scop_number');
+
+	/** Facturación > Remesas */
+	Route::get('/facturacion/remesas', 'RemesasController@index')->name('dashboard.facturation.voucher.remesas');
+	Route::post('/facturacion/remesas/crear', 'RemesasController@store')->name('dashboard.facturation.voucher.remesas.store');
 
 	/** Reportes > Cuentas Corrientes Clientes */
 	Route::get('/reporte/cuentas-corrientes-clientes', 'CheckingAccountReportController@index')->name('dashboard.report.checking_account_report');

@@ -93,7 +93,6 @@
 									<span class="kt-menu__link-text">Generación de Documentos </span>
 								</a>
 							</li>
-                         
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.collection_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.voucher.collection_register') }}" class="kt-menu__link ">
@@ -112,7 +111,6 @@
 								</a>
 							</li>
 
-
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.voucher.liquidations_glp' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.voucher.liquidations_glp') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -121,12 +119,19 @@
 									<span class="kt-menu__link-text">Liquidación GLP</span>
 								</a>
 							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.facturation.voucher.remesas' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.facturation.voucher.remesas') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Registro de Remesas</span>
+								</a>
+							</li>
 							
-					 </ul>
-				 </div>
-			 </li>
-							
-							
+					</ul>
+				</div>
+			</li>
 
 				<li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/reporte/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
