@@ -37,11 +37,21 @@
 					<div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo de Cancelación:</label>
-							<select class="form-control" name="payment_method_id" id="payment_method_id" v-model="model.payment_method_id" @focus="$parent.clearErrorMsg($event)">
+							<select class="form-control" name="payment_method_id" id="payment_method_id" v-model="model.payment_method_id" @focus="$parent.clearErrorMsg($event)" v-on:change="changePayment">
 								<option value="">Seleccionar</option>
 								<option v-for="payment_method in payment_methods" :value="payment_method.id" v-bind:key="payment_method.id">{{ payment_method.name }}</option>
 							</select>
                             <div id="payment_method_id-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+					<div class="col-lg-3" v-if="model.payment_method_id === 10">
+                        <div class="form-group">
+                            <label class="form-control-label">Saldos a Favor:</label>
+							<select class="form-control" name="saldo_favor_id" id="saldo_favor_id" v-model="model.saldo_favor_id" @focus="$parent.clearErrorMsg($event)" v-on:change="changeSaldo">
+								<option value="">Seleccionar</option>
+								<option v-for="saldo_favor in saldos_favor" :value="saldo_favor.id" v-bind:key="saldo_favor.id">{{ saldo_favor.name }}</option>
+							</select>
+                            <div id="referral_warehouse_document_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
 					<div class="col-lg-3">
@@ -54,14 +64,14 @@
                             <div id="currency_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-					<div class="col-lg-3">
+					<div class="col-lg-3" v-if="model.currency_id != 1 && model.currency_id">
                         <div class="form-group">
                             <label class="form-control-label">Tipo de Cambio:</label>
 							<input type="text" class="form-control" name="exchange_rate" id="exchange_rate" v-model="model.exchange_rate" @focus="$parent.clearErrorMsg($event)">
                             <div id="exchange_rate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-					<div class="col-lg-3">
+					<div class="col-lg-3" v-if="model.payment_method_id === 2 || model.payment_method_id === 3">
                         <div class="form-group">
                             <label class="form-control-label">Banco:</label>
 							<select class="form-control" name="bank_account_id" id="bank_account_id" v-model="model.bank_account_id" @focus="$parent.clearErrorMsg($event)">
@@ -71,7 +81,7 @@
                             <div id="bank_account_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-					<div class="col-lg-3">
+					<div class="col-lg-3" v-if="model.payment_method_id === 2 || model.payment_method_id === 3">
                         <div class="form-group">
                             <label class="form-control-label">Nº Operación:</label>
 							<input type="text" class="form-control" name="operation_number" id="operation_number" v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)">
@@ -85,7 +95,7 @@
                             <div id="detraction_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-					<div class="col-lg-3">
+					<div class="col-lg-3" v-if="model.payment_method_id === 6">
                         <div class="form-group">
                             <label class="form-control-label">Tipo de Documento Aplicación/Canje:</label>
 							<select class="form-control" name="referral_warehouse_document_type_id" id="referral_warehouse_document_type_id" v-model="model.referral_warehouse_document_type_id" @focus="$parent.clearErrorMsg($event)">
@@ -93,20 +103,6 @@
 								<option v-for="warehouse_document_type in warehouse_document_types" :value="warehouse_document_type.id" v-bind:key="warehouse_document_type.id">{{ warehouse_document_type.name }}</option>
 							</select>
                             <div id="referral_warehouse_document_type_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-					<div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Serie de Documento Aplicación/Canje:</label>
-							<input type="text" class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="model.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
-                            <div id="referral_serie_number-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-					<div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Nº de Documento Aplicación/Canje:</label>
-							<input type="text" class="form-control" name="referral_voucher_number" id="referral_voucher_number" v-model="model.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
-                            <div id="referral_voucher_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
 					<div class="col-lg-3">
@@ -161,6 +157,10 @@
                 type: String,
                 default: ''
             },
+            url_get_saldos: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -181,6 +181,7 @@
 					referral_voucher_number: '',
 					amount: '',
                 },
+                saldos_favor: [],
             }
         },
         created() {
@@ -238,14 +239,10 @@
 
                 var target = $(event.target);
                 var url = url;
-                var fd = new FormData(event.target);
 
                 EventBus.$emit('loading', true);
 
-                axios.post(url, fd, { headers: {
-                        'Content-type': 'application/x-www-form-urlencoded',
-                    }
-                }).then(response => {
+                axios.post(url, vm.model).then(response => {
 					EventBus.$emit('loading', false);
 
 					if ( response.data.error ) {
@@ -280,6 +277,33 @@
                     });
                 });
             },
+            changePayment(e) {
+                const value = e.target.value;
+
+                if (value == 10) {
+                    axios.post(this.url_get_saldos,{
+                        client_id: this.model.client_id
+                    }).then(res => {
+                        const { data } = res;
+                        this.saldos_favor = data;
+                    }).catch(err => {
+                        console.log(err);
+                        console.log(err.response);
+                    });
+                };
+            },
+            changeSaldo(e) {
+                const value = e.target.value;
+
+                const item = this.saldos_favor.find(element => element.id == value);
+
+                if (item) {
+                    this.model.amount = item.total_perception;
+                    this.model.currency_id = item.currency_id;
+                    document.getElementById('amount').disabled = true;
+                    document.getElementById('currency_id').disabled = true;
+                };
+            }
         }
     };
 </script>

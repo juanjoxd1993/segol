@@ -15,6 +15,7 @@ use App\SaleDetail;
 use App\WarehouseDocumentType;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Backend\gmp_neg;
 use stdClass;
 
 class CollectionRegisterController extends Controller
@@ -216,15 +217,28 @@ class CollectionRegisterController extends Controller
 			$newSale->referral_voucher_number = ++$last_referral_voucher_number;
 			$newSale->sale_value = 0;
 			$newSale->exonerated_value = 0;
-			$newSale->inaccurate_value = gmp_neg($to_be_assigned);
+			$newSale->inaccurate_value = $to_be_assigned * -1;
 			$newSale->igv = 0;
-			$newSale->total = gmp_neg($to_be_assigned);
-			$newSale->total_perception = gmp_neg($to_be_assigned);
-			$newSale->balance = gmp_neg($to_be_assigned);
+			$newSale->total = $to_be_assigned * -1;
+			$newSale->total_perception = $to_be_assigned * -1;
+			$newSale->balance = $to_be_assigned * -1;
 			$newSale->paid = 0;
 			$newSale->save();
 
-		/*	$newSaleDetail = new SaleDetail();
+			$newSale = new Sale();
+			$newSale->company_id = $company_id;
+			$newSale->sale_date = $sale_date;
+			$newSale->client_id = $client_id;
+			$newSale->client_code = $client->code;
+			$newSale->payment_id = 1;
+			$newSale->currency_id = $currency_id;
+			$newSale->warehouse_document_type_id = 30;
+			$newSale->referral_serie_number = $referral_serie_number;
+			$newSale->referral_voucher_number = ++$last_referral_voucher_number;
+			$newSale->total_perception = $to_be_assigned;
+			$newSale->save();
+
+			/*$newSaleDetail = new SaleDetail();
 			$newSaleDetail->sale_id = $newSale->id;
 			$newSaleDetail->concept = 'Exceso cobrado';
 			$newSaleDetail->price_igv = 0;
@@ -291,4 +305,27 @@ class CollectionRegisterController extends Controller
 	// 	request()->validate($rules, $messages);
 	// 	return request()->all();
 	// }
+
+	public function getSaldosFavor() {
+		$client_id = request('client_id');
+
+		$saldos_favor = Sale::where('warehouse_document_type_id', 30)
+												->where('client_id', $client_id)
+												->where('total_perception', '>', 0)
+												->select('id',
+																'sale_date',
+																'referral_serie_number',
+																'referral_voucher_number',
+																'currency_id',
+																'total_perception')
+												->get();
+
+		$saldos_favor->map(function($item, $index) {
+			$item->name = $item->sale_date . ' | ' . $item->referral_serie_number . '-' . $item->referral_voucher_number;
+
+			return $item;
+		});
+
+		return response()->json($saldos_favor, 200);
+	}
 }

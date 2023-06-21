@@ -47,6 +47,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/cobranzas/validar-segundo-paso', 'CollectionRegisterController@validateSecondStep')->name('dashboard.voucher.collection_register.validate_second_step');
 	Route::post('/facturacion/cobranzas/obtener-ventas', 'CollectionRegisterController@getSales')->name('dashboard.voucher.collection_register.get_sales');
 	Route::post('/facturacion/cobranzas/guardar', 'CollectionRegisterController@store')->name('dashboard.voucher.collection_register.store');
+	Route::post('/facturacion/cobranzas/obtener-saldos', 'CollectionRegisterController@getSaldosFavor')->name('dashboard.voucher.collection_register.get_saldos_favor');
 
 	/** Facturación > Liquidaciones Final */
 	Route::get('/facturacion/liquidaciones-final', 'LiquidationFinalController@index')->name('dashboard.voucher.liquidations_final');

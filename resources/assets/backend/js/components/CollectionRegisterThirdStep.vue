@@ -314,10 +314,20 @@
 					}
 
                     $.each(e, function(key, value) {
+                        let item = vm.items.find((element) => element.id == value);
+                        let index_item = vm.items.findIndex((element) => element.id == value);
                         let index = vm.ids.findIndex((element) => element == value);
+
+                        vm.items[index_item].paid = accounting.toFixed(item.balance, 2);
+
+                        // vm.ids = [];
+                        // vm.total_paid = 0;
+                        vm.collection_register_datatable.originalDataSet = vm.items;
+                        // vm.collection_register_datatable.load();
+
                         if ( index < 0 ) {
                             vm.ids.push(parseInt(value));
-                        }
+                        };
 
 						let paid = accounting.unformat(vm.items.find(element => element.id == value).paid);
 						vm.total_paid += paid;
@@ -355,13 +365,14 @@
 						title: 'Error',
 						msg: 'El Total Registrado no puede ser 0.'
 					});
-				} else if ( this.model.amount > this.total_paid ) {
-					this.$parent.alertMsg({
-						type: 5,
-						title: 'Error',
-						msg: 'El Total Registrado no puede exceder el Total Cobrado.'
-					});
-			   	} 
+				}
+                // else if ( this.model.amount > this.total_paid ) {
+				// 	this.$parent.alertMsg({
+				// 		type: 5,
+				// 		title: 'Error',
+				// 		msg: 'El Total Registrado no puede exceder el Total Cobrado.'
+				// 	});
+                // } 
                 else if ( this.model.payment_method_id > 3 && this.to_be_assigned > 0 ) {
 					this.$parent.alertMsg({
 						type: 5,
@@ -369,7 +380,7 @@
 						msg: 'El Total del Detalle es menor al Total por aplicar o canjear.'
 					});
 				} else {
-					EventBus.$emit('loading', false);
+					EventBus.$emit('loading', true);
 					let filteredItems = this.items.filter(element => this.ids.includes(element.id));
 					// console.log(filteredItems);
 
