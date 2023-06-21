@@ -21,7 +21,9 @@ export default {
 			currency_id: 1,
 		},
 		clients: [],
+		prestamos: [],
 		articles_for_liquidations: [],
+		balones: [],
 		warehouse_account_type_id: 0,
 		sale_series: [],
 		warehouse_type_id: 0,
@@ -119,6 +121,51 @@ export default {
 		setWarehouseTypeIdReceiver(state, id) {
 			state.warehouse_type_id_receiver = id;
 		},
+		addBalones(state, balones) {
+			balones.map(item => {
+				const balon = state.balones.find(element => element.article_id == item.article_id);
+				const balon_index = state.balones.findIndex(element => element.article_id == item.article_id);
+
+				const prestamo = item.prestamo;
+				const retorno_press = item.retorno_press;
+
+				if (balon) {
+					const rest_prestamo = prestamo - balon.last_prestamo;
+					const rest_retorno_press = retorno_press - balon.last_retorno_press;
+
+					const obj = { ...balon }
+
+					obj.retorno_press += rest_retorno_press;
+					obj.prestamo += rest_prestamo;
+
+					state.balones[balon_index] = obj;
+				} else {
+					state.balones.push(item);
+				}
+			});
+		},
+		changeStockBalon(state, model) {
+			const article_id = model.article_id;
+			const amount = model.amount;
+			const if_devol = model.if_devol;
+			const operation = model.operation;
+
+			const balon_index = state.balones.findIndex(item => item.article_id == article_id);
+
+			if (if_devol) {
+				if (operation < 0) {
+					state.balones[balon_index].retorno_press -= amount;
+				} else {
+					state.balones[balon_index].retorno_press = parseInt(state.balones[balon_index].retorno_press) + parseInt(amount);
+				}
+			} else {
+				if (operation < 0) {
+					state.balones[balon_index].prestamo -= amount;
+				} else {
+					state.balones[balon_index].prestamo = parseInt(state.balones[balon_index].prestamo) + parseInt(amount);
+				}
+			};
+		}
 	},
 	getters: {
 		editSale: (state) => (client_id) => {

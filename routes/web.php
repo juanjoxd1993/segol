@@ -48,6 +48,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/cobranzas/obtener-ventas', 'CollectionRegisterController@getSales')->name('dashboard.voucher.collection_register.get_sales');
 	Route::post('/facturacion/cobranzas/guardar', 'CollectionRegisterController@store')->name('dashboard.voucher.collection_register.store');
 	Route::post('/facturacion/cobranzas/obtener-saldos', 'CollectionRegisterController@getSaldosFavor')->name('dashboard.voucher.collection_register.get_saldos_favor');
+	Route::post('/facturacion/cobranzas/obtener-documentos', 'CollectionRegisterController@getDocuments')->name('dashboard.voucher.collection_register.get_documents');
 
 	/** Facturación > Liquidaciones Final */
 	Route::get('/facturacion/liquidaciones-final', 'LiquidationFinalController@index')->name('dashboard.voucher.liquidations_final');
@@ -325,6 +326,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/retorno-guias/actualizar', 'GuidesReturnController@update')->name('dashboard.operations.guides_return.update');
 	Route::post('/operaciones/retorno-guias/obtener-clientes', 'GuidesReturnController@getClients')->name('dashboard.operations.guides_return.get_clients');
 	Route::post('/operaciones/retorno-guias/obtener-balon', 'GuidesReturnController@getBalon')->name('dashboard.operations.guides_return.get_balon');
+	Route::post('/operaciones/retorno-guias/obtener-balones', 'GuidesReturnController@getBalons')->name('dashboard.operations.guides_return.get_balons');
 
 	/** Operaciones > Registro de producción */
 	Route::get('/logistica/registro-produccion', 'ProductionController@index')->name('dashboard.logistics.production_register');
