@@ -370,9 +370,9 @@ class LiquidacionGlpController extends Controller
 			$scop = $sale['scop_number'];
 
 			GlpSeries::where('id', $sale['sale_serie_id'])
-					->update(
-						['correlative' => $sale['referral_serie_number']]
-					);
+							->update(
+								['correlative' => $sale['referral_voucher_number']]
+							);
 
 			$client = Client::find(
 				$sale['client_id'],
@@ -721,24 +721,41 @@ class LiquidacionGlpController extends Controller
 			}
 
 			if ($total_sale_amount < 0) {
-				$saldo_favor_search = Sale::where('client_id', $client->id)
-																	->where('currency_id', $sale['currency_id'])
-																	->where('total', null)
-																	->first();
+				$sale_saldo_favor = new Sale();
+				$sale_saldo_favor->company_id = $model['company_id'];
+				$sale_saldo_favor->sale_date = $sale_date;
+				$sale_saldo_favor->expiry_date = $sale_date;
+				$sale_saldo_favor->client_id = $client->id;
+				$sale_saldo_favor->client_code = $client->code;
+				$sale_saldo_favor->payment_id =  1;
+				$sale_saldo_favor->currency_id = $sale['currency_id'];
+				$sale_saldo_favor->warehouse_document_type_id = 30;
+				$sale_saldo_favor->referral_serie_number = $sale['referral_serie_number'];
+				$sale_saldo_favor->referral_voucher_number = $sale['referral_voucher_number'];
+				$sale_saldo_favor->sale_value = 0;
+				$sale_saldo_favor->exonerated_value = 0;
+				$sale_saldo_favor->inaccurate_value = $total_sale_amount * -1;
+				$sale_saldo_favor->igv = 0;
+				$sale_saldo_favor->total = $total_sale_amount * -1;
+				$sale_saldo_favor->total_perception = $total_sale_amount * -1;
+				$sale_saldo_favor->balance = $total_sale_amount * -1;
+				$sale_saldo_favor->paid = 0;
+				$sale_saldo_favor->save();
 
-				if ($saldo_favor_search) {
-					$saldo_favor_search->sale_value += $total_sale_amount * -1;
-				} else {
-					$sale_saldo_favor = new Sale();
-					$sale_saldo_favor->company_id = $model['company_id'];
-					$sale_saldo_favor->sale_date = $sale_date;
-					$sale_saldo_favor->client_id = $client->id;
-					$sale_saldo_favor->client_code = $client->code;
-					$sale_saldo_favor->payment_id =  $sale['payment_id'];
-					$sale_saldo_favor->currency_id = $sale['currency_id'];
-					$sale_saldo_favor->sale_value = $total_sale_amount * -1;
-					$sale_saldo_favor->save();
-				}
+				$newSaleDetail = new SaleDetail();
+				$newSaleDetail->sale_id = $sale_saldo_favor->id;
+				$newSaleDetail->concept = 'Exceso cobrado';
+				$newSaleDetail->price_igv = 0;
+				$newSaleDetail->sale_value = 0;
+				$newSaleDetail->inaccurate_value = $total_sale_amount * -1;
+				$newSaleDetail->exonerated_value = 0;
+				$newSaleDetail->igv = 0;
+				$newSaleDetail->total = $total_sale_amount * -1;
+				$newSaleDetail->total_perception = $total_sale_amount * -1;
+				$newSaleDetail->igv_percentage = 0;
+				$newSaleDetail->igv_perception_percentage = 0;
+				$newSaleDetail->igv_percentage = 0;
+				$newSaleDetail->save();
 			}
 		}
 
@@ -787,5 +804,28 @@ class LiquidacionGlpController extends Controller
 		};
 
 		return response()->json([], 200);
+	}
+
+	public function getSaldoFavor() {
+		$client_id = request('client_id');
+
+		$saldos_favor = Sale::where('warehouse_document_type_id', 30)
+												->where('client_id', $client_id)
+												->where('total_perception', '>', 0)
+												->select('id',
+																'sale_date',
+																'referral_serie_number',
+																'referral_voucher_number',
+																'currency_id',
+																'total_perception')
+												->get();
+
+		$saldos_favor->map(function($item, $index) {
+			$item->name = $item->sale_date . ' | ' . $item->referral_serie_number . '-' . $item->referral_voucher_number . ' | ' . $item->total_perception;
+
+			return $item;
+		});
+
+		return response()->json($saldos_favor, 200);
 	}
 }
