@@ -19,7 +19,7 @@ use stdClass;
 
 class CollectionRegisterController extends Controller
 {
-    public function index() {
+  public function index() {
 		$companies = Company::select('id', 'name')->get();
 		$max_sale_date = CarbonImmutable::now()->toAtomString();
 		$payment_methods = PaymentMethod::select('id', 'name')->get();
@@ -38,7 +38,9 @@ class CollectionRegisterController extends Controller
 
 		$clients = Client::select('id', 'business_name as text','code')
 			->where('company_id', $company_id)
-			->where('business_name', 'like', '%'.$q.'%') ->orWhere('code', 'like', '%'.$q.'%')
+			->where('business_name', 'like', '%'.$q.'%')
+			->orWhere('code', 'like', '%'.$q.'%')
+			->orWhere('id', 'like', '%'.$q.'%')
 			->get();
 
 		return $clients;
