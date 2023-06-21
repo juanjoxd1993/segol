@@ -781,18 +781,15 @@ class LiquidationFinalController extends Controller
 						}
 
 						if ( $payment_method_id == 10 ) {
-							$saldo_favor_search = Sale::where('client_id', $client->id)
-																				->where('currency_id', $sale['currency_id'])
-																				->where('total', null)
-																				->first();
+							$saldo_favor_search = Sale::find($liquidation['saldo_favor_id']);
 
-							if ($sale['total'] > $saldo_favor_search->sale_value) {
-								$saldo_favor_search->sale_value = 0;
-								$saldo_favor_search->save();
+							if ($total_sale_amount > 0) {
+								$saldo_favor_search->total_perception = 0;
 							} else {
-								$saldo_favor_search->sale_value = $saldo_favor_search->sale_value - $sale['total'];
-								$saldo_favor_search->save();
-							}
+								$saldo_favor_search->total_perception = $total_sale_amount * -1;
+							};
+
+							$saldo_favor_search->save();
 						}
 
 						$client->credit_balance -= $liquidation['amount'];

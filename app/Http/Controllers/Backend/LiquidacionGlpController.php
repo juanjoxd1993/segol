@@ -367,7 +367,6 @@ class LiquidacionGlpController extends Controller
 
 		foreach ($sales as $sale) {
 			$total_sale_amount = $sale['total'];
-			$scop = $sale['scop_number'];
 
 			GlpSeries::where('id', $sale['sale_serie_id'])
 							->update(
@@ -414,7 +413,7 @@ class LiquidacionGlpController extends Controller
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
 			$sale_model->cede = 1;
 
-			if ( $sale['warehouse_document_type_id'] >= 4 && $sale['warehouse_document_type_id'] <= 9 ) {
+			if ( $sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 5 || $sale['warehouse_document_type_id'] == 18 ) {
 				switch ($sale['warehouse_document_type_id']) {
 					case 4:
 						$voucher_type_id = 5;
@@ -435,6 +434,10 @@ class LiquidacionGlpController extends Controller
 						$voucher_type_id = 3;
 						break;
 				}
+
+				$scop = $sale['scop_number'];
+
+				$sale_model->scop_number = $sale['scop_number'];
 
 				$voucher_type = VoucherType::find($voucher_type_id, ['id', 'serie_type']);
 				$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
@@ -543,8 +546,6 @@ class LiquidacionGlpController extends Controller
 				}
 
 			}
-
-			$sale_model->scop_number = $sale['scop_number'];
 
 			$sale_value = 0;
 			$igv = 0;
@@ -712,6 +713,18 @@ class LiquidacionGlpController extends Controller
 							$sale_model->payment_method_credit = 3;
 							$sale_model->save();
 
+						}
+
+						if ( $payment_method_id == 10 ) {
+							$saldo_favor_search = Sale::find($liquidation['saldo_favor_id']);
+
+							if ($total_sale_amount > 0) {
+								$saldo_favor_search->total_perception = 0;
+							} else {
+								$saldo_favor_search->total_perception = $total_sale_amount * -1;
+							};
+
+							$saldo_favor_search->save();
 						}
 
 						$client->credit_balance -= $liquidation['amount'];

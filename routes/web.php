@@ -77,6 +77,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-glp/guardar', 'LiquidacionGlpController@store')->name('dashboard.operations.voucher.liquidations_glp.store');
 	Route::post('/facturacion/liquidaciones-glp/get-guide-number', 'LiquidacionGlpController@getGuideNumber')->name('dashboard.operations.voucher.liquidations_glp.get_guide_number');
 	Route::post('/facturacion/liquidaciones-glp/get-scop-number', 'LiquidacionGlpController@getScopNumber')->name('dashboard.operations.voucher.liquidations_glp.get_scop_number');
+	Route::post('/facturacion/liquidaciones-glp/get-saldo-favor', 'LiquidacionGlpController@getSaldoFavor')->name('dashboard.operations.voucher.liquidations_glp.get_saldo_favor');
 
 	/** Facturación > Remesas */
 	Route::get('/facturacion/remesas', 'RemesasController@index')->name('dashboard.facturation.voucher.remesas');
