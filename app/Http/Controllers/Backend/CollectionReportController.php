@@ -173,6 +173,8 @@ class CollectionReportController extends Controller
 				$total->bank_account = '';
 				$total->operation_number = '';
 				$total->origin = '';
+				$total->remesa_date = '';
+				$total->payment_sede = '';
 
 				$total_sum_amount_soles += $sum_amount_soles;
 				$total_sum_amount_dolares += $sum_amount_dolares;
@@ -210,6 +212,8 @@ class CollectionReportController extends Controller
 				$total->bank_account = '';
 				$total->operation_number = '';
 				$total->origin = '';
+				$total->remesa_date = '';
+				$total->payment_sede = '';
 
 				$total_sum_amount_soles += $sum_amount_soles;
 				$total_sum_amount_dolares += $sum_amount_dolares;
@@ -239,6 +243,8 @@ class CollectionReportController extends Controller
 				$sumTotal->bank_account = '';
 				$sumTotal->operation_number = '';
 				$sumTotal->origin = '';
+				$sumTotal->remesa_date = '';
+				$sumTotal->payment_sede = '';
 
 				$response[] = $sumTotal;
 			}
