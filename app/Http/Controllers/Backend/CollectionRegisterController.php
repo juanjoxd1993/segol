@@ -280,6 +280,12 @@ class CollectionRegisterController extends Controller
 			$newLiquidation->operation_number = $operation_number;
 			$newLiquidation->detraction_number = $detraction_number;
 			$newLiquidation->amount = $to_be_assigned;
+			if ($liquidation['payment_date']) {
+				$liquidation_model->rem_date = $liquidation['payment_date'];
+			}
+			if ($liquidation['payment_sede']) {
+				$liquidation_model->payment_sede = $liquidation['payment_sede'];
+			}
 			$newLiquidation->collection = 1;
 			$newLiquidation->save();
 		}

@@ -682,6 +682,12 @@ class LiquidacionGlpController extends Controller
 						$liquidation_model->bank_account_id = $liquidation['bank_account'];
 						$liquidation_model->operation_number = $liquidation['operation_number'];
 						$liquidation_model->amount = round($liquidation['amount'], 4);
+						if ($liquidation['payment_date']) {
+							$liquidation_model->rem_date = $liquidation['payment_date'];
+						}
+						if ($liquidation['payment_sede']) {
+							$liquidation_model->payment_sede = $liquidation['payment_sede'];
+						}
 						$liquidation_model->created_at_user = Auth::user()->user;
 						$liquidation_model->updated_at_user = Auth::user()->user;
 						$liquidation_model->cede = 1;

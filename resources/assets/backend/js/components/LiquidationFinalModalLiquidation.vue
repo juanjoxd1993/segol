@@ -33,6 +33,17 @@
                                         <div id="payment_method_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
+                                <div class="col-lg-3" v-if="model.payment_method == 9">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Sede:</label>
+                                        <select class="form-control" name="payment_sede" id="payment_sede" v-model="model.payment_sede" @focus="$parent.clearErrorMsg($event)">
+                                            <option value="ATE">ATE</option>
+                                            <option value="CALLAO">CALLAO</option>
+                                            <option value="COLONIAL">COLONIAL</option>
+                                        </select>
+                                        <div id="payment_sede-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
                                 <div class="col-lg-3" v-if="model.payment_method == 10">
                                     <div class="form-group">
                                         <label class="form-control-label">Saldo a Favor:</label>
@@ -211,7 +222,8 @@ import EventBus from '../event-bus';
                     operation_number: '',
                     amount: '',
                     payment_date: '',
-                    saldo_favor_id: 0
+                    saldo_favor_id: 0,
+                    payment_sede: ''
                 },
                 liquidations: [],
                 bank_accounts: [],

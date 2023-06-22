@@ -736,6 +736,9 @@ class LiquidationFinalController extends Controller
 						if ($liquidation['payment_date']) {
 							$liquidation_model->rem_date = $liquidation['payment_date'];
 						}
+						if ($liquidation['payment_sede']) {
+							$liquidation_model->payment_sede = $liquidation['payment_sede'];
+						}
 						$liquidation_model->created_at_user = Auth::user()->user;
 						$liquidation_model->updated_at_user = Auth::user()->user;
 						$liquidation_model->cede = $warehouse_type_id;
