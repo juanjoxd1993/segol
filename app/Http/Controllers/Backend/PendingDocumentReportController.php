@@ -19,7 +19,7 @@ use stdClass;
 
 class PendingDocumentReportController extends Controller
 {
-    public function index() {
+  public function index() {
 		$companies = Company::select('id', 'name')->get();
 		$max_datetime = CarbonImmutable::now()->toAtomString();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
@@ -71,53 +71,51 @@ class PendingDocumentReportController extends Controller
 		$route_id = request('model.route_id');
 
 		$elements = Sale::leftjoin('companies', 'sales.company_id', '=', 'companies.id')
-			->leftjoin('warehouse_document_types', 'sales.warehouse_document_type_id', '=', 'warehouse_document_types.id')
-			->leftjoin('clients', 'sales.client_id', '=', 'clients.id')
-			->leftjoin('client_routes', 'clients.route_id', '=', 'client_routes.id')
-			->leftjoin('document_types', 'clients.document_type_id', '=', 'document_types.id')
-			->leftjoin('payments', 'clients.payment_id', '=', 'payments.id')
-			->leftjoin('currencies', 'sales.currency_id', '=', 'currencies.id')
-			->leftjoin('business_units', 'clients.business_unit_id', '=', 'business_units.id')
-			->when($company_id, function ($query, $company_id) {
-				return $query->where('sales.company_id', $company_id);
-			})
-			->when($route_id, function ($query, $route_id) {
-				return $query->where('clients.route_id', $route_id);
-			})
-			->when($date_type_id == 1, function ($query) use ($initial_date, $final_date) {
-				return $query->where('sales.sale_date', '>=', $initial_date->format('Y-m-d'))
-							 ->where('sales.sale_date', '<=', $final_date->format('Y-m-d'));
-			})
-			->when($date_type_id == 2, function ($query) use ($initial_date, $final_date) {
-				return $query->where('sales.expiry_date', '>=', $initial_date->startOfDay()->format('Y-m-d'))
-							 ->where('sales.expiry_date', '<=', $final_date->endOfDay()->format('Y-m-d'));
-			})
-			
-			->when($client_id, function ($query, $client_id) {
-				return $query->where('clients.id', $client_id);
-			})
-			
-			
-			->when($warehouse_document_type_id, function ($query, $warehouse_document_type_id) {
-				return $query->where('sales.warehouse_document_type_id', $warehouse_document_type_id);
-			})
-			->when($warehouse_document_type_id == null, function ($query, $warehouse_document_type_id) {
-				return $query->where('sales.warehouse_document_type_id', '!=', 27);
-			})
-			->when($business_unit_id, function ($query, $business_unit_id) {
-				return $query->where('clients.business_unit_id', $business_unit_id);
-			})
-			->where('sales.balance', '!=', 0)
-			->whereNotIn('sales.client_id', [1031,427,13326,14072,13783,14269,14274,14294,14328,14329,14258])
-			->whereNotIn('sales.warehouse_document_type_id', [1, 2, 3, 4,6,9,10,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29])
-			->select('companies.short_name as company_short_name', 'warehouse_document_types.name as warehouse_document_type_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_date', 'sales.expiry_date', 'clients.id as client_id', DB::Raw('CONCAT("R-", client_routes.id) as client_route_id'),'clients.code as client_code', 'document_types.name as document_type_name', 'clients.document_number', 'clients.business_name', 'payments.name as payment_name', 'currencies.symbol as currency_symbol', 'sales.total_perception', 'sales.balance', 'sales.paid', 'business_units.name as business_unit_name')
-			->orderBy('company_short_name')
-			->orderBy('warehouse_document_type_name')
-			->orderBy('referral_serie_number')
-			->orderBy('referral_voucher_number')
-			->orderBy('sale_date')
-			->orderBy('expiry_date')
-			->get();
+										->leftjoin('warehouse_document_types', 'sales.warehouse_document_type_id', '=', 'warehouse_document_types.id')
+										->leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+										->leftjoin('client_routes', 'clients.route_id', '=', 'client_routes.id')
+										->leftjoin('document_types', 'clients.document_type_id', '=', 'document_types.id')
+										->leftjoin('payments', 'clients.payment_id', '=', 'payments.id')
+										->leftjoin('currencies', 'sales.currency_id', '=', 'currencies.id')
+										->leftjoin('business_units', 'clients.business_unit_id', '=', 'business_units.id')
+										->when($company_id, function ($query, $company_id) {
+											return $query->where('sales.company_id', $company_id);
+										})
+										->when($route_id, function ($query, $route_id) {
+											return $query->where('clients.route_id', $route_id);
+										})
+										->when($date_type_id == 1, function ($query) use ($initial_date, $final_date) {
+											return $query->where('sales.sale_date', '>=', $initial_date->format('Y-m-d'))
+														->where('sales.sale_date', '<=', $final_date->format('Y-m-d'));
+										})
+										->when($date_type_id == 2, function ($query) use ($initial_date, $final_date) {
+											return $query->where('sales.expiry_date', '>=', $initial_date->startOfDay()->format('Y-m-d'))
+														->where('sales.expiry_date', '<=', $final_date->endOfDay()->format('Y-m-d'));
+										})
+										->when($client_id, function ($query, $client_id) {
+											return $query->where('clients.id', $client_id);
+										})
+										->when($warehouse_document_type_id, function ($query, $warehouse_document_type_id) {
+											return $query->where('sales.warehouse_document_type_id', $warehouse_document_type_id);
+										})
+										->when($warehouse_document_type_id == null, function ($query, $warehouse_document_type_id) {
+											return $query->where('sales.warehouse_document_type_id', '!=', 27);
+										})
+										->when($business_unit_id, function ($query, $business_unit_id) {
+											return $query->where('clients.business_unit_id', $business_unit_id);
+										})
+										->where('sales.balance', '!=', 0)
+										->whereNotIn('sales.client_id', [1031,427,13326,14072,13783,14269,14274,14294,14328,14329,14258])
+										->whereNotIn('sales.warehouse_document_type_id', [1, 2, 3, 4,6,9,10,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29])
+										->select('companies.short_name as company_short_name', 'warehouse_document_types.name as warehouse_document_type_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_date', 'sales.expiry_date', 'clients.id as client_id', DB::Raw('CONCAT("R-", client_routes.id) as client_route_id'),'clients.code as client_code', 'document_types.name as document_type_name', 'clients.document_number', 'clients.business_name', 'payments.name as payment_name', 'currencies.symbol as currency_symbol', 'sales.total_perception', 'sales.balance', 'sales.paid', 'business_units.name as business_unit_name')
+										->orderBy('clients.business_name')
+										->orderBy('company_short_name')
+										->orderBy('warehouse_document_type_name')
+										->orderBy('referral_serie_number')
+										->orderBy('referral_voucher_number')
+										->orderBy('sale_date')
+										->orderBy('expiry_date')
+										->get();
 
 		$response = [];
 		$last_element = count($elements) - 1;
@@ -258,16 +256,30 @@ class PendingDocumentReportController extends Controller
 			$sheet->setCellValue('P3', 'Total');
 			$sheet->setCellValue('Q3', 'Pago a cuenta');
 			$sheet->setCellValue('R3', 'Saldo');
-			$sheet->setCellValue('S3', 'Undidad Negocio');
-			$sheet->getStyle('A3:R3')->applyFromArray([
+			$sheet->setCellValue('S3', 'Saldo Acumulado');
+			$sheet->setCellValue('T3', 'Undidad Negocio');
+			$sheet->getStyle('A3:S3')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
 			]);
 
+			$acumulate = 0;
+			$before_element_client_id = 0;
+
 			$row_number = 4;
 			foreach ($response as $index => $element) {
 				$index++;
+
+				$element_client_id = $element->client_id;
+
+				if ($before_element_client_id == $element_client_id) {
+					$acumulate += $element->balance;
+				} else {
+					$before_element_client_id = $element_client_id;
+					$acumulate = $element->balance;
+				}
+
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
 				$sheet->setCellValue('C'.$row_number, $element->warehouse_document_type_name);
@@ -286,14 +298,16 @@ class PendingDocumentReportController extends Controller
 				$sheet->setCellValue('P'.$row_number, $element->total_perception);
 				$sheet->setCellValue('Q'.$row_number, $element->paid);
 				$sheet->setCellValue('R'.$row_number, $element->balance);
-				$sheet->setCellValue('S'.$row_number, $element->business_unit_name);
+				$sheet->setCellValue('S'.$row_number, $acumulate);
+				$sheet->setCellValue('T'.$row_number, $element->business_unit_name);
 
 				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('Q'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('R'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('S'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 
 				if ( $element->company_short_name == '' ) {
-					$sheet->getStyle('B'.$row_number.':R'.$row_number)->applyFromArray([
+					$sheet->getStyle('B'.$row_number.':S'.$row_number)->applyFromArray([
 						'font' => [
 							'bold' => true,
 						],
@@ -325,6 +339,7 @@ class PendingDocumentReportController extends Controller
 			$sheet->getColumnDimension('Q')->setAutoSize(true);
 			$sheet->getColumnDimension('R')->setAutoSize(true);
 			$sheet->getColumnDimension('S')->setAutoSize(true);
+			$sheet->getColumnDimension('T')->setAutoSize(true);
 
 
 			$writer = new Xls($spreadsheet);
