@@ -274,6 +274,24 @@
 								</a>
 							</li>
 
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.report_saldos_favor' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.report_saldos_favor') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte Saldos a Favor</span>
+								</a>
+							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.report_balones_press' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.report_balones_press') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte Balones Prestados</span>
+								</a>
+							</li>
+
 						</ul>
 					</div>
 				</li>

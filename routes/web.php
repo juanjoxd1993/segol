@@ -209,6 +209,14 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::get('/reporte/report-envase-general', 'ReportsEnvasesGeneralController@index')->name('dashboard.report.report_envases_general');
 	Route::post('/reporte/report-envase-general/get-stocks', 'ReportsEnvasesGeneralController@getStockArticles')->name('dashboard.report.report_envases_general.get_stocks_articles');
 
+	/** Reportes > Saldos Favor*/
+	Route::get('/reporte/report-saldos-favor', 'ReportsSaldosFavorController@index')->name('dashboard.report.report_saldos_favor');
+	Route::post('/reporte/report-saldos-favor/obtener-saldos', 'ReportsSaldosFavorController@getSaldosFavor')->name('dashboard.report.report_saldos_favor.get_saldos_favor');
+
+	/** Reportes > Balones Prestados*/
+	Route::get('/reporte/report-balones-prestados', 'ReportsBalonesPressController@index')->name('dashboard.report.report_balones_press');
+	Route::post('/reporte/report-balones-prestados/listar', 'ReportsBalonesPressController@getContainers')->name('dashboard.report.report_balones_press.get_containers');
+
 	/** Logística > Registro Movimiento de Existencias */
 	Route::get('/logistica/registro-movimiento-existencias', 'StockRegisterController@index')->name('dashboard.logistics.stock_register');
 	Route::post('/logistica/registro-movimiento-existencias/validar-formulario', 'StockRegisterController@validateForm')->name('dashboard.logistics.stock_register.validate_form');
