@@ -671,6 +671,7 @@ class LiquidacionGlpController extends Controller
 				if ( count($sale['liquidations']) > 0 ) {
 					foreach ($sale['liquidations'] as $liquidation) {
 						$total_sale_amount -= $liquidation['amount'];
+						$payment_method_id = $liquidation['payment_method']['id'];
 
 						$liquidation_model = new Liquidation();
 						$liquidation_model->sale_id = $sale_model->id;
