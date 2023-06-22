@@ -102,21 +102,21 @@ class CollectionRegisterController extends Controller
 				->where('referral_voucher_number', $referral_voucher_number)
 				->first();
 
-			if ( !$sale ) {
-				$error = new stdClass();
-				$error->title = 'Error';
-				$error->msg = 'El Documento de Referencia no existe.';
+			// if ( !$sale ) {
+			// 	$error = new stdClass();
+			// 	$error->title = 'Error';
+			// 	$error->msg = 'El Documento de Referencia no existe.';
 
-				return response()->json(['error' => $error]);
-			}
+			// 	return response()->json(['error' => $error]);
+			// }
 
-			if ( $sale->balance > 0 ) {
-				$error = new stdClass();
-				$error->title = 'Error';
-				$error->msg = 'El Documento de Referencia no cuenta con saldo.';
+			// if ( $sale->balance > 0 ) {
+			// 	$error = new stdClass();
+			// 	$error->title = 'Error';
+			// 	$error->msg = 'El Documento de Referencia no cuenta con saldo.';
 
-				return response()->json(['error' => $error]);
-			}
+			// 	return response()->json(['error' => $error]);
+			// }
 
 			request()->merge([
 				'sale' => $sale
