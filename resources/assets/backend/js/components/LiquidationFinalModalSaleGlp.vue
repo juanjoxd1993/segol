@@ -938,6 +938,13 @@
                 }
             },
             manageScopNumber() {
+                if (!(this.sale.scop_number.length >= 11 || this.sale.scop_number == '')) {
+                    
+                    $('#liquidar').prop('disabled', true);
+                    $('#scop_number-error').text('El Nro. de Scop tiene que ser mayor que 11 u omitirlo');
+                    $('#scop_number-error').show();
+                    return
+                }
                 if (
                     this.sale.warehouse_document_type_id === 4 ||
                     this.sale.warehouse_document_type_id === 5 ||
