@@ -308,6 +308,10 @@ class RegisterDocumentChargeController extends Controller
 															->where('referral_serie_number', $serie_number)
 															->max('referral_voucher_number');
 
+		if ($total_perception < 0) {
+			$total_perception = $total_perception * -1;
+		}
+
 		$sale = new Sale();
 		$sale->company_id = $company_id;
 		$sale->sale_date = $sale_date;
