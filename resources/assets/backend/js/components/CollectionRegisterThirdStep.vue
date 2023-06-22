@@ -318,12 +318,11 @@
                         let index_item = vm.items.findIndex((element) => element.id == value);
                         let index = vm.ids.findIndex((element) => element == value);
 
-                        vm.items[index_item].paid = accounting.toFixed(item.balance, 2);
+                        if (vm.items[index_item].paid <= 0) {
+                            vm.items[index_item].paid = accounting.toFixed(item.balance, 2);
+                        }
 
-                        // vm.ids = [];
-                        // vm.total_paid = 0;
                         vm.collection_register_datatable.originalDataSet = vm.items;
-                        // vm.collection_register_datatable.load();
 
                         if ( index < 0 ) {
                             vm.ids.push(parseInt(value));
