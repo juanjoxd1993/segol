@@ -819,7 +819,6 @@ class LiquidationFinalController extends Controller
 				$sale_saldo_favor->igv = 0;
 				$sale_saldo_favor->total = $total_sale_amount * -1;
 				$sale_saldo_favor->total_perception = $total_sale_amount * -1;
-				$sale_saldo_favor->balance = $total_sale_amount * -1;
 				$sale_saldo_favor->paid = 0;
 				$sale_saldo_favor->save();
 

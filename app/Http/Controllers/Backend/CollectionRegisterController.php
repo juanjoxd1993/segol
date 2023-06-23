@@ -172,6 +172,12 @@ class CollectionRegisterController extends Controller
 			$liquidation->operation_number = $operation_number;
 			$liquidation->detraction_number = $detraction_number;
 			$liquidation->amount = $item['paid'];
+			if ($liquidation['payment_date']) {
+				$liquidation_model->rem_date = $liquidation['payment_date'];
+			}
+			if ($liquidation['payment_sede']) {
+				$liquidation_model->payment_sede = $liquidation['payment_sede'];
+			}
 			$liquidation->collection = 1;
 			$liquidation->created_at_user = Auth::user()->user;
 			$liquidation->updated_at_user = Auth::user()->user;
@@ -247,7 +253,6 @@ class CollectionRegisterController extends Controller
 			$newSale->igv = 0;
 			$newSale->total = $to_be_assigned;
 			$newSale->total_perception = $to_be_assigned;
-			$newSale->balance = $to_be_assigned;
 			$newSale->paid = 0;
 			$newSale->save();
 
@@ -280,12 +285,6 @@ class CollectionRegisterController extends Controller
 			$newLiquidation->operation_number = $operation_number;
 			$newLiquidation->detraction_number = $detraction_number;
 			$newLiquidation->amount = $to_be_assigned;
-			if ($liquidation['payment_date']) {
-				$liquidation_model->rem_date = $liquidation['payment_date'];
-			}
-			if ($liquidation['payment_sede']) {
-				$liquidation_model->payment_sede = $liquidation['payment_sede'];
-			}
 			$newLiquidation->collection = 1;
 			$newLiquidation->save();
 		}
