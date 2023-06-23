@@ -68,7 +68,7 @@ class FinanzasDetailTotalReportController extends Controller
 		$totals_total = 0;
 		$totals_sum_total = 0;
 
-		$warehouse_document_type_ids = [13,5,7,4,22,23];
+		$warehouse_document_type_ids = [13,5,7];
 		$client_ids = [1031, 427, 13326, 13775, 14072,14258];
 
 		$total_venta_del_dia = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
@@ -80,26 +80,33 @@ class FinanzasDetailTotalReportController extends Controller
 															->sum('sales.total_perception');
 
 		$efective = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+		                                ->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
 										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 										->whereIn('sales.cede', $warehouse_types)
 										->whereNotIn('sales.client_id', $client_ids)
-										->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',  $initial_date)
-										->select('sales.efective')
-										->sum('sales.efective');
+										->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=',  $initial_date)
+										->whereIn('liquidations.payment_method_id', [1,9])
+										->where('liquidations.collection',0)
+										->select('liquidations.amount')
+										->sum('liquidations.amount');
 
 		$deposit = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+									->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
 									->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 									->whereIn('sales.cede', $warehouse_types)
 									->whereNotIn('sales.client_id', $client_ids)
-									->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
-									->select('sales.deposit')
-									->sum('sales.deposit');
+									->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $initial_date)
+									->whereIn('liquidations.payment_method_id', [2,3])
+									->where('liquidations.collection',0)
+									->select('liquidations.amount')
+									->sum('liquidations.amount');
 
 		$credit = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 								->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 								->whereIn('sales.cede', $warehouse_types)
 								->whereNotIn('sales.client_id', $client_ids)
 								->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
+								->whereIn('sales.warehouse_document_type_id', [13,7,5])
 								->select('sales.pre_balance')
 								->sum('sales.pre_balance');
 
@@ -112,7 +119,7 @@ class FinanzasDetailTotalReportController extends Controller
 																	->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $initial_date)
 																	->whereIn('liquidations.cede', $warehouse_types)
 																	->whereNotIn('sales.client_id', $client_ids)	 
-																	->where('liquidations.payment_method_id',[1])
+																	->where('liquidations.payment_method_id',[1,9])
 																	->Where('liquidations.collection',[1])
 																	->select('liquidations.amount')
 																	->sum('liquidations.amount');
@@ -122,7 +129,7 @@ class FinanzasDetailTotalReportController extends Controller
 																	->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $initial_date)
 																	->whereIn('liquidations.cede', $warehouse_types)
 																	->whereNotIn('sales.client_id', $client_ids)	 
-																	->where('liquidations.payment_method_id',[2])
+																	->where('liquidations.payment_method_id',[2,3])
 																	->Where('liquidations.collection',[1])
 																	->select('liquidations.amount')				
 																	->sum('liquidations.amount');
@@ -334,7 +341,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 			// Credito
 			$sheet->setCellValue('F8', 'CREDITO');
-			$sheet->setCellValue('G9', $credit );
+			$sheet->setCellValue('G8', $credit );
 
 			// Total liquidado
 			$sheet->setCellValue('F10', 'TOTAL LIQUIDADO');
@@ -406,13 +413,13 @@ class FinanzasDetailTotalReportController extends Controller
 			$sheet->setCellValue('F28', 'TOTAL EFECTIVO DEL DIA');
 			$sheet->setCellValue('G28', $total_efective_day );
 
-			// Remesa Hermes
+		/*	// Remesa Hermes
 			$sheet->setCellValue('F30', 'REMESA HERMES');
 			$sheet->setCellValue('G30', $remesa_hermes );
 
 			// Cuadre
 			$sheet->setCellValue('F32', 'CUADRE');
-			$sheet->setCellValue('G32', $cuadre );
+			$sheet->setCellValue('G32', $cuadre );*/
 
 			// $sheet->getStyle('D'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 
