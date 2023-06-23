@@ -319,8 +319,13 @@
                         let index = vm.ids.findIndex((element) => element == value);
 
                         if (vm.items[index_item].paid <= 0) {
-                            vm.items[index_item].paid = accounting.toFixed(item.balance, 2);
-                        }
+                            const rest = vm.model.amount - item.balance;
+                            if (rest < 0) {
+                                vm.items[index_item].paid = accounting.toFixed(vm.model.amount, 2);
+                            } else {
+                                vm.items[index_item].paid = accounting.toFixed(item.balance, 2);
+                            };
+                        };
 
                         vm.collection_register_datatable.originalDataSet = vm.items;
 
