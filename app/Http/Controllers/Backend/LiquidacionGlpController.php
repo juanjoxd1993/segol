@@ -28,6 +28,7 @@ use App\WarehouseMovementDetail;
 use Carbon\Carbon;
 use App\Payment;
 use App\WarehouseType;
+use App\Employee;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use DB;
@@ -359,9 +360,11 @@ class LiquidacionGlpController extends Controller
 		$sales = request('sales');
 
 		$rate = Rate::where('description', 'IGV')
-			->where('state', 1)
-			->select('id', 'value')
-			->first();
+								->where('state', 1)
+								->select('id', 'value')
+								->first();
+
+		$employe = Employee::find($model['warehouse_account_id']);
 
 		$igv_percentage = ( $rate->value / 100 ) + 1;
 
@@ -411,6 +414,10 @@ class LiquidacionGlpController extends Controller
 			$sale_model->guide_series = $sale['referral_guide_series'];
 			$sale_model->guide_number = $sale['referral_guide_number'];
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
+			$sale_model->warehouse_account_type_id = 3;
+			$sale_model->account_id = $employe->id;
+			$sale_model->account_document_number = $employe->document_number;
+			$sale_model->account_name = $employe->first_name . ' ' . $employe->last_name;
 			$sale_model->cede = 1;
 
 			if ( $sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 5 || $sale['warehouse_document_type_id'] == 18 ) {
@@ -846,5 +853,28 @@ class LiquidacionGlpController extends Controller
 		});
 
 		return response()->json($saldos_favor, 200);
+	}
+
+	public function getAccounts()
+	{
+		$company_id = request('company_id');
+		$q = request('q');
+
+		$clients = Employee::select('id', 'first_name', 'last_name')
+			->where(function ($query) use ($q) {
+				$query->where('first_name', 'like', '%' . $q . '%')
+					->orWhere('last_name', 'like', '%' . $q . '%');
+			})
+			->get();
+
+		$clients->map(function ($item, $index) {
+			$item->text = $item->first_name . ' ' . $item->last_name;
+			unset($item->first_name);
+			unset($item->last_name);
+
+			return $item;
+		});
+
+		return $clients;
 	}
 }
