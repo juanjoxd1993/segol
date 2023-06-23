@@ -44,7 +44,7 @@
                             <div id="payment_method_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3" v-if="model.payment_method == 9">
+                    <div class="col-lg-3" v-if="model.payment_method_id == 9">
                         <div class="form-group">
                             <label class="form-control-label">Sede:</label>
                             <select class="form-control" name="payment_sede" id="payment_sede" v-model="model.payment_sede" @focus="$parent.clearErrorMsg($event)">
@@ -53,6 +53,23 @@
                                 <option value="COLONIAL">COLONIAL</option>
                             </select>
                             <div id="payment_sede-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3" v-if="model.payment_method_id == 9">
+                        <div class="form-group">
+                            <label class="form-control-label">Fecha Final:</label>
+                            <datetime
+                                v-model="model.payment_date"
+                                placeholder="Selecciona una Fecha"
+                                :format="'dd-LL-yyyy'"
+                                input-id="since_date"
+                                name="since_date"
+                                value-zone="America/Lima"
+                                zone="America/Lima"
+                                class="form-control"
+                                @focus="$parent.clearErrorMsg($event)">
+                            </datetime>
+                            <div id="payment_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
 					<div class="col-lg-3" v-if="model.payment_method_id === 10">

@@ -9,6 +9,7 @@
 		:warehouses_types = "{{ $warehouse_types }}"
 		:url = "'{{ route('dashboard.operations.voucher.liquidations_glp.validate_form') }}'"
 		:url_get_warehouse_movements = "'{{ route('dashboard.operations.voucher.liquidations_glp.get_warehouse_movements') }}'"
+		:url_get_accounts = "'{{ route('dashboard.operations.voucher.liquidations_glp.get_accounts') }}'"
 	></liquidation-final-form-glp>
 
 	<liquidation-final-table-glp

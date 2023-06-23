@@ -938,10 +938,10 @@
                 }
             },
             manageScopNumber() {
-                if (!(this.sale.scop_number.length >= 11 || this.sale.scop_number == '')) {
+                if (!(this.sale.scop_number.length === 11 || this.sale.scop_number == '')) {
                     
                     $('#liquidar').prop('disabled', true);
-                    $('#scop_number-error').text('El Nro. de Scop tiene que ser mayor que 11 u omitirlo');
+                    $('#scop_number-error').text('El Nro. de Scop tiene que ser de 11 digitos u omitirlo');
                     $('#scop_number-error').show();
                     return
                 }
