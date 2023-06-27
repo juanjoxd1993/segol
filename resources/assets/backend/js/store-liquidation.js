@@ -135,8 +135,8 @@ export default {
 
 					const obj = { ...balon }
 
-					obj.retorno_press += rest_retorno_press;
-					obj.prestamo += rest_prestamo;
+					obj.retorno_press = parseInt(obj.retorno_press) + parseInt(rest_retorno_press);
+					obj.prestamo = parseInt(obj.prestamo) + parseInt(rest_prestamo);
 
 					state.balones[balon_index] = obj;
 				} else {
