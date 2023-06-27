@@ -137,6 +137,12 @@
                             width: 200,
                             textAlign: 'left',
                         },
+                        {
+                            field: 'credit_limit_days',
+                            title: 'Dias de Credito',
+                            width: 80,
+                            textAlign: 'center',
+                        },
 						{
                             field: 'warehouse_document_type_name',
                             title: 'Tipo',

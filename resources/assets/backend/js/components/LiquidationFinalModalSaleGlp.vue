@@ -260,6 +260,7 @@
                     payment_id: '',
 					currency_id: 1,
                     credit_limit: '',
+                    credit_limit_days: '',
                     scop_number: '',
                     sale_serie_id: '',
                     sale_serie_num: '',
@@ -307,6 +308,7 @@
                 this.sale.payment_id = '';
                 this.sale.currency_id = 1;
                 this.sale.credit_limit = '';
+                this.sale.credit_limit_days = '';
 
 				this.model = {
                     article_id: '',
@@ -636,7 +638,8 @@
 								total_perception: '',
 								payment_id: '',
 								currency_id: 1,
-                              credit_limit: '',
+                                credit_limit: '',
+                                credit_limit_days: '',
 							};
 						}
 					}).catch(error => {
@@ -772,6 +775,7 @@
 								payment_id: '',
 								currency_id: 1,
                                 credit_limit: '',
+                                credit_limit_days: '',
 							};
 
 							$('#modal-sale').modal('hide');
@@ -812,6 +816,7 @@
                     payment_id: '',
 					currency_id: 1,
                     credit_limit: '',
+                    credit_limit_days: '',
                 };
 
 				$('#modal-sale').modal('hide');
@@ -872,6 +877,7 @@
                     vm.sale.payment_id = e.params.data.payment_id;
                     vm.sale.perception_percentage = e.params.data.perception_percentage.value;
                     vm.sale.credit_limit = e.params.data.credit_limit;
+                    vm.sale.credit_limit_days = e.params.data.credit_limit_days;
 
                     vm.model.article_id = '';
                     vm.model.article_name = '';
@@ -889,6 +895,7 @@
                     vm.sale.document_type_id = '';
                     vm.sale.payment_id = '';
                     vm.sale.credit_limit = '';
+                    vm.sale.credit_limit_days = '';
                     vm.sale.perception_percentage = 0;
                     vm.sale.total = 0;
                     vm.sale.perception = 0;
