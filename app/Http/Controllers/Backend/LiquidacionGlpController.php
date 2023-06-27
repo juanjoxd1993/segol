@@ -186,14 +186,14 @@ class LiquidacionGlpController extends Controller
 			$q = request('q');
 
 			if ( isset($client_id) ) {
-					$elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit')
+					$elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit','credit_limit_days')
 							->where('id', $client_id)
 							->first();
 
 					$elements->text = $elements->business_name;
 					unset($elements->business_name);
 			} else {
-					$elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id', 'credit_limit')
+					$elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id', 'credit_limit','credit_limit_days')
 							->where('company_id', $company_id)
 							->where('business_name', 'like', '%'.$q.'%') ->orWhere('id', 'like', '%'.$q.'%')
 							->orderBy('business_name', 'asc')
@@ -395,7 +395,7 @@ class LiquidacionGlpController extends Controller
 				->select('id', 'address')
 				->first();
 
-			$client->credit_limit_days = $client->credit_limit_days ? $client->credit_limit_days : 0;
+		//	$client->credit_limit_days = $client->credit_limit_days ? $client->credit_limit_days : 0;
 			$sale_date = date('Y-m-d', strtotime($sale['sale_date']));
 			$expiry_date = $sale_date;
 			if ( $sale['payment_id'] == 2 ) {
@@ -418,6 +418,7 @@ class LiquidacionGlpController extends Controller
 			$sale_model->account_id = $employe->id;
 			$sale_model->account_document_number = $employe->document_number;
 			$sale_model->account_name = $employe->first_name . ' ' . $employe->last_name;
+			$sale_model->credit_limit_days = $client->credit_limit_days;
 			$sale_model->cede = 1;
 
 			if ( $sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 5 || $sale['warehouse_document_type_id'] == 18 ) {
@@ -769,6 +770,7 @@ class LiquidacionGlpController extends Controller
 				$sale_saldo_favor->igv = 0;
 				$sale_saldo_favor->total = $total_sale_amount * -1;
 				$sale_saldo_favor->total_perception = $total_sale_amount * -1;
+				$sale_saldo_favor->balance = 0;
 				$sale_saldo_favor->paid = 0;
 				$sale_saldo_favor->save();
 
