@@ -442,9 +442,13 @@ class LiquidacionGlpController extends Controller
 						break;
 				}
 
-				$scop = $sale['scop_number'];
+				$scop = '';
 
-				$sale_model->scop_number = $sale['scop_number'];
+				if (array_key_exists('scop_number', $sale)) {
+					$scop = $sale['scop_number'];
+				};
+
+				$sale_model->scop_number = $scop;
 
 				$voucher_type = VoucherType::find($voucher_type_id, ['id', 'serie_type']);
 				$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
