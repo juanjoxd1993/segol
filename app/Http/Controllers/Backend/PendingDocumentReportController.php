@@ -8,6 +8,7 @@ use App\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Sale;
+use App\Manager;
 use App\ClientRoute;
 use App\WarehouseDocumentType;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ use Carbon\CarbonImmutable;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use Carbon\Carbon;
 use stdClass;
 
 class PendingDocumentReportController extends Controller
@@ -108,7 +110,7 @@ class PendingDocumentReportController extends Controller
 										->where('sales.balance', '!=', 0)
 										->whereNotIn('sales.client_id', [1031,427,13326,14072,13783,14269,14274,14294,14328,14329,14258])
 										->whereNotIn('sales.warehouse_document_type_id', [1, 2, 3, 4,6,9,10,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29])
-										->select('companies.short_name as company_short_name', 'warehouse_document_types.name as warehouse_document_type_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_date', 'sales.expiry_date', 'clients.id as client_id', DB::Raw('CONCAT("R-", client_routes.id) as client_route_id'),'clients.code as client_code', 'document_types.name as document_type_name', 'clients.document_number', 'clients.business_name', 'payments.name as payment_name', 'currencies.symbol as currency_symbol', 'sales.total_perception', 'sales.balance', 'sales.paid','sales.account_name as account_name','business_units.name as business_unit_name','managers.name as manager')
+										->select('companies.short_name as company_short_name', 'warehouse_document_types.name as warehouse_document_type_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_date', 'sales.expiry_date', 'clients.id as client_id', DB::Raw('CONCAT("R-", client_routes.id) as client_route_id'),'clients.code as client_code', 'document_types.name as document_type_name', 'clients.document_number', 'clients.business_name', 'payments.name as payment_name', 'currencies.symbol as currency_symbol', 'sales.total_perception', 'sales.balance', 'sales.paid','sales.account_name','business_units.name as business_unit_name','managers.name as manager')
 										->orderBy('clients.business_name')
 										->orderBy('company_short_name')
 										->orderBy('warehouse_document_type_name')
@@ -131,12 +133,10 @@ class PendingDocumentReportController extends Controller
 		foreach ($elements as $index => $element) {
 			if ( $index == 0 ) {
 				$company_short_name = $element->company_short_name;
+				
 			}
-            
-			$date1 = new DateTime("now");
-			$date2 = $total->expiry_date;
-            $diff = $date1->diff($date2);
-			$days= $diff->days;
+
+			
 
 			if ( $company_short_name !== $element->company_short_name ) {
 				$total = new stdClass();
@@ -154,10 +154,13 @@ class PendingDocumentReportController extends Controller
 				$total->business_name = 'TOTAL ' . $company_short_name;
 				$total->payment_name = '';
 				$total->currency_symbol = '';
+				$total->manager = '';
 				$total->total_perception = number_format($total_company_total, 2, '.', '');
 				$total->balance = number_format($total_company_balance, 2, '.', '');
 				$total->paid = number_format($total_company_paid, 2, '.', '');
 				$total->business_unit_name = '';
+				$total->days = '';
+				
 
 				$grand_total_total += $total_company_total;
 				$grand_total_balance += $total_company_balance;
@@ -165,13 +168,12 @@ class PendingDocumentReportController extends Controller
 				$total_company_total = 0;
 				$total_company_balance = 0;
 				$total_company_paid = 0;
-				$total->account_name = '';
-				$total->manager = '';
-				$total->days = '';
+				
 
 				$response[] = $total;
 
 				$company_short_name = $element->company_short_name;
+				
 			}
 
 			$response[] = $element;
@@ -195,10 +197,15 @@ class PendingDocumentReportController extends Controller
 				$total->business_name = 'TOTAL ' . $company_short_name;
 				$total->payment_name = '';
 				$total->currency_symbol = '';
+				$total->manager = '';
+				$total->days = '';
 				$total->total_perception = number_format($total_company_total, 2, '.', '');
 				$total->balance = number_format($total_company_balance, 2, '.', '');
 				$total->paid = number_format($total_company_paid, 2, '.', '');
 				$total->business_unit_name = '';
+				
+			//	$total->account_name = '';
+				
 
 				$grand_total_total += $total_company_total;
 				$grand_total_balance += $total_company_balance;
@@ -207,10 +214,8 @@ class PendingDocumentReportController extends Controller
 				$total_company_balance = 0;
 				$total_company_paid = 0;
 
-				$total->account_name = '';
-				$total->manager = '';
-				$total->days = '';
-
+				
+			
 				$response[] = $total;
 
 				$sumTotal = new stdClass();
@@ -228,14 +233,13 @@ class PendingDocumentReportController extends Controller
 				$sumTotal->business_name = 'TOTAL GENERAL';
 				$sumTotal->payment_name = '';
 				$sumTotal->currency_symbol = '';
+				$sumTotal->manager = '';
+				$sumTotal->days = '';
 				$sumTotal->total_perception = number_format($grand_total_total, 2, '.', '');
 				$sumTotal->balance = number_format($grand_total_balance, 2, '.', '');
 				$sumTotal->paid = number_format($grand_total_paid, 2, '.', '');
 				$sumTotal->business_unit_name = '';
-
-				$sumtotal->account_name = '';
-				$sumtotal->manager = '';
-				$sumtotal->days = '';
+				
 
 				$response[] = $sumTotal;
 			}
@@ -244,7 +248,7 @@ class PendingDocumentReportController extends Controller
 		if ( $export ) {
 			$spreadsheet = new Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
-			$sheet->mergeCells('A1:V1');
+			$sheet->mergeCells('A1:W1');
 			$sheet->setCellValue('A1', 'DOCUMENTOS PENDIENTES '.$initial_date->format('d/m/Y').' AL '.$final_date->format('d/m/Y').'  '.CarbonImmutable::now()->format('d/m/Y H:m:s'));
 			$sheet->getStyle('A1')->applyFromArray([
 				'font' => [
@@ -301,6 +305,19 @@ class PendingDocumentReportController extends Controller
 					$acumulate = $element->balance;
 				}
 
+
+				$date1 = Carbon::now();
+				$date2 = Carbon::parse($element->expiry_date);
+
+            	$diff = $date1->diffInDays($date2);
+		
+				if($date1 > $date2){
+
+				$days= $diff;
+				} else{
+				$days= 0;
+		    	}
+
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
 				$sheet->setCellValue('C'.$row_number, $element->warehouse_document_type_name);
@@ -321,7 +338,7 @@ class PendingDocumentReportController extends Controller
 				$sheet->setCellValue('R'.$row_number, $element->balance);
 				$sheet->setCellValue('S'.$row_number, $acumulate);
 				$sheet->setCellValue('T'.$row_number, $element->business_unit_name);
-				$sheet->setCellValue('U'.$row_number, $element->account_name);
+			//	$sheet->setCellValue('U'.$row_number, $element->account_name);
 				$sheet->setCellValue('V'.$row_number, $element->manager);
 				$sheet->setCellValue('W'.$row_number, $days);
 				
