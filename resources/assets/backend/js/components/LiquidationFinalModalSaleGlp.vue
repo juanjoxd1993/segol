@@ -264,6 +264,7 @@
                     scop_number: '',
                     sale_serie_id: '',
                     sale_serie_num: '',
+                    sale_date: null
                 },
                 filterArticles: [],
                 edit_flag: false,
@@ -567,6 +568,15 @@
                         showCancelButton: false,
                         confirmButtonText: 'Ok',
                     });
+                } else if ( !(this.sale.sale_date) ) {
+                    Swal.fire({
+                        title: '¡Error!',
+                        text: 'Debe elegir una fecha',
+                        type: "error",
+                        heightAuto: false,
+                        showCancelButton: false,
+                        confirmButtonText: 'Ok',
+                    });
                 } else {
 					EventBus.$emit('loading', true);
                     
@@ -640,6 +650,7 @@
 								currency_id: 1,
                                 credit_limit: '',
                                 credit_limit_days: '',
+                                sale_date: null
 							};
 						}
 					}).catch(error => {
