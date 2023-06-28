@@ -14,9 +14,10 @@ use App\Sale;
 use App\SaleDetail;
 use App\WarehouseDocumentType;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Backend\gmp_neg;
 use stdClass;
+use App\WarehouseTypeInUser;
+use Auth;
 
 class CollectionRegisterController extends Controller
 {
@@ -141,6 +142,14 @@ class CollectionRegisterController extends Controller
 	}
 
 	public function store() {
+		$user_id = Auth::user()->id;
+
+		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+																							->where('user_id', $user_id)
+																							->first();
+
+		// Este valor debe ser dependiendo del almacen que tenga asignado el usuario
+		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 		$company_id = request('model.company_id');
 		$client_id = request('model.client_id');
 		$sale_date = date('Y-m-d', strtotime(request('model.sale_date')));
@@ -179,6 +188,7 @@ class CollectionRegisterController extends Controller
 				$liquidation_model->payment_sede = $liquidation['payment_sede'];
 			}
 			$liquidation->collection = 1;
+			$liquidation->cede = $warehouse_type_id;
 			$liquidation->created_at_user = Auth::user()->user;
 			$liquidation->updated_at_user = Auth::user()->user;
 			$liquidation->save();
