@@ -730,7 +730,7 @@ class LiquidationFinalController extends Controller
 						$liquidation_model->payment_method_id = $payment_method_id;
 						$liquidation_model->currency_id = $liquidation['currency']['id'];
 						$liquidation_model->exchange_rate = $liquidation['exchange_rate'];
-						$liquidation_model->bank_account_id = $liquidation['bank_account'];
+						$liquidation_model->bank_account_id = $liquidation['bank_account']['id'];
 						$liquidation_model->operation_number = $liquidation['operation_number'];
 						$liquidation_model->amount = round($liquidation['amount'], 4);
 						if ($liquidation['payment_date']) {
