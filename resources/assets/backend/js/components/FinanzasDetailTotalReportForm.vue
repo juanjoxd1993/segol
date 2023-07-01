@@ -93,7 +93,7 @@
                     warehouse_type_index: 0,
                 },
                 warehouse_types: [
-                    [1,4,13],
+                    [1,4,13,''],
                     [4],
                     [13],
                     [1],
