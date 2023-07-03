@@ -45,7 +45,7 @@
                                 <!-- <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id >= 4 && this.sale.warehouse_document_type_id <= 9"> -->
                                 <div class="col-lg-3">
                                     <div class="form-group">
-                                        <label class="form-control-label">Serie de Referencia:</label>
+                                        <label class="form-control-label">Correlativo:</label>
                                         <input type="text" readonly class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="sale.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
                                         <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                                     </div>
