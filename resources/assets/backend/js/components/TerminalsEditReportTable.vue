@@ -94,7 +94,7 @@
             }.bind(this));
         },
         watch: {
-            
+
         },
         computed: {
 
@@ -179,13 +179,11 @@
                             title: 'Guía Remisión',
                             width: 80,
                         },
-					
                         {
                             field: 'date',
                             title: 'Fecha de Emisión',
                             width: 80,
                         },
-                       
                         {
                             field: 'article_name',
                             title: 'Descripción',
@@ -197,15 +195,12 @@
                             width: 80,
                             textAlign: 'right'
                         },
-                                 
                         {
                             field: 'scop_number',
                             title: 'SCOP',
                             width: 100,
                             textAlign: 'left'
                         },
-                        
-                       
                         {
                             field: 'id',
                             title: 'ID',
@@ -218,7 +213,6 @@
                                 hidden: 'xl'
                             }
                         },
-					
                         {
                             field: 'options',
                             title: 'Opciones',
@@ -229,14 +223,13 @@
                             textAlign: 'right',
 							class: 'td-sticky',
                             template: function(row) {
-								if ( row.state == 0 ) {
-									let actions = '<div class="actions">';
-										actions += '<a href="#" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">';
-											actions += '<i class="la la-edit"></i>';
-										actions += '</a>';
-									actions += '</div>';
-                                
-									return actions;
+                                if ( row.state == 0 ) {
+                                    let actions = '<div class="actions">';
+                                    actions += '<a href="#" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">';
+                                    actions += '<i class="la la-edit"></i>';
+                                    actions += '</a>';
+                                    actions += '</div>';
+                                    return actions;
 								} else {
 									return '';
 								}

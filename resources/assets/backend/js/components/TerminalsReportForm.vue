@@ -13,7 +13,7 @@
         <form class="kt-form" @submit.prevent="formController(url, $event)">
             <div class="kt-portlet__body">
                 <div class="row">
-                
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
@@ -24,6 +24,7 @@
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Fecha Inicial:</label>
@@ -42,6 +43,7 @@
                             <div id="initial_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Fecha Final:</label>
@@ -60,7 +62,7 @@
                             <div id="final_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-              
+
                 </div>
             </div>
             <div class="kt-portlet__foot">
@@ -88,18 +90,18 @@
 
     export default {
         props: {
-      /*     movement_classes: {
-                type: Array,
-                default: ''
-            },
-            movement_types: {
-                type: Array,
-                default: ''
-            },
-            warehouse_types: {
-                type: Array,
-                default: ''
-            }, */
+            // movement_classes: {
+            //     type: Array,
+            //     default: ''
+            // },
+            // movement_types: {
+            //     type: Array,
+            //     default: ''
+            // },
+            // warehouse_types: {
+            //     type: Array,
+            //     default: ''
+            // },
             companies: {
                 type: Array,
                 default: ''
@@ -108,34 +110,34 @@
                 type: String,
                 default: ''
             },
-         /*   warehouse_account_types: {
-                type: Array,
-                default: ''
-            },
-            warehouse_document_types: {
-                type: Array,
-                default: ''
-            },*/
+            // warehouse_account_types: {
+            //     type: Array,
+            //     default: ''
+            // },
+            // warehouse_document_types: {
+            //     type: Array,
+            //     default: ''
+            // },
             url: {
                 type: String,
                 default: ''
             },
-        /*    url_get_accounts: {
-                type: String,
-                default: ''
-            },*/
+            // url_get_accounts: {
+            //     type: String,
+            //     default: ''
+            // },
         },
         data() {
             return {
                 model: {
-                 //   movement_class_id: '',
-                 //   movement_type_id: '',
-                //  warehouse_type_id: '',
+                    // movement_class_id: '',
+                    // movement_type_id: '',
+                    // warehouse_type_id: '',
                     company_id: '',
                     initial_date: '',
                     final_date: this.current_date,
-                //    warehouse_account_type_id: '',
-                //    warehouse_account_id: '',
+                    // warehouse_account_type_id: '',
+                    // warehouse_account_id: '',
                     // referral_guide_series: '',
                     // referral_guide_number: '',
                     // warehouse_document_type_id: '',

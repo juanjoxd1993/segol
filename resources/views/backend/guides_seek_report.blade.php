@@ -7,7 +7,6 @@
 	<guides-seek-report-form
 		:companies = "{{ $companies }}"
 		:url = "'{{ route('dashboard.operations.guides_seek.validate_form') }}'"
-		
 	></guides-seek-report-form>
 	
 	<guides-seek-report-table

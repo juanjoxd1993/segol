@@ -25,8 +25,7 @@
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    
-                 
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
@@ -241,8 +240,7 @@
                     referral_guide_number: '',
                     scop_number: '',
                     license_plate: '',
-               //     route_id:'',
-
+                    // route_id:'',
                 },
             }
         },
@@ -372,6 +370,10 @@
                 var target = $(event.target);
                 var url = url;
                 var fd = new FormData(event.target);
+
+                const warehouse_account_type_id = this.model.warehouse_account_type_id;
+
+                this.$store.commit('registerWarehouseAccountTypeId', warehouse_account_type_id);
 
                 EventBus.$emit('loading', true);
                 axios.post(url, fd, {

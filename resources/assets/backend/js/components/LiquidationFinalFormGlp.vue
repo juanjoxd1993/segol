@@ -14,6 +14,7 @@
             <div class="kt-portlet__body">
                 <div class="row">
                     <input type="hidden" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id">
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
@@ -24,6 +25,7 @@
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Almacén:</label>
@@ -34,24 +36,17 @@
                             <div id="warehouse_Type-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Nº de Parte:</label>
-                            <select class="form-control" name="warehouse_movement_id" id="warehouse_movement_id" v-model="model.warehouse_movement_id" @focus="$parent.clearErrorMsg($event)" @change="onChange">
+                            <label class="form-control-label">Chofer:</label>
+                            <select class="form-control kt-select2" name="warehouse_account_id" id="warehouse_account_id" v-model="model.warehouse_account_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
-                                <!-- Algunos scop_number eran null -->
-                                <!-- <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id" v-bind:key="warehouse_movement.id">#{{ warehouse_movement.movement_number }} | {{ warehouse_movement.referral_guide_series }}-{{ warehouse_movement.referral_guide_number }} | {{ warehouse_movement.stock_pend}} | {{ warehouse_movement.created_at }}</option> -->
-                                <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id" v-bind:key="warehouse_movement.id">#{{ warehouse_movement.movement_number }} | {{ warehouse_movement.scop_number }} | {{ warehouse_movement.stock_pend}} | {{ warehouse_movement.created_at }}</option>
                             </select>
-                            <div id="warehouse_movement_id-error" class="error invalid-feedback"></div>
+                            <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Tracto:</label>
-                            <input type="text" class="form-control" name="referral_tracto" id="referral_tracto" v-model="license_plate_2" @focus="$parent.clearErrorMsg($event)">
-                        </div>
-                    </div>
+
                 </div>
             </div>
             <div class="kt-portlet__foot">
@@ -90,6 +85,10 @@
                 type: String,
                 default: ''
             },
+            url_get_accounts: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -97,6 +96,7 @@
                     company_id: '',
                     warehouse_movement_id: '',
                     warehouse_type_id: '',
+                    warehouse_account_id: '',
                 },
                 warehouse_movements: [],
                 license_plate_2: '',
@@ -117,30 +117,34 @@
                     warehouse_type_id: 5,
 				}
             }.bind(this));
+            this.newSelect2();
         },
         watch: {
-            'model.warehouse_type_id': function(val) {
-                if ( val != '' ) {
-                    EventBus.$emit('loading', true);
+            // 'model.warehouse_type_id': function(val) {
+            //     if ( val != '' ) {
+            //         EventBus.$emit('loading', true);
 
-                    axios.post(this.url_get_warehouse_movements, {
-                        company_id: this.model.company_id,
-                        warehouse_type_id: this.model.warehouse_type_id,
-                    }).then(response => {
-                        // console.log(response);
-                        this.model.warehouse_movement_id = '';
-                        this.warehouse_movements = response.data;
+            //         this.$store.commit('setWarehouseTypeId', this.model.warehouse_type_id);
 
-                        EventBus.$emit('loading', false);
-                    }).catch(error => {
-                        console.log(error);
-                        console.log(error.response)
-                    });
-                } else {
-                    this.model.warehouse_movement_id = '';
-                    this.warehouse_movements = '';
-                }
-            }
+            //         axios.post(this.url_get_warehouse_movements, {
+            //             company_id: this.model.company_id,
+            //             warehouse_type_id: this.model.warehouse_type_id,
+            //         }).then(response => {
+            //             // console.log(response);
+            //             this.model.warehouse_movement_id = '';
+            //             this.warehouse_movements = response.data;
+
+            //             EventBus.$emit('loading', false);
+            //         }).catch(error => {
+            //             console.log(error);
+            //             console.log(error.response)
+            //         });
+            //     } else {
+            //         this.$store.commit('setWarehouseTypeId', 0);
+            //         this.model.warehouse_movement_id = '';
+            //         this.warehouse_movements = '';
+            //     }
+            // }
         },
         computed: {
 
@@ -190,7 +194,65 @@
                 const license_plate_2 = warehouse_movement.license_plate_2;
 
                 this.license_plate_2 = license_plate_2;
-            }
+            },
+            newSelect2: function() {
+                let vm = this;
+                let token = document.head.querySelector('meta[name="csrf-token"]').content;
+                $("#warehouse_account_id").select2({
+                    placeholder: "Buscar",
+                    allowClear: true,
+                    language: {
+                        noResults: function() {
+                            return 'No hay resultados';
+                        },
+                        searching: function() {
+                            return 'Buscando...';
+                        },
+                        inputTooShort: function() {
+                            return 'Ingresa 1 o más caracteres';
+                        },
+                        errorLoading: function() {
+                            return 'No se pudo cargar la información'
+                        }
+                    },
+                    ajax: {
+                        url: this.url_get_accounts,
+                        dataType: 'json',
+                        delay: 250,
+                        type: 'POST',
+                        data: function (params) {
+                            var queryParameters = {
+                                q: params.term,
+                                company_id: vm.model.company_id,
+                                warehouse_account_type_id: vm.model.warehouse_account_type_id,
+                                _token: token,
+                            }
+
+                            return queryParameters;
+                        },
+                        processResults: function(data, params) {
+                            params.page = params.page || 1;
+
+                            return {
+                                results: data,
+                                pagination: {
+                                    more: (params.page * 30) < data.total_count
+                                }
+                            };
+                        },
+
+                        cache: true
+                        
+                    },
+                    minimumInputLength: 1,
+                }).on('select2:select', function(e) {
+                    var selected_element = $(e.currentTarget);
+                    vm.model.warehouse_account_id = parseInt(selected_element.val());
+                }).on('select2:unselect', function(e) {
+                    vm.model.warehouse_account_id = '';
+                    vm.perception_percentage = '';
+                });
+            },
         }
     };
 </script>

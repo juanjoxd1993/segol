@@ -13,7 +13,13 @@
 	
 	<facturation-sales-report-table
 		:url = "'{{ route('dashboard.report.facturations_sales.list') }}'"
+		:url_detail = "'{{ route('dashboard.report.facturations_sales.get_voucher') }}'"
+		:url_delete = "'{{ route('dashboard.report.facturations_sales.delete_voucher') }}'"
 	></facturation-sales-report-table>
+
+	<facturation-sales-report-modal
+		:url_update = "'{{ route('dashboard.report.facturations_sales.update_voucher') }}'"
+	></facturation-sales-report-modal>
 
 	<loading></loading>
 @endsection

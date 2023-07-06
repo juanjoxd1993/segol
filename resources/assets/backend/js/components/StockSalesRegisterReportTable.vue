@@ -35,8 +35,9 @@
                 </div>
             </div>
         </div>
-       <div class="kt-portlet__body kt-portlet__body--fit" @click="manageActions">
-       <!--    begin: Datatable  -->
+
+        <div class="kt-portlet__body kt-portlet__body--fit" @click="manageActions">
+        <!--    begin: Datatable  -->
             <div class="kt-datatable"></div>
         <!--    end: Datatable -->
         </div>
@@ -56,7 +57,14 @@
                 type: String,
                 default: ''
             },
-		
+            url_validate_stock: {
+                type: String,
+                default: ''
+            },
+            url_delete: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -174,7 +182,6 @@
                             width: 60,
                             textAlign: 'left',
                         },
-                   
                         {
                             field: 'date',
                             title: 'Fecha de Emisión',
@@ -217,26 +224,25 @@
                             width: 40,
                             textAlign: 'left',
                         },
-                         {
+                        {
                             field: 'tc',
                             title: 'TC',
                             width: 60,
                             textAlign: 'left',
                         },
-
                         {
                             field: 'total',
                             title: 'Valor Venta',
                             width: 60,
                             textAlign: 'left',
                         },
-                          {
+                        {
                             field: 'conv_soles',
                             title: 'Conversión Soles',
                             width: 60,
                             textAlign: 'left',
                         },
-                         {
+                        {
                             field: 'kg_soles',
                             title: 'Precio kg Soles',
                             width: 60,
@@ -260,7 +266,7 @@
                             width: 60,
                             textAlign: 'left',
                         },
-                         {
+                        {
                             field: 'despacho',
                             title: 'Despachado',
                             width: 60,
@@ -272,14 +278,12 @@
                             width: 60,
                             textAlign: 'left',
                         },
-                         {
+                        {
                             field: 'tm',
                             title: 'TM',
                             width: 40,
                             textAlign: 'left',
                         },
-					
-						
 						{
 							field: 'order_sale',
 							title: 'N° Orden Venta',
@@ -292,7 +296,6 @@
 							width: 120,
 							textAlign: 'left',
 						},
-
                         {
                             field: 'id',
                             title: 'ID',
@@ -305,10 +308,7 @@
                                 hidden: 'xl'
                             }
                         },
-                       
-						
-						
-                       {
+                        {
                             field: 'warehouse_movement_id',
                             title: 'ID Movimiento de Almacén',
                             width: 0,
@@ -331,10 +331,13 @@
 							class: 'td-sticky',
                             template: function(row) {
 								if ( row.state == 0 ) {
-									let actions = '<div class="actions">';
-										actions += '<a href="#" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">';
-											actions += '<i class="la la-edit"></i>';
-										actions += '</a>';
+									let actions = '<div class="actions" style="display:flex">';
+                                    actions += '<a href="#" class="edit btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">';
+                                    actions += '<i class="la la-edit"></i>';
+                                    actions += '</a>';
+                                    actions += `<a style="cursor:pointer; color:#dc3545" class="delete btn btn-sm btn-icon btn-icon-md" title="Eliminar">`;
+                                    actions += '<i class="la la-trash-o"></i>';
+                                    actions += '</a>';
 									actions += '</div>';
                                 
 									return actions;
@@ -361,6 +364,79 @@
                         EventBus.$emit('edit_modal', response.data);
                         EventBus.$emit('loading', false);
                     }).catch(error => {
+                        console.log(error);
+                        console.log(error.response);
+                    });
+                } else if ( $(event.target).hasClass('delete') ) {
+                    event.preventDefault();
+                    let id = $(event.target).parents('tr').find('td[data-field="warehouse_movement_id"] span').html();
+                    EventBus.$emit('loading', true);
+
+                    axios.post(this.url_validate_stock, {
+                        id: id,
+                    }).then(response => {
+                        axios.post(this.url_delete, {
+                            id: id,
+                        }).then(response => {
+                            EventBus.$emit('loading', false);
+                            Swal.fire({
+                                title: '¡Ok!',
+                                text: 'Se ha eliminado correctamente',
+                                type: "success",
+                                heightAuto: false,
+                            });
+                            EventBus.$emit('refresh_table');
+                        }).catch(error => {
+                            EventBus.$emit('loading', false);
+                            Swal.fire({
+                                title: '¡Error!',
+                                text: 'Ha ocurrido un error',
+                                type: "error",
+                                heightAuto: false,
+                            });
+                            console.log(error);
+                            console.log(error.response);
+                        });
+                    }).catch(error => {
+                        EventBus.$emit('loading', false);
+                        Swal.fire({
+                            title: '¡Cuidado!',
+                            text: error.response.data.msg,
+                            type: "warning",
+                            heightAuto: false,
+                            showCancelButton: true,
+                            confirmButtonText: 'Sí',
+                            cancelButtonText: 'No'
+                        }).then(result => {
+                            EventBus.$emit('loading', true);
+
+                            if ( result.value ) {
+                                axios.post(this.url_delete, {
+                                    id: id,
+                                }).then(response => {
+                                    EventBus.$emit('loading', false);
+                                    Swal.fire({
+                                        title: '¡Ok!',
+                                        text: 'Se ha eliminado correctamente',
+                                        type: "success",
+                                        heightAuto: false,
+                                    });
+                                    EventBus.$emit('refresh_table');
+                                }).catch(error => {
+                                    EventBus.$emit('loading', false);
+                                    Swal.fire({
+                                        title: '¡Error!',
+                                        text: 'Ha ocurrido un error',
+                                        type: "error",
+                                        heightAuto: false,
+                                    });
+                                    console.log(error);
+                                    console.log(error.response);
+                                });
+                            } else if ( result.dismiss == Swal.DismissReason.cancel ) {
+                                EventBus.$emit('loading', false);
+                            }
+                        });
                         console.log(error);
                         console.log(error.response);
                     });

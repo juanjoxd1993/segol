@@ -108,7 +108,7 @@ class CollectionReportController extends Controller
 			'clients.document_number', 'clients.business_name','liquidations.collection', DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") as liquidation_created_at'),
 			'sales.sale_date', 'sales.expiry_date', 'warehouse_document_types.name as warehouse_document_type_name', 
 			'sales.referral_serie_number', 'sales.referral_voucher_number', 'liquidations.amount', 'liquidations.currency_id',
-			'liquidations.exchange_rate', 'payment_methods.name as payment_method_name', 'clients.route_id as route_id', 'client_routes.short_name as route_name',
+			'liquidations.exchange_rate', 'payment_methods.name as payment_method_name', 'clients.route_id as route_id', 'client_routes.short_name as route_name','liquidations.rem_date as remesa_date','liquidations.payment_sede as payment_sede',
 			  DB::Raw('CONCAT(banks.short_name, "-", bank_accounts.account_number) as bank_account'), 'liquidations.operation_number')
 			->orderBy('company_short_name')
 			->orderBy('liquidation_created_at')
@@ -173,6 +173,8 @@ class CollectionReportController extends Controller
 				$total->bank_account = '';
 				$total->operation_number = '';
 				$total->origin = '';
+				$total->remesa_date = '';
+				$total->payment_sede = '';
 
 				$total_sum_amount_soles += $sum_amount_soles;
 				$total_sum_amount_dolares += $sum_amount_dolares;
@@ -210,6 +212,8 @@ class CollectionReportController extends Controller
 				$total->bank_account = '';
 				$total->operation_number = '';
 				$total->origin = '';
+				$total->remesa_date = '';
+				$total->payment_sede = '';
 
 				$total_sum_amount_soles += $sum_amount_soles;
 				$total_sum_amount_dolares += $sum_amount_dolares;
@@ -239,6 +243,8 @@ class CollectionReportController extends Controller
 				$sumTotal->bank_account = '';
 				$sumTotal->operation_number = '';
 				$sumTotal->origin = '';
+				$sumTotal->remesa_date = '';
+				$sumTotal->payment_sede = '';
 
 				$response[] = $sumTotal;
 			}
@@ -247,7 +253,7 @@ class CollectionReportController extends Controller
 		if ( $export ) {
 			$spreadsheet = new Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
-			$sheet->mergeCells('A1:T1');
+			$sheet->mergeCells('A1:W1');
 			$sheet->setCellValue('A1', 'RELACIÓN DE COBRANZAS '.$initial_date->format('d/m/Y').' AL '.$final_date->format('d/m/Y'));
 			$sheet->getStyle('A1')->applyFromArray([
 				'font' => [
@@ -279,7 +285,9 @@ class CollectionReportController extends Controller
 			$sheet->setCellValue('S3', 'Forma pago');
 			$sheet->setCellValue('T3', 'Banco');
 			$sheet->setCellValue('U3', 'Nº Operación');
-			$sheet->getStyle('A3:U3')->applyFromArray([
+			$sheet->setCellValue('V3', 'Fecha de Remesa');
+			$sheet->setCellValue('W3', 'Sede Remesa');
+			$sheet->getStyle('A3:W3')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
@@ -309,6 +317,8 @@ class CollectionReportController extends Controller
 				$sheet->setCellValue('S'.$row_number, $element->payment_method_name);
 				$sheet->setCellValue('T'.$row_number, $element->bank_account);
 				$sheet->setCellValue('U'.$row_number, $element->operation_number);
+				$sheet->setCellValue('V'.$row_number, $element->remesa_date);
+				$sheet->setCellValue('W'.$row_number, $element->payment_sede);
 
 				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 				$sheet->getStyle('Q'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
@@ -349,6 +359,8 @@ class CollectionReportController extends Controller
 			$sheet->getColumnDimension('S')->setAutoSize(true);
 			$sheet->getColumnDimension('T')->setAutoSize(true);
 			$sheet->getColumnDimension('U')->setAutoSize(true);
+			$sheet->getColumnDimension('V')->setAutoSize(true);
+			$sheet->getColumnDimension('W')->setAutoSize(true);
 
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');

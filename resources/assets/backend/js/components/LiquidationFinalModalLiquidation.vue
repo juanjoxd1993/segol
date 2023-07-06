@@ -28,9 +28,30 @@
                                         <label class="form-control-label">Forma de Pago:</label>
                                         <select class="form-control" name="payment_method_id" id="payment_method_id" v-model="model.payment_method" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
-                                            <option v-for="payment_method in payment_methods" :value="payment_method.id" v-bind:key="model.payment_method.id">{{ payment_method.name }}</option>
+                                            <option v-for="payment_method in payment_methods" :value="payment_method.id" v-bind:key="payment_method.id">{{ payment_method.name }}</option>
                                         </select>
                                         <div id="payment_method_id-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3" v-if="model.payment_method == 9">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Sede:</label>
+                                        <select class="form-control" name="payment_sede" id="payment_sede" v-model="model.payment_sede" @focus="$parent.clearErrorMsg($event)">
+                                            <option value="ATE">ATE</option>
+                                            <option value="CALLAO">CALLAO</option>
+                                            <option value="COLONIAL">COLONIAL</option>
+                                        </select>
+                                        <div id="payment_sede-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3" v-if="model.payment_method == 10">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Saldo a Favor:</label>
+                                        <select class="form-control" name="saldo_favor_id" id="saldo_favor_id" v-model="model.saldo_favor_id" @focus="$parent.clearErrorMsg($event)">
+                                            <option value="">Seleccionar</option>
+                                            <option v-for="saldo_favor in saldos_favor" :value="saldo_favor.id" v-bind:key="saldo_favor.id">{{ saldo_favor.name }}</option>
+                                        </select>
+                                        <div id="saldo_favor_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
@@ -65,6 +86,23 @@
                                         <label class="form-control-label">Nº de Operación:</label>
                                         <input type="text" class="form-control" name="operation_number" id="operation_number" v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageOperationNumber">
                                         <div id="operation_number-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3" v-if="model.payment_method == 9">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Fecha Final:</label>
+                                        <datetime
+                                            v-model="model.payment_date"
+                                            placeholder="Selecciona una Fecha"
+                                            :format="'dd-LL-yyyy'"
+                                            input-id="since_date"
+                                            name="since_date"
+                                            value-zone="America/Lima"
+                                            zone="America/Lima"
+                                            class="form-control"
+                                            @focus="$parent.clearErrorMsg($event)">
+                                        </datetime>
+                                        <div id="payment_date-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
@@ -139,7 +177,8 @@
 </template>
 
 <script>
-    import EventBus from '../event-bus';
+    import Swal from 'sweetalert2';
+import EventBus from '../event-bus';
     export default {
         props: {
             payment_methods: {
@@ -151,6 +190,10 @@
                 default: '',
             },
             url_get_bank_accounts: {
+                type: String,
+                default: ''
+            },
+            url_get_saldo_favor: {
                 type: String,
                 default: ''
             },
@@ -178,9 +221,13 @@
                     bank_account: '',
                     operation_number: '',
                     amount: '',
+                    payment_date: '',
+                    saldo_favor_id: 0,
+                    payment_sede: ''
                 },
                 liquidations: [],
                 bank_accounts: [],
+                saldos_favor: [],
                 total: '',
             }
         },
@@ -188,6 +235,7 @@
 
         },
         mounted() {
+            document.getElementById('amount').disabled = false;
             EventBus.$on('liquidation_modal', function() {
                 let vm = this;
 
@@ -224,6 +272,7 @@
                 }
             },
             'model.payment_method': function(val) {
+                document.getElementById('amount').disabled = false;
                 if ( val.id == 2 || val.id == 3 ) {
                     EventBus.$emit('loading', true);
 
@@ -240,6 +289,41 @@
                         console.log(error);
                         console.log(error.response);
                     });
+                }
+            },
+            'model.payment_method': function(val) {
+                document.getElementById('amount').disabled = false;
+                document.getElementById('currency_id').disabled = false;
+
+                this.model.saldo_favor_id = 0;
+                if (val == 10) {
+                    axios.post(this.url_get_saldo_favor, {
+                        client_id: this.$store.state.sale.client_id,
+                    }).then(res => {
+                        const { data } = res;
+
+                        this.saldos_favor = data;
+                    }).catch(err => {
+                        Swal.fire({
+                            title: '¡Error!',
+                            text: 'El cliente no cuenta con saldo a favor.',
+                            type: "error",
+                            heightAuto: false,
+                        });
+
+                        console.log(err)
+                        console.log(err.response)
+                    });
+                }
+            },
+            'model.saldo_favor_id': function(val) {
+                const saldo = this.saldos_favor.find(item => item.id == val);
+
+                if (saldo) {
+                    this.model.amount = saldo.total_perception;
+                    this.model.currency = saldo.currency_id;
+                    document.getElementById('amount').disabled = true;
+                    document.getElementById('currency_id').disabled = true;
                 }
             }
         },
@@ -268,9 +352,6 @@
                 } else if (this.$store.state.sale.payment_id != this.payment_credit && liquidation.payment_id == this.payment_credit) {
                     text = 'El cliente no cuenta con crédito disponible';
                 }
-                
-               
-				
 
                 if ( text != '' ) {
                     Swal.fire({
@@ -309,6 +390,7 @@
                     this.model.bank_account = '';
                     this.model.operation_number = '';
                     this.model.amount = '';
+                    this.model.payment_date = '';
                 }
             },
             resetLiquidation: function() {
@@ -325,71 +407,69 @@
             addLiquidations: function() {
 				let error = 0;
 
-				if ( this.$store.state.sale.payment_id !== 2 && accounting.unformat(this.addTotals) !== accounting.unformat(this.$store.state.sale.total_perception)) {
-					error = 1;
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'Debe liquidar por el total de la Venta.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				}
+                // fix
+				// if ( this.$store.state.sale.payment_id !== 2 && accounting.unformat(this.addTotals) !== accounting.unformat(this.$store.state.sale.total_perception)) {
+				// 	error = 1;
+				// 	Swal.fire({
+                //         title: '¡Error!',
+                //         text: 'Debe liquidar por el total de la Venta.',
+                //         type: "error",
+                //         heightAuto: false,
+                //         showCancelButton: false,
+                //         confirmButtonText: 'Ok',
+                //     });
+				// }
 
-				if ( this.$store.state.sale.payment_id == 2 && accounting.unformat(this.addTotals) > accounting.unformat(this.$store.state.sale.total_perception)) {
-					error = 1;
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'El Pago a cuenta no puede exceder el Total de la Venta.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				}
+				// if ( this.$store.state.sale.payment_id == 2 && accounting.unformat(this.addTotals) > accounting.unformat(this.$store.state.sale.total_perception)) {
+				// 	error = 1;
+				// 	Swal.fire({
+                //         title: '¡Error!',
+                //         text: 'El Pago a cuenta no puede exceder el Total de la Venta.',
+                //         type: "error",
+                //         heightAuto: false,
+                //         showCancelButton: false,
+                //         confirmButtonText: 'Ok',
+                //     });
+				// }
 				
-				if ( this.$store.state.sale.payment_id !== 2 && this.liquidations < 1 ) {
-					error = 1;
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'Debe agregar al menos 1 Forma de Pago.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-                }
+				// if ( this.$store.state.sale.payment_id !== 2 && this.liquidations < 1 ) {
+				// 	error = 1;
+                //     Swal.fire({
+                //         title: '¡Error!',
+                //         text: 'Debe agregar al menos 1 Forma de Pago.',
+                //         type: "error",
+                //         heightAuto: false,
+                //         showCancelButton: false,
+                //         confirmButtonText: 'Ok',
+                //     });
+                // }
 
-                if ( this.model.payment_id == this.payment_credit && (this.$store.state.sale.total_perception - accounting.unformat(this.addTotals))> this.$store.state.sale.credit_limit ) {
-                    error = 1;
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'La línea del crédito del cliente es insuficiente.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-                }  else if ((this.$store.state.sale.total_perception - accounting.unformat(this.addTotals)) > this.$store.state.sale.credit_limit) {
-                    error = 1;
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'La línea del crédito del cliente es insuficiente.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-                }
+                // if ( this.model.payment_id == this.payment_credit && (this.$store.state.sale.total_perception - accounting.unformat(this.addTotals))> this.$store.state.sale.credit_limit ) {
+                //     error = 1;
+                //     Swal.fire({
+                //         title: '¡Error!',
+                //         text: 'La línea del crédito del cliente es insuficiente.',
+                //         type: "error",
+                //         heightAuto: false,
+                //         showCancelButton: false,
+                //         confirmButtonText: 'Ok',
+                //     });
+                // }  else if ((this.$store.state.sale.total_perception - accounting.unformat(this.addTotals)) > this.$store.state.sale.credit_limit) {
+                //     error = 1;
+                //     Swal.fire({
+                //         title: '¡Error!',
+                //         text: 'La línea del crédito del cliente es insuficiente.',
+                //         type: "error",
+                //         heightAuto: false,
+                //         showCancelButton: false,
+                //         confirmButtonText: 'Ok',
+                //     });
+                // }
 
 				if ( error == 0 ) {
-					let liquidations = JSON.parse(JSON.stringify(this.liquidations));
-					let sale = JSON.parse(JSON.stringify(this.$store.state.sale));
+					let liquidations = this.liquidations;
+					let sale = this.$store.state.sale;
 
-					this.$store.commit('addLiquidations', liquidations);
-					this.$store.commit('addSales');
-					
 					sale.details.forEach(element => {
 						let article_id = element.article_id;
 						let quantity = element.quantity;
@@ -400,7 +480,12 @@
 						});
 					});
 
+					this.$store.commit('addLiquidations', liquidations);
+					this.$store.commit('addSales');
+
 					EventBus.$emit('refresh_table_sale');
+
+                    this.$store.state.article_id = 0;
 
 					this.liquidations = [];
 					this.title_text = '';

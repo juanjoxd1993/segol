@@ -93,7 +93,6 @@
 									<span class="kt-menu__link-text">Generación de Documentos </span>
 								</a>
 							</li>
-                         
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.collection_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.voucher.collection_register') }}" class="kt-menu__link ">
@@ -112,7 +111,6 @@
 								</a>
 							</li>
 
-
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.voucher.liquidations_glp' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.voucher.liquidations_glp') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -121,12 +119,19 @@
 									<span class="kt-menu__link-text">Liquidación GLP</span>
 								</a>
 							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.facturation.voucher.remesas' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.facturation.voucher.remesas') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Registro de Remesas</span>
+								</a>
+							</li>
 							
-					 </ul>
-				 </div>
-			 </li>
-							
-							
+					</ul>
+				</div>
+			</li>
 
 				<li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/reporte/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -206,8 +211,6 @@
 								</a>
 							</li>
 
-							
-
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.collection_sales_report' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.collection_sales_report') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -216,7 +219,6 @@
 									<span class="kt-menu__link-text">Liquidación Detallado</span>
 								</a>
 							</li>
-							
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.warehouse_part' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.warehouse_part') }}" class="kt-menu__link ">
@@ -226,7 +228,7 @@
 									<span class="kt-menu__link-text">Parte de Almacén</span>
 								</a>
 							</li>
-							
+
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.collection_report' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.collection_report') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -235,6 +237,7 @@
 									<span class="kt-menu__link-text">Relación de Cobranzas</span>
 								</a>
 							</li>
+
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.pending_document_report' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.pending_document_report') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -243,6 +246,7 @@
 									<span class="kt-menu__link-text">Relación de Documentos Pendientes</span>
 								</a>
 							</li>
+
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.uncollected_document_report' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.uncollected_document_report') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -251,8 +255,43 @@
 									<span class="kt-menu__link-text">Relación de Documentos Emitidos</span>
 								</a>
 							</li>
-						
-							
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.report_glp_global' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.report_glp_global') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte GLP Global</span>
+								</a>
+							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.report_envases_general' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.report_envases_general') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte Envases General</span>
+								</a>
+							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.report_saldos_favor' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.report_saldos_favor') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte Saldos a Favor</span>
+								</a>
+							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.report_balones_press' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.report_balones_press') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte Balones Prestados</span>
+								</a>
+							</li>
+
 						</ul>
 					</div>
 				</li>
@@ -365,13 +404,31 @@
 									<span class="kt-menu__link-text">Registro de Guías de Remisión</span>
 								</a>
 							</li>
-							
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_validate' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.guides_validate') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Validacion de Guías de Remisión</span>
+								</a>
+							</li>
+
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_return' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.guides_return') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
 									<span class="kt-menu__link-text">Retorno de Guías de Remisión</span>
+								</a>
+							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_validate_press' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.guides_validate_press') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Validacion de Prestamo de Balones</span>
 								</a>
 							</li>
 
@@ -406,6 +463,14 @@
 										<span></span>
 									</i>
 									<span class="kt-menu__link-text">Anulación Guías</span>
+								</a>
+							</li>
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.operations_part' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.operations_part') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Impresion Guías</span>
 								</a>
 							</li>
 			            </ul>
@@ -837,13 +902,6 @@
 								</span>
 							</li>
 
-
-
-
-
-
-
-
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.administration.cobranzas_detail_total' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.administration.cobranzas_detail_total') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -853,9 +911,6 @@
 								</a>
 							</li>
 
-
-
-							
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.liquidations_detail_total' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.liquidations_detail_total') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -865,12 +920,14 @@
 								</a>
 							</li>
 
-
-
-
-
-							
-						    	
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.finanzas_detail_total' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.finanzas_detail_total') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte de Cierre de Caja</span>
+								</a>
+							</li>
 
 					  </ul>
 					</div>

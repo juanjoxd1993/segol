@@ -34,18 +34,32 @@
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Serie de Usuario:</label>
-                                        <select class="form-control" name="sale_serie_id" id="sale_serie_id" v-model="sale.sale_serie_id" @focus="$parent.clearErrorMsg($event)">
-                                            <option value="">Seleccionar</option>
-                                            <option v-for="sale_serie in sale_series" :value="sale_serie.id" v-bind:key="sale_serie.id">{{ sale_serie.num_serie }}</option>
-                                        </select>
-                                        <div id="sale_serie_id-error" class="error invalid-feedback"></div>
+                                        <input type="text" readonly class="form-control" name="sale_serie_num" id="sale_serie_num" v-model="sale.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
+                                        <div id="sale_serie_num-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
                                     <div class="form-group">
-                                        <label class="form-control-label">Serie de Referencia:</label>
-                                        <input type="text" readonly class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="sale.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
+                                        <label class="form-control-label">Correlativo:</label>
+                                        <input type="text" readonly class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="sale.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
                                         <div id="referral_serie_number-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Fecha de Factura:</label>
+                                        <datetime
+                                            v-model="sale.sale_date"
+                                            placeholder="Selecciona una Fecha"
+                                            :format="'dd-LL-yyyy'"
+                                            input-id="final_effective_date"
+                                            name="final_effective_date"
+                                            value-zone="America/Lima"
+											zone="America/Lima"
+                                            class="form-control"
+                                            @focus="$parent.clearErrorMsg($event)">
+                                        </datetime>
+                                        <div id="sale_date-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id == 4 || this.sale.warehouse_document_type_id == 6 || this.sale.warehouse_document_type_id == 8">
@@ -65,7 +79,7 @@
                                 <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id == 5 || this.sale.warehouse_document_type_id == 7 || this.sale.warehouse_document_type_id == 9 || this.sale.warehouse_document_type_id == 17">
                                     <div class="form-group">
                                         <label class="form-control-label">Número de Guía:</label>
-                                        <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)">
+                                        <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageNumberGuide">
                                         <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -82,8 +96,8 @@
 								<div class="col-lg-3" v-if="this.sale.warehouse_document_type_id === 4 || this.sale.warehouse_document_type_id === 5 || this.sale.warehouse_document_type_id === 18">
 									<div class="form-group">
                                         <label class="form-control-label">Nº SCOP:</label>
-                                        <input type="text" class="form-control"  v-model="sale.scop_number" name="scop_number" id="scop_number" @focus="$parent.clearErrorMsg($event)">
-                                        <!-- <div id="scop_number-error" class="error invalid-feedback"></div> -->
+                                        <input type="text" class="form-control"  v-model="sale.scop_number" name="scop_number" id="scop_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageScopNumber">
+                                        <div id="scop_number-error" class="error invalid-feedback"></div>
                                     </div>
 								</div>
                             </div>
@@ -101,7 +115,7 @@
                                         <label class="form-control-label">Artículo:</label>
                                         <select class="form-control" name="article_id" id="article_id" v-model="model.article_id" @change="getArticlePrice()" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
-                                            <option v-for="article in filterArticles" :value="article.article_id" v-bind:key="article.article_id">{{ article.article_name }}</option>
+                                            <option v-for="article in filterArticles" :value="article.id" v-bind:key="article.id">{{ article.name }}</option>
                                         </select>
                                         <div id="article_id-error" class="error invalid-feedback"></div>
                                     </div>
@@ -174,7 +188,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success" @click.prevent="liquidationModal()">Liquidar</button>
+                        <button id="liquidar" type="submit" class="btn btn-success" @click.prevent="liquidationModal()">Liquidar</button>
                         <!-- <button type="submit" class="btn btn-success" v-if="sale.payment_id == 2" @click.prevent="addSale()">{{ button_text }}</button> -->
                         <button type="button" class="btn btn-secondary" @click.prevent="closeModal()">Cerrar</button>
                     </div>
@@ -187,6 +201,10 @@
 
 <script>
     import EventBus from '../event-bus';
+    import Datetime from 'vue-datetime';
+    // You need a specific loader for CSS files
+    import 'vue-datetime/dist/vue-datetime.css';
+
     export default {
         props: {
             warehouse_document_types: {
@@ -202,10 +220,6 @@
                 default: ''
             },
             url_get_article_price: {
-                type: String,
-                default: ''
-            },
-            url_get_sale_series: {
                 type: String,
                 default: ''
             },
@@ -246,8 +260,11 @@
                     payment_id: '',
 					currency_id: 1,
                     credit_limit: '',
+                    credit_limit_days: '',
                     scop_number: '',
-                    sale_serie_id: ''
+                    sale_serie_id: '',
+                    sale_serie_num: '',
+                    sale_date: null
                 },
                 filterArticles: [],
                 edit_flag: false,
@@ -261,6 +278,17 @@
             this.newSelect2();
 
             EventBus.$on('create_modal', function() {
+                const envasado = this.$store.state.articles.filter((item) => item.code === "2");
+                const granelKgs = this.$store.state.articles.filter((item) => item.code === "1");
+
+                this.filterArticles = this.$store.state.articles.filter((item) => item.code != "2");
+
+                this.filterArticles.map((item) => {
+                    if (item.code === "1") {
+                        item.stock_good = granelKgs.stock_good + envasado.stock_good;
+                    };
+                });
+
                 let vm = this;
 
                 this.button_text = 'Crear';
@@ -281,6 +309,7 @@
                 this.sale.payment_id = '';
                 this.sale.currency_id = 1;
                 this.sale.credit_limit = '';
+                this.sale.credit_limit_days = '';
 
 				this.model = {
                     article_id: '',
@@ -336,34 +365,27 @@
 			// 	}
 			// },
 			'sale.warehouse_document_type_id': function(val) {
-                axios.post(this.url_get_sale_series, {
-                    warehouse_document_type_id: val
-                })
-                    .then(response => {
-                        const data = response.data;
-                        
-                        this.sale_series = data;
-                    })
-                    .catch(error => {
-                        this.sale_series = [];
-                        console.log(error);
-                    });
+
+                const data_filter = this.$store.state.sale_series.filter(item => item.warehouse_document_type_id === val)[0];
+
+                this.sale.sale_serie_id = data_filter.id;
+                this.sale.referral_serie_number = data_filter.num_serie;
+                this.sale.referral_voucher_number = data_filter.correlative;
 
                 let warehouse_document_type = this.warehouse_document_types.find(element => element.id == val);
 
-                this.sale.sale_serie_id = '';
                 this.sale.warehouse_document_type_name = warehouse_document_type ? warehouse_document_type.name : '';
 			},
-			'sale.sale_serie_id': function(val) {
-				let sale_serie = this.sale_series.find(element => element.id == val);
-				this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : '';
-			}
+			// 'sale.sale_serie_id': function(val) {
+			// 	let sale_serie = this.sale_series.find(element => element.id == val);
+			// 	this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : '';
+			// }
         },
         computed: {
             setDetails() {
                 let articles = this.$store.state.articles;
                 let sale_article_ids = this.sale.details.map(element => element.article_id);
-                this.filterArticles = articles.filter(element => !sale_article_ids.includes(element.article_id));
+                // this.filterArticles = articles.filter(element => !sale_article_ids.includes(element.article_id));
 
                 return this.sale.details;
             },
@@ -401,7 +423,7 @@
                 }
             },
             addArticle: function() {
-                let article = this.$store.state.articles.find(element => element.article_id == this.model.article_id)
+                let article = this.$store.state.articles.find(element => element.id == this.model.article_id)
 
                 if ( this.sale.client_id == '' ) {
                     Swal.fire({
@@ -546,8 +568,25 @@
                         showCancelButton: false,
                         confirmButtonText: 'Ok',
                     });
+                } else if ( !(this.sale.sale_date) ) {
+                    Swal.fire({
+                        title: '¡Error!',
+                        text: 'Debe elegir una fecha',
+                        type: "error",
+                        heightAuto: false,
+                        showCancelButton: false,
+                        confirmButtonText: 'Ok',
+                    });
                 } else {
 					EventBus.$emit('loading', true);
+                    
+
+                    this.$store.state.sale_series.map(item => {
+                        if (item.id === this.sale.sale_serie_id) {
+                            item.last_correlative = item.correlative;
+                            item.correlative = item.correlative + 1;
+                        };
+                    });
 
 					axios.post(this.url_verify_document_type, {
 						'model': this.$store.state.model,
@@ -609,7 +648,9 @@
 								total_perception: '',
 								payment_id: '',
 								currency_id: 1,
-                              credit_limit: '',
+                                credit_limit: '',
+                                credit_limit_days: '',
+                                sale_date: null
 							};
 						}
 					}).catch(error => {
@@ -745,6 +786,7 @@
 								payment_id: '',
 								currency_id: 1,
                                 credit_limit: '',
+                                credit_limit_days: '',
 							};
 
 							$('#modal-sale').modal('hide');
@@ -785,6 +827,7 @@
                     payment_id: '',
 					currency_id: 1,
                     credit_limit: '',
+                    credit_limit_days: '',
                 };
 
 				$('#modal-sale').modal('hide');
@@ -845,6 +888,7 @@
                     vm.sale.payment_id = e.params.data.payment_id;
                     vm.sale.perception_percentage = e.params.data.perception_percentage.value;
                     vm.sale.credit_limit = e.params.data.credit_limit;
+                    vm.sale.credit_limit_days = e.params.data.credit_limit_days;
 
                     vm.model.article_id = '';
                     vm.model.article_name = '';
@@ -862,6 +906,7 @@
                     vm.sale.document_type_id = '';
                     vm.sale.payment_id = '';
                     vm.sale.credit_limit = '';
+                    vm.sale.credit_limit_days = '';
                     vm.sale.perception_percentage = 0;
                     vm.sale.total = 0;
                     vm.sale.perception = 0;
@@ -878,6 +923,73 @@
                     vm.model.igv_perception = '';
                     vm.model.total_perception = '';
                 });
+            },
+            manageNumberGuide() {
+                if (
+                    this.sale.warehouse_document_type_id == 5 ||
+                    this.sale.warehouse_document_type_id == 7 ||
+                    this.sale.warehouse_document_type_id == 9 ||
+                    this.sale.warehouse_document_type_id == 17
+                ) {
+                    EventBus.$emit('loading', true);
+                    $('#liquidar').prop('disabled', true);
+                    $('#referral_guide_number-error').hide();
+                    $('#referral_guide_number-error').text('');
+
+                    axios.post('/facturacion/liquidaciones-glp/get-guide-number', {
+                        params: {
+                            serie_number: this.sale.referral_guide_series,
+                            guide_number: this.sale.referral_guide_number,
+                        }
+                    }).then(response => {
+                        console.log('bien');
+                        EventBus.$emit('loading', false);
+                        $('#liquidar').prop('disabled', false);
+                        $('#referral_guide_number-error').text('');
+                        $('#referral_guide_number-error').hide();
+                    }).catch(error => {
+                        EventBus.$emit('loading', false);
+                        $('#liquidar').prop('disabled', true);
+                        $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                        $('#referral_guide_number-error').show();
+                    });
+                }
+            },
+            manageScopNumber() {
+                if (!(this.sale.scop_number.length === 11 || this.sale.scop_number == '')) {
+                    
+                    $('#liquidar').prop('disabled', true);
+                    $('#scop_number-error').text('El Nro. de Scop tiene que ser de 11 digitos u omitirlo');
+                    $('#scop_number-error').show();
+                    return
+                }
+                if (
+                    this.sale.warehouse_document_type_id === 4 ||
+                    this.sale.warehouse_document_type_id === 5 ||
+                    this.sale.warehouse_document_type_id === 18
+                ) {
+                    EventBus.$emit('loading', true);
+                    $('#liquidar').prop('disabled', true);
+                    $('#scop_number-error').hide();
+                    $('#scop_number-error').text('');
+
+                    axios.post('/facturacion/liquidaciones-glp/get-scop-number', {
+                        params: {
+                            scop_number: this.sale.scop_number,
+                        }
+                    }).then(response => {
+                        console.log('bien');
+                        EventBus.$emit('loading', false);
+                        $('#liquidar').prop('disabled', false);
+                        $('#scop_number-error').text('');
+                        $('#scop_number-error').hide();
+                    }).catch(error => {
+                        EventBus.$emit('loading', false);
+                        $('#liquidar').prop('disabled', true);
+                        $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                        $('#scop_number-error').show();
+                    });
+                }
             },
         }
     };

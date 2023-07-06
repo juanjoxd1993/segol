@@ -26,18 +26,18 @@ use stdClass;
 
 class SalesReportController extends Controller
 {
-    public function index() {
-        $companies = Company::select('id', 'name')->get();
-        $current_date = Carbon::now();
-        $max_date = date(DATE_ATOM, mktime(0, 0, 0));
+	public function index() {
+		$companies = Company::select('id', 'name')->get();
+		$current_date = Carbon::now();
+		$max_date = date(DATE_ATOM, mktime(0, 0, 0));
 		$sale_options = SaleOption::select('id', 'name')
-			->where('id', '!=', 1)
-			->get();
+															->where('id', '!=', 1)
+															->get();
 
-        return view('backend.sales_report')->with(compact('companies', 'current_date', 'max_date', 'sale_options'));
-    }
+			return view('backend.sales_report')->with(compact('companies', 'current_date', 'max_date', 'sale_options'));
+	}
 
-    public function validateForm() {
+	public function validateForm() {
 		$messages = [
 			'to_date.required'          => 'Debe seleccionar una Fecha Limite.',
 			'sale_option_id.required'   => 'Debe seleccionar una Opción.',
@@ -103,13 +103,6 @@ class SalesReportController extends Controller
 				$sale_column = 'channel_id';
 				$select_table = 'clients';
 				break;
-
-		//	case 4:
-		//		$sale_option = 'client_zone_id';
-		//		$sale_table = 'client_zones';
-		//		$sale_column = 'zone_id';
-		//		$select_table = 'clients';
-		//		break;
 			case 4:
 				$sale_option = 'family_id';
 				$sale_table = 'classifications';
@@ -124,33 +117,26 @@ class SalesReportController extends Controller
 				break;
 		}
 
-
-
 		$elements = Budget::rightjoin('client_routes', 'client_routes.id', '=', 'budgets.client_route_id')
-		//	->leftjoin($sale_table, $sale_table.'.id', '=', 'budgets.'.$sale_option)
-			->leftjoin('client_channels','client_channels.id','=','budgets.client_channel_id')
-			->where('year', $current_year)
-			->where('month', $current_month)
-			->where('sale_option_id', $sale_option_id)
-			->select('year', 'month', 'days', 'client_route_id', 'client_routes.name as client_route_name', $sale_option, $sale_table.'.name as sale_option_name', 'metric_tons', 'total', 'percentage')
-		//	->groupBy('business_unit_id', $sale_option)
-			->get();
-
-
-
-//		$elements = Budget::rightjoin('business_units', 'business_units.id', '=', 'budgets.business_unit_id')
-//			->rightjoin($sale_table, $sale_table.'.id', '=', 'budgets.'.$sale_option)
-//			->where('year', $current_year)
-//			->where('month', $current_month)
-//			->where('sale_option_id', $sale_option_id)
-//			->select('year', 'month', 'days', 'business_unit_id', 'business_units.name as business_unit_name', $sale_option, $sale_table.'.name as sale_option_name', 'metric_tons', 'total', 'percentage')
-//			->groupBy('business_unit_id', $sale_option)
-//			->get();
+											->leftjoin('client_channels','client_channels.id','=','budgets.client_channel_id')
+											->where('year', $current_year)
+											->where('month', $current_month)
+											->where('sale_option_id', $sale_option_id)
+											->select('year',
+															'month',
+															'days',
+															'client_route_id',
+															'client_routes.name as client_route_name',
+															$sale_option, $sale_table.'.name as sale_option_name',
+															'metric_tons',
+															'total',
+															'percentage')
+											->get();
 
 		$previous_month_price = PriceHistory::where('year', $current_year)
-			->where('month', $previous_month->format('m'))
-			->select('price')
-			->first();
+																				->where('month', $previous_month->format('m'))
+																				->select('price')
+																				->first();
 		
 		$previous_month_price = $previous_month_price ? $previous_month_price->price : 0;
 		
@@ -164,20 +150,13 @@ class SalesReportController extends Controller
 		$sale_report = collect();
 
 		if ( count($elements) > 0 ) {
-		//	$group_ids = array_values(array_unique($elements->pluck('business_unit_id')->all()));
 			$group_ids = array_values(array_unique($elements->pluck('client_route_id')->all()));
 			$days = array_values(array_unique($elements->pluck('days')->all()));
 			$parent_elements = $elements->unique('client_route_id')->values()->all();
-		//	$parent_elements = $elements->unique('business_unit_id')->values()->all();
-
-			// if ( $current_day > $days[0] ) {
-			// 	$current_day = $days[0];
-			// }
 
 			foreach ($parent_elements as $parent_element) {
 				$child_elements = $elements->filter(function ($value, $key) use ($parent_element) {
 					return $value->client_route_id == $parent_element->client_route_id;
-				//	return $value->business_unit_id == $parent_element->business_unit_id;
 				});
 
 				$families = collect();
@@ -208,49 +187,48 @@ class SalesReportController extends Controller
 					// return DB::getQueryLog();
 
 					$previous_month_query = SaleDetail::leftjoin('sales', 'sales.id', '=', 'sale_details.sale_id')
-						->leftjoin('clients', 'clients.id', '=', 'sales.client_id')
-						->leftjoin('articles', 'articles.id', '=', 'sale_details.article_id')
-						->where(function($query) {
-							$query->where('sales.company_id', '<>', 1)
-								->orWhere(function($query) {
-									$query->where('sales.company_id', 1)
-										->whereNotIn('sales.client_id', [1031, 427, 13326, 13775]);
-								});
-						})
-						->whereYear('sales.sale_date', $previous_month->format('Y'))
-						->whereMonth('sales.sale_date', $previous_month->format('m'))
-						->where('clients.route_id', $child_element->route_id)
-						->where($select_table.'.'.$sale_column, $child_element->$sale_option)
-						->select('clients.route_id', $select_table.'.'.$sale_column, DB::Raw('SUM((quantity * convertion) / 1000) AS sum_metric_tons, SUM(sale_details.total) AS sum_total'))
-						->groupBy('clients.route_id', $select_table.'.'.$sale_column)
-						->orderBy('clients.route_id', 'asc')
-						->orderBy($select_table.'.'.$sale_column, 'asc')
-						->first();
+																						->leftjoin('clients', 'clients.id', '=', 'sales.client_id')
+																						->leftjoin('articles', 'articles.id', '=', 'sale_details.article_id')
+																						->where(function($query) {
+																							$query->where('sales.company_id', '<>', 1)
+																								->orWhere(function($query) {
+																									$query->where('sales.company_id', 1)
+																										->whereNotIn('sales.client_id', [1031, 427, 13326, 13775]);
+																								});
+																						})
+																						->whereYear('sales.sale_date', $previous_month->format('Y'))
+																						->whereMonth('sales.sale_date', $previous_month->format('m'))
+																						->where('clients.route_id', $child_element->route_id)
+																						->where($select_table.'.'.$sale_column, $child_element->$sale_option)
+																						->select('clients.route_id', $select_table.'.'.$sale_column, DB::Raw('SUM((quantity * convertion) / 1000) AS sum_metric_tons, SUM(sale_details.total) AS sum_total'))
+																						->groupBy('clients.route_id', $select_table.'.'.$sale_column)
+																						->orderBy('clients.route_id', 'asc')
+																						->orderBy($select_table.'.'.$sale_column, 'asc')
+																						->first();
 
 					$previous_year_query = SaleDetail::leftjoin('sales', 'sales.id', '=', 'sale_details.sale_id')
-						->leftjoin('clients', 'clients.id', '=', 'sales.client_id')
-						->leftjoin('articles', 'articles.id', '=', 'sale_details.article_id')
-						->where(function($query) {
-							$query->where('sales.company_id', '<>', 1)
-								->orWhere(function($query) {
-									$query->where('sales.company_id', 1)
-										->whereNotIn('sales.client_id', [1031, 427, 13326, 13775]);
-								});
-						})
-						->whereYear('sales.sale_date', $previous_year)
-						->whereMonth('sales.sale_date', $current_month)
-						->where('clients.route_id', $child_element->client_route_id)
-						->where($select_table.'.'.$sale_column, $child_element->$sale_option)
-						->select('clients.route_id', $select_table.'.'.$sale_column, DB::Raw('SUM((quantity * convertion) / 1000) AS sum_metric_tons, SUM(sale_details.total) AS sum_total'))
-						->groupBy('clients.route_id', $select_table.'.'.$sale_column)
-						->orderBy('clients.route_id', 'asc')
-						->orderBy($select_table.'.'.$sale_column, 'asc')
-						->first();
+																					->leftjoin('clients', 'clients.id', '=', 'sales.client_id')
+																					->leftjoin('articles', 'articles.id', '=', 'sale_details.article_id')
+																					->where(function($query) {
+																						$query->where('sales.company_id', '<>', 1)
+																							->orWhere(function($query) {
+																								$query->where('sales.company_id', 1)
+																									->whereNotIn('sales.client_id', [1031, 427, 13326, 13775]);
+																							});
+																					})
+																					->whereYear('sales.sale_date', $previous_year)
+																					->whereMonth('sales.sale_date', $current_month)
+																					->where('clients.route_id', $child_element->client_route_id)
+																					->where($select_table.'.'.$sale_column, $child_element->$sale_option)
+																					->select('clients.route_id', $select_table.'.'.$sale_column, DB::Raw('SUM((quantity * convertion) / 1000) AS sum_metric_tons, SUM(sale_details.total) AS sum_total'))
+																					->groupBy('clients.route_id', $select_table.'.'.$sale_column)
+																					->orderBy('clients.route_id', 'asc')
+																					->orderBy($select_table.'.'.$sale_column, 'asc')
+																					->first();
 
 					$obj = new stdClass();
 					$obj->family_name = $child_element->sale_option_name;
 					$obj->current_advance = ( isset($current_query) ? $current_query->sum_metric_tons : 0 );
-					// $obj->current_projection = ( $obj->current_advance > 0 ? ( $obj->current_advance / $current_day ) * $days[0] : 0 );
 					$obj->current_projection = ( $obj->current_advance > 0 ? ( $obj->current_advance / $current_day ) * $last_day : 0 );
 					$obj->previous_month = ( isset($previous_month_query) ? $previous_month_query->sum_metric_tons : 0 );
 					$obj->previous_year = ( isset($previous_year_query) ? $previous_year_query->sum_metric_tons : 0 );
@@ -259,7 +237,6 @@ class SalesReportController extends Controller
 					$obj->v_previous_year = ( $obj->previous_year > 0 ? number_format( ( ($obj->current_projection - $obj->previous_year) / $obj->previous_year ) * 100, 2, '.', '') : 0 );
 					$obj->v_budget = ( $obj->budget > 0 ? number_format( ( ($obj->current_projection - $obj->budget) / $obj->budget ) * 100, 2, '.', '') : 0 );
 					$obj->money_current_advance = ( isset($current_query) ? $current_query->sum_total : 0 );
-					// $obj->money_current_projection = ( $obj->money_current_advance > 0 ? ( $obj->money_current_advance / $current_day ) * $days[0] : 0 );
 					$obj->money_current_projection = ( $obj->money_current_advance > 0 ? ( $obj->money_current_advance / $current_day ) * $last_day : 0 );
 					$obj->money_previous_month = ( isset($previous_month_query) ? $previous_month_query->sum_total : 0 );
 					$obj->money_previous_year = ( isset($previous_year_query) ? $previous_year_query->sum_total : 0 );
@@ -400,7 +377,7 @@ class SalesReportController extends Controller
 			// ->where('clients.'.$sale_option, $sale_option_id)
 			// ->select('clients.channel_id as client_channel_id', DB::Raw('SUM((quantity * convertion) / 1000) AS sum_metric_tons, SUM(sale_details.total) AS sum_total'))
 			->select('clients.business_name', 'warehouse_document_types.name as warehouse_document_type_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_date', 'sales.total')
-			// ->groupBy('clients.'.$sale_option)
+			->groupBy('clients.business_name', 'ASC')
 			->orderBy('sales.sale_date', 'ASC')
 			->get();
 

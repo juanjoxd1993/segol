@@ -62,7 +62,11 @@
                 }).then(response => {
                     const data = response.data;
 
-                    this.$store.commit('addArticles', data);
+                    const movement_details = data.movement_details;
+                    const clients = data.clients;
+
+                    this.$store.commit('addClients', clients);
+                    this.$store.commit('addArticles', movement_details)
                     
                     if ( this.liquidation_datatable == undefined ) {
                         this.fillTableX();
@@ -93,10 +97,10 @@
 			articlesState: function() {
 				let articles = this.$store.state.articles;
 				articles.map(element => {
-					element.presale_converted_amount = accounting.toFixed(element.presale_converted_amount, 4);
-					element.sale_converted_amount = accounting.toFixed(element.sale_converted_amount, 4);
-					element.return_converted_amount = accounting.toFixed(element.return_converted_amount, 4);
-					element.new_balance_converted_amount = accounting.toFixed(element.new_balance_converted_amount, 4);
+					element.presale_converted_amount = accounting.toFixed(element.presale_converted_amount, 2);
+					element.sale_converted_amount = accounting.toFixed(element.sale_converted_amount, 2);
+					element.return_converted_amount = accounting.toFixed(element.return_converted_amount, 2);
+					element.new_balance_converted_amount = accounting.toFixed(element.new_balance_converted_amount, 2);
 				});
 				
 				return articles;
@@ -104,12 +108,20 @@
         },
         methods: {
 			saveLiquidation: function() {
-				let zeroBalance = this.$store.state.articles.filter(element => element.new_balance_converted_amount > 0);
-
-				if ( zeroBalance.length > 0 ) {
+				// let zeroBalance = this.$store.state.articles.filter(element => element.new_balance_converted_amount > 0);
+				let zeroBalance = 0;
+                const salesRegister = this.$store.state.sales.length;
+                if ( zeroBalance.length > 0 ) {
 					Swal.fire({
 						title: '¡Error!',
 						text: 'Tiene Artículos pendientes por liquidar.',
+						type: "error",
+						heightAuto: false,
+					});
+				} else if ( !salesRegister ) {
+					Swal.fire({
+						title: '¡Error!',
+						text: 'No ha registrado ninguna liquidacion.',
 						type: "error",
 						heightAuto: false,
 					});
@@ -248,6 +260,12 @@
                         {
                             field: 'return_converted_amount',
                             title: 'Retorno',
+                            width: 120,
+                            textAlign: 'right',
+                        },
+                        {
+                            field: 'cesion',
+                            title: 'Cesión de Uso',
                             width: 120,
                             textAlign: 'right',
                         },

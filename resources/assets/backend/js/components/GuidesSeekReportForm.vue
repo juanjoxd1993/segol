@@ -78,7 +78,6 @@
                     company_id: '',
                     referral_guide_series: '',
                     referral_guide_number: '',
-                   
                 },
             }
         },

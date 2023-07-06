@@ -36,6 +36,7 @@
 
 	<stock-glp-register-modal
 		:url_get_article = "'{{ route('dashboard.operations.stock_glp_register.get_article') }}'"
+		:url_get_article_receiver = "'{{ route('dashboard.operations.stock_glp_register.get_article_receiver') }}'"
 	></stock-glp-register-modal>
 
 	<loading></loading>

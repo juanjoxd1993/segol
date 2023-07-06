@@ -15,6 +15,7 @@
                             <div class="row">
                                 <input type="hidden" name="id" id="id" v-model="model.id">
                                 <input type="hidden" name="account_id" id="account_id" v-model="model.account_id">
+
                                 <div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Proveedor:</label>
@@ -22,6 +23,7 @@
 										<div id="account_name-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">N° Orden de Pedido:</label>
@@ -29,6 +31,7 @@
 										<div id="referral_guide_number-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Serie de Factura:</label>
@@ -36,6 +39,7 @@
 										<div id="referral_serie_number-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Número de Factura:</label>
@@ -43,6 +47,7 @@
 										<div id="referral_voucher_number-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Número de SCOP:</label>
@@ -50,6 +55,7 @@
 										<div id="scop_number-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Costo Facturado:</label>
@@ -57,6 +63,7 @@
 										<div id="total-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
                                 <div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Fecha de Emisión:</label>
@@ -76,6 +83,7 @@
 										<div id="date-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Fecha de LLegada:</label>
@@ -95,13 +103,13 @@
 									</div>
 								</div>
 
-                           <!--     <div class="col-lg-4">
+                                <!-- <div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Cantidad:</label>
 										<input type="text" class="form-control" name="cantidad" id="cantidad" v-model="model.cantidad" @focus="$parent.clearErrorMsg($event)">
 										<div id="cantidad-error" class="error invalid-feedback"></div>
 									</div>
-								</div>-->
+								</div> -->
 
                                 <div class="col-lg-4">
 									<div class="form-group">
@@ -111,13 +119,13 @@
 									</div>
 								</div>
 
-
-                        <div class="col-lg-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Almacén:</label>
-                            <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
-                               <option disabled value="">Seleccionar</option>
-                                            <option value="8">PLUSPETROL</option>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Almacén:</label>
+                                        <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
+                                            <option disabled value="">Seleccionar</option>
+                                            <option v-for="warehouse_type in warehouse_types" v-bind:value="warehouse_type.id">{{ warehouse_type.name }}</option>
+                                            <!-- <option value="8">PLUSPETROL</option>
                                             <option value="9">PLUS-ZETA</option>
                                             <option value="10">NUMAY CALLAO</option>
                                             <option value="11">UNNA</option>
@@ -129,13 +137,13 @@
                                             <option value="41">SOLGAS TRUJILLO</option>
                                             <option value="42">SOLGAS CHICLAYO</option>
                                             <option value="43">ZETA GAS CALLAO</option>
-                                            <option value="44">SAVIA</option>
-                            </select>
-                            <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
+                                            <option value="44">SAVIA</option> -->
+                                        </select>
+                                        <div id="warehouse_type_id-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
 
-                    <div class="col-12">
+                                <div class="col-12">
                                     <table class="table">
                                         <thead>
                                             <th>Código</th>
@@ -146,16 +154,21 @@
                                             <tr v-for="(item, index) in model.details">
                                                 <input type="hidden" :name="`details[${index}][id]`" :value="item.id">
                                                 <td>{{ item.code }}</td>
-                                                <td>{{ item.name }}</td>
-                                                <td><input type="number" step=".00001" class="form-control" :name="`details[${index}][converted_amount]`" style="width:200px" :value="item.converted_amount">
+                                                <td>
+                                                    <select class="form-control" name="article_code" id="article_code" v-model="item.article_code" @focus="$parent.clearErrorMsg($event)">
+                                                        <option disabled value="">Seleccionar</option>
+                                                        <option v-for="article in articles" v-bind:value="article.code">{{ article.name }}</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <!-- <input type="number" step=".00001" class="form-control" :name="`details[${index}][converted_amount]`" style="width:200px" :value="item.converted_amount"> -->
+                                                    <input type="number" step=".00001" class="form-control" :name="`details[${index}][converted_amount]`" style="width:200px" v-model="item.converted_amount">
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
 
-
-								
                             </div>
                         </div>
                     </div>
@@ -185,6 +198,14 @@
                 type: String,
                 default: ''
             },
+            url_get_articles: {
+                type: String,
+                default: ''
+            },
+            url_get_warehouse_types: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -192,6 +213,7 @@
                     id: '',
                     account_id: '',
                     account_name: '',
+                    old_warehouse_type_id: '',
                     warehouse_type_id: '',
                     referral_guide_number: '',
                     referral_serie_number: '',
@@ -207,20 +229,20 @@
                     price_mes: '',
                     details: []
                 },
-                button_text: ''
+                button_text: '',
+                warehouse_types: [],
+                articles: []
             }
         },
         watch: {
-            
         },
         computed: {
-            
         },
         created() {
             EventBus.$on('create_modal', function() {
                 this.button_text = 'Crear';
 				this.model = {
-                     account_id: '',
+                    account_id: '',
                     account_name: '',
                     warehouse_type_id: '',
                     referral_guide_number: '',
@@ -244,11 +266,31 @@
             EventBus.$on('edit_modal', function(model) {
                 this.model = model;
                 this.button_text = 'Actualizar';
+
+                axios.post(this.url_get_warehouse_types)
+                    .then(response => {
+                        const data = response.data;
+                        this.warehouse_types = data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        console.log(error.response);
+                    })
+
+                axios.post(this.url_get_articles)
+                    .then(response => {
+                        const data = response.data;
+                        this.articles = data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        console.log(error.response);
+                    })
+
                 $('#modal').modal('show');
             }.bind(this));
         },
         mounted() {
-            
         },
         methods: {
             formController: function(url, event) {
@@ -257,35 +299,35 @@
                 var target = $(event.target);
                 var url = url;
                 var fd = new FormData(event.target);
+                const model = this.model;
 
                 EventBus.$emit('loading', true);
 
                 // EventBus.$emit('loading', true);
-                axios.post(url, fd, { headers: {
-                        'Content-type': 'application/x-www-form-urlencoded',
-                    }
-                }).then(response => {
+                axios.post(url, { ...model }).then(response => {
                     EventBus.$emit('loading', false);
                     $('#modal').modal('hide');
                     this.$parent.alertMsg(response.data);
 
                     this.model = {
-						  account_id: '',
-                    account_name: '',
-                    warehouse_type_id: '',
-                    referral_guide_number: '',
-                    referral_serie_number: '',
-                    referral_voucher_number: '',
-                    scop_number: '',
-                    created_at: '',
-                    date: '',
-                    min_datetime: '',
-                    max_datetime: '',
-                    cantidad: '',
-                    total: '',
-                    tc: '',
-                    price_mes: '',
-                    details: []
+                        id: '',
+                        account_id: '',
+                        account_name: '',
+                        old_warehouse_type_id: '',
+                        warehouse_type_id: '',
+                        referral_guide_number: '',
+                        referral_serie_number: '',
+                        referral_voucher_number: '',
+                        scop_number: '',
+                        created_at: '',
+                        date: '',
+                        min_datetime: '',
+                        max_datetime: '',
+                        cantidad: '',
+                        total: '',
+                        tc: '',
+                        price_mes: '',
+                        details: []
 					};
 
                     EventBus.$emit('refresh_table');

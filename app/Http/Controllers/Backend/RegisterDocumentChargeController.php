@@ -27,7 +27,7 @@ use stdClass;
 
 class RegisterDocumentChargeController extends Controller
 {
-    public function index() {
+	public function index() {
 		$companies = Company::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
 		$min_sale_date = CarbonImmutable::now()->subWeek()->toAtomString();
@@ -189,7 +189,6 @@ class RegisterDocumentChargeController extends Controller
 		return request()->all();
 	}
 
-
 	public function getClients() {
 		$company_id = request('company_id');
 		$voucher_type_id = request('voucher_type_id');
@@ -295,13 +294,22 @@ class RegisterDocumentChargeController extends Controller
 		$total_perception = $voucher_type_id == 1 && $perception_percentage ? $total * $perception_percentage : $total;
 		$detraction = $detraction_percentage > 0 ? $total * ( $detraction_percentage / 100 ) : 0;
 
-		if ( $warehouse_document_type_id == 8 || $warehouse_document_type_id == 9 || $warehouse_document_type_id == 14 || $warehouse_document_type_id == 15 || $warehouse_document_type_id == 20 || $warehouse_document_type_id == 22 || $warehouse_document_type_id == 29 ) {
+		if ( $warehouse_document_type_id == 8 || $warehouse_document_type_id == 9 || $warehouse_document_type_id == 14 || $warehouse_document_type_id == 15 || $warehouse_document_type_id == 20 ) {
 			$sale_value = -abs($sale_value);
 			$exonerated_value = -abs($exonerated_value);
 			$inaccurate_value = -abs($inaccurate_value);
 			$igv = -abs($igv);
 			$total = -abs($total);
 			$total_perception = -abs($total_perception);
+		}
+
+		$last_referral_voucher_number = Sale::where('company_id', $company_id)
+															->where('warehouse_document_type_id', $warehouse_document_type_id)
+															->where('referral_serie_number', $serie_number)
+															->max('referral_voucher_number');
+
+		if ($total_perception < 0) {
+			$total_perception = $total_perception * -1;
 		}
 
 		$sale = new Sale();
@@ -313,15 +321,15 @@ class RegisterDocumentChargeController extends Controller
 		$sale->payment_id = $payment_id;
 		$sale->currency_id = $currency_id;
 		$sale->warehouse_document_type_id = $warehouse_document_type_id;
-		$sale->referral_serie_number = $referral_serie_number;
-		$sale->referral_voucher_number = $referral_voucher_number;
+		$sale->referral_serie_number = $serie_number;
+		$sale->referral_voucher_number = $last_referral_voucher_number + 1;
 		$sale->sale_value = $sale_value;
 		$sale->exonerated_value = $exonerated_value;
 		$sale->inaccurate_value = $inaccurate_value;
 		$sale->igv = $igv;
 		$sale->total = $total;
 		$sale->total_perception = $total_perception;
-		$sale->balance = $total_perception;
+		// $sale->balance = $total_perception;
 		$sale->paid = 0;
 		$sale->detraction_percentage = $detraction_percentage;
 		$sale->detraction = $detraction;

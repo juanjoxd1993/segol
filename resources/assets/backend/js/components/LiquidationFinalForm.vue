@@ -68,6 +68,10 @@
                 type: String,
                 default: ''
             },
+            url_get_sale_series: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -83,6 +87,17 @@
 
         },
         mounted() {
+            axios.post(this.url_get_sale_series)
+            .then(response => {
+                const data = response.data;
+                
+                this.$store.state.sale_series = data;
+            })
+            .catch(error => {
+                this.$store.state.sale_series = [];
+                console.log(error);
+            });
+
             EventBus.$on('clear_form_sale', function() {
 				$('.kt-form').find('input').prop('disabled', false);
 				$('.kt-form').find('select').prop('disabled', false);

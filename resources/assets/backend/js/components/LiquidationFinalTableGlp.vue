@@ -41,7 +41,11 @@
 			url_store: {
 				type: String,
 				default: ''
-			}
+			},
+            url_get_glp_series: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -75,6 +79,38 @@
                     console.log(error);
                     console.log(error.response);
                 });
+
+                axios.post(this.url_get_glp_series, {
+                    warehouse_type_id: response.warehouse_type_id
+                })
+                .then(response => {
+                    // console.log(response.data);
+                    this.$store.state.sale_series = response.data;
+
+                    EventBus.$emit('loading', false);
+                }).catch(error => {
+                    console.log(error);
+                    console.log(error.response);
+                });
+
+                // axios.post(this.url, {
+                //     model: this.$store.state.model,
+                // }).then(response => {
+                //     // console.log(response.data);
+                //     this.$store.commit('addArticles', response.data);
+                    
+                //     if ( this.liquidation_datatable == undefined ) {
+                //         this.fillTableX();
+                //     } else {
+                //         this.liquidation_datatable.originalDataSet = this.articlesState;
+                //         this.liquidation_datatable.load();
+                //     }
+
+                //     EventBus.$emit('loading', false);
+                // }).catch(error => {
+                //     console.log(error);
+                //     console.log(error.response);
+                // });
             }.bind(this));
 
             EventBus.$on('refresh_table_liquidation', function() {
@@ -91,12 +127,12 @@
         computed: {
 			articlesState: function() {
 				let articles = this.$store.state.articles;
-				articles.map(element => {
-					element.presale_converted_amount = accounting.toFixed(element.presale_converted_amount, 4);
-					element.sale_converted_amount = accounting.toFixed(element.sale_converted_amount, 4);
-					element.return_converted_amount = accounting.toFixed(element.return_converted_amount, 4);
-					element.new_balance_converted_amount = accounting.toFixed(element.new_balance_converted_amount, 4);
-				});
+				// articles.map(element => {
+				// 	element.presale_converted_amount = accounting.toFixed(element.presale_converted_amount, 4);
+				// 	element.sale_converted_amount = accounting.toFixed(element.sale_converted_amount, 4);
+				// 	element.return_converted_amount = accounting.toFixed(element.return_converted_amount, 4);
+				// 	element.new_balance_converted_amount = accounting.toFixed(element.new_balance_converted_amount, 4);
+				// });
 				
 				return articles;
 			}
@@ -227,26 +263,20 @@
                     // columns definition
                     columns: [
                         {
-                            field: 'article_code',
+                            field: 'code',
                             title: 'Código',
-                            width: 60,
+                            width: 100,
                             textAlign: 'center',
                         },
                         {
-                            field: 'article_name',
+                            field: 'name',
                             title: 'Artículo',
-                            width: 300,
+                            width: 200,
                         },
                         {
-                            field: 'article_stock_good',
+                            field: 'stock_good',
                             title: 'Stock',
                             width: 120,
-                        },
-                        {
-                            field: 'presale_converted_amount',
-                            title: 'Pre-Venta',
-                            width: 120,
-                            textAlign: 'right',
                         },
                         // {
                         //     field: 'return_converted_amount',
@@ -254,18 +284,6 @@
                         //     width: 120,
                         //     textAlign: 'right',
                         // },
-                         {
-                            field: 'sale_converted_amount',
-                             title: 'Venta',
-                             width: 120,
-                             textAlign: 'right',
-                         },
-                        {
-                            field: 'new_balance_converted_amount',
-                            title: 'Saldo',
-                            width: 120,
-                            textAlign: 'right',
-                        },
                         {
                             field: 'id',
                             title: 'ID',

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSaleSeries extends Migration
+class CreateGuidesState extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,10 @@ class CreateSaleSeries extends Migration
      */
     public function up()
     {
-        Schema::create('sale_series', function (Blueprint $table) {
+        Schema::create('guides_states', function (Blueprint $table) {
             $table->bigIncrements('id');
-			$table->string('num_serie')->nullable();
-			$table->bigInteger('correlative')->nullable();
+            $table->string('name');
             $table->timestamps();
-			$table->string('created_at_user')->nullable();
-            $table->string('updated_at_user')->nullable();
-            $table->softDeletes();
         });
     }
 
@@ -31,6 +27,6 @@ class CreateSaleSeries extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sale_series');
+        Schema::dropIfExists('guides_state');
     }
 }

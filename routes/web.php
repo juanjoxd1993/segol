@@ -23,7 +23,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::get('/facturacion/importar', 'FacturationController@showImport')->name('facturations.import');
 	Route::post('/facturacion/importar', 'FacturationController@postImport')->name('facturations.import');
 
-
 	/** Facturación > Envío OSE */
 	Route::get('/', 'VoucherController@sendOse')->name('dashboard.voucher.send_ose');
 	Route::post('/facturacion/validar-formulario-documentos', 'VoucherController@validate_voucher_form')->name('dashboard.voucher.validate_voucher_form');
@@ -31,8 +30,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/listar', 'VoucherController@list')->name('dashboard.voucher.list');
 	Route::post('/facturacion/obtener-detalle-documento', 'VoucherController@get_voucher_detail')->name('dashboard.voucher.get_voucher_detail');
 	Route::post('/facturacion/enviar-documento', 'VoucherController@send_voucher')->name('dashboard.voucher.send_voucher');
-
-	
 
 	/** Facturación > Registro de Documentos por Cobrar */
 	Route::get('/facturacion/documentos-por-cobrar', 'RegisterDocumentChargeController@index')->name('dashboard.voucher.register_document_charge');
@@ -43,8 +40,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/documentos-por-cobrar/validar-tercer-paso', 'RegisterDocumentChargeController@validateThirdStep')->name('dashboard.voucher.register_document_charge.validate_third_step');
 	Route::post('/facturacion/documentos-por-cobrar/guardar', 'RegisterDocumentChargeController@store')->name('dashboard.voucher.register_document_charge.store');
 
- 
-
 	/** Facturación > Registro de Cobranzas */
 	Route::get('/facturacion/cobranzas', 'CollectionRegisterController@index')->name('dashboard.voucher.collection_register');
 	Route::post('/facturacion/cobranzas/obtener-clientes', 'CollectionRegisterController@getClients')->name('dashboard.voucher.collection_register.get_clients');
@@ -52,8 +47,9 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/cobranzas/validar-segundo-paso', 'CollectionRegisterController@validateSecondStep')->name('dashboard.voucher.collection_register.validate_second_step');
 	Route::post('/facturacion/cobranzas/obtener-ventas', 'CollectionRegisterController@getSales')->name('dashboard.voucher.collection_register.get_sales');
 	Route::post('/facturacion/cobranzas/guardar', 'CollectionRegisterController@store')->name('dashboard.voucher.collection_register.store');
+	Route::post('/facturacion/cobranzas/obtener-saldos', 'CollectionRegisterController@getSaldosFavor')->name('dashboard.voucher.collection_register.get_saldos_favor');
+	Route::post('/facturacion/cobranzas/obtener-documentos', 'CollectionRegisterController@getDocuments')->name('dashboard.voucher.collection_register.get_documents');
 
-	
 	/** Facturación > Liquidaciones Final */
 	Route::get('/facturacion/liquidaciones-final', 'LiquidationFinalController@index')->name('dashboard.voucher.liquidations_final');
 	Route::post('/facturacion/liquidaciones-final/validar-formulario', 'LiquidationFinalController@validateForm')->name('dashboard.voucher.liquidations_final.validate_form');
@@ -61,25 +57,33 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/liquidaciones-final/listar', 'LiquidationFinalController@list')->name('dashboard.voucher.liquidations_final.list');
 	Route::post('/facturacion/liquidaciones-final/obtener-clientes', 'LiquidationFinalController@getClients')->name('dashboard.voucher.liquidations_final.get_clients');
 	Route::post('/facturacion/liquidaciones-final/obtener-sale-serie', 'LiquidationFinalController@getSaleSeries')->name('dashboard.voucher.liquidations_final.get_sale_serie');
+	Route::post('/facturacion/liquidaciones-final/obtener-articles-clients', 'LiquidationFinalController@getArticles')->name('dashboard.voucher.liquidations_final.get_articles_clients');
 	Route::post('/facturacion/liquidaciones-final/obtener-precio-articulo', 'LiquidationFinalController@getArticlePrice')->name('dashboard.voucher.liquidations_final.get_article_price');
 	Route::post('/facturacion/liquidaciones-final/obtener-cuentas-banco', 'LiquidationFinalController@getBankAccounts')->name('dashboard.voucher.liquidations_final.get_bank_accounts');
 	Route::post('/facturacion/liquidaciones-final/verificar-documento', 'LiquidationFinalController@verifyDocumentType')->name('dashboard.voucher.liquidations_final.verify_document_type');
 	Route::post('/facturacion/liquidaciones-final/guardar', 'LiquidationFinalController@store')->name('dashboard.voucher.liquidations_final.store');
+	Route::post('/facturacion/liquidaciones-final/obtener-saldo-favor', 'LiquidationFinalController@getSaldoFavor')->name('dashboard.voucher.liquidations_final.get_saldo_favor');
 
-
-   /** Facturación > Liquidaciones Glp */
+	/** Facturación > Liquidaciones Glp */
 	Route::get('/facturacion/liquidaciones-glp', 'LiquidacionGlpController@index')->name('dashboard.operations.voucher.liquidations_glp');
 	Route::post('/facturacion/liquidaciones-glp/validar-formulario', 'LiquidacionGlpController@validateForm')->name('dashboard.operations.voucher.liquidations_glp.validate_form');
 	Route::post('/facturacion/liquidaciones-glp/obtener-movimientos-almacen', 'LiquidacionGlpController@getWarehouseMovements')->name('dashboard.operations.voucher.liquidations_glp.get_warehouse_movements');
 	Route::post('/facturacion/liquidaciones-glp/listar', 'LiquidacionGlpController@list')->name('dashboard.voucher.liquidations_glp.list');
 	Route::post('/facturacion/liquidaciones-glp/obtener-clientes', 'LiquidacionGlpController@getClients')->name('dashboard.operations.voucher.liquidations_glp.get_clients');
-	Route::post('/facturacion/liquidaciones-glp/obtener-sale-serie', 'LiquidationGlpController@getSaleSeries')->name('dashboard.voucher.liquidations_glp.get_sale_serie');
+	Route::post('/facturacion/liquidaciones-glp/obtener-glp-serie', 'LiquidacionGlpController@getGlpSeries')->name('dashboard.voucher.liquidations_glp.get_glp_serie');
 	Route::post('/facturacion/liquidaciones-glp/obtener-precio-articulo', 'LiquidacionGlpController@getArticlePrice')->name('dashboard.operations.voucher.liquidations_glp.get_article_price');
 	Route::post('/facturacion/liquidaciones-glp/obtener-cuentas-banco', 'LiquidacionGlpController@getBankAccounts')->name('dashboard.operations.voucher.liquidations_glp.get_bank_accounts');
 	Route::post('/facturacion/liquidaciones-glp/verificar-documento', 'LiquidacionGlpController@verifyDocumentType')->name('dashboard.operations.voucher.liquidations_glp.verify_document_type');
 	Route::post('/facturacion/liquidaciones-glp/guardar', 'LiquidacionGlpController@store')->name('dashboard.operations.voucher.liquidations_glp.store');
+	Route::post('/facturacion/liquidaciones-glp/get-guide-number', 'LiquidacionGlpController@getGuideNumber')->name('dashboard.operations.voucher.liquidations_glp.get_guide_number');
+	Route::post('/facturacion/liquidaciones-glp/get-scop-number', 'LiquidacionGlpController@getScopNumber')->name('dashboard.operations.voucher.liquidations_glp.get_scop_number');
+	Route::post('/facturacion/liquidaciones-glp/get-saldo-favor', 'LiquidacionGlpController@getSaldoFavor')->name('dashboard.operations.voucher.liquidations_glp.get_saldo_favor');
+	Route::post('/facturacion/liquidaciones-glp/get-empleados', 'LiquidacionGlpController@getAccounts')->name('dashboard.operations.voucher.liquidations_glp.get_accounts');
 
-	
+	/** Facturación > Remesas */
+	Route::get('/facturacion/remesas', 'RemesasController@index')->name('dashboard.facturation.voucher.remesas');
+	Route::post('/facturacion/remesas/crear', 'RemesasController@store')->name('dashboard.facturation.voucher.remesas.store');
+
 	/** Reportes > Cuentas Corrientes Clientes */
 	Route::get('/reporte/cuentas-corrientes-clientes', 'CheckingAccountReportController@index')->name('dashboard.report.checking_account_report');
 	Route::post('/reporte/cuentas-corrientes-clientes/obtener-clientes', 'CheckingAccountReportController@getClients')->name('dashboard.report.checking_account_report.get_clients');
@@ -105,17 +109,14 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/liquidaciones-resumen/obtener-clientes', 'LiquidationTotalReportController@getClients')->name('dashboard.report.liquidations_total.get_clients');
 	Route::post('/reporte/liquidaciones-resumen/listar', 'LiquidationTotalReportController@list')->name('dashboard.report.liquidations_total.list');
 
-	 
+	/** Reportes > Guias */
+	Route::get('/reporte/guias', 'StockFinalReportController@index')->name('dashboard.report.stock_final');
+	Route::post('/reporte/guias/validar-formulario', 'StockFinalReportController@validateForm')->name('dashboard.report.stock_final.validate_form');
+	Route::post('/reporte/guias/obtener-guias', 'StockFinalReportController@getWarehouseMovements')->name('dashboard.report.stock_final.get_warehouse_movements');
+	Route::post('/reporte/guias/listar', 'StockFinalReportController@list')->name('dashboard.report.stock_final.list');
+	Route::post('/reporte/guias/detalle', 'StockFinalReportController@detail')->name('dashboard.report.stock_final.detail');
+	Route::post('/reporte/guias/actualizar', 'StockFinalReportController@update')->name('dashboard.report.stock_final.update');
 
-	 /** Reportes > Guias */
-	 Route::get('/reporte/guias', 'StockFinalReportController@index')->name('dashboard.report.stock_final');
-	 Route::post('/reporte/guias/validar-formulario', 'StockFinalReportController@validateForm')->name('dashboard.report.stock_final.validate_form');
-	 Route::post('/reporte/guias/obtener-guias', 'StockFinalReportController@getWarehouseMovements')->name('dashboard.report.stock_final.get_warehouse_movements');
-	 Route::post('/reporte/guias/listar', 'StockFinalReportController@list')->name('dashboard.report.stock_final.list');
-	 Route::post('/reporte/guias/detalle', 'StockFinalReportController@detail')->name('dashboard.report.stock_final.detail');
-	 Route::post('/reporte/guias/actualizar', 'StockFinalReportController@update')->name('dashboard.report.stock_final.update');
-
-	
     /** Reportes > Estado de Guías */
 	Route::get('/reporte/estado-guias', 'GuidesScopReportController@index')->name('dashboard.report.guides_scop');
 	Route::post('/reporte/estado-guias/validar-formulario', 'GuidesScopReportController@validateForm')->name('dashboard.report.guides_scop.validate_form');
@@ -124,12 +125,14 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/estado-guias/detalle', 'GuidesScopReportController@detail')->name('dashboard.report.guides_scop.detail');
 	Route::post('/reporte/estado-guias/actualizar', 'GuidesScopReportController@update')->name('dashboard.report.guides_scop.update');
 
-
-	 /** Reportes > Facturas emitidas */
+	/** Reportes > Facturas emitidas */
 	Route::get('/reporte/facturas-emitidas', 'FacturationSalesReportController@index')->name('dashboard.report.facturations_sales');
 	Route::post('/reporte/facturas-emitidas/validar-formulario', 'FacturationSalesReportController@validateForm')->name('dashboard.report.facturations_sales.validate_form');
 	Route::post('/reporte/facturas-emitidas/obtener-clientes', 'FacturationSalesReportController@getClients')->name('dashboard.report.facturations_sales.get_clients');
 	Route::post('/reporte/facturas-emitidas/listar', 'FacturationSalesReportController@list')->name('dashboard.report.facturations_sales.list');
+	Route::post('/reporte/facturas-emitidas/obtener-voucher', 'FacturationSalesReportController@getVoucher')->name('dashboard.report.facturations_sales.get_voucher');
+	Route::post('/reporte/facturas-emitidas/actualizar-voucher', 'FacturationSalesReportController@updateVoucher')->name('dashboard.report.facturations_sales.update_voucher');
+	Route::post('/reporte/facturas-emitidas/eliminar-voucher', 'FacturationSalesReportController@deleteVoucher')->name('dashboard.report.facturations_sales.delete_voucher');
 
 	/** Reportes > Boletas emitidas */
 	Route::get('/reporte/boletas-emitidas', 'FacturationBoletasReportController@index')->name('dashboard.report.facturation_boletas');
@@ -137,13 +140,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/boletas-emitidas/obtener-clientes', 'FacturationBoletasReportController@getClients')->name('dashboard.report.facturation_boletas.get_clients');
 	Route::post('/reporte/boletas-emitidas/listar', 'FacturationBoletasReportController@list')->name('dashboard.report.facturation_boletas.list');
 
-
-	 
-
-    
-
-
-	
 	/** Reportes > Liquidación Detallado */
 	Route::get('/reporte/liquidacion-detallado', 'CollectionSalesReportController@index')->name('dashboard.report.collection_sales_report');
 	Route::post('/reporte/liquidacion-detallado/obtener-clientes', 'CollectionSalesReportController@getClients')->name('dashboard.report.collection_sales_report.get_clients');
@@ -201,7 +197,26 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/relacion-de-documentos-por-cobrar/validar-formulario', 'UncollectedDocumentReportController@validateForm')->name('dashboard.report.uncollected_document_report.validate_form');
 	Route::post('/reporte/relacion-de-documentos-por-cobrar/listar', 'UncollectedDocumentReportController@list')->name('dashboard.report.uncollected_document_report.list');
 
-	
+	/** Reportes > GLP COSTO*/
+	Route::get('/reporte/glp-diaria', 'DaysGlpReportController@index')->name('dashboard.report.days_glp');
+	Route::post('/reporte/glp-diaria/validar-formulario', 'DaysGlpReportController@validateForm')->name('dashboard.report.days_glp.validate_form');
+	Route::post('/reporte/glp-diaria/listar', 'DaysGlpReportController@list')->name('dashboard.report.days_glp.list');
+
+	/** Reportes > GLP Global*/
+	Route::get('/reporte/report-glp-global', 'ReportsGlpGlobalController@index')->name('dashboard.report.report_glp_global');
+	Route::post('/reporte/report-glp-global/get-stocks', 'ReportsGlpGlobalController@getStockArticles')->name('dashboard.report.report_glp_global.get_stocks_articles');
+
+	/** Reportes > Envases General*/
+	Route::get('/reporte/report-envase-general', 'ReportsEnvasesGeneralController@index')->name('dashboard.report.report_envases_general');
+	Route::post('/reporte/report-envase-general/get-stocks', 'ReportsEnvasesGeneralController@getStockArticles')->name('dashboard.report.report_envases_general.get_stocks_articles');
+
+	/** Reportes > Saldos Favor*/
+	Route::get('/reporte/report-saldos-favor', 'ReportsSaldosFavorController@index')->name('dashboard.report.report_saldos_favor');
+	Route::post('/reporte/report-saldos-favor/obtener-saldos', 'ReportsSaldosFavorController@getSaldosFavor')->name('dashboard.report.report_saldos_favor.get_saldos_favor');
+
+	/** Reportes > Balones Prestados*/
+	Route::get('/reporte/report-balones-prestados', 'ReportsBalonesPressController@index')->name('dashboard.report.report_balones_press');
+	Route::post('/reporte/report-balones-prestados/listar', 'ReportsBalonesPressController@getContainers')->name('dashboard.report.report_balones_press.get_containers');
 
 	/** Logística > Registro Movimiento de Existencias */
 	Route::get('/logistica/registro-movimiento-existencias', 'StockRegisterController@index')->name('dashboard.logistics.stock_register');
@@ -282,7 +297,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/logistica/reporte-movimiento-existencias/listar', 'StockRegisterReportController@list')->name('dashboard.logistics.report.stock_register.list');
 	Route::post('/logistica/reporte-movimiento-existencias/detalle', 'StockRegisterReportController@detail')->name('dashboard.logistics.report.stock_register.detail');
 	Route::post('/logistica/reporte-movimiento-existencias/actualizar', 'StockRegisterReportController@update')->name('dashboard.logistics.report.stock_register.update');
-	
 
     /** Operaciones > Guias */
 	Route::get('/operaciones/registro-movimiento-existencias', 'GuidesRegisterController@index')->name('dashboard.operations.guides_register');
@@ -295,6 +309,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/registro-movimiento-existencias/obtener-articulo', 'GuidesRegisterController@getArticle')->name('dashboard.operations.guides_register.get_article');
 	Route::post('/operaciones/registro-movimiento-existencias/guardar', 'GuidesRegisterController@store')->name('dashboard.operations.guides_register.store');
 	Route::get('/operaciones/registro-movimiento-existencias/obtener-siguiente-correlativo', 'GuidesRegisterController@getNextcorrelative')->name('dashboard.operations.guides_register.next_correlative');
+
 	/** Operaciones > Parte de Almacén */
 	Route::get('/operaciones/parte-almacen', 'OperationsPartController@index')->name('dashboard.operations.operations_part');
 	Route::post('/operaciones/parte-almacen/validar-formulario', 'OperationsPartController@validateForm')->name('dashboard.operations.operations_part.validate_form');
@@ -303,16 +318,34 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/parte-almacen/exportar', 'OperationsPartController@export')->name('dashboard.operations.operations_part.export');
 	Route::get('/operaciones/parte-almacen/exportar-guia-remision', 'OperationsPartController@exportReferralGuide')->name('dashboard.operations.operations_part.export_referral_guide');
 
+	/** Operaciones > Validar Guías */
+	Route::get('/operaciones/validar-guias', 'GuidesValidateController@index')->name('dashboard.operations.guides_validate');
+	Route::post('/operaciones/validar-guias/validar-formulario', 'GuidesValidateController@validateForm')->name('dashboard.operations.guides_validate.validate_form');
+	Route::post('/operaciones/validar-guias/obtener-movimientos', 'GuidesValidateController@getWarehouseMovements')->name('dashboard.operations.guides_validate.get_warehouse_movements');
+	Route::post('/operaciones/validar-guias/listar-detalle-movimientos', 'GuidesValidateController@list')->name('dashboard.operations.guides_validate.list');
+	Route::post('/operaciones/validar-guias/remove-article', 'GuidesValidateController@removeArticle')->name('dashboard.operations.guides_validate.remove_article');
+	Route::post('/operaciones/validar-guias/update-articles', 'GuidesValidateController@updateArticles')->name('dashboard.operations.guides_validate.update_articles');
+	Route::post('/operaciones/validar-guias/get-articles', 'GuidesValidateController@getArticles')->name('dashboard.operations.guides_validate.get_articles');
+	Route::post('/operaciones/validar-guias/validate-guides', 'GuidesValidateController@validateGuides')->name('dashboard.operations.guides_validate.validate_guides');
+
    /** Operaciones > Retorno de Guías */
-	
     Route::get('/operaciones/retorno-guias', 'GuidesReturnController@index')->name('dashboard.operations.guides_return');
 	Route::post('/operaciones/retorno-guias/validar-formulario', 'GuidesReturnController@validateForm')->name('dashboard.operations.guides_return.validate_form');
 	Route::post('/operaciones/retorno-guias/obtener-movimientos-almacen', 'GuidesReturnController@getWarehouseMovements')->name('dashboard.operations.guides_return.get_warehouse_movements');
 	Route::post('/operaciones/retorno-guias/listar', 'GuidesReturnController@list')->name('dashboard.operations.guides_return.list');
 	Route::post('/operaciones/retorno-guias/actualizar', 'GuidesReturnController@update')->name('dashboard.operations.guides_return.update');
+	Route::post('/operaciones/retorno-guias/obtener-clientes', 'GuidesReturnController@getClients')->name('dashboard.operations.guides_return.get_clients');
+	Route::post('/operaciones/retorno-guias/obtener-balon', 'GuidesReturnController@getBalon')->name('dashboard.operations.guides_return.get_balon');
+	Route::post('/operaciones/retorno-guias/obtener-balones', 'GuidesReturnController@getBalons')->name('dashboard.operations.guides_return.get_balons');
+
+	/** Operaciones > Validar Prestamos */
+	Route::get('/operaciones/validar-prestamos', 'GuidesValidatePressController@index')->name('dashboard.operations.guides_validate_press');
+	Route::post('/operaciones/validar-prestamos/validar-formulario', 'GuidesValidatePressController@validateForm')->name('dashboard.operations.guides_validate_press.validate_form');
+	Route::post('/operaciones/validar-prestamos/obtener-movimientos', 'GuidesValidatePressController@getWarehouseMovements')->name('dashboard.operations.guides_validate_press.get_warehouse_movements');
+	Route::post('/operaciones/validar-prestamos/listar-detalle-movimientos', 'GuidesValidatePressController@list')->name('dashboard.operations.guides_validate_press.list');
+	Route::post('/operaciones/validar-prestamos/validate-guides', 'GuidesValidatePressController@validateGuides')->name('dashboard.operations.guides_validate_press.validate_guides');
 
 	/** Operaciones > Registro de producción */
-
 	Route::get('/logistica/registro-produccion', 'ProductionController@index')->name('dashboard.logistics.production_register');
 	Route::post('/logistica/registro-produccion/validar-formulario', 'ProductionController@validateForm')->name('dashboard.logistics.production_register.validate_form');
 	Route::post('/logistica/registro-produccion/listar', 'ProductionController@list')->name('dashboard.logistics.production_register.list');
@@ -322,7 +355,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/logistica/registro-produccion/obtener-tasas', 'ProductionController@getArticleRates')->name('dashboard.logistics.production_register.get_article_rates');
 	Route::post('/logistica/registro-produccion/obtener-articulo', 'ProductionController@getArticle')->name('dashboard.logistics.production_register.get_article');
 	Route::post('/logistica/registro-produccion/guardar', 'ProductionController@store')->name('dashboard.logistics.production_register.store');
- 
+
 	/** Reportes > Prueba Guias */
 	Route::get('/operaciones/guias-registro', 'StockSeekRegisterReportController@index')->name('dashboard.operations.stock_seek_register');
 	Route::post('/operaciones/guias-registro/validar-formulario', 'StockSeekRegisterReportController@validateForm')->name('dashboard.operations.stock_seek_register.validate_form');
@@ -331,11 +364,10 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/guias-registro/detalle', 'StockSeekRegisterReportController@detail')->name('dashboard.operations.stock_seek_register.detail');
 	Route::post('/operaciones/guias-registro/actualizar', 'StockSeekRegisterReportController@update')->name('dashboard.operations.stock_seek_register.update');
 
-     /** Reportes > Buscador de Guías */
+    /** Reportes > Buscador de Guías */
 	Route::get('/operaciones/buscador-guias', 'GuidesSeekReportController@index')->name('dashboard.operations.guides_seek');
 	Route::post('/operaciones/buscador-guias/validar-formulario', 'GuidesSeekReportController@validateForm')->name('dashboard.operations.guides_seek.validate_form');
 	Route::post('/operaciones/buscador-guias/listar', 'GuidesSeekReportController@list')->name('dashboard.operations.guides_seek.list');
-	
 
 	Route::get('/operaciones/inventario', 'OpeAdjustInventoryController@index')->name('dashboard.operations.opeinventories');
 	Route::post('/operaciones/inventario/validar-formulario', 'OpeAdjustInventoryController@validateForm')->name('dashboard.operations.opeinventories.validate_form');
@@ -350,36 +382,26 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/inventario/formulario-registro', 'AdjustInventoryController@formRecord')->name('dashboard.operations.opeinventories.form_record');
 	Route::post('/operaciones/inventario/exportar-registro', 'OpeAdjustInventoryController@exportRecord')->name('dashboard.operations.opeinventories.export_record');
 
-
-
 	Route::get('/operaciones/anulacionguias', 'AnulacionGuiaController@index')->name('dashboard.operations.anulacionguias');
 	Route::post('/operaciones/anulacionguias/search', 'AnulacionGuiaController@searchGuides')->name('dashboard.operations.anulacionguias.search');
 	Route::post('/operaciones/anulacionguias/anular', 'AnulacionGuiaController@anular')->name('dashboard.operations.anulacionguias.anular');
 
+	/** Comercial > Estado de Guías */
+	Route::get('/comercial/estado-guias', 'GuidesCommercialReportController@index')->name('dashboard.commercial.guides_commercial');
+	Route::post('/comercial/estado-guias/validar-formulario', 'GuidesCommercialReportController@validateForm')->name('dashboard.commercial.guides_commercial.validate_form');
+	Route::post('/comercial/estado-guias/obtener-clientes', 'GuidesCommercialReportController@getClients')->name('dashboard.commercial.guides_commercial.get_warehouse_movements');
+	Route::post('/comercial/estado-guias/listar', 'GuidesCommercialReportController@list')->name('dashboard.commercial.guides_commercial.list');
+	Route::post('/comercial/estado-guias/detalle', 'GuidesCommercialReportController@detail')->name('dashboard.commercial.guides_commercial.detail');
+	Route::post('/comercial/estado-guias/actualizar', 'GuidesCommercialReportController@update')->name('dashboard.commercial.guides_commercial.update');
 
-
-
-
-
-	 /** Comercial > Estado de Guías */
-	 Route::get('/comercial/estado-guias', 'GuidesCommercialReportController@index')->name('dashboard.commercial.guides_commercial');
-	 Route::post('/comercial/estado-guias/validar-formulario', 'GuidesCommercialReportController@validateForm')->name('dashboard.commercial.guides_commercial.validate_form');
-	 Route::post('/comercial/estado-guias/obtener-clientes', 'GuidesCommercialReportController@getClients')->name('dashboard.commercial.guides_commercial.get_warehouse_movements');
-	 Route::post('/comercial/estado-guias/listar', 'GuidesCommercialReportController@list')->name('dashboard.commercial.guides_commercial.list');
-	 Route::post('/comercial/estado-guias/detalle', 'GuidesCommercialReportController@detail')->name('dashboard.commercial.guides_commercial.detail');
-	 Route::post('/comercial/estado-guias/actualizar', 'GuidesCommercialReportController@update')->name('dashboard.commercial.guides_commercial.update');
-
-
-     /** Comercial > Lista de Precios */
+    /** Comercial > Lista de Precios */
 	Route::get('/comercial/lista-de-precios', 'PriceListController@index')->name('dashboard.commercial.price_list');
 	Route::post('/comercial/lista-de-precios/validar-formulario', 'PriceListController@validateForm')->name('dashboard.commercial.price_list.validate_form');
 	Route::post('/comercial/lista-de-precios/listar', 'PriceListController@list')->name('dashboard.commercial.price_list.list');
 	Route::post('/comercial/lista-de-precios/obtener-dia', 'PriceListController@getMinEffectiveDate')->name('dashboard.commercial.price_list.get_min_effective_date');
 	Route::post('/comercial/lista-de-precios/guardar', 'PriceListController@store')->name('dashboard.commercial.price_list.store');
 
-
-
-	 /** comercial > Clientes */
+	/** comercial > Clientes */
 	Route::get('/comercial/clientes', 'ClientController@index')->name('dashboard.commercial.clients');
 	Route::post('/comercial/clientes/validar-formulario', 'ClientController@validateForm')->name('dashboard.commercial.clients.validate_form');
 	Route::post('/comercial/clientes/listar', 'ClientController@list')->name('dashboard.commercial.clients.list');
@@ -406,22 +428,19 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/comercial/venta-diaria/obtener-clientes', 'CommercialChannelReportController@getClients')->name('dashboard.commercial.commercial_channel.get_clients');
 	Route::post('/comercial/venta-diaria/listar', 'CommercialChannelReportController@list')->name('dashboard.commercial.commercial_channel.list');
 
-		/** Comercial > Lista de Precios */
-		Route::get('/comercial/lista/lista-de-precios', 'PriceListReportController@index')->name('dashboard.commercial.price_list_report');
-		Route::post('/comercial/lista/lista-de-precios/validar-formulario', 'PriceListReportController@validateForm')->name('dashboard.commercial.price_list_report.validate_form');
-		Route::post('/comercial/lista/lista-de-precios/obtener-clientes', 'PriceListReportController@getClients')->name('dashboard.commercial.price_list_report.get_clients');
-		Route::post('/comercial/lista/lista-de-precios/obtener-articulos', 'PriceListReportController@getArticles')->name('dashboard.commercial.price_list_report.get_articles');
-		Route::post('/comercial/lista/lista-de-precios/listar', 'PriceListReportController@list')->name('dashboard.commercial.price_list_report.list');
-		Route::post('/comercial/lista/lista-de-precios/exportar-pdf', 'PriceListReportController@exportPdf')->name('dashboard.commercial.price_list_report.export_pdf');
-	
+	/** Comercial > Lista de Precios */
+	Route::get('/comercial/lista/lista-de-precios', 'PriceListReportController@index')->name('dashboard.commercial.price_list_report');
+	Route::post('/comercial/lista/lista-de-precios/validar-formulario', 'PriceListReportController@validateForm')->name('dashboard.commercial.price_list_report.validate_form');
+	Route::post('/comercial/lista/lista-de-precios/obtener-clientes', 'PriceListReportController@getClients')->name('dashboard.commercial.price_list_report.get_clients');
+	Route::post('/comercial/lista/lista-de-precios/obtener-articulos', 'PriceListReportController@getArticles')->name('dashboard.commercial.price_list_report.get_articles');
+	Route::post('/comercial/lista/lista-de-precios/listar', 'PriceListReportController@list')->name('dashboard.commercial.price_list_report.list');
+	Route::post('/comercial/lista/lista-de-precios/exportar-pdf', 'PriceListReportController@exportPdf')->name('dashboard.commercial.price_list_report.export_pdf');
 		
-		/** Comercial > Relación de Clientes */
-		Route::get('/comercial/relacion-de-clientes', 'ListClientsReportController@index')->name('dashboard.commercial.list_clients');
-		Route::post('/comercial/relacion-de-clientes/validar-formulario', 'ListClientsReportController@validateForm')->name('dashboard.commercial.list_clients.validate_form');
-		Route::post('/comercial/relacion-de-clientes/listar', 'ListClientsReportController@list')->name('dashboard.commercial.list_clients.list');
-	
-	
-	
+	/** Comercial > Relación de Clientes */
+	Route::get('/comercial/relacion-de-clientes', 'ListClientsReportController@index')->name('dashboard.commercial.list_clients');
+	Route::post('/comercial/relacion-de-clientes/validar-formulario', 'ListClientsReportController@validateForm')->name('dashboard.commercial.list_clients.validate_form');
+	Route::post('/comercial/relacion-de-clientes/listar', 'ListClientsReportController@list')->name('dashboard.commercial.list_clients.list');
+
 	/** Comercial > Venta Canal*/
 	Route::get('/comercial/venta-canal', 'LiquidationChannelReportController@index')->name('dashboard.commercial.liquidations_channel');
 	Route::post('/comercial/venta-canal/validar-formulario', 'LiquidationChannelReportController@validateForm')->name('dashboard.commercial.liquidations_channel.validate_form');
@@ -434,16 +453,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/comercial/venta-canal-resumido/obtener-clientes', 'LiquidationChannelTotalReportController@getClients')->name('dashboard.commercial.liquidations_channel_total.get_clients');
 	Route::post('/comercial/venta-canal-resumido/listar', 'LiquidationChannelTotalReportController@list')->name('dashboard.commercial.liquidations_channel_total.list');
 
-	
-
-	/** Reportes > GLP COSTO*/
-	Route::get('/reporte/glp-diaria', 'DaysGlpReportController@index')->name('dashboard.report.days_glp');
-	Route::post('/reporte/glp-diaria/validar-formulario', 'DaysGlpReportController@validateForm')->name('dashboard.report.days_glp.validate_form');
-	Route::post('/reporte/glp-diaria/listar', 'DaysGlpReportController@list')->name('dashboard.report.days_glp.list');
-
-
-
-	 /** Creditos y Cobranzas> Liquidaciones */
+	/** Creditos y Cobranzas> Liquidaciones */
 
 	/** creditos > Clientes */
 	Route::get('/creditos/clientes', 'ClientController@index')->name('dashboard.voucher.clients');
@@ -464,11 +474,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/creditos/clientes/obtener-dia', 'ClientController@priceMinEffectiveDate')->name('dashboard.voucher.clients.price_min_effective_date');
 	Route::post('/creditos/clientes/guardar-precio', 'ClientController@priceStore')->name('dashboard.voucher.clients.price_store');
 
-
-
-
-
-	 /** Creditos y Cobranzas> Liquidaciones */
+	/** Creditos y Cobranzas> Liquidaciones */
 	Route::get('creditos/reporte/liquidaciones-creditos', 'LiquidationCreditsReportController@index')->name('dashboard.credits.report.liquidations_credits');
 	Route::post('creditos/reporte/liquidaciones-creditos/validar-formulario', 'LiquidationCreditsReportController@validateForm')->name('dashboard.credits.report.liquidations_credits.validate_form');
 	Route::post('creditos/reporte/liquidaciones-creditos/obtener-clientes', 'LiquidationCreditsReportController@getClients')->name('dashboard.credits.report.liquidations_credits.get_clients');
@@ -476,59 +482,52 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::get('creditos/reporte/liquidaciones-creditos/registrar-voucher', 'LiquidationCreditsReportController@showRegisterVoucher')->name('dashboard.credits.register_voucher');
 	Route::post('creditos/reporte/liquidaciones-creditos/registrar-voucher', 'LiquidationCreditsReportController@registerVoucher')->name('dashboard.credits.register_voucher');
 
-    
-
 	/** Creditos y Cobranzas > Relación de Documentos Pendientes Internos*/
 	Route::get('/reporte/relacion-de-documentos-pendientes-internos', 'PendingDocumentIntReportController@index')->name('dashboard.report.pending_document_int_report');
 	Route::post('/reporte/relacion-de-documentos-pendientes-internos/obtener-clientes', 'PendingDocumentIntReportController@getClients')->name('dashboard.report.pending_document_int_report.get_clients');
 	Route::post('/reporte/relacion-de-documentos-pendientes-internos/validar-formulario', 'PendingDocumentIntReportController@validateForm')->name('dashboard.report.pending_document_int_report.validate_form');
 	Route::post('/reporte/relacion-de-documentos-pendientes-internos/listar', 'PendingDocumentIntReportController@list')->name('dashboard.report.pending_document_int_report.list');
 
+	/** Contabilidad > Generación masiva de Comprobantes */
+	Route::get('/contabilidad/generacion-masiva-comprobantes', 'VoucherMassiveGenerationController@index')->name('dashboard.voucher.massive_generation');
+	Route::post('/contabilidad/generacion-masiva-comprobantes/validar-formulario', 'VoucherMassiveGenerationController@validateForm')->name('dashboard.voucher.massive_generation.validate_form');
+	Route::post('/contabilidad/generacion-masiva-comprobantes/listar', 'VoucherMassiveGenerationController@list')->name('dashboard.voucher.massive_generation.list');
+	Route::post('/contabilidad/generacion-masiva-comprobantes/obtener-clientes', 'VoucherMassiveGenerationController@getClients')->name('dashboard.voucher.massive_generation.get_clients');
+	Route::post('/contabilidad/generacion-masiva-comprobantes/obtener-articulos', 'VoucherMassiveGenerationController@getArticles')->name('dashboard.voucher.massive_generation.get_articles');
+	Route::post('/contabilidad/generacion-masiva-comprobantes/guardar', 'VoucherMassiveGenerationController@store')->name('dashboard.voucher.massive_generation.store');
 
+	/** Contabilidad > Reporte de guias transportistas */
+	Route::get('/contabilidad/guias-registro', 'TransportistRegisterReportController@index')->name('dashboard.report.transportist_register');
+	Route::post('/contabilidad/guias-registro/validar-formulario', 'TransportistRegisterReportController@validateForm')->name('dashboard.report.transportist_register.validate_form');
+	Route::post('/contabilidad/guias-registro/obtener-guias', 'TransportistRegisterReportController@getWarehouseMovements')->name('dashboard.report.transportist_register.get_warehouse_movements');
+	Route::post('/contabilidad/guias-registro/listar', 'TransportistRegisterReportController@list')->name('dashboard.report.transportist_register.list');
+	Route::post('/contabilidad/guias-registro/detalle', 'TransportistRegisterReportController@detail')->name('dashboard.report.transportist_register.detail');
+	Route::post('/contabilidad/guias-registro/actualizar', 'TransportistRegisterReportController@update')->name('dashboard.report.transportist_register.update');
 
-		/** Contabilidad > Generación masiva de Comprobantes */
-		Route::get('/contabilidad/generacion-masiva-comprobantes', 'VoucherMassiveGenerationController@index')->name('dashboard.voucher.massive_generation');
-		Route::post('/contabilidad/generacion-masiva-comprobantes/validar-formulario', 'VoucherMassiveGenerationController@validateForm')->name('dashboard.voucher.massive_generation.validate_form');
-		Route::post('/contabilidad/generacion-masiva-comprobantes/listar', 'VoucherMassiveGenerationController@list')->name('dashboard.voucher.massive_generation.list');
-		Route::post('/contabilidad/generacion-masiva-comprobantes/obtener-clientes', 'VoucherMassiveGenerationController@getClients')->name('dashboard.voucher.massive_generation.get_clients');
-		Route::post('/contabilidad/generacion-masiva-comprobantes/obtener-articulos', 'VoucherMassiveGenerationController@getArticles')->name('dashboard.voucher.massive_generation.get_articles');
-		Route::post('/contabilidad/generacion-masiva-comprobantes/guardar', 'VoucherMassiveGenerationController@store')->name('dashboard.voucher.massive_generation.store');
+	/** Contabilidad > Facturas emitidas volumen */
+	Route::get('/contabilidad/facturas-emitidas-volumen', 'FacturationSalesVolumeReportController@index')->name('dashboard.report.facturations_sales_volume');
+	Route::post('/contabilidad/facturas-emitidas-volumen/validar-formulario', 'FacturationSalesVolumeReportController@validateForm')->name('dashboard.report.facturations_sales_volume.validate_form');
+	Route::post('/contabilidad/facturas-emitidas-volumen/obtener-clientes', 'FacturationSalesVolumeReportController@getClients')->name('dashboard.report.facturations_sales_volume.get_clients');
+	Route::post('/contabilidad/facturas-emitidas-volumen/listar', 'FacturationSalesVolumeReportController@list')->name('dashboard.report.facturations_sales_volume.list');
 
-
-     /** Contabilidad > Reporte de guias transportistas */
-	 Route::get('/contabilidad/guias-registro', 'TransportistRegisterReportController@index')->name('dashboard.report.transportist_register');
-	 Route::post('/contabilidad/guias-registro/validar-formulario', 'TransportistRegisterReportController@validateForm')->name('dashboard.report.transportist_register.validate_form');
-	 Route::post('/contabilidad/guias-registro/obtener-guias', 'TransportistRegisterReportController@getWarehouseMovements')->name('dashboard.report.transportist_register.get_warehouse_movements');
-	 Route::post('/contabilidad/guias-registro/listar', 'TransportistRegisterReportController@list')->name('dashboard.report.transportist_register.list');
-	 Route::post('/contabilidad/guias-registro/detalle', 'TransportistRegisterReportController@detail')->name('dashboard.report.transportist_register.detail');
-	 Route::post('/contabilidad/guias-registro/actualizar', 'TransportistRegisterReportController@update')->name('dashboard.report.transportist_register.update');
-
-	 /** Contabilidad > Facturas emitidas volumen */
-	 Route::get('/contabilidad/facturas-emitidas-volumen', 'FacturationSalesVolumeReportController@index')->name('dashboard.report.facturations_sales_volume');
-	 Route::post('/contabilidad/facturas-emitidas-volumen/validar-formulario', 'FacturationSalesVolumeReportController@validateForm')->name('dashboard.report.facturations_sales_volume.validate_form');
-	 Route::post('/contabilidad/facturas-emitidas-volumen/obtener-clientes', 'FacturationSalesVolumeReportController@getClients')->name('dashboard.report.facturations_sales_volume.get_clients');
-	 Route::post('/contabilidad/facturas-emitidas-volumen/listar', 'FacturationSalesVolumeReportController@list')->name('dashboard.report.facturations_sales_volume.list');
-
-
-	 /** Contabilidad > Volumen de Ventas */
+	/** Contabilidad > Volumen de Ventas */
 	Route::get('/contabilidad/volumen-ventas', 'SalesVolumeReportController@index')->name('dashboard.report.sales_volume');
 	Route::post('/contabilidad/volumen-ventas/validar-formulario', 'SalesVolumeReportController@validateForm')->name('dashboard.report.sales_volume.validate_form');
 	Route::post('/contabilidad/volumen-ventas/listar', 'SalesVolumeReportController@list')->name('dashboard.report.sales_volume.list');
 	Route::post('/contabilidad/volumen-ventas/exportar', 'SalesVolumeReportController@export')->name('dashboard.report.sales_volume.export');
 
-	 /** Contabilidad > Volumen de Cordia*/
-	 Route::get('/contabilidad/volumen-cordia', 'CordiaVolumeReportController@index')->name('dashboard.report.cordia_volume');
-	 Route::post('/contabilidad/volumen-cordia/validar-formulario', 'CordiaVolumeReportController@validateForm')->name('dashboard.report.cordia_volume.validate_form');
-	 Route::post('/contabilidad/volumen-cordia/listar', 'CordiaVolumeReportController@list')->name('dashboard.report.cordia_volume.list');
-	 Route::post('/contabilidad/volumen-cordia/exportar', 'CordiaVolumeReportController@export')->name('dashboard.report.cordia_volume.export');
- 
+	/** Contabilidad > Volumen de Cordia*/
+	Route::get('/contabilidad/volumen-cordia', 'CordiaVolumeReportController@index')->name('dashboard.report.cordia_volume');
+	Route::post('/contabilidad/volumen-cordia/validar-formulario', 'CordiaVolumeReportController@validateForm')->name('dashboard.report.cordia_volume.validate_form');
+	Route::post('/contabilidad/volumen-cordia/listar', 'CordiaVolumeReportController@list')->name('dashboard.report.cordia_volume.list');
+	Route::post('/contabilidad/volumen-cordia/exportar', 'CordiaVolumeReportController@export')->name('dashboard.report.cordia_volume.export');
 
-	 /** Contabilidad > Facturas volumen */
-	 Route::get('/contabilidad/facturas-emitidas-volumen-resumido', 'FacturationTotalSalesVolumeReportController@index')->name('dashboard.report.facturations_total_sales_volume');
-	 Route::post('/contabilidad/facturas-emitidas-volumen-resumido/validar-formulario', 'FacturationTotalSalesVolumeReportController@validateForm')->name('dashboard.report.facturations_total_sales_volume.validate_form');
-	 Route::post('/contabilidad/facturas-emitidas-volumen-resumido/obtener-clientes', 'FacturationTotalSalesVolumeReportController@getClients')->name('dashboard.report.facturations_total_sales_volume.get_clients');
-	 Route::post('/contabilidad/facturas-emitidas-volumen-resumido/listar', 'FacturationTotalSalesVolumeReportController@list')->name('dashboard.report.facturations_total_sales_volume.list');
- 
+	/** Contabilidad > Facturas volumen */
+	Route::get('/contabilidad/facturas-emitidas-volumen-resumido', 'FacturationTotalSalesVolumeReportController@index')->name('dashboard.report.facturations_total_sales_volume');
+	Route::post('/contabilidad/facturas-emitidas-volumen-resumido/validar-formulario', 'FacturationTotalSalesVolumeReportController@validateForm')->name('dashboard.report.facturations_total_sales_volume.validate_form');
+	Route::post('/contabilidad/facturas-emitidas-volumen-resumido/obtener-clientes', 'FacturationTotalSalesVolumeReportController@getClients')->name('dashboard.report.facturations_total_sales_volume.get_clients');
+	Route::post('/contabilidad/facturas-emitidas-volumen-resumido/listar', 'FacturationTotalSalesVolumeReportController@list')->name('dashboard.report.facturations_total_sales_volume.list');
+
     /** Compras GLP > Compras GLP */
 	Route::get('/controlglp/registro-movimiento-existencias', 'GuidesGlpRegisterController@index')->name('dashboard.operations.guides_glp_register');
 	Route::post('/controlglp/registro-movimiento-existencias/validar-formulario', 'GuidesGlpRegisterController@validateForm')->name('dashboard.operations.guides_glp_register.validate_form');
@@ -540,7 +539,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/registro-movimiento-existencias/obtener-articulo', 'GuidesGlpRegisterController@getArticle')->name('dashboard.operations.guides_glp_register.get_article');
 	Route::post('/controlglp/registro-movimiento-existencias/guardar', 'GuidesGlpRegisterController@store')->name('dashboard.operations.guides_glp_register.store');
 
-
 	/** Compras GLP > Registro de Abastecimiento Comercial*/
 	Route::get('/controlglp/registro-movimiento-comercial', 'StockGlpRegisterController@index')->name('dashboard.operations.stock_glp_register');
 	Route::post('/controlglp/registro-movimiento-comercial/validar-formulario', 'StockGlpRegisterController@validateForm')->name('dashboard.operations.stock_glp_register.validate_form');
@@ -550,6 +548,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/registro-movimiento-comercial/obtener-percepcion', 'StockGlpRegisterController@getPerceptionPercentage')->name('dashboard.operations.stock_glp_register.get_perception_percentage');
 	Route::post('/controlglp/registro-movimiento-comercial/obtener-tasas', 'StockGlpRegisterController@getArticleRates')->name('dashboard.operations.stock_glp_register.get_article_rates');
 	Route::post('/controlglp/registro-movimiento-comercial/obtener-articulo', 'StockGlpRegisterController@getArticle')->name('dashboard.operations.stock_glp_register.get_article');
+	Route::post('/controlglp/registro-movimiento-comercial/obtener-articulo-receiver', 'StockGlpRegisterController@getArticleReceiver')->name('dashboard.operations.stock_glp_register.get_article_receiver');
 	Route::post('/controlglp/registro-movimiento-comercial/guardar', 'StockGlpRegisterController@store')->name('dashboard.operations.stock_glp_register.store');
 	Route::post('/controlglp/registro-movimiento-comercial/get-invoices', 'StockGlpRegisterController@getInvoices')->name('dashboard.operations.stock_glp_register.get_invoices');
     
@@ -600,26 +599,25 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/placas/obtener-ubigeo', 'PlatesController@getUbigeo')->name('dashboard.plates.get_ubigeo');
 	Route::post('/placas/eliminar', 'PlatesController@delete')->name('dashboard.plates.delete'); 
 
-
-
-
-
 	 /** Compras GLP > Reporte de Compras GLP */
-	 Route::get('/controlglp/compras-registro', 'StockSalesRegisterReportController@index')->name('dashboard.report.stock_sales_register');
-	 Route::post('/controlglp/compras-registro/validar-formulario', 'StockSalesRegisterReportController@validateForm')->name('dashboard.report.stock_sales_register.validate_form');
-	 Route::post('/controlglp/compras-registro/obtener-guias', 'StockSalesRegisterReportController@getWarehouseMovements')->name('dashboard.report.stock_sales_register.get_warehouse_movements');
-	 Route::post('/controlglp/compras-registro/listar', 'StockSalesRegisterReportController@list')->name('dashboard.report.stock_sales_register.list');
-	 Route::post('/controlglp/compras-registro/detalle', 'StockSalesRegisterReportController@detail')->name('dashboard.report.stock_sales_register.detail');
-	 Route::post('/controlglp/compras-registro/actualizar', 'StockSalesRegisterReportController@update')->name('dashboard.report.stock_sales_register.update');
+	Route::get('/controlglp/compras-registro', 'StockSalesRegisterReportController@index')->name('dashboard.report.stock_sales_register');
+	Route::post('/controlglp/compras-registro/validar-formulario', 'StockSalesRegisterReportController@validateForm')->name('dashboard.report.stock_sales_register.validate_form');
+	Route::post('/controlglp/compras-registro/obtener-guias', 'StockSalesRegisterReportController@getWarehouseMovements')->name('dashboard.report.stock_sales_register.get_warehouse_movements');
+	Route::post('/controlglp/compras-registro/listar', 'StockSalesRegisterReportController@list')->name('dashboard.report.stock_sales_register.list');
+	Route::post('/controlglp/compras-registro/detalle', 'StockSalesRegisterReportController@detail')->name('dashboard.report.stock_sales_register.detail');
+	Route::post('/controlglp/compras-registro/actualizar', 'StockSalesRegisterReportController@update')->name('dashboard.report.stock_sales_register.update');
+	Route::post('/controlglp/compras-registro/get-warehouse-type-two', 'StockSalesRegisterReportController@getWarehouseTypeTwo')->name('dashboard.report.stock_sales_register.get_warehouse_type_two');
+	Route::post('/controlglp/compras-registro/get-articles', 'StockSalesRegisterReportController@getArticles')->name('dashboard.report.stock_sales_register.get_articles');
+	Route::post('/controlglp/compras-registro/validate-stock', 'StockSalesRegisterReportController@validateStock')->name('dashboard.report.stock_sales_register.validate_stock');
+	Route::post('/controlglp/compras-registro/delete', 'StockSalesRegisterReportController@delete')->name('dashboard.report.stock_sales_register.delete');
 
-	  /** Compras GLP > Edición de Facturas */
-	  Route::get('/control-glp/editor', 'GlpFactReportController@index')->name('dashboard.report.glp_fact');
-	  Route::post('/control-glp/editor/validar-formulario', 'GlpFactReportController@validateForm')->name('dashboard.report.glp_fact.validate_form');
-	  Route::post('/control-glp/editor/obtener-guias', 'GlpFactReportController@getWarehouseMovements')->name('dashboard.report.glp_fact.get_warehouse_movements');
-	  Route::post('/control-glp/editor/listar', 'GlpFactReportController@list')->name('dashboard.report.glp_fact.list');
-	  Route::post('/control-glp/editor/detalle', 'GlpFactReportController@detail')->name('dashboard.report.glp_fact.detail');
-	  Route::post('/control-glp/editor/actualizar', 'GlpFactReportController@update')->name('dashboard.report.glp_fact.update');
-    
+	/** Compras GLP > Edición de Facturas */
+	Route::get('/control-glp/editor', 'GlpFactReportController@index')->name('dashboard.report.glp_fact');
+	Route::post('/control-glp/editor/validar-formulario', 'GlpFactReportController@validateForm')->name('dashboard.report.glp_fact.validate_form');
+	Route::post('/control-glp/editor/obtener-guias', 'GlpFactReportController@getWarehouseMovements')->name('dashboard.report.glp_fact.get_warehouse_movements');
+	Route::post('/control-glp/editor/listar', 'GlpFactReportController@list')->name('dashboard.report.glp_fact.list');
+	Route::post('/control-glp/editor/detalle', 'GlpFactReportController@detail')->name('dashboard.report.glp_fact.detail');
+	Route::post('/control-glp/editor/actualizar', 'GlpFactReportController@update')->name('dashboard.report.glp_fact.update');
 
 	  /** Compras GLP > Stocks Artículos GLP */
 	Route::get('/control-glp', 'WarehouseGlpController@index')->name('dashboard.operations.warehouse_glp');
@@ -638,6 +636,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/controlglp/movimiento-abastecimiento/listar', 'TerminalsReportController@list')->name('dashboard.report.terminals.list');
 	Route::post('/controlglp/movimiento-abastecimiento/detalle', 'TerminalsReportController@detail')->name('dashboard.report.terminals.detail');
 	Route::post('/controlglp/movimiento-abastecimiento/actualizar', 'TerminalsReportController@update')->name('dashboard.report.terminals.update');
+	Route::post('/controlglp/movimiento-abastecimiento/delete', 'TerminalsReportController@delete')->name('dashboard.report.terminals.delete');
 
    /** Compras GLP  > Reporte Control GLP */
 	Route::get('/controlglp/reporte-movimientos-glp', 'ControlGlpReportController@index')->name('dashboard.operations.control_glp');
@@ -680,6 +679,12 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/administracion/liquidacion-detallado-resumido/validar-formulario', 'LiquidationDetailTotalReportController@validateForm')->name('dashboard.report.liquidations_detail_total.validate_form');
 	Route::post('/administracion/liquidacion-detallado-resumido/obtener-clientes', 'LiquidationDetailTotalReportController@getClients')->name('dashboard.report.liquidations_detail_total.get_clients');
 	Route::post('/administracion/liquidacion-detallado-resumido/listar', 'LiquidationDetailTotalReportController@list')->name('dashboard.report.liquidations_detail_total.list');
+
+	/** Reportes > Liquidación Detallado Resumido*/ 
+	Route::get('/administracion/finanzas-detallado-resumido', 'FinanzasDetailTotalReportController@index')->name('dashboard.report.finanzas_detail_total');
+	Route::post('/administracion/finanzas-detallado-resumido/validar-formulario', 'FinanzasDetailTotalReportController@validateForm')->name('dashboard.report.finanzas_detail_total.validate_form');
+	Route::post('/administracion/finanzas-detallado-resumido/obtener-clientes', 'FinanzasDetailTotalReportController@getClients')->name('dashboard.report.finanzas_detail_total.get_clients');
+	Route::post('/administracion/finanzas-detallado-resumido/listar', 'FinanzasDetailTotalReportController@list')->name('dashboard.report.finanzas_detail_total.list');
 
 
 });

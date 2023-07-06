@@ -256,6 +256,18 @@
 							width: 100,
 							textAlign: 'left',
 						},
+						{
+							field: 'account_name',
+							title: 'Nombre de chofer',
+							width: 100,
+							textAlign: 'left',
+						},
+						{
+							field: 'manager',
+							title: 'Supervisor',
+							width: 100,
+							textAlign: 'left',
+						},
 						// {
 						//     field: 'id',
 						//     title: 'ID',
