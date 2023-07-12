@@ -344,6 +344,8 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/validar-prestamos/obtener-movimientos', 'GuidesValidatePressController@getWarehouseMovements')->name('dashboard.operations.guides_validate_press.get_warehouse_movements');
 	Route::post('/operaciones/validar-prestamos/listar-detalle-movimientos', 'GuidesValidatePressController@list')->name('dashboard.operations.guides_validate_press.list');
 	Route::post('/operaciones/validar-prestamos/validate-guides', 'GuidesValidatePressController@validateGuides')->name('dashboard.operations.guides_validate_press.validate_guides');
+	Route::post('/operaciones/validar-prestamos/comodato-guides', 'GuidesValidatePressController@comodatoGuides')->name('dashboard.operations.guides_validate_press.comodato_guides');
+	Route::post('/operaciones/validar-prestamos/view-detail', 'GuidesValidatePressController@viewDetail')->name('dashboard.operations.guides_validate_press.view_detail');
 
 	/** Operaciones > Registro de producción */
 	Route::get('/logistica/registro-produccion', 'ProductionController@index')->name('dashboard.logistics.production_register');

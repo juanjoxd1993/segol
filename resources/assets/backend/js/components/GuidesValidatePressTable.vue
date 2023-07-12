@@ -1,247 +1,329 @@
 <template>
-  <div>
-      <!--begin::Portlet-->
-      <div class="kt-portlet" v-if="show_table">
-          <div class="kt-portlet__head">
-              <div class="kt-portlet__head-label">
-                  <h3 class="kt-portlet__head-title">
-                      Artículos de Preventa
-                  </h3>
-              </div>
-              <div class="kt-portlet__head-toolbar">
-                  <div class="kt-portlet__head-wrapper">
-                      <div class="dropdown dropdown-inline">
-                          <a href="#" class="btn btn-success btn-bold btn-sm" @click.prevent="validate()">
-                              <i class="fa fa-check"></i> Validar
-                          </a>
-                      </div>
-                  </div>
-              </div>
-          </div>
+    <div>
+        <!--begin::Portlet-->
+        <div class="kt-portlet" v-if="show_table">
+            <div class="kt-portlet__head">
+                <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">
+                        Artículos de Preventa
+                    </h3>
+                </div>
+                <div class="kt-portlet__head-toolbar">
+                    <div class="kt-portlet__head-wrapper" style="margin-right: 16px;">
+                        <div class="dropdown dropdown-inline">
+                            <a href="#" class="btn btn-outline-brand btn-bold btn-sm" @click.prevent="comodato()">
+                                <i class="fa fa-plus"></i> Como Dato
+                            </a>
+                        </div>
+                    </div>
+                    <div class="kt-portlet__head-wrapper">
+                        <div class="dropdown dropdown-inline">
+                            <a href="#" class="btn btn-success btn-bold btn-sm" @click.prevent="validate()">
+                                <i class="fa fa-check"></i> Validar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-          <div class="kt-portlet__body kt-portlet__body--fit">
-              <!--begin: Datatable -->
-              <div class="kt-datatable"></div>
-              <!--end: Datatable -->
-          </div>
-      </div>
-      <!--end::Portlet-->
-  </div>
+            <div class="kt-portlet__body kt-portlet__body--fit">
+                <!--begin: Datatable -->
+                <div class="kt-datatable"></div>
+                <!--end: Datatable -->
+            </div>
+        </div>
+        <!--end::Portlet-->
+    </div>
 </template>
 
 <script>
-  import Swal from 'sweetalert2';
-  import EventBus from '../event-bus';
+    import Swal from 'sweetalert2';
+    import EventBus from '../event-bus';
 
-  export default {
-      props: {
-          url: {
-              type: String,
-              default: ''
-          },
-          url_list: {
-              type: String,
-              default: ''
-          },
-          url_validate: {
-              type: String,
-              default: ''
-          },
-      },
-      data() {
-          return {
-              show_table: false,
-              data: [],
-              guide: {},
-              account_type_id: 0,
-              ids: []
-          }
-      },
-      created() {
-      },
-      mounted() {
-          EventBus.$on('show_table', function (response) {
-              EventBus.$emit('loading', true);
-              this.show_table = true;
-              this.$store.commit('addModel', response);
+    export default {
+        props: {
+            url: {
+                type: String,
+                default: ''
+            },
+            url_list: {
+                type: String,
+                default: ''
+            },
+            url_validate: {
+                type: String,
+                default: ''
+            },
+            url_comodato: {
+                type: String,
+                default: ''
+            },
+            url_view_detail: {
+                type: String,
+                default: ''
+            },
+        },
+        data() {
+            return {
+                show_table: false,
+                data: [],
+                guide: {},
+                account_type_id: 0,
+                ids: []
+            }
+        },
+        created() {
+            let context = this;
+            $(document).on('click', '.view', function () {
+                EventBus.$emit('loading', true);
 
-              axios.post(this.url, {
-                  company_id: parseInt(this.$store.state.model.company_id),
-              }).then(response => {
-                  const data = response.data;
+                const index = $(this).parents('tr').index();
 
-                  this.data = data;
+                const data = context.data[index];
 
-                  this.fillTableX(data);
+                const id = data.id;
+                axios.post(context.url_view_detail, { id })
+                    .then(response => {
+                        const data = response.data;
+                        EventBus.$emit('loading', false);
+                        EventBus.$emit('create_modal', data);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        console.log(error.response);
+                        EventBus.$emit('loading', false);
+                    });
+            })
+        },
+        mounted() {
+            EventBus.$on('show_table', function (response) {
+                EventBus.$emit('loading', true);
+                this.show_table = true;
+                this.$store.commit('addModel', response);
 
-                  EventBus.$emit('loading', false);
-              }).catch(error => {
-                  console.log(error);
-                  console.log(error.response);
-                  EventBus.$emit('loading', false);
-              });
-          }.bind(this));
-      },
-      watch: {},
-      computed: {},
-      methods: {
-          fillTableX(data) {
-              let vm = this;
-              let token = document.head.querySelector('meta[name="csrf-token"]').content;
+                axios.post(this.url, {
+                    company_id: parseInt(this.$store.state.model.company_id),
+                }).then(response => {
+                    const data = response.data;
 
-              this.datatable = $('.kt-datatable').KTDatatable({
-                  // datasource definition
-                  data: {
-                      type: 'local',
-                      source: data,
-                      pageSize: 10,
-                  },
+                    this.data = data;
 
-                  // layout definition
-                  layout: {
-                      scroll: true, // enable/disable datatable scroll both horizontal and vertical when needed.
-                      height: 400,
-                      footer: false // display/hide footer
-                  },
+                    this.fillTableX(data);
 
-                  // column sorting
-                  sortable: true,
-                  pagination: false,
+                    EventBus.$emit('loading', false);
+                }).catch(error => {
+                    console.log(error);
+                    console.log(error.response);
+                    EventBus.$emit('loading', false);
+                });
+            }.bind(this));
+        },
+        watch: {},
+        computed: {},
+        methods: {
+            fillTableX(data) {
+                let vm = this;
+                let token = document.head.querySelector('meta[name="csrf-token"]').content;
 
-                  search: {
-                      input: $('#generalSearch'),
-                  },
+                this.datatable = $('.kt-datatable').KTDatatable({
+                    // datasource definition
+                    data: {
+                        type: 'local',
+                        source: data,
+                        pageSize: 10,
+                    },
 
-                  extensions: {
-                      checkbox: {
-                          vars: {
-                              selectedAllRows: 'selectedAllRows',
-                              requestIds: 'requestIds',
-                              rowIds: 'meta.rowIds',
-                          },
-                      },
-                  },
+                    // layout definition
+                    layout: {
+                        scroll: true, // enable/disable datatable scroll both horizontal and vertical when needed.
+                        height: 400,
+                        footer: false // display/hide footer
+                    },
 
-                  translate: {
-                      records: {
-                          processing: 'Espere porfavor...',
-                          noRecords: 'No hay registros'
-                      },
-                      toolbar: {
-                          pagination: {
-                              items: {
-                                  default: {
-                                      first: 'Primero',
-                                      prev: 'Anterior',
-                                      next: 'Siguiente',
-                                      last: 'Último',
-                                      more: 'Más páginas',
-                                      input: 'Número de página',
-                                      select: 'Seleccionar tamaño de página'
-                                  },
-                                  info: 'Mostrando {{start}} - {{end}} de {{total}} registros'
-                              }
-                          }
-                      }
-                  },
+                    // column sorting
+                    sortable: true,
+                    pagination: false,
 
-                  rows: {
-                      autoHide: true,
-                  },
+                    search: {
+                        input: $('#generalSearch'),
+                    },
 
-                  // columns definition
-                  columns: [
-                      {
-                        field: 'id',
-                        title: '#',
-                        sortable: false,
-                        width: 30,
-                        selector: {class: 'kt-checkbox--solid'},
-                        textAlign: 'center',
-                      },
-                      {
-                        field: 'creation_date',
-                        title: 'Fecha de Creacion',
-                        width: 100,
-                      },
-                      {
-                        field: 'referral_guide_series',
-                        title: 'Numero de Serie',
-                        width: 60,
-                      },
-                      {
-                        field: 'referral_guide_number',
-                        title: 'Numero de Guia',
-                        width: 60,
-                      },
-                      {
-                        field: 'account_name',
-                        title: 'Cliente o Trabajador',
-                        width: 300,
-                      },
-                  ]
-              });
+                    extensions: {
+                        checkbox: {
+                            vars: {
+                                selectedAllRows: 'selectedAllRows',
+                                requestIds: 'requestIds',
+                                rowIds: 'meta.rowIds',
+                            },
+                        },
+                    },
 
-              $('.kt-datatable').on('kt-datatable--on-check', function(a, e) {
+                    translate: {
+                        records: {
+                            processing: 'Espere porfavor...',
+                            noRecords: 'No hay registros'
+                        },
+                        toolbar: {
+                            pagination: {
+                                items: {
+                                    default: {
+                                        first: 'Primero',
+                                        prev: 'Anterior',
+                                        next: 'Siguiente',
+                                        last: 'Último',
+                                        more: 'Más páginas',
+                                        input: 'Número de página',
+                                        select: 'Seleccionar tamaño de página'
+                                    },
+                                    info: 'Mostrando {{start}} - {{end}} de {{total}} registros'
+                                }
+                            }
+                        }
+                    },
 
-                  $.each(e, function(key, value) {
-                      let index = vm.ids.findIndex((element) => element == value);
-                      if ( index < 0 ) {
-                          vm.ids.push(value);
-                      }
-                  });
+                    rows: {
+                        autoHide: true,
+                    },
 
-                  vm.ids.sort(function(a, b) {
-                      let aNumber = parseInt(a);
-                      let bNumber = parseInt(b);
-                      return ((aNumber < bNumber) ? -1 : ((aNumber > bNumber) ? 1 : 0));
-                  });
+                    // columns definition
+                    columns: [
+                        {
+                            field: 'id',
+                            title: '#',
+                            sortable: false,
+                            width: 30,
+                            selector: {class: 'kt-checkbox--solid'},
+                            textAlign: 'center',
+                        },
+                        {
+                            field: 'creation_date',
+                            title: 'Fecha de Creacion',
+                            width: 100,
+                        },
+                        {
+                            field: 'referral_guide_series',
+                            title: 'Numero de Serie',
+                            width: 60,
+                        },
+                        {
+                            field: 'referral_guide_number',
+                            title: 'Numero de Guia',
+                            width: 60,
+                        },
+                        {
+                            field: 'account_name',
+                            title: 'Cliente o Trabajador',
+                            width: 300,
+                        },
+                        {
+                            field: 'options',
+                            title: 'Opciones',
+                            sortable: false,
+                            width: 60,
+                            overflow: 'visible',
+                            autoHide: false,
+                            textAlign: 'right',
+                            class: 'td-sticky',
+                            template: function (row) {
 
-                  console.log(vm.ids);
-              });
+                                let actions = '<div class="actions">';
+                                actions += '<a style="cursor:pointer" class="view btn btn-sm btn-clean btn-icon btn-icon-md" title="Editar">';
+                                actions += '<i class="la la-eye"></i>';
+                                actions += '</a>';
+                                actions += '</div>';
 
-              $('.kt-datatable').on('kt-datatable--on-uncheck', function(a, e) {
-                  $.each(e, function(key, value) {
-                      let index = vm.ids.findIndex((element) => element == value);
-                      if ( index >= 0 ) {
-                          vm.ids.splice(index, 1);
-                      }
-                  });
+                                return actions;
 
-                  vm.ids.sort(function(a, b) {
-                      let aNumber = parseInt(a);
-                      let bNumber = parseInt(b);
-                      return ((aNumber < bNumber) ? -1 : ((aNumber > bNumber) ? 1 : 0));
-                  });
+                            },
+                        },
+                    ]
+                });
 
-                  console.log(vm.ids);
-              });
-          },
-          validate: function() {
-              EventBus.$emit('loading', true);
+                $('.kt-datatable').on('kt-datatable--on-check', function(a, e) {
 
-              const ids = this.ids.map(id => {
-                  return parseInt(id);
-              })
+                    $.each(e, function(key, value) {
+                        let index = vm.ids.findIndex((element) => element == value);
+                        if ( index < 0 ) {
+                            vm.ids.push(value);
+                        }
+                    });
 
-              axios.post(this.url_validate,{
-                  ids
-              })
-              .then(response => {
-                  EventBus.$emit('loading', false);
-                  console.log(response);
-                  Swal.fire({
-                      title: 'Ok!',
-                      text: 'Se han validado las guias exitosamente',
-                      type: "success",
-                      heightAuto: false,
-                  });
-              }).catch(error => {
-                  EventBus.$emit('loading', false);
-                  console.log(error);
-                  console.log(error.response);
-              })
-          }
-      }
-  }
+                    vm.ids.sort(function(a, b) {
+                        let aNumber = parseInt(a);
+                        let bNumber = parseInt(b);
+                        return ((aNumber < bNumber) ? -1 : ((aNumber > bNumber) ? 1 : 0));
+                    });
+
+                    console.log(vm.ids);
+                });
+
+                $('.kt-datatable').on('kt-datatable--on-uncheck', function(a, e) {
+                    $.each(e, function(key, value) {
+                        let index = vm.ids.findIndex((element) => element == value);
+                        if ( index >= 0 ) {
+                            vm.ids.splice(index, 1);
+                        }
+                    });
+
+                    vm.ids.sort(function(a, b) {
+                        let aNumber = parseInt(a);
+                        let bNumber = parseInt(b);
+                        return ((aNumber < bNumber) ? -1 : ((aNumber > bNumber) ? 1 : 0));
+                    });
+
+                    console.log(vm.ids);
+                });
+            },
+            validate: function() {
+                EventBus.$emit('loading', true);
+
+                const ids = this.ids.map(id => {
+                    return parseInt(id);
+                })
+
+                axios.post(this.url_validate,{
+                    ids
+                })
+                .then(response => {
+                    EventBus.$emit('loading', false);
+                    console.log(response);
+                    Swal.fire({
+                        title: 'Ok!',
+                        text: 'Se han validado las guias exitosamente',
+                        type: "success",
+                        heightAuto: false,
+                    });
+                }).catch(error => {
+                    EventBus.$emit('loading', false);
+                    console.log(error);
+                    console.log(error.response);
+                })
+            },
+            comodato: function() {
+                EventBus.$emit('loading', true);
+
+                const ids = this.ids.map(id => {
+                    return parseInt(id);
+                })
+
+                axios.post(this.url_comodato,{
+                    ids
+                })
+                .then(response => {
+                    EventBus.$emit('loading', false);
+                    console.log(response);
+                    Swal.fire({
+                        title: 'Ok!',
+                        text: 'Se han guardadi las guias comodato',
+                        type: "success",
+                        heightAuto: false,
+                    });
+                }).catch(error => {
+                    EventBus.$emit('loading', false);
+                    console.log(error);
+                    console.log(error.response);
+                })
+            }
+        }
+    }
 </script>
