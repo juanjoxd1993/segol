@@ -177,7 +177,7 @@
                                     <div class="form-group">
                                         <label class="form-control-label">Sector:</label>
                                         <input type="text"  class="form-control" name="sector_id" id="sector_id" v-model="model.sector_id" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="seller_id-error" class="error invalid-feedback"></div>
+                                        <div id="sector_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
@@ -217,7 +217,7 @@
                                     <div class="col-lg-4">
                                    <div class="form-group">
                                    <label class="form-control-label">Mail:</label>
-                                   <input type="text" name="manager_mail" id="manager_mail" v-model="model.manager_mail" @focus="$parent.clearErrorMsg($event)">
+                                   <input class="form-control" type="text" name="manager_mail" id="manager_mail" v-model="model.manager_mail" @focus="$parent.clearErrorMsg($event)">
                                        <div id="manager_mail-error" class="error invalid-feedback"></div>
                                       </div>
                                      </div>
@@ -257,6 +257,13 @@
 										<div id="perception_percentage_id-error" class="error invalid-feedback"></div>
 									</div>
 								</div>
+                                <div class="col-lg-4">
+                                   <div class="form-group">
+                                        <label class="form-control-label">Referencia Interna:</label>
+                                        <input class="form-control" type="text" name="int_name" id="int_name" v-model="model.int_name" @focus="$parent.clearErrorMsg($event)">
+                                        <div id="int_name-error" class="error invalid-feedback"></div>
+                                    </div>     
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -365,6 +372,7 @@
                     credit_limit: '',
                     credit_limit_days: '',
                     perception_percentage_id: '',
+                    int_name: '',
                 },
                 button_text: '',
             }
@@ -409,6 +417,7 @@
                 this.model.credit_limit = '';
                 this.model.credit_limit_days = '';
                 this.model.perception_percentage_id = '';
+                this.model.int_name = '';
 
                 $('#ubigeo_id').val(null).trigger('change');
                 $('#modal-client').modal('show');
@@ -549,6 +558,7 @@
                     this.model.credit_limit = '';
                     this.model.credit_limit_days = '';
                     this.model.perception_percentage_id = '';
+                    this.model.int_name = '';
 
                     EventBus.$emit('refresh_table');
 
@@ -583,6 +593,8 @@
                         }
                     }).then(response => {
                         EventBus.$emit('loading', false);
+                        this.model.business_name = response.data.business_name;
+                        this.model.address = response.data.address;
                         $('#business_name').val(response.data.business_name);
                         $('#address').val(response.data.address);
                         $('#document_number-error').css('display', 'none');
@@ -590,8 +602,8 @@
                         EventBus.$emit('loading', false);
                         $('#document_number-error').css('display', 'block');
                         $('#document_number-error').html('Error, no encontrado');
-                        $('#business_name').val('');
-                        $('#address').val('');
+                        this.model.business_name = '';
+                        this.model.address = '';
                     });
                 }
             }
