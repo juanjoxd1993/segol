@@ -347,6 +347,13 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/operaciones/validar-prestamos/comodato-guides', 'GuidesValidatePressController@comodatoGuides')->name('dashboard.operations.guides_validate_press.comodato_guides');
 	Route::post('/operaciones/validar-prestamos/view-detail', 'GuidesValidatePressController@viewDetail')->name('dashboard.operations.guides_validate_press.view_detail');
 
+	/** Operaciones > Asignar Retornos */
+	Route::get('/operaciones/asignar-retornos', 'GuidesAsignReturnController@index')->name('dashboard.operations.guides_asign_return');
+	Route::post('/operaciones/asignar-retornos/asignar-retornos', 'GuidesAsignReturnController@validateForm')->name('dashboard.operations.guides_asign_return.validate_form');
+	Route::post('/operaciones/asignar-retornos/obtener-movimientos', 'GuidesAsignReturnController@getWarehouseMovements')->name('dashboard.operations.guides_asign_return.get_warehouse_movements');
+	Route::post('/operaciones/asignar-retornos/view-detail', 'GuidesAsignReturnController@viewDetail')->name('dashboard.operations.guides_asign_return.view_detail');
+	Route::post('/operaciones/asignar-retornos/balons-press', 'GuidesAsignReturnController@balonsPress')->name('dashboard.operations.guides_asign_return.balons_press');
+
 	/** Operaciones > Registro de producción */
 	Route::get('/logistica/registro-produccion', 'ProductionController@index')->name('dashboard.logistics.production_register');
 	Route::post('/logistica/registro-produccion/validar-formulario', 'ProductionController@validateForm')->name('dashboard.logistics.production_register.validate_form');

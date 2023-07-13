@@ -5,7 +5,7 @@
             <div class="kt-portlet__head">
                 <div class="kt-portlet__head-label">
                     <h3 class="kt-portlet__head-title">
-                        Artículos de Preventa
+                        Guías
                     </h3>
                 </div>
                 <div class="kt-portlet__head-toolbar">
@@ -43,10 +43,6 @@
     export default {
         props: {
             url: {
-                type: String,
-                default: ''
-            },
-            url_list: {
                 type: String,
                 default: ''
             },
