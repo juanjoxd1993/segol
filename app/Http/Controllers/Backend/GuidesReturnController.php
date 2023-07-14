@@ -268,6 +268,7 @@ class GuidesReturnController extends Controller
                     'total' => $article['retorno_press'],
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
+                    'warehouse_movement_id' => $warehouse_movement_id,
                 ]);
 
                 WarehouseMovementDetail::insert([
@@ -341,6 +342,7 @@ class GuidesReturnController extends Controller
                     'press' => 1,
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
+                    'warehouse_movement_id' => $warehouse_movement_id,
                 ]);
 
                 WarehouseMovementDetail::insert([
@@ -470,11 +472,17 @@ class GuidesReturnController extends Controller
             $press->warehouse_movement_id = $request->warehouse_movement_id;
             $press->if_devol = $prestamo['if_devol'];
             $press->date = $date;
+            if ($prestamo['if_devol']) {
+                $press->if_asign = 0;
+            } else {
+                $press->pend_devol = 1;
+            }
             $press->save();
 
             $press_detail = new ContainerDetail;
             $press_detail->article_id = $prestamo['article_id'];
             $press_detail->devol = $prestamo['press'];
+            $press_detail->rest_devol = $prestamo['press'];
             $press_detail->container_id = $press->id;
             $press_detail->save();
         }

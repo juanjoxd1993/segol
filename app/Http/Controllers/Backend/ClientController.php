@@ -141,8 +141,7 @@ class ClientController extends Controller
 			'credit_limit.required_if'			=> 'Debe digitar un Límite de Crédito.',
 			'credit_limit_days.required_if'		=> 'Debe digitar los Días de Crédito.',
 			'perception_percentage_id.required'	=> 'El Agente de Percepción es obligatorio.',
-			
-
+			'int_name.required'	=> 'La referencia interna es obligatoria.',
 		];
 
 		$rules = [
@@ -164,6 +163,7 @@ class ClientController extends Controller
 			'credit_limit'				=> 'required_if:payment_id,2',
 			'credit_limit_days'			=> 'required_if:payment_id,2',
 			'perception_percentage_id'	=> 'required',
+			'int_name'                  => 'required',
 		];
 
 		request()->validate($rules, $messages);
@@ -271,6 +271,9 @@ class ClientController extends Controller
 		$credit_limit_days = request('credit_limit_days');
 		$grupo = request('grupo');
 		$perception_percentage_id = request('perception_percentage_id');
+		$bol_name = 'CLIENTES VARIOS';
+		$bol_number = '12345678';
+		$int_name = $business_name . ' - ' . request('int_name');
 
 		if ( isset($id) ) {
 			$element = Client::find($id);
@@ -295,6 +298,8 @@ class ClientController extends Controller
 			$msg = 'Registro creado exitosamente';
 			$element->created_at_user = Auth::user()->user;
 			$element->updated_at_user = Auth::user()->user;
+            $element->bol_name = $bol_name;
+            $element->bol_number = $bol_number;
 
 			$childElement = new ClientAddress();
 			$childElement->created_at_user = Auth::user()->user;
@@ -328,6 +333,7 @@ class ClientController extends Controller
 		$element->credit_limit = $payment_id == 2 ? $credit_limit : 0;
 		$element->credit_limit_days = $payment_id == 2 ? $credit_limit_days : 0;
 		$element->perception_percentage_id = $perception_percentage_id;
+		$element->int_name = $int_name;
 		$element->save();
 
 		$childElement->client_id = $element->id;
