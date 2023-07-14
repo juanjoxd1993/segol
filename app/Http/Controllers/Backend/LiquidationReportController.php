@@ -134,7 +134,7 @@ class LiquidationReportController extends Controller
 
 			$gallons= SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-			->where('sale_id', $sale['id'])
+		//	->where('sale_id', $sale['id'])
 			->where('articles.code', 3)
 			->select('sale_details.quantity')
 			->sum('sale_details.quantity');
@@ -142,14 +142,14 @@ class LiquidationReportController extends Controller
 
 			$sum_1k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-			->where('sale_id', $sale['id'])
+		//	->where('sale_id', $sale['id'])
 			->where('articles.code', 1)
 			->select('sale_details.quantity')
 			->sum('sale_details.quantity');
 
 			$sum_5k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-			->where('sale_id', $sale['id'])
+		//	->where('sale_id', $sale['id'])
 			->where('articles.subgroup_id', 55)
 			->select('sale_details.quantity')
 			->sum('sale_details.quantity');
@@ -157,14 +157,14 @@ class LiquidationReportController extends Controller
 
 			$sum_10k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-			->where('sale_id', $sale['id'])
+		//	->where('sale_id', $sale['id'])
 			->where('articles.subgroup_id', 56)
 			->select('sale_details.quantity')
 			->sum('sale_details.quantity');
 
 			$sum_15k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-			->where('sale_id', $sale['id'])
+		//	->where('sale_id', $sale['id'])
 			->where('articles.subgroup_id', 57)
 			->select('sale_details.quantity')
 			->sum('sale_details.quantity');
@@ -172,7 +172,7 @@ class LiquidationReportController extends Controller
 
 			$sum_45k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-			->where('sale_id', $sale['id'])
+		//	->where('sale_id', $sale['id'])
 			->where('articles.subgroup_id', 58)
 			->select('sale_details.quantity')
 			->sum('sale_details.quantity');
