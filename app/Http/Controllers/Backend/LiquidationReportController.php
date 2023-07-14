@@ -132,7 +132,7 @@ class LiquidationReportController extends Controller
 				->select('amount')
 				->sum('amount');
 
-			$gallons= SaleDetails::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
+			$gallons= SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
 			->where('sale_id', $sale['id'])
 			->where('articles.code', 3)
@@ -140,14 +140,14 @@ class LiquidationReportController extends Controller
 			->sum('sale_details.quantity');
 
 
-			$sum_1k=SaleDetails::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
+			$sum_1k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
 			->where('sale_id', $sale['id'])
 			->where('articles.code', 1)
 			->select('sale_details.quantity')
 			->sum('sale_details.quantity');
 
-			$sum_5k=SaleDetails::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
+			$sum_5k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
 			->where('sale_id', $sale['id'])
 			->where('articles.subgroup_id', 55)
@@ -155,14 +155,14 @@ class LiquidationReportController extends Controller
 			->sum('sale_details.quantity');
 
 
-			$sum_10k=SaleDetails::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
+			$sum_10k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
 			->where('sale_id', $sale['id'])
 			->where('articles.subgroup_id', 56)
 			->select('sale_details.quantity')
 			->sum('sale_details.quantity');
 
-			$sum_15k=SaleDetails::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
+			$sum_15k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
 			->where('sale_id', $sale['id'])
 			->where('articles.subgroup_id', 57)
@@ -170,7 +170,7 @@ class LiquidationReportController extends Controller
 			->sum('sale_details.quantity');
 
 
-			$sum_45k=SaleDetails::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
+			$sum_45k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
 			->where('sale_id', $sale['id'])
 			->where('articles.subgroup_id', 58)
