@@ -15,7 +15,7 @@
 
           <div class="kt-portlet__body kt-portlet__body--fit">
             <!--begin: Datatable -->
-              <div class="row">
+              <div class="row px-4">
                 <div class="col-12">
                   <table class="table table-vertical-middle table-layout-fixed">
                     <thead>
@@ -23,6 +23,7 @@
                         <th>Articulo</th>
                         <th>Cliente</th>
                         <th>Cantidad</th>
+                        <th>Asignar</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -30,6 +31,11 @@
                         <td>{{ item.article_name }}</td>
                         <td>{{ item.client_name }}</td>
                         <td>{{ item.devol }}</td>
+                        <td style="text-align:left;">
+                            <a href="#" class="btn-sm btn btn-primary btn-bold" @click.prevent="asign(item.id)">
+                                <i class="la la-plus pr-0"></i>
+                            </a>
+                        </td>
                       </tr>
                     </tbody>
                     <tfoot>
@@ -60,29 +66,56 @@
   import 'vue-datetime/dist/vue-datetime.css';
 
   export default {
-      props: {
+    props: {
+      url: {
+        type: String,
+        default: ''
       },
-      data() {
-          return {
-            show_table: false,
-            data: []
-          }
-      },
-      watch: {
-      },
-      computed: {
-      },
-      created() {
-      },
-      mounted() {
-        EventBus.$on('create_modal', function (response) {
-          this.show_table = true;
-          this.data = response;
+    },
+    data() {
+        return {
+          show_table: false,
+          data: []
+        }
+    },
+    watch: {
+    },
+    computed: {
+    },
+    created() {
+    },
+    mounted() {
+      EventBus.$on('create_modal', function (response) {
+        this.button_text = 'Crear';
+        this.show_table = true;
+        this.data = response;
 
-          $('#modal').modal('show');
-        }.bind(this));
-      },
-      methods: {
+        $('#modal').modal('show');
+      }.bind(this));
+    },
+    methods: {
+      asign(id) {
+        axios.post(this.url, {
+          id
+        }).then(response => {
+            console.log(response);
+        }).catch(error => {
+            EventBus.$emit('loading', false);
+            console.log(error.response);
+            var obj = error.response.data.errors;
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500, 'swing');
+            $.each(obj, function(i, item) {
+                // console.log(target);
+                let c_target = target.find("#" + i + "-error");
+                let p = c_target.parents('.form-group').find('#' + i);
+                p.addClass('is-invalid');
+                c_target.css('display', 'block');
+                c_target.html(item);
+            });
+        });
       }
+    }
   };
 </script>

@@ -250,6 +250,7 @@ class GuidesValidatePressController extends Controller
         foreach ($containers as $container) {
             $detail = ContainerDetail::select(
                                             'devol',
+                                            'rest_devol',
                                             'article_id'
                                         )
                                         ->where('container_id', $container->id)
@@ -265,7 +266,7 @@ class GuidesValidatePressController extends Controller
             $client = Client::select('business_name')->where('id', $container->client_id)->first();
 
             $data[] = [
-                'devol' => $detail->devol,
+                'devol' => $detail->rest_devol,
                 'article_name' => $article->name,
                 'client_name' => $client->business_name
             ];
