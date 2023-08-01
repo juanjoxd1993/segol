@@ -129,7 +129,6 @@ class LiquidationReportController extends Controller
 				->sum('amount');
 
 
-				$sum_total=(($sale['gallons']*2.018)+$sale['sum_1k']+$sale['sum_5k']+$sale['sum_10k']+$sale['sum_15k']+$sale['sum_45k']);
 
 			$totals_sale_value += $sale['sale_value'];
 			$totals_igv += $sale['igv'];
