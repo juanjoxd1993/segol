@@ -256,7 +256,7 @@ class GuidesValidatePressController extends Controller
                                         ->where('container_id', $container[id])
                                         ->first();
 
-            $article = Article::select(
+            $article = Article::select('id',
                                     'code',
                                     'name'
                                 )
