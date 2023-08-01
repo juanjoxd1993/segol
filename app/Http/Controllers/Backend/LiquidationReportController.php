@@ -405,13 +405,13 @@ class LiquidationReportController extends Controller
 				$sheet->setCellValue('X'.$row_number, $element->warehouse_movement_movement_number);
 				$sheet->setCellValue('Y'.$row_number, $element->movement_type_name);
 				$sheet->setCellValue('Z'.$row_number, $element->guide);
-				$sheet->setCellValue('AA'.$row_number, $gallons);
-				$sheet->setCellValue('AB'.$row_number, $sum_1k);
-				$sheet->setCellValue('AC'.$row_number, $sum_5k);
-				$sheet->setCellValue('AD'.$row_number, $sum_10k);
-				$sheet->setCellValue('AE'.$row_number, $sum_15k);
-				$sheet->setCellValue('AF'.$row_number, $sum_45k);
-				$sheet->setCellValue('AG'.$row_number, $kilos);
+				$sheet->setCellValue('AA'.$row_number, $element->gallons);
+				$sheet->setCellValue('AB'.$row_number, $element->sum_1k);
+				$sheet->setCellValue('AC'.$row_number, $element->sum_5k);
+				$sheet->setCellValue('AD'.$row_number, $element->sum_10k);
+				$sheet->setCellValue('AE'.$row_number, $element->sum_15k);
+				$sheet->setCellValue('AF'.$row_number, $element->sum_45k);
+				$sheet->setCellValue('AG'.$row_number, $element->sum_total);
 
 				$sheet->getStyle('H'.$row_number)->getNumberFormat()->setFormatCode('0');
 				$sheet->getStyle('I'.$row_number)->getNumberFormat()->setFormatCode('0.00');
