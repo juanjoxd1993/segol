@@ -253,17 +253,17 @@ class GuidesValidatePressController extends Controller
                                             'rest_devol',
                                             'article_id'
                                         )
-                                        ->where('container_id', $container->id)
+                                        ->where('container_id', $container[id])
                                         ->first();
 
             $article = Article::select(
                                     'code',
                                     'name'
                                 )
-                                ->where('id', $detail->article_id)
+                                ->where('id', $detail[article_id])
                                 ->first();
 
-            $client = Client::select('business_name')->where('id', $container->client_id)->first();
+            $client = Client::select('business_name')->where('id', $container[client_id])->first();
 
             $data[] = [
                 'devol' => $detail->rest_devol,
