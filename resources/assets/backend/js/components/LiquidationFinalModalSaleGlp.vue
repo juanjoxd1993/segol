@@ -476,7 +476,7 @@
                     let price_igv = accounting.toFixed(model.price_igv, 4);
                     let quantity = accounting.toFixed(model.quantity, 4);
                     let perception_percentage = ( model.perception === 1 && (this.sale.warehouse_document_type_id == 4 || this.sale.warehouse_document_type_id == 5) ? Number(this.sale.perception_percentage) / 100 : 0 );
-                    let sale_value = accounting.toFixed(quantity * price_igv, 2);
+                    let sale_value = accounting.toFixed(quantity * price_igv, 4);
                     let igv_perception = accounting.toFixed(sale_value * perception_percentage, 4);
 					let total_perception = accounting.toFixed(Number(sale_value) + Number(igv_perception), 4);
 
