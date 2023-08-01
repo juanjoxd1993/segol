@@ -80,8 +80,7 @@ class LiquidationReportController extends Controller
 			->leftjoin('sale_details', 'sales.id', '=', 'sale_details.sale_id')
 			->where('sales.created_at', '>=', $initial_date)
 			->where('sales.created_at', '<=', $final_date)
-			->select('sales.id', 'companies.short_name as company_short_name', DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'), 'sale_date', 'business_units.name as business_unit_name', 'warehouse_document_types.short_name as warehouse_document_type_short_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_value', 'sales.igv', 'sales.total', DB::Raw('(sales.total_perception - sales.total) as perception'), 'sales.total_perception', 'payments.name as payment_name', 'banks.short_name as bank_short_name', 'clients.code as client_code', 'clients.business_name as client_business_name', 'document_types.name as document_type_name', 'clients.document_number as client_document_number', 'warehouse_movements.movement_number as warehouse_movement_movement_number', 'movent_types.name as movement_type_name', 
-			DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide',DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND sale_details.article_id = 24) as gallons'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND sale_details.article_id = 23) as sum_1k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 55) AS sum_5k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 56) AS sum_10k'), DB::Raw('(SELECT SUM(sale_details.quantity) from sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 57) AS sum_15k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 58) AS sum_45k'), DB::Raw('(SELECT SUM(sale_details.quantity * (SELECT articles.convertion FROM articles WHERE articles.id = sale_details.article_id AND sale_details.article_id <> 24)) FROM sale_details WHERE sale_details.sale_id = sales.id) AS sum_total')))
+			->select('sales.id', 'companies.short_name as company_short_name', DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'), 'sale_date', 'business_units.name as business_unit_name', 'warehouse_document_types.short_name as warehouse_document_type_short_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_value', 'sales.igv', 'sales.total', DB::Raw('(sales.total_perception - sales.total) as perception'), 'sales.total_perception', 'payments.name as payment_name', 'banks.short_name as bank_short_name', 'clients.code as client_code', 'clients.business_name as client_business_name', 'document_types.name as document_type_name', 'clients.document_number as client_document_number', 'warehouse_movements.movement_number as warehouse_movement_movement_number', 'movent_types.name as movement_type_name', DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND sale_details.article_id = 24) as gallons'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND sale_details.article_id = 23) as sum_1k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 55) AS sum_5k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 56) AS sum_10k'), DB::Raw('(SELECT SUM(sale_details.quantity) from sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 57) AS sum_15k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 58) AS sum_45k'), DB::Raw('(SELECT SUM(sale_details.quantity * (SELECT articles.convertion FROM articles WHERE articles.id = sale_details.article_id AND sale_details.article_id <> 24)) FROM sale_details WHERE sale_details.sale_id = sales.id) AS sum_total'))
 			->when($company_id, function($query, $company_id) {
 				return $query->where('sales.company_id', $company_id);
 			})
@@ -125,25 +124,6 @@ class LiquidationReportController extends Controller
 				->where('payment_method_id', '!=', 1)
 				->select('amount')
 				->sum('amount');
-
-			$gallons= SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
-			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-			->where('articles.code', 3)
-			->where('sale_details.sale_id', $sale['id'])
-			->select('sale_details.sale_id', 'sale_details.quantity')
-			->sum('sale_details.quantity');
-
-
-			$sum_1k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
-			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-			->where('articles.code', 1)
-			->where('sale_details.sale_id', $sale['id'])
-			->select('sale_details.sale_id', 'sale_details.quantity')
-			->sum('sale_details.quantity');
-
-			
-
-
 
 			$totals_sale_value += $sale['sale_value'];
 			$totals_igv += $sale['igv'];
@@ -270,13 +250,13 @@ class LiquidationReportController extends Controller
 					$credit->total = $sale['total'];
 					$credit->perception = $sale['perception'];
 					$credit->total_perception = $sale['total_perception'];
-					$liquidation->gallons = $sale['gallons'];
-					$liquidation->sum_1k = $sale['sum_1k'];
-					$liquidation->sum_5k = $sale['sum_5k'];
-					$liquidation->sum_10k = $sale['sum_10k'];
-					$liquidation->sum_15k = $sale['sum_15k'];
-					$liquidation->sum_45k = $sale['sum_45k'];
-					$liquidation->sum_total = $sale['sum_total'];
+					$credit->gallons = $sale['gallons'];
+					$credit->sum_1k = $sale['sum_1k'];
+					$credit->sum_5k = $sale['sum_5k'];
+					$credit->sum_10k = $sale['sum_10k'];
+					$credit->sum_15k = $sale['sum_15k'];
+					$credit->sum_45k = $sale['sum_45k'];
+					$credit->sum_total = $sale['sum_total'];
 				}
 
 				$totals_credit += $totals_credit;
