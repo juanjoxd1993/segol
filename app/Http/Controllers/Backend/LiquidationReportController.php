@@ -128,6 +128,9 @@ class LiquidationReportController extends Controller
 				->select('amount')
 				->sum('amount');
 
+
+				$sum_total=(($sale['gallons']*2.018)+$sale['sum_1k']+$sale['sum_5k']+$sale['sum_10k']+$sale['sum_15k']+$sale['sum_45k']);
+
 			$totals_sale_value += $sale['sale_value'];
 			$totals_igv += $sale['igv'];
 			$totals_total += $sale['total'];
@@ -141,7 +144,7 @@ class LiquidationReportController extends Controller
 			$totals_sum_10k += $sale['sum_10k'];
 			$totals_sum_15k += $sale['sum_15k'];
 			$totals_sum_45k += $sale['sum_45k'];
-			$totals_sum_total += $sale['sum_total'];
+			$totals_sum_total += $sum_total;
 
 			$liquidations = Liquidation::leftjoin('bank_accounts', 'liquidations.bank_account_id', '=', 'bank_accounts.id')
 				->leftjoin('banks', 'bank_accounts.bank_id', '=', 'banks.id')
@@ -195,7 +198,7 @@ class LiquidationReportController extends Controller
 					$liquidation->sum_10k = $sale['sum_10k'];
 					$liquidation->sum_15k = $sale['sum_15k'];
 					$liquidation->sum_45k = $sale['sum_45k'];
-					$liquidation->sum_total = $sale['sum_total'];
+					$liquidation->sum_total = $sum_total;
 				}
 
 				$response[] = $liquidation;
@@ -259,7 +262,7 @@ class LiquidationReportController extends Controller
 					$credit->sum_10k = $sale['sum_10k'];
 					$credit->sum_15k = $sale['sum_15k'];
 					$credit->sum_45k = $sale['sum_45k'];
-					$credit->sum_total = $sale['sum_total'];
+					$credit->sum_total = $sum_total;
 				}
 
 				$totals_credit += $totals_credit;
@@ -394,7 +397,7 @@ class LiquidationReportController extends Controller
 				$sheet->setCellValue('AD'.$row_number, $element->sum_10k);
 				$sheet->setCellValue('AE'.$row_number, $element->sum_15k);
 				$sheet->setCellValue('AF'.$row_number, $element->sum_45k);
-				$sheet->setCellValue('AG'.$row_number, $element->sum_total);
+				$sheet->setCellValue('AG'.$row_number, $sum_total);
 
 				$sheet->getStyle('H'.$row_number)->getNumberFormat()->setFormatCode('0');
 				$sheet->getStyle('I'.$row_number)->getNumberFormat()->setFormatCode('0.00');
