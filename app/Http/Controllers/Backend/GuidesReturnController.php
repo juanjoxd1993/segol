@@ -342,7 +342,7 @@ class GuidesReturnController extends Controller
                     'press' => 1,
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
-                    'warehouse_movement_id' => $warehouse_movement_id,
+                //    'warehouse_movement_id' => $warehouse_movement_id,
                 ]);
 
                 WarehouseMovementDetail::insert([
