@@ -938,6 +938,15 @@
 								</a>
 							</li>
 
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.finance_settlements' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.finance_settlements') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Consolidado de Cierre de Caja</span>
+								</a>
+							</li>
+
 					  </ul>
 					</div>
 				</li>

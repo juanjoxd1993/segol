@@ -696,4 +696,15 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/administracion/finanzas-detallado-resumido/listar', 'FinanzasDetailTotalReportController@list')->name('dashboard.report.finanzas_detail_total.list');
 
 
+
+	/** Reportes > Finanzas y Liquidaciones */
+	Route::get('/reporte/finanzas-liquidaciones', 'FinanceSettlementsController@index')->name('dashboard.report.finance_settlements');
+	Route::post('/reporte/finanzas-liquidaciones/obtener-articulos', 'FinanceSettlementsController@getArticles')->name('dashboard.report.finance_settlements.get_articles');
+	Route::post('/reporte/finanzas-liquidaciones/obtener-cuentas', 'FinanceSettlementsController@getAccounts')->name('dashboard.report.finance_settlements.get_accounts');
+	Route::post('/reporte/finanzas-liquidaciones/obtener-clientes', 'FinanceSettlementsController@getClients')->name('dashboard.report.finance_settlements.get_clients');
+	Route::post('/reporte/finanzas-liquidaciones/validar-formulario', 'FinanceSettlementsController@validateForm')->name('dashboard.report.finance_settlements.validate_form');
+	Route::post('reporte/finanzas-liquidaciones/listar', 'FinanceSettlementsController@list')->name('dashboard.report.finance_settlements.list');
+
+
+
 });
