@@ -715,6 +715,12 @@ class GuidesRegisterController extends Controller
 								'movement_class_id' => 2,//Salida
 								'movement_type_id' => 5, //Producción
 								'warehouse_account_type_id' => 3, //Trabajador
+								'account_document_number' => $account ? $account->document_number : '',
+								'account_name' => $account ? $account->business_name : '',
+								'referral_guide_series' => $referral_guide_series,
+								'referral_guide_number' => $referral_guide_number,
+								'scop_number' => $scop_number,
+								'license_plate' => $license_plate,
 								'total' => $converted_amount,
 								'created_at' => date('Y-m-d H:i:s'),
 								'updated_at' => date('Y-m-d H:i:s'),
@@ -750,6 +756,12 @@ class GuidesRegisterController extends Controller
 								'movement_class_id' => 2,//Salida
 								'movement_type_id' => 5, //Producción
 								'warehouse_account_type_id' => 3, //Trabajador
+								'account_document_number' => $account ? $account->document_number : '',
+								'account_name' => $account ? $account->business_name : '',
+								'referral_guide_series' => $referral_guide_series,
+								'referral_guide_number' => $referral_guide_number,
+								'scop_number' => $scop_number,
+								'license_plate' => $license_plate,
 								'total' => $converted_amount,
 								'created_at' => date('Y-m-d H:i:s'),
 								'updated_at' => date('Y-m-d H:i:s'),
