@@ -69,7 +69,7 @@ class FinanzasDetailTotalReportController extends Controller
 		$totals_sum_total = 0;
 
 		$warehouse_document_type_ids = [13,5,7];
-		$client_ids = [1031, 427, 13326, 13775, 14072,14258];
+	//	$client_ids = [1031, 427, 13326, 13775, 14072,14258];
 
 		$total_venta_del_dia = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 															->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
