@@ -154,7 +154,6 @@ class FinanceSettlementsController extends Controller
 		->select('sales.id', 
 		'companies.short_name as company_short_name', 
 		DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'),  
-		DB::Raw('(IFNULL(liquidations.amount,0) FROM liquidations WHERE sales.id = sales.id AND liquidations.payment_method_id = 9) as remesa'),  
 		'sale_date',
 		DB::Raw('IFNULL(sales.efective, 0) as efective'),
 		DB::Raw('IFNULL(sales.deposit, 0) as deposit'),
@@ -170,9 +169,9 @@ class FinanceSettlementsController extends Controller
 		// ->when($client_id, function($query, $client_id) {
 		// 	return $query->where('sales.client_id', $client_id);
 		// })
-		->groupBy('sales.id')
+		->groupBy('liquidation_date')
 		->orderBy('sales.company_id')
-		->orderBy('liquidation_date')
+	//	->orderBy('liquidation_date')
 		->orderBy('business_unit_name')
 		->orderBy('sale_date')
 		->orderBy('warehouse_document_type_short_name')
@@ -361,12 +360,25 @@ class FinanceSettlementsController extends Controller
 		// }
 		
 		foreach ($elements as $sale) {
+
+            $warehouse_document_type_ids = [13,5,7];
+
+			$remesa = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+		                                ->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
+										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
+										->whereIn('sales.cede', $warehouse_types)
+										->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=',  $initial_date)
+										->whereIn('liquidations.payment_method_id', [9])
+										->where('liquidations.collection',0)
+										->select('liquidations.amount')
+										->sum('liquidations.amount');
+
 			$totals_sale_value += $sale['sale_value'];
 			$totals_igv += $sale['igv'];
 			$totals_total += $sale['total'];
 			$totals_perception += $sale['perception'];
 			$totals_total_perception += $sale['total_perception'];
-			$totals_remesa += $sale['remesa'];
+			$totals_remesa += $remesa;
 			$totals_efective += $sale['efective'];
 			$totals_deposit += $sale['deposit'];
 			$totals_pre_balance += $sale['pre_balance'];
@@ -382,7 +394,7 @@ class FinanceSettlementsController extends Controller
 			$credit->perception = $sale['perception'];
 			$credit->total_perception = $sale['total_perception'];
 			$credit->efective = $sale['efective'];
-			$credit->remesa = $sale['remesa'];
+			$credit->remesa = $remesa;
 			$credit->deposit = $sale['deposit'];
 			$credit->pre_balance = $sale['pre_balance'];
 			$credit->payment_method_efective = number_format($sale['payment_method_efective'], 2, '.', '');
@@ -452,7 +464,7 @@ class FinanceSettlementsController extends Controller
 				]
 			]);
 			$sheet->setCellValue('A3', '#');
-			$sheet->setCellValue('B3', 'Fecha');
+			$sheet->setCellValue('B3', 'Fecha de Liquidación');
 			$sheet->setCellValue('C3', 'Total Soles');
 			$sheet->setCellValue('D3', 'Remesa Forma Pago');
 			$sheet->setCellValue('E3', 'Efectivo Forma Pago');
@@ -474,7 +486,7 @@ class FinanceSettlementsController extends Controller
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->sale_date);
 				$sheet->setCellValue('C'.$row_number, $element->total_perception);
-				$sheet->setCellValue('D'.$row_number, $element->remesa);
+				$sheet->setCellValue('D'.$row_number, $remesa);
 				$sheet->setCellValue('E'.$row_number, $element->efective);
 				$sheet->setCellValue('F'.$row_number, $element->deposit);
 				$sheet->setCellValue('G'.$row_number, $element->pre_balance);
