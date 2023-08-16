@@ -366,7 +366,7 @@ class FinanceSettlementsController extends Controller
 			$remesa = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 		                                ->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
 										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
-										->whereIn('sales.cede', $warehouse_types)
+								//		->whereIn('sales.cede', $warehouse_types)
 										->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=',  $initial_date)
 										->whereIn('liquidations.payment_method_id', [9])
 										->where('liquidations.collection',0)
