@@ -373,7 +373,7 @@ class FinanceSettlementsController extends Controller
 			$credit->perception = $sale['perception'];
 			$credit->total_perception = $sale['total_perception'];
 			$credit->efective = $sale['efective'];
-			$credit->efective = $sale['remesa'];
+			$credit->remesa = $sale['remesa'];
 			$credit->deposit = $sale['deposit'];
 			$credit->pre_balance = $sale['pre_balance'];
 			$credit->payment_method_efective = number_format($sale['payment_method_efective'], 2, '.', '');
