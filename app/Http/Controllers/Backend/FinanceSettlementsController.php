@@ -151,7 +151,10 @@ class FinanceSettlementsController extends Controller
 		->leftjoin('sale_details', 'sales.id', '=', 'sale_details.sale_id')
 		->where('sales.created_at', '>=', $initial_date)
 		->where('sales.created_at', '<=', $final_date)
-		->select('sales.id', 'companies.short_name as company_short_name', DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'), 'sale_date',DB::Raw('IFNULL(sales.efective, 0) as efective'),DB::Raw('IFNULL(sales.deposit, 0) as deposit'),DB::Raw('IFNULL(sales.pre_balance, 0) as pre_balance'),DB::Raw('IFNULL(sales.payment_method_efective, 0) as payment_method_efective'),DB::Raw('IFNULL(sales.payment_method_deposit, 0) as payment_method_deposit'), 'business_units.name as business_unit_name', 'warehouse_document_types.short_name as warehouse_document_type_short_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_value', 'sales.igv', 'sales.total', DB::Raw('(sales.total_perception - sales.total) as perception'), 'sales.total_perception', 'payments.name as payment_name', 'banks.short_name as bank_short_name', 'clients.code as client_code', 'clients.business_name as client_business_name', 'document_types.name as document_type_name', 'clients.document_number as client_document_number', 'warehouse_movements.movement_number as warehouse_movement_movement_number', 'movent_types.name as movement_type_name', DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND sale_details.article_id = 24) as gallons'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND sale_details.article_id = 23) as sum_1k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 55) AS sum_5k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 56) AS sum_10k'), DB::Raw('(SELECT SUM(sale_details.quantity) from sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 57) AS sum_15k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 58) AS sum_45k'), DB::Raw('(SELECT SUM(sale_details.quantity * (SELECT articles.convertion FROM articles WHERE articles.id = sale_details.article_id AND sale_details.article_id <> 24)) FROM sale_details WHERE sale_details.sale_id = sales.id) AS sum_total'))
+		->select('sales.id', 'companies.short_name as company_short_name', DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'),  
+		DB::Raw('(SELECT SUM(liquidations.amount) FROM liquidations WHERE sales.id = sales.id AND liquidations.payment_method_id = 9) as remesa'),  
+
+		'sale_date',DB::Raw('IFNULL(sales.efective, 0) as efective'),DB::Raw('IFNULL(sales.deposit, 0) as deposit'),DB::Raw('IFNULL(sales.pre_balance, 0) as pre_balance'),DB::Raw('IFNULL(sales.payment_method_efective, 0) as payment_method_efective'),DB::Raw('IFNULL(sales.payment_method_deposit, 0) as payment_method_deposit'), 'business_units.name as business_unit_name', 'warehouse_document_types.short_name as warehouse_document_type_short_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_value', 'sales.igv', 'sales.total', DB::Raw('(sales.total_perception - sales.total) as perception'), 'sales.total_perception', 'payments.name as payment_name', 'banks.short_name as bank_short_name', 'clients.code as client_code', 'clients.business_name as client_business_name', 'document_types.name as document_type_name', 'clients.document_number as client_document_number', 'warehouse_movements.movement_number as warehouse_movement_movement_number', 'movent_types.name as movement_type_name', DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND sale_details.article_id = 24) as gallons'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND sale_details.article_id = 23) as sum_1k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 55) AS sum_5k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 56) AS sum_10k'), DB::Raw('(SELECT SUM(sale_details.quantity) from sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 57) AS sum_15k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 58) AS sum_45k'), DB::Raw('(SELECT SUM(sale_details.quantity * (SELECT articles.convertion FROM articles WHERE articles.id = sale_details.article_id AND sale_details.article_id <> 24)) FROM sale_details WHERE sale_details.sale_id = sales.id) AS sum_total'))
 		// ->when($company_id, function($query, $company_id) {
 		// 	return $query->where('sales.company_id', $company_id);
 		// })
@@ -174,6 +177,7 @@ class FinanceSettlementsController extends Controller
 		$totals_total = 0;
 		$totals_perception = 0;
 		$totals_total_perception = 0;
+		$totals_remesa = 0;
 		$totals_efective = 0;
 		$totals_deposit = 0;
 		$totals_pre_balance = 0;
@@ -353,6 +357,7 @@ class FinanceSettlementsController extends Controller
 			$totals_total += $sale['total'];
 			$totals_perception += $sale['perception'];
 			$totals_total_perception += $sale['total_perception'];
+			$totals_remesa += $sale['remesa'];
 			$totals_efective += $sale['efective'];
 			$totals_deposit += $sale['deposit'];
 			$totals_pre_balance += $sale['pre_balance'];
@@ -368,11 +373,12 @@ class FinanceSettlementsController extends Controller
 			$credit->perception = $sale['perception'];
 			$credit->total_perception = $sale['total_perception'];
 			$credit->efective = $sale['efective'];
+			$credit->efective = $sale['remesa'];
 			$credit->deposit = $sale['deposit'];
 			$credit->pre_balance = $sale['pre_balance'];
 			$credit->payment_method_efective = number_format($sale['payment_method_efective'], 2, '.', '');
 			$credit->payment_method_deposit = number_format($sale['payment_method_deposit'], 2, '.', '');
-			$credit->total_efective_cobranza = number_format($sale['efective'] + $sale['payment_method_efective'], 2, '.', '');
+			$credit->total_efective_cobranza = number_format($sale['remesa'] +$sale['efective'] + $sale['payment_method_efective'], 2, '.', '');
 			$credit->total_deposit_cobranza = number_format($sale['deposit'] + $sale['payment_method_deposit'], 2, '.', '');
 			
 			$response[] = $credit;
@@ -391,6 +397,7 @@ class FinanceSettlementsController extends Controller
 		$totals->total_perception = number_format($totals_total_perception, 2, '.', '');
 		$totals->efective = number_format($totals_efective, 2, '.', '');
 		$totals->deposit = number_format($totals_deposit, 2, '.', '');
+		$totals->remesa = number_format($totals_remesa, 2, '.', '');
 		$totals->pre_balance = number_format($totals_pre_balance, 2, '.', '');
 		$totals->payment_method_efective = number_format($totals_payment_method_efective, 2, '.', '');
 		$totals->payment_method_deposit = number_format($totals_payment_method_deposit, 2, '.', '');
@@ -438,14 +445,15 @@ class FinanceSettlementsController extends Controller
 			$sheet->setCellValue('A3', '#');
 			$sheet->setCellValue('B3', 'Fecha');
 			$sheet->setCellValue('C3', 'Total Soles');
-			$sheet->setCellValue('D3', 'Efectivo Forma Pago');
-			$sheet->setCellValue('E3', 'Depósito Forma Pago');
-			$sheet->setCellValue('F3', 'Venta a Credito');
-			$sheet->setCellValue('G3', 'Efectivo Cobranza');
-			$sheet->setCellValue('H3', 'Depósito Cobranza');
-			$sheet->setCellValue('I3', 'Efectivo Total Cobranza');
-			$sheet->setCellValue('J3', 'Depósito Total Cobranza');
-			$sheet->getStyle('A3:J3')->applyFromArray([
+			$sheet->setCellValue('D3', 'Remesa Forma Pago');
+			$sheet->setCellValue('E3', 'Efectivo Forma Pago');
+			$sheet->setCellValue('F3', 'Depósito Forma Pago');
+			$sheet->setCellValue('G3', 'Venta a Credito');
+			$sheet->setCellValue('H3', 'Efectivo Cobranza');
+			$sheet->setCellValue('I3', 'Depósito Cobranza');
+			$sheet->setCellValue('J3', 'Efectivo Total Cobranza');
+			$sheet->setCellValue('K3', 'Depósito Total Cobranza');
+			$sheet->getStyle('A3:K3')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
@@ -457,13 +465,14 @@ class FinanceSettlementsController extends Controller
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->sale_date);
 				$sheet->setCellValue('C'.$row_number, $element->total_perception);
-				$sheet->setCellValue('D'.$row_number, $element->efective);
-				$sheet->setCellValue('E'.$row_number, $element->deposit);
-				$sheet->setCellValue('F'.$row_number, $element->pre_balance);
-				$sheet->setCellValue('G'.$row_number, $element->payment_method_efective);
-				$sheet->setCellValue('H'.$row_number, $element->payment_method_deposit);
-				$sheet->setCellValue('I'.$row_number, $element->total_efective_cobranza);
-				$sheet->setCellValue('J'.$row_number, $element->total_deposit_cobranza);
+				$sheet->setCellValue('D'.$row_number, $element->remesa);
+				$sheet->setCellValue('E'.$row_number, $element->efective);
+				$sheet->setCellValue('F'.$row_number, $element->deposit);
+				$sheet->setCellValue('G'.$row_number, $element->pre_balance);
+				$sheet->setCellValue('H'.$row_number, $element->payment_method_efective);
+				$sheet->setCellValue('I'.$row_number, $element->payment_method_deposit);
+				$sheet->setCellValue('J'.$row_number, $element->total_efective_cobranza);
+				$sheet->setCellValue('K'.$row_number, $element->total_deposit_cobranza);
 				
 
 				$sheet->getStyle('H'.$row_number)->getNumberFormat()->setFormatCode('0');
