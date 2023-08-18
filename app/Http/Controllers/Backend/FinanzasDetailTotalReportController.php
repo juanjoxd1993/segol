@@ -69,7 +69,7 @@ class FinanzasDetailTotalReportController extends Controller
 		$totals_sum_total = 0;
 
 		$warehouse_document_type_ids = [13,5,7];
-		$client_ids = [1031, 427, 13326, 13775, 14072,14258];
+	//	$client_ids = [1031, 427, 13326, 13775, 14072,14258];
 
 		$total_venta_del_dia = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 															->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
@@ -85,10 +85,24 @@ class FinanzasDetailTotalReportController extends Controller
 										->whereIn('sales.cede', $warehouse_types)
 										->whereNotIn('sales.client_id', $client_ids)
 										->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=',  $initial_date)
-										->whereIn('liquidations.payment_method_id', [1,9])
+										->whereIn('liquidations.payment_method_id', [1])
 										->where('liquidations.collection',0)
 										->select('liquidations.amount')
 										->sum('liquidations.amount');
+
+
+
+										$remesa = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+		                                ->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
+										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
+										->whereIn('sales.cede', $warehouse_types)
+										->whereNotIn('sales.client_id', $client_ids)
+										->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=',  $initial_date)
+										->whereIn('liquidations.payment_method_id', [9])
+										->where('liquidations.collection',0)
+										->select('liquidations.amount')
+										->sum('liquidations.amount');
+
 
 		$deposit = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 									->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
@@ -110,7 +124,7 @@ class FinanzasDetailTotalReportController extends Controller
 								->select('sales.pre_balance')
 								->sum('sales.pre_balance');
 
-		$total_liquidado = $efective + $deposit + $credit;
+		$total_liquidado = $remesa + $efective + $deposit + $credit;
 
 		$diference = $total_venta_del_dia - $total_liquidado;
 
@@ -198,6 +212,11 @@ class FinanzasDetailTotalReportController extends Controller
 			[
 				'company_short_name' => 'Total Venta del Día',
 				'total' => $total_venta_del_dia
+			],
+
+			[
+				'company_short_name' => 'Remesa',
+				'total' => $remesa
 			],
 			[
 				'company_short_name' => 'Efectivo',
@@ -331,87 +350,91 @@ class FinanzasDetailTotalReportController extends Controller
 				],
 			]);
 
+           // Efectivo
+			$sheet->setCellValue('F6', 'REMESA');
+			$sheet->setCellValue('G6', $remesa );
+
 			// Efectivo
-			$sheet->setCellValue('F6', 'EFECTIVO');
-			$sheet->setCellValue('G6', $efective );
+			$sheet->setCellValue('F7', 'EFECTIVO');
+			$sheet->setCellValue('G7', $efective );
 
 			// Deposito
-			$sheet->setCellValue('F7', 'DEPOSITO');
-			$sheet->setCellValue('G7', $deposit );
+			$sheet->setCellValue('F8', 'DEPOSITO');
+			$sheet->setCellValue('G8', $deposit );
 
 			// Credito
-			$sheet->setCellValue('F8', 'CREDITO');
-			$sheet->setCellValue('G8', $credit );
+			$sheet->setCellValue('F9', 'CREDITO');
+			$sheet->setCellValue('G9', $credit );
 
 			// Total liquidado
-			$sheet->setCellValue('F10', 'TOTAL LIQUIDADO');
-			$sheet->setCellValue('G10', $total_liquidado );
+			$sheet->setCellValue('F11', 'TOTAL LIQUIDADO');
+			$sheet->setCellValue('G11', $total_liquidado );
 
 			// Diferencia
-			$sheet->setCellValue('F12', 'DIFERENCIA');
-			$sheet->setCellValue('G12', $diference );
+			$sheet->setCellValue('F13', 'DIFERENCIA');
+			$sheet->setCellValue('G13', $diference );
 
 			// Cobranzas de creditos
-			$sheet->setCellValue('F13', 'Cobranzas de Creditos');
+			$sheet->setCellValue('F14', 'Cobranzas de Creditos');
 
-			$sheet->getStyle('F13')->applyFromArray([
+			$sheet->getStyle('F14')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
 			]);
 
 			// Cobranza en efectivo
-			$sheet->setCellValue('F14', 'COBRANZA EN EFECTIVO');
-			$sheet->setCellValue('G14', $cobranza_efective );
+			$sheet->setCellValue('F15', 'COBRANZA EN EFECTIVO');
+			$sheet->setCellValue('G15', $cobranza_efective );
 
 			// Cobranza en deposito
-			$sheet->setCellValue('F15', 'COBRANZA EN DEPOSITO');
-			$sheet->setCellValue('G15', $cobranza_deposit );
+			$sheet->setCellValue('F16', 'COBRANZA EN DEPOSITO');
+			$sheet->setCellValue('G16', $cobranza_deposit );
 
 			// Total cobranza
-			$sheet->setCellValue('F15', 'TOTAL COBRANZA');
-			$sheet->setCellValue('G15', $total_cobranza );
+			$sheet->setCellValue('F17', 'TOTAL COBRANZA');
+			$sheet->setCellValue('G17', $total_cobranza );
 
 			// Otros ingresos de caja
-			$sheet->setCellValue('F17', 'Otros Ingresos de Caja');
+			$sheet->setCellValue('F18', 'Otros Ingresos de Caja');
 
-			$sheet->getStyle('F17')->applyFromArray([
+			$sheet->getStyle('F18')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
 			]);
 
 			// Cesion de Uso en Efectivo
-			$sheet->setCellValue('F18', 'CESION DE USO EN EFECTIVO');
-			$sheet->setCellValue('G18', $cesion_uso_efective );
+			$sheet->setCellValue('F19', 'CESION DE USO EN EFECTIVO');
+			$sheet->setCellValue('G19', $cesion_uso_efective );
 
 			// Cesion de Uso en Deposito
-			$sheet->setCellValue('F19', 'CESION DE USO EN DEPOSITO');
-			$sheet->setCellValue('G19', $cesion_uso_deposit );
+			$sheet->setCellValue('F20', 'CESION DE USO EN DEPOSITO');
+			$sheet->setCellValue('G20', $cesion_uso_deposit );
 
 			// Otros ingresos efectivo
-			$sheet->setCellValue('F20', 'OTROS INGRESOS EN EFECTIVO');
-			$sheet->setCellValue('G20', $otros_efective );
+			$sheet->setCellValue('F21', 'OTROS INGRESOS EN EFECTIVO');
+			$sheet->setCellValue('G21', $otros_efective );
 
 			// Otros ingresos deposito
-			$sheet->setCellValue('F21', 'OTROS INGRESOS EN DEPOSITO');
-			$sheet->setCellValue('G21', $otros_deposit );
+			$sheet->setCellValue('F22', 'OTROS INGRESOS EN DEPOSITO');
+			$sheet->setCellValue('G22', $otros_deposit );
 
 			// Total otros ingresos
-			$sheet->setCellValue('F22', 'TOTAL OTROS INGRESOS');
-			$sheet->setCellValue('G22', $total_otros_ingresos );
+			$sheet->setCellValue('F23', 'TOTAL OTROS INGRESOS');
+			$sheet->setCellValue('G23', $total_otros_ingresos );
 
 			// Total recaudado del dia
-			$sheet->setCellValue('F24', 'TOTAL RECAUDADO');
-			$sheet->setCellValue('G24', $total_recaudado );
+			$sheet->setCellValue('F25', 'TOTAL RECAUDADO');
+			$sheet->setCellValue('G25', $total_recaudado );
 
 			// Egresos de caja
-			$sheet->setCellValue('F26', 'EGRESOS DE CAJA');
-			$sheet->setCellValue('G26', $egresos_caja );
+			$sheet->setCellValue('F27', 'EGRESOS DE CAJA');
+			$sheet->setCellValue('G27', $egresos_caja );
 
 			// Total efectivo del dìa
-			$sheet->setCellValue('F28', 'TOTAL EFECTIVO DEL DIA');
-			$sheet->setCellValue('G28', $total_efective_day );
+			$sheet->setCellValue('F29', 'TOTAL EFECTIVO DEL DIA');
+			$sheet->setCellValue('G29', $total_efective_day );
 
 		/*	// Remesa Hermes
 			$sheet->setCellValue('F30', 'REMESA HERMES');

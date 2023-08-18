@@ -109,6 +109,7 @@
 										element.sale_value = accounting.toFixed(element.sale_value, 2);
 										element.perception = accounting.toFixed(element.perception, 2);
 										element.total_perception = accounting.toFixed(element.total_perception, 2);
+                                        element.remesa = accounting.toFixed(element.remesa, 2);
 										element.efective = accounting.toFixed(element.efective, 2);
 										element.deposit = accounting.toFixed(element.deposit, 2);
 										element.pre_balance = accounting.toFixed(element.pre_balance, 2);
@@ -243,7 +244,7 @@
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'reporte-finanzas-liquidaciones-'+Date.now()+'.xls');
+                    link.setAttribute('download', 'reporte-consolidado-liquidaciones-'+Date.now()+'.xls');
                     document.body.appendChild(link);
                     link.click();
 

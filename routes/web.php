@@ -704,7 +704,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/finanzas-liquidaciones/obtener-clientes', 'FinanceSettlementsController@getClients')->name('dashboard.report.finance_settlements.get_clients');
 	Route::post('/reporte/finanzas-liquidaciones/validar-formulario', 'FinanceSettlementsController@validateForm')->name('dashboard.report.finance_settlements.validate_form');
 	Route::post('reporte/finanzas-liquidaciones/listar', 'FinanceSettlementsController@list')->name('dashboard.report.finance_settlements.list');
-
-
-
 });
+
+
+
