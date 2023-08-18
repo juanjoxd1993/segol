@@ -44,6 +44,14 @@
                                         <div id="payment_sede-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
+
+                                <div class="col-lg-3" v-if="model.payment_method == 9">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Nº de Hermeticase:</label>
+                                        <input type="text" class="form-control" name="operation_number" id="operation_number" v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageOperationNumber">
+                                        <div id="operation_number-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
                                 <div class="col-lg-3" v-if="model.payment_method == 10">
                                     <div class="form-group">
                                         <label class="form-control-label">Saldo a Favor:</label>
@@ -112,6 +120,7 @@
                                         <div id="amount-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
+                                
                             </div>
                             <div class="row">
                                 <div class="col-12 text-right">

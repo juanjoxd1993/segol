@@ -498,7 +498,7 @@ class LiquidationFinalController extends Controller
 			$total_sale_amount = $sale['total'];
 			$sales_models = [];
 			$warehouse_document_type_id = $sale['warehouse_document_type_id'];
-			$client = Client::find($sale['client_id'], ['id', 'code', 'business_name', 'link_client_id', 'payment_id', 'credit_limit_days','credit_limit', 'credit_balance','route_id', 'perception_percentage_id','document_type_id']);
+			$client = Client::find($sale['client_id'], ['id', 'code', 'business_name','bol_name','bol_number', 'link_client_id', 'payment_id', 'credit_limit_days','credit_limit', 'credit_balance','route_id', 'perception_percentage_id','document_type_id']);
 			$rates = Rate::find($client->perception_percentage_id,['id','value']);
 			$client_address = ClientAddress::where('client_id', $client->id)
 																		->where('address_type_id', 1)
@@ -519,13 +519,19 @@ class LiquidationFinalController extends Controller
 					$quantity_div = floor($quantity / 2);
 					$rest = $quantity % 2;
 
-					$total = $sale['total'];
-					$rest_total = $total % $quantity;
-					$total_div = ($total - ($rest_total * $rest)) / $quantity_div;
+				//	$total = $sale['total'];
+					
+					$precio= round($detail['price_igv'], 4);
+					
+					$total_base = ($rest*$precio);
+					$rest_total = $total_base/1.18;
+					$total_div= ($precio*2);
+					$rest_div=($total_div/1.18);
 
-					$sale_value = $detail['sale_value'];
-					$rest_sale_value = $sale_value % $quantity;
-					$sale_value_div = ($sale_value - ($rest_sale_value * $rest)) / $quantity_div;
+
+				//	$sale_value = $total_div;
+				//	$rest_sale_value = $sale_value % $quantity;
+				//	$sale_value_div = $total_div/1.18;
 				};
 
 				if ($rest) {
@@ -578,8 +584,8 @@ class LiquidationFinalController extends Controller
 						$voucher->company_id = $model['company_id'];
 						$voucher->client_id = $client->id;
 						$voucher->original_client_id = $client->id;
-						$voucher->client_name = $client->business_name;
-						$voucher->client_address = $client_address->address;
+						$voucher->client_name = $client->bol_name;
+						$voucher->client_address = 'S/N';
 						$voucher->voucher_type_id = $voucher_type->id;
 						$voucher->serie_number = $serie_number;
 						$voucher->voucher_number = ++$last_voucher_number;
@@ -591,9 +597,9 @@ class LiquidationFinalController extends Controller
 						$voucher->currency_id = $sale['currency_id'];
 						$voucher->payment_id = $sale['payment_id'];
 						// $voucher->payment_id = $client->payment_id;
-						$voucher->total = $rest_total;
+						$voucher->total = $total_base;
 						$voucher->igv_perception = $sale['perception'];
-						$voucher->total_perception = $sale['total_perception'];
+						$voucher->total_perception = $total_base;
 						$voucher->igv_percentage = $rate->value;
 						// $voucher->igv_perception_percentage = $sale['perception_percentage'] / 100;
 						$voucher->igv_perception_percentage = $rate->value / 100;
@@ -620,17 +626,17 @@ class LiquidationFinalController extends Controller
 							$voucher_detail->sale_value = round($detail['price_igv'], 4);
 							$voucher_detail->exonerated_value = 0;
 							$voucher_detail->inaccurate_value = 0;
-							$voucher_detail->igv = round($rest_sale_value, 4) - round($rest_sale_value / $igv_percentage, 4);
-							$voucher_detail->total = round($rest_sale_value, 4);
+							$voucher_detail->igv = round($total_base, 4) - round($rest_total, 4);
+							$voucher_detail->total = round($total_base, 4);
 							$voucher_detail->user = Auth::user()->user;
 							$voucher_detail->article_id = $article->id;
 							$voucher_detail->save();
 		
 							if ( $detail['igv'] == 1 ) {
-								$taxed_operation += round($rest_sale_value / $igv_percentage, 4);
-								$igv += round($rest_sale_value, 4) - round($rest_sale_value / $igv_percentage, 4);
+								$taxed_operation += round($rest_total, 4);
+								$igv += round($total_base, 4) - round($rest_total, 4);
 							} else {
-								$taxed_operation += round($rest_sale_value, 4);
+								$taxed_operation += round($rest_total, 4);
 							}
 						}
 		
@@ -667,20 +673,20 @@ class LiquidationFinalController extends Controller
 					$igv = 0;
 					foreach ($sale['details'] as $detail) {
 						if ( $detail['igv'] == 1 ) {
-							$sale_value += round($rest_sale_value / $igv_percentage, 4);
-							$igv += round($rest_sale_value, 4) - round($rest_sale_value / $igv_percentage, 4);
+							$sale_value += round($rest_total, 4);
+							$igv += round($total_base, 4) - round($rest_total, 4);
 						} else {
-							$sale_value += round($rest_sale_value, 4);
+							$sale_value += round($rest_total, 4);
 						}
 					}
 
-					$total = $rest_total;
-					$total_perception = $sale['total_perception'];
+					$total = $total_base;
+					$total_perception = $total_base;
 
 					if ( $sale['warehouse_document_type_id'] == 8 || $sale['warehouse_document_type_id'] == 9 || $sale['warehouse_document_type_id'] == 20 || $sale['warehouse_document_type_id'] == 22 ) {
 						$sale_value = abs($sale_value);
 						$igv = abs($igv);
-						$total = abs($rest_total);
+						$total = abs($total_base);
 						$total_perception = abs($sale['total_perception']);
 					}
 
@@ -721,12 +727,12 @@ class LiquidationFinalController extends Controller
 						$sale_detail->article_id = $detail['article_id'];
 						$sale_detail->quantity = 1;
 						$sale_detail->price_igv = round($detail['price_igv'], 4);
-						$sale_detail->sale_value = round($rest_sale_value, 4);
+						$sale_detail->sale_value = round($rest_total, 4);
 						$sale_detail->inaccurate_value = 0;
 						$sale_detail->exonerated_value = 0;
-						$sale_detail->igv = round($rest_sale_value, 4) - round($rest_sale_value / $igv_percentage, 4);
-						$sale_detail->total = round($rest_sale_value, 4);
-						$sale_detail->total_perception = round($detail['total_perception'], 4);
+						$sale_detail->igv = round($total_base, 4) - round($rest_total, 4);
+						$sale_detail->total = round($total_base, 4);
+						$sale_detail->total_perception =  round($total_base, 4);
 						$sale_detail->igv_percentage = $rate->value;
 						// $sale_detail->igv_perception_percentage = $sale['perception_percentage'];
 						$sale_detail->igv_perception_percentage = $rate->value;
@@ -774,9 +780,11 @@ class LiquidationFinalController extends Controller
 							case 7:
 								$voucher_type_id = 2;
 								break;
+
 							case 8:
 								$voucher_type_id = 7;
-								break;
+									break;
+							
 							case 9:
 								$voucher_type_id = 3;
 								break;
@@ -793,8 +801,8 @@ class LiquidationFinalController extends Controller
 						$voucher->company_id = $model['company_id'];
 						$voucher->client_id = $client->id;
 						$voucher->original_client_id = $client->id;
-						$voucher->client_name = $client->business_name;
-						$voucher->client_address = $client_address->address;
+						$voucher->client_name = $client->bol_name;
+						$voucher->client_address = 'S/N';
 						$voucher->voucher_type_id = $voucher_type->id;
 						$voucher->serie_number = $serie_number;
 						$voucher->voucher_number = ++$last_voucher_number;
@@ -835,17 +843,17 @@ class LiquidationFinalController extends Controller
 							$voucher_detail->sale_value = round($detail['price_igv'], 4);
 							$voucher_detail->exonerated_value = 0;
 							$voucher_detail->inaccurate_value = 0;
-							$voucher_detail->igv = round($sale_value_div, 4) - round($sale_value_div / $igv_percentage, 4);
-							$voucher_detail->total = round($sale_value_div, 4);
+							$voucher_detail->igv = round($total_div, 4) - round($rest_div, 4);
+							$voucher_detail->total = round($total_div, 4);
 							$voucher_detail->user = Auth::user()->user;
 							$voucher_detail->article_id = $article->id;
 							$voucher_detail->save();
 
 							if ( $detail['igv'] == 1 ) {
-								$taxed_operation += round($sale_value_div / $igv_percentage, 4);
-								$igv += round($sale_value_div, 4) - round($sale_value_div / $igv_percentage, 4);
+								$taxed_operation += round($rest_div, 4);
+								$igv += round($total_div, 4) - round($rest_div, 4);
 							} else {
-								$taxed_operation += round($sale_value_div, 4);
+								$taxed_operation += round($rest_div, 4);
 							}
 						}
 
@@ -882,15 +890,15 @@ class LiquidationFinalController extends Controller
 					$igv = 0;
 					foreach ($sale['details'] as $detail) {
 						if ( $detail['igv'] == 1 ) {
-							$sale_value += round($sale_value_div / $igv_percentage, 4);
-							$igv += round($sale_value_div, 4) - round($sale_value_div / $igv_percentage, 4);
+							$sale_value += round($rest_div, 4);
+							$igv += round($total_div, 4) - round($rest_div, 4);
 						} else {
-							$sale_value += round($sale_value_div, 4);
+							$sale_value += round($rest_div, 4);
 						}
 					}
 
 					$total = $total_div;
-					$total_perception = $sale['total_perception'];
+					$total_perception = $total_div;
 
 					if ( $sale['warehouse_document_type_id'] == 8 || $sale['warehouse_document_type_id'] == 9 || $sale['warehouse_document_type_id'] == 20 || $sale['warehouse_document_type_id'] == 22 ) {
 						$sale_value = abs($sale_value);
@@ -936,11 +944,11 @@ class LiquidationFinalController extends Controller
 						$sale_detail->article_id = $detail['article_id'];
 						$sale_detail->quantity = 2;
 						$sale_detail->price_igv = round($detail['price_igv'], 4);
-						$sale_detail->sale_value = round($sale_value_div, 4);
+						$sale_detail->sale_value = round($rest_div, 4);
 						$sale_detail->inaccurate_value = 0;
 						$sale_detail->exonerated_value = 0;
-						$sale_detail->igv = round($sale_value_div, 4) - round($sale_value_div / $igv_percentage, 4);
-						$sale_detail->total = round($sale_value_div, 4);
+						$sale_detail->igv = round($total_div, 4) - round($rest_div, 4);
+						$sale_detail->total = round($total_div, 4);
 						$sale_detail->total_perception = round($detail['total_perception'], 4);
 						$sale_detail->igv_percentage = $rate->value;
 						// $sale_detail->igv_perception_percentage = $sale['perception_percentage'];
@@ -957,7 +965,11 @@ class LiquidationFinalController extends Controller
 											['correlative' => $sale['referral_serie_number']]
 										);
 				}
-			} else {
+			} 
+			
+			
+		
+			else {
 				$sale_model = new Sale();
 				$sale_model->company_id = $model['company_id'];
 				$sale_model->sale_date = $sale_date;
@@ -974,7 +986,7 @@ class LiquidationFinalController extends Controller
 				$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
 				$sale_model->cede = $warehouse_type_id;
 	
-				if ( $sale['warehouse_document_type_id'] >= 4 && $sale['warehouse_document_type_id'] <= 9 ) {
+				if ( $sale['warehouse_document_type_id'] = 4  || $sale['warehouse_document_type_id'] = 5 ) {
 					switch ($sale['warehouse_document_type_id']) {
 						case 4:
 							$voucher_type_id = 5;
@@ -988,10 +1000,8 @@ class LiquidationFinalController extends Controller
 						case 7:
 							$voucher_type_id = 2;
 							break;
+						
 						case 8:
-							$voucher_type_id = 7;
-							break;
-						case 9:
 							$voucher_type_id = 3;
 							break;
 					}
