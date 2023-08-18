@@ -255,7 +255,7 @@ import EventBus from '../event-bus';
                 this.model.exchange_rate = '';
                 this.model.bank_account = '';
                 this.model.operation_number = '';
-                this.model.amount = '';
+                this.model.amount = this.$store.state.sale.total_perception;
 
                 $('#modal-liquidation').modal('show');
             }.bind(this));
