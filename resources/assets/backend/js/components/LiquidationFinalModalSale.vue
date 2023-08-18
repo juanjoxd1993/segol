@@ -358,7 +358,42 @@
                 }).then(response => {
                     document.getElementById('client_id').disabled = true;
                     const data = response.data;
-                    this.filterArticles = data;
+                    let dataParse = [];
+
+                    const sales = this.$store.state.sales;
+
+                    if (sales.length) {
+                        sales.map(sale => {
+                            const { details } = sale;
+
+                            details.map(detail => {
+                                const {
+                                    article_id,
+                                    quantity
+                                } = detail;
+
+                                const parseQuantity = parseInt(quantity);
+
+                                data.map(dat => {
+                                    const {id} = dat;
+                                    const quantityDat = dat.quantity;
+
+                                    if (article_id === id) {
+                                        const rest = quantityDat - parseQuantity;
+
+                                        if (rest > 0) {
+                                            dat.quantity = rest;
+                                            dataParse.push(dat);
+                                        };
+                                    }
+                                })
+                            })
+                        });
+                    } else {
+                        dataParse = data;
+                    };
+
+                    this.filterArticles = dataParse;
                     this.$store.state.articles_filter = data;
                 }).catch(error => {
                     console.log(error);
@@ -417,6 +452,7 @@
             addArticle: function() {
                 let article = this.$store.state.articles.find(element => element.article_id == this.model.article_id);
                 const articleQuantity = this.filterArticles.find(item => item.id === this.model.article_id);
+                const articlesFilter = this.filterArticles.filter(item => item.id !== this.model.article_id);
 
                 if ( this.sale.client_id == '' ) {
                     Swal.fire({
@@ -499,6 +535,8 @@
 						igv_perception: '',
 						total_perception: '',
 					};
+
+                    this.filterArticles = articlesFilter;
 
                     this.addTotals();
                 }
