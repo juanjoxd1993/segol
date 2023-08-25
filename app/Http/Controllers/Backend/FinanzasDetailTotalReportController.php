@@ -98,8 +98,8 @@ class FinanzasDetailTotalReportController extends Controller
 										->whereIn('sales.cede', $warehouse_types)
 								//		->whereNotIn('sales.client_id', $client_ids)
 										->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=',  $initial_date)
-										->whereIn('liquidations.payment_method_id', [9])
-										->where('liquidations.collection',0)
+										->whereIn('liquidations.payment_method_id', [9])									
+								//	->where('liquidations.collection',0)
 										->select('liquidations.amount')
 										->sum('liquidations.amount');
 
