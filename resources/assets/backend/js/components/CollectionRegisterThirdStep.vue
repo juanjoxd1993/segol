@@ -378,13 +378,14 @@
 				// 		msg: 'El Total Registrado no puede exceder el Total Cobrado.'
 				// 	});
                 // } 
-                else if ( this.model.payment_method_id > 3 && this.to_be_assigned > 0 ) {
-					this.$parent.alertMsg({
-						type: 5,
-						title: 'Error',
-						msg: 'El Total del Detalle es menor al Total por aplicar o canjear.'
-					});
-				} else {
+             //   else if ( this.model.payment_method_id > 3 && this.to_be_assigned > 0 ) {
+			//		this.$parent.alertMsg({
+			//			type: 5,
+			//			title: 'Error',
+			//			msg: 'El Total del Detalle es menor al Total por aplicar o canjear.'
+			//		}); 
+            // SE USA PARA EVALUAR SI EL TOTAL EXCEDE LO COBRADO
+				 else {
 					EventBus.$emit('loading', true);
 					let filteredItems = this.items.filter(element => this.ids.includes(element.id));
 					// console.log(filteredItems);
