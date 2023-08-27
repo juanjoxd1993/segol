@@ -128,22 +128,31 @@
                         </div>
                     </div>-->
 
-                      <div class="col-lg-3">
+                    <div class="col-lg-3">
                         <div class="form-group">
-                         <label class="form-control-label">Tipo de Referencia:</label>
+                            <label class="form-control-label">Tipo de Referencia:</label>
                             <select class="form-control" name="referral_warehouse_document_type_id" id="referral_warehouse_document_type_id" v-model="model.referral_warehouse_document_type_id" @focus="$parent.clearErrorMsg($event)">
-                               <option disabled value="">Seleccionar</option>
-                                            <option value="1">Factura Electrónica</option>
-                                            <option value="2">Boleta de Venta Electrónica</option>
-                                                                          
+                                <option disabled value="">Seleccionar</option>
+                                <option value="5">Factura Electrónica</option>
+                                <option value="7">Boleta de Venta Electrónica</option>
+                                <option value="3" v-if="model.warehouse_document_type_id == 28">Guía de prestamo de balones</option>
                             </select>
                             <div id="referral_warehouse_document_type_id-error" class="error invalid-feedback"></div>
-                      </div>
+                        </div>
                     </div>
 
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Referencia:</label>
+                            <select class="form-control" name="reference" id="reference" v-model="model.referencce" @focus="$parent.clearErrorMsg($event)">
+                                <option disabled value="">Seleccionar</option>
+								<option v-for="reference in references" :value="reference.id" v-bind:key="reference.id">{{ reference.referral_serie_number }} | {{ reference.referral_voucher_number }}</option>
+                            </select>
+                            <div id="reference-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
 
-
-					<div class="col-lg-3">
+					<!-- <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Serie de Referencia:</label>
 							<input type="text" class="form-control" name="referral_serie_number" id="referral_serie_number" v-model="model.referral_serie_number" @focus="$parent.clearErrorMsg($event)">
@@ -156,7 +165,8 @@
 							<input type="text" class="form-control" name="referral_voucher_number" id="referral_voucher_number" v-model="model.referral_voucher_number" @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_voucher_number-error" class="error invalid-feedback"></div>
                         </div>
-                    </div>
+                    </div> -->
+
                 </div>
             </div>
             <div class="kt-portlet__foot">
@@ -222,10 +232,15 @@
                 type: String,
                 default: ''
             },
+			url_get_references: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
 				second_step: false,
+                references: [],
                 model: {
 					company_id: '',
 					warehouse_document_type_id: '',
@@ -244,6 +259,7 @@
 					referral_warehouse_document_type_id: '',
 					referral_serie_number: '',
 					referral_voucher_number: '',
+                    reference: '',
                 },
             }
         },
@@ -303,7 +319,22 @@
 			}.bind(this));
         },
         watch: {
+            'model.referral_warehouse_document_type_id'(value) {
+                EventBus.$emit('loading', true);
 
+                axios.post(this.url_get_references, {
+                    referral_warehouse_document_type_id: value
+                })
+                    .then(res => {
+                        EventBus.$emit('loading', false);
+
+                        this.references = res.data;
+                    })
+                    .catch(err => {
+                        EventBus.$emit('loading', false);
+                        console.log(error.response);
+                    })
+            }
         },
         computed: {
 

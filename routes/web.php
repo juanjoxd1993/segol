@@ -39,6 +39,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/facturacion/documentos-por-cobrar/obtener-clientes', 'RegisterDocumentChargeController@getClients')->name('dashboard.voucher.register_document_charge.get_clients');
 	Route::post('/facturacion/documentos-por-cobrar/validar-tercer-paso', 'RegisterDocumentChargeController@validateThirdStep')->name('dashboard.voucher.register_document_charge.validate_third_step');
 	Route::post('/facturacion/documentos-por-cobrar/guardar', 'RegisterDocumentChargeController@store')->name('dashboard.voucher.register_document_charge.store');
+	Route::post('/facturacion/documentos-por-cobrar/obetener-referencias', 'RegisterDocumentChargeController@getReferences')->name('dashboard.voucher.register_document_charge.get_references');
 
 	/** Facturación > Registro de Cobranzas */
 	Route::get('/facturacion/cobranzas', 'CollectionRegisterController@index')->name('dashboard.voucher.collection_register');

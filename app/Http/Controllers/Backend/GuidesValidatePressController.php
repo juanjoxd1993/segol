@@ -219,7 +219,7 @@ class GuidesValidatePressController extends Controller
             //                 ->where('name', 'Por Liquidar')
             //                 ->first();
 
-            $movement->if_comodato = 1;
+            $movement->if_comodato = true;
             $movement->save();
             
         }
