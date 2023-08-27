@@ -38,18 +38,21 @@ class ReportsBalonesPressController extends Controller {
                             ->get();
 
     foreach ($containers as $container) {
-      $container_detail = ContainerDetail::find($container->id);
-      $client = Client::find($container->client_id);
-      $warehouse_movement = WarehouseMovement::find($container->warehouse_movement_id);
+      $container_detail = ContainerDetail::where('container_id', $container->id)->first();
 
-      $article = Article::find($container_detail->article_id);
+      if ($container_detail) {
+        $client = Client::find($container->client_id);
+        $warehouse_movement = WarehouseMovement::find($container->warehouse_movement_id);
 
-      $warehouse_type = WarehouseType::find($warehouse_movement->warehouse_type_id);
+        $article = Article::find($container_detail->article_id);
 
-      $container->client_name = $client->business_name;
-      $container->stock = $container_detail->devol;
-      $container->article_name = $article->name;
-      $container->warehouse_type_name = $warehouse_type->name;
+        $warehouse_type = WarehouseType::find($warehouse_movement->warehouse_type_id);
+
+        $container->client_name = $client->business_name;
+        $container->stock = $container_detail->devol;
+        $container->article_name = $article->name;
+        $container->warehouse_type_name = $warehouse_type->name;
+      }
     }
 
 		return $containers;
