@@ -81,8 +81,8 @@ class FacturationBoletasReportController extends Controller
 			            ->where('vouchers.issue_date', '<=', $final_date)
 			->select('voucher_details.id', 'companies.short_name as company_short_name', 'issue_date', 'business_units.name as business_unit_name', 'client_channels.name as client_channel_name', 'client_zones.name as client_zone_name', 'client_sectors.name as client_sector_name',
 			 DB::Raw('CONCAT("R-", client_routes.id) as client_route_id'),'vouchers.serie_number', 'vouchers.voucher_number','voucher_details.name as name',
-			 'quantity as sum_total','voucher_details.original_price as price','voucher_details.total', 'clients.document_number as client_code', 
-			 'clients.business_name as client_business_name', DB::Raw('CONCAT(vouchers.referral_guide_series, "-", vouchers.referral_guide_number) as guide'),
+			 'quantity as sum_total','voucher_details.original_price as price','voucher_details.total', 'clients.bol_number as client_code', 
+			 'clients.bol_name as client_business_name', DB::Raw('CONCAT(vouchers.referral_guide_series, "-", vouchers.referral_guide_number) as guide'),
 			 'ubigeos.district as district', 'ubigeos.province as province', 'ubigeos.department as department', 'vouchers.ose as state')
             ->where('vouchers.voucher_type_id',2)
 			->when($company_id, function($query, $company_id) {

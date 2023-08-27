@@ -45,7 +45,7 @@
         },
         data() {
             return {
-                liquidation_datatable: undefined,
+                liquidation_final_datatable: undefined,
                 show_table: false,
             }
         },
@@ -68,11 +68,11 @@
                     this.$store.commit('addClients', clients);
                     this.$store.commit('addArticles', movement_details)
                     
-                    if ( this.liquidation_datatable == undefined ) {
+                    if ( this.liquidation_final_datatable == undefined ) {
                         this.fillTableX();
                     } else {
-                        this.liquidation_datatable.originalDataSet = this.articlesState;
-                        this.liquidation_datatable.load();
+                        this.liquidation_final_datatable.originalDataSet = this.articlesState;
+                        this.liquidation_final_datatable.load();
                     }
 
                     EventBus.$emit('loading', false);
@@ -83,10 +83,10 @@
             }.bind(this));
 
             EventBus.$on('refresh_table_liquidation', function() {
-                if ( this.liquidation_datatable != undefined ) {
+                if ( this.liquidation_final_datatable != undefined ) {
 					// console.log(this.articlesState);
-                    this.liquidation_datatable.originalDataSet = this.articlesState;
-                    this.liquidation_datatable.load();
+                    this.liquidation_final_datatable.originalDataSet = this.articlesState;
+                    this.liquidation_final_datatable.load();
                 }
             }.bind(this));
         },
@@ -187,7 +187,7 @@
                 let vm = this;
                 let token = document.head.querySelector('meta[name="csrf-token"]').content;
 
-                this.liquidation_datatable = $('.kt-datatable-articles').KTDatatable({
+                this.liquidation_final_datatable = $('.kt-datatable-articles').KTDatatable({
                     // datasource definition
                     data: {
                         type: 'local',
@@ -329,7 +329,7 @@
                     ]
                 });
 
-                this.liquidation_datatable.columns('id').visible(false);
+                this.liquidation_final_datatable.columns('id').visible(false);
             },
         }
     };
