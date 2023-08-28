@@ -391,7 +391,9 @@ import EventBus from '../event-bus';
                         liquidation.bank_account = bank_account;
                     };
 
-                    this.liquidations.push(liquidation);
+                    if (liquidation.payment_id != 2) {
+                        this.liquidations.push(liquidation);
+                    };
 
                     this.model.payment_method = '';
                     this.model.currency = '';

@@ -26,6 +26,8 @@ export default {
 		balones: [],
 		warehouse_account_type_id: 0,
 		sale_series: [],
+		guide_numbers: [],
+		scops: [],
 		warehouse_type_id: 0,
 		articles_filter: [],
 		warehouse_type_id_receiver: 0,
@@ -39,6 +41,12 @@ export default {
 		},
 		addSale(state, sale) {
 			state.sale = sale;
+		},
+		addGuideNumber(state, guide_number) {
+			state.guide_numbers.push(guide_number);
+		},
+		addScop(state, scop) {
+			state.scops.push(scop);
 		},
 		addLiquidations(state, liquidations) {
 			state.sale.liquidations = liquidations;

@@ -376,6 +376,11 @@
 
                 this.sale.warehouse_document_type_name = warehouse_document_type ? warehouse_document_type.name : '';
 			},
+			'sale.sale_serie_id': function(val) {
+				let sale_serie = this.sale_series.find(element => element.id == val);
+
+                this.sale.sale_serie_num = sale_serie.num_serie;
+			},
 			// 'sale.sale_serie_id': function(val) {
 			// 	let sale_serie = this.sale_series.find(element => element.id == val);
 			// 	this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : '';
@@ -579,7 +584,6 @@
                     });
                 } else {
 					EventBus.$emit('loading', true);
-                    
 
                     this.$store.state.sale_series.map(item => {
                         if (item.id === this.sale.sale_serie_id) {
@@ -587,6 +591,13 @@
                             item.correlative = item.correlative + 1;
                         };
                     });
+
+                    this.$store.commit('addGuideNumber', {
+                        serie_number: this.sale.referral_guide_series,
+                        guide_number: this.sale.referral_guide_number,
+                    })
+
+                    this.$store.commit('addScop', this.sale.scop_number);
 
 					axios.post(this.url_verify_document_type, {
 						'model': this.$store.state.model,
@@ -936,23 +947,42 @@
                     $('#referral_guide_number-error').hide();
                     $('#referral_guide_number-error').text('');
 
-                    axios.post('/facturacion/liquidaciones-glp/get-guide-number', {
-                        params: {
-                            serie_number: this.sale.referral_guide_series,
-                            guide_number: this.sale.referral_guide_number,
-                        }
-                    }).then(response => {
-                        console.log('bien');
-                        EventBus.$emit('loading', false);
-                        $('#liquidar').prop('disabled', false);
-                        $('#referral_guide_number-error').text('');
-                        $('#referral_guide_number-error').hide();
-                    }).catch(error => {
-                        EventBus.$emit('loading', false);
-                        $('#liquidar').prop('disabled', true);
-                        $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
-                        $('#referral_guide_number-error').show();
-                    });
+                    let find = false;
+
+                    if (this.$store.state.guide_numbers.length) {
+                        this.$store.state.guide_numbers.map(item => {
+                            if (
+                                item.serie_number == this.sale.referral_guide_series &&
+                                item.guide_number == this.sale.referral_guide_number
+                            ) {
+                                EventBus.$emit('loading', false);
+                                $('#liquidar').prop('disabled', true);
+                                $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                                $('#referral_guide_number-error').show();
+
+                                find = true;
+                            };
+                        });
+                    };
+
+                    if (!find) {
+                        axios.post('/facturacion/liquidaciones-glp/get-guide-number', {
+                            params: {
+                                serie_number: this.sale.referral_guide_series,
+                                guide_number: this.sale.referral_guide_number,
+                            }
+                        }).then(response => {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', false);
+                            $('#referral_guide_number-error').text('');
+                            $('#referral_guide_number-error').hide();
+                        }).catch(error => {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                            $('#referral_guide_number-error').show();
+                        });
+                    }
                 }
             },
             manageScopNumber() {
@@ -973,22 +1003,38 @@
                     $('#scop_number-error').hide();
                     $('#scop_number-error').text('');
 
-                    axios.post('/facturacion/liquidaciones-glp/get-scop-number', {
-                        params: {
-                            scop_number: this.sale.scop_number,
-                        }
-                    }).then(response => {
-                        console.log('bien');
-                        EventBus.$emit('loading', false);
-                        $('#liquidar').prop('disabled', false);
-                        $('#scop_number-error').text('');
-                        $('#scop_number-error').hide();
-                    }).catch(error => {
-                        EventBus.$emit('loading', false);
-                        $('#liquidar').prop('disabled', true);
-                        $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
-                        $('#scop_number-error').show();
-                    });
+                    let find = false;
+
+                    if (this.$store.state.scops.length) {
+                        const exists = this.$store.state.scops.find(item => item == this.sale.scop_number);
+
+                        if (exists) {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                            $('#scop_number-error').show();
+                            find = true;
+                        };
+                    };
+
+                    if (!find) {
+                        axios.post('/facturacion/liquidaciones-glp/get-scop-number', {
+                            params: {
+                                scop_number: this.sale.scop_number,
+                            }
+                        }).then(response => {
+                            console.log('bien');
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', false);
+                            $('#scop_number-error').text('');
+                            $('#scop_number-error').hide();
+                        }).catch(error => {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                            $('#scop_number-error').show();
+                        });
+                    }
                 }
             },
         }
