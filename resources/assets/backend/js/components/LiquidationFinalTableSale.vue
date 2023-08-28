@@ -149,6 +149,38 @@
                             width: 120,
                             textAlign: 'left',
                         },
+						{
+                            field: 'sale_serie_num',
+                            title: 'Serie de Usuario',
+                            width: 120,
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'referral_serie_number',
+                            title: 'Correlativo',
+                            width: 120,
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'scop_number',
+                            title: 'SCOP',
+                            width: 0,
+                            overflow: 'hidden',
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'referral_guide_series',
+                            title: 'Número de serie',
+                            width: 0,
+                            overflow: 'hidden',
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'referral_guide_number',
+                            title: 'Número de guia',
+                            width: 120,
+                            textAlign: 'left',
+                        },
                         {
                             field: 'total',
                             title: 'Valor Venta',
@@ -211,7 +243,24 @@
             manageActions: function(event) {
                 if ( $(event.target).hasClass('delete') ) {
                     event.preventDefault();
+
                     let client_id = $(event.target).parents('tr').find('td[data-field="client_id"] span').html();
+                    let sale_serie_num = $(event.target).parents('tr').find('td[data-field="sale_serie_num"] span').html();
+                    let referral_guide_series = $(event.target).parents('tr').find('td[data-field="referral_guide_series"] span').html();
+                    let referral_guide_number = $(event.target).parents('tr').find('td[data-field="referral_guide_number"] span').html();
+                    let scop = $(event.target).parents('tr').find('td[data-field="scop_number"] span').html();
+
+                    const sale_serie_index = this.$store.state.sale_series.findIndex(item => item.num_serie == sale_serie_num);
+
+                    this.$store.state.sale_series[sale_serie_index].correlative -= 1;
+
+                    const guide_numbers = this.$store.state.guide_numbers.filter(item => (item.serie_number != referral_guide_series && item.guide_number != referral_guide_number));
+
+                    this.$store.state.guide_numbers = guide_numbers;
+
+                    const scops = this.$store.state.scops.filter(item => item != scop);
+
+                    this.$store.state.scops = scops;
 
                     Swal.fire({
                         title: '¡Cuidado!',

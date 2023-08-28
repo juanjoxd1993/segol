@@ -67,7 +67,7 @@
                                 <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id == 5 || this.sale.warehouse_document_type_id == 7 || this.sale.warehouse_document_type_id == 9 || this.sale.warehouse_document_type_id == 17">
                                     <div class="form-group">
                                         <label class="form-control-label">Número de Guía:</label>
-                                        <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)">
+                                        <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageNumberGuide">
                                         <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -245,7 +245,8 @@
                     payment_id: '',
 					currency_id: 1,
                     credit_limit: '',
-                    sale_serie_id: ''
+                    sale_serie_id: '',
+                    sale_serie_num: '',
                 },
                 filterArticles: [],
                 edit_flag: false,
@@ -282,6 +283,8 @@
                 this.sale.payment_id = '';
                 this.sale.currency_id = 1;
                 this.sale.credit_limit = '';
+                this.sale.sale_serie_id = '';
+                this.sale.sale_serie_num = ''
 
 				this.model = {
                     article_id: '',
@@ -337,6 +340,8 @@
 			},
 			'sale.sale_serie_id': function(val) {
 				let sale_serie = this.sale_series.find(element => element.id == val);
+
+                this.sale.sale_serie_num = sale_serie.num_serie;
 
                 this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : 0;
 			},
@@ -608,6 +613,11 @@
                 } else {
 					EventBus.$emit('loading', true);
 
+                    this.$store.commit('addGuideNumber', {
+                        serie_number: this.sale.referral_guide_series,
+                        guide_number: this.sale.referral_guide_number,
+                    })
+
 					axios.post(this.url_verify_document_type, {
 						'model': this.$store.state.model,
 						'warehouse_document_type_id': this.sale.warehouse_document_type_id,
@@ -809,6 +819,56 @@
 
 				$('#modal-sale').modal('hide');
 			},
+            manageNumberGuide() {
+                if (
+                    this.sale.warehouse_document_type_id == 5 ||
+                    this.sale.warehouse_document_type_id == 7 ||
+                    this.sale.warehouse_document_type_id == 9 ||
+                    this.sale.warehouse_document_type_id == 17
+                ) {
+                    EventBus.$emit('loading', true);
+                    $('#liquidar').prop('disabled', true);
+                    $('#referral_guide_number-error').hide();
+                    $('#referral_guide_number-error').text('');
+
+                    let find = false;
+
+                    if (this.$store.state.guide_numbers.length) {
+                        this.$store.state.guide_numbers.map(item => {
+                            if (
+                                item.serie_number == this.sale.referral_guide_series &&
+                                item.guide_number == this.sale.referral_guide_number
+                            ) {
+                                EventBus.$emit('loading', false);
+                                $('#liquidar').prop('disabled', true);
+                                $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                                $('#referral_guide_number-error').show();
+
+                                find = true;
+                            };
+                        });
+                    };
+
+                    if (!find) {
+                        axios.post('/facturacion/liquidaciones-glp/get-guide-number', {
+                            params: {
+                                serie_number: this.sale.referral_guide_series,
+                                guide_number: this.sale.referral_guide_number,
+                            }
+                        }).then(response => {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', false);
+                            $('#referral_guide_number-error').text('');
+                            $('#referral_guide_number-error').hide();
+                        }).catch(error => {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                            $('#referral_guide_number-error').show();
+                        });
+                    }
+                }
+            },
         }
     };
 </script>
