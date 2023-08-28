@@ -324,50 +324,50 @@ class FinanzasDetailTotalReportController extends Controller
 			$sheet->setCellValue('G11', $total_liquidado );
 
 			// Diferencia
-			$sheet->setCellValue('F13', 'DIFERENCIA');
-			$sheet->setCellValue('G13', $diference );
+			$sheet->setCellValue('F14', 'DIFERENCIA');
+			$sheet->setCellValue('G14', $diference );
 
 			// Cobranzas de creditos
-			$sheet->setCellValue('F14', 'Cobranzas de Creditos');
+			$sheet->setCellValue('F15', 'Cobranzas de Creditos');
 
-			$sheet->getStyle('F14')->applyFromArray([
+			$sheet->getStyle('F15')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
 			]);
 
 			// Cobranza en efectivo
-			$sheet->setCellValue('F15', 'COBRANZA EN EFECTIVO');
-			$sheet->setCellValue('G15', $cobranza_efective );
+			$sheet->setCellValue('F16', 'COBRANZA EN EFECTIVO');
+			$sheet->setCellValue('G16', $cobranza_efective );
 
 			// Cobranza en deposito
-			$sheet->setCellValue('F16', 'COBRANZA EN DEPOSITO');
-			$sheet->setCellValue('G16', $cobranza_deposit );
+			$sheet->setCellValue('F17', 'COBRANZA EN DEPOSITO');
+			$sheet->setCellValue('G17', $cobranza_deposit );
 
 			// Total cobranza
-			$sheet->setCellValue('F17', 'TOTAL COBRANZA');
-			$sheet->setCellValue('G17', $total_cobranza );
+			$sheet->setCellValue('F18', 'TOTAL COBRANZA');
+			$sheet->setCellValue('G18', $total_cobranza );
 
 			// Otros ingresos de caja
-			$sheet->setCellValue('F18', 'RESUMEN COBRANZA');
+			$sheet->setCellValue('F20', 'RESUMEN COBRANZA');
 
-			$sheet->getStyle('F18')->applyFromArray([
+			$sheet->getStyle('F20')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
 			]);
 
 			// Cesion de Uso en Efectivo
-			$sheet->setCellValue('F19', 'TOTAL EFECTIVO');
-			$sheet->setCellValue('G19', $cesion_uso_efective );
+			$sheet->setCellValue('F21', 'TOTAL EFECTIVO');
+			$sheet->setCellValue('G21', $cesion_uso_efective );
 
 			// Cesion de Uso en Deposito
-			$sheet->setCellValue('F20', 'TOTAL DEPOSITO');
-			$sheet->setCellValue('G20', $cesion_uso_deposit );
+			$sheet->setCellValue('F22', 'TOTAL DEPOSITO');
+			$sheet->setCellValue('G22', $cesion_uso_deposit );
 
 			// Otros ingresos efectivo
-			$sheet->setCellValue('F21', 'TOTAL COBRANZA');
-			$sheet->setCellValue('G21', $otros_efective );
+			$sheet->setCellValue('F23', 'TOTAL COBRANZA');
+			$sheet->setCellValue('G23', $otros_efective );
 
 			
 		//	$sheet->getStyle('G'.$row_number)->getNumberFormat()->setFormatCode('0.00');
