@@ -92,7 +92,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 
 
-										$remesa = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+			$remesa = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 		                                ->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
 										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 										->whereIn('sales.cede', $warehouse_types)
@@ -202,7 +202,10 @@ class FinanzasDetailTotalReportController extends Controller
 											->select('sales.total_perception')
 											->sum('sales.total_perception');
 
-		$total_efective_day = $total_recaudado - $egresos_caja;
+		$total_efective_day = $efective + $remesa + $cobranza_efective;
+		$total_deposit_day = $deposit + $cobranza_deposit;
+
+		$total_cobranza_final=$total_efective_day+$total_deposit_day;
 
 		$remesa_hermes = 0;
 
@@ -250,45 +253,19 @@ class FinanzasDetailTotalReportController extends Controller
 				'company_short_name' => 'Total Cobranza',
 				'total' => $total_cobranza
 			],
-			[
-				'company_short_name' => 'Cesión de Uso en Efectivo',
-				'total' => $cesion_uso_efective
-			],
-			[
-				'company_short_name' => 'Cesión de Uso en Deposito',
-				'total' => $cesion_uso_deposit
-			],
-			[
-				'company_short_name' => 'Otros Ingresos en Efectivo',
-				'total' => $otros_efective
-			],
-			[
-				'company_short_name' => 'Otros Ingresos en Deposito',
-				'total' => $otros_deposit
-			],
-			[
-				'company_short_name' => 'Total Otros Ingresos',
-				'total' => $total_otros_ingresos
-			],
-			[
-				'company_short_name' => 'Total Recaudado del Día',
-				'total' => $total_recaudado
-			],
-			[
-				'company_short_name' => 'Egresos de Caja',
-				'total' => $egresos_caja
-			],
+			
+			
 			[
 				'company_short_name' => 'Total Efectivo del Día',
 				'total' => $total_efective_day
 			],
 			[
-				'company_short_name' => 'Remesa Hermes',
-				'total' => $remesa_hermes
+				'company_short_name' => 'Total Deposito del Día',
+				'total' => $total_deposit_day
 			],
 			[
-				'company_short_name' => 'Cuadre',
-				'total' => $cuadre
+				'company_short_name' => 'Total Cobranza',
+				'total' => $total_cobranza_final
 			],
 		];
 
@@ -307,31 +284,7 @@ class FinanzasDetailTotalReportController extends Controller
 				]
 			]);
 
-			// $sheet->setCellValue('A3', '#');
-            // $sheet->setCellValue('B3', 'Caja');		
-            // $sheet->setCellValue('C3', 'Fecha de Liquidación');
-			// $sheet->setCellValue('D3', 'Total');
-
-			// $sheet->getStyle('A3:M3')->applyFromArray([
-			// 	'font' => [
-			// 		'bold' => true,
-			// 	],
-			// ]);
-
-			// $row_number = 4;
-			// foreach ($response as $index => $element) {
-			// 	$index++;
-			// 	$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
-			// 	$sheet->setCellValue('B'.$row_number, $element->company_short_name);
-			// 	$sheet->setCellValue('C'.$row_number, $initial_date );
-			// 	$sheet->setCellValue('D'.$row_number, $element->total);
-
-            //     $sheet->getStyle('D'.$row_number)->getNumberFormat()->setFormatCode('0.00');
-
-			// 	$row_number++;
-			// }
-			// $sheet->setCellValueExplicit('A4', 1, DataType::TYPE_NUMERIC);
-			// Total venta del dia
+			
 			$sheet->setCellValue('F3', 'TOTAL VENTA DEL DIA');
 			$sheet->setCellValue('G3', $total_venta_del_dia );
 
@@ -396,7 +349,7 @@ class FinanzasDetailTotalReportController extends Controller
 			$sheet->setCellValue('G17', $total_cobranza );
 
 			// Otros ingresos de caja
-			$sheet->setCellValue('F18', 'Otros Ingresos de Caja');
+			$sheet->setCellValue('F18', 'RESUMEN COBRANZA');
 
 			$sheet->getStyle('F18')->applyFromArray([
 				'font' => [
@@ -405,52 +358,23 @@ class FinanzasDetailTotalReportController extends Controller
 			]);
 
 			// Cesion de Uso en Efectivo
-			$sheet->setCellValue('F19', 'CESION DE USO EN EFECTIVO');
+			$sheet->setCellValue('F19', 'TOTAL EFECTIVO');
 			$sheet->setCellValue('G19', $cesion_uso_efective );
 
 			// Cesion de Uso en Deposito
-			$sheet->setCellValue('F20', 'CESION DE USO EN DEPOSITO');
+			$sheet->setCellValue('F20', 'TOTAL DEPOSITO');
 			$sheet->setCellValue('G20', $cesion_uso_deposit );
 
 			// Otros ingresos efectivo
-			$sheet->setCellValue('F21', 'OTROS INGRESOS EN EFECTIVO');
+			$sheet->setCellValue('F21', 'TOTAL COBRANZA');
 			$sheet->setCellValue('G21', $otros_efective );
 
-			// Otros ingresos deposito
-			$sheet->setCellValue('F22', 'OTROS INGRESOS EN DEPOSITO');
-			$sheet->setCellValue('G22', $otros_deposit );
-
-			// Total otros ingresos
-			$sheet->setCellValue('F23', 'TOTAL OTROS INGRESOS');
-			$sheet->setCellValue('G23', $total_otros_ingresos );
-
-			// Total recaudado del dia
-			$sheet->setCellValue('F25', 'TOTAL RECAUDADO');
-			$sheet->setCellValue('G25', $total_recaudado );
-
-			// Egresos de caja
-			$sheet->setCellValue('F27', 'EGRESOS DE CAJA');
-			$sheet->setCellValue('G27', $egresos_caja );
-
-			// Total efectivo del dìa
-			$sheet->setCellValue('F29', 'TOTAL EFECTIVO DEL DIA');
-			$sheet->setCellValue('G29', $total_efective_day );
-
-		/*	// Remesa Hermes
-			$sheet->setCellValue('F30', 'REMESA HERMES');
-			$sheet->setCellValue('G30', $remesa_hermes );
-
-			// Cuadre
-			$sheet->setCellValue('F32', 'CUADRE');
-			$sheet->setCellValue('G32', $cuadre );*/
-
-			// $sheet->getStyle('D'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+			
+			$sheet->getStyle('G'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 
 			$sheet->getColumnDimension('F')->setAutoSize(true);
 			$sheet->getColumnDimension('G')->setAutoSize(true);
-			// $sheet->getColumnDimension('C')->setAutoSize(true);
-			// $sheet->getColumnDimension('D')->setAutoSize(true);
-            // $sheet->getColumnDimension('E')->setAutoSize(true);
+			
 
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');
