@@ -246,7 +246,8 @@
 					currency_id: 1,
                     credit_limit: '',
                     sale_serie_id: '',
-                    sale_serie_num: '',
+                    serie_num: '',
+                    correlative: ''
                 },
                 filterArticles: [],
                 edit_flag: false,
@@ -284,7 +285,8 @@
                 this.sale.currency_id = 1;
                 this.sale.credit_limit = '';
                 this.sale.sale_serie_id = '';
-                this.sale.sale_serie_num = ''
+                this.sale.serie_num = '';
+                this.sale.correlative = '';
 
 				this.model = {
                     article_id: '',
@@ -341,9 +343,9 @@
 			'sale.sale_serie_id': function(val) {
 				let sale_serie = this.sale_series.find(element => element.id == val);
 
-                this.sale.sale_serie_num = sale_serie.num_serie;
-
                 this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : 0;
+                this.sale.serie_num = sale_serie.num_serie;
+                this.sale.correlative = sale_serie.correlative;
 			},
             'sale.client_id': function(val) {
                 const client_id = val;

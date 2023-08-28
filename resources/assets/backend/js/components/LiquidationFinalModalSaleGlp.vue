@@ -264,7 +264,9 @@
                     scop_number: '',
                     sale_serie_id: '',
                     sale_serie_num: '',
-                    sale_date: null
+                    sale_date: null,
+                    serie_num: '',
+                    correlative: ''
                 },
                 filterArticles: [],
                 edit_flag: false,
@@ -310,6 +312,8 @@
                 this.sale.currency_id = 1;
                 this.sale.credit_limit = '';
                 this.sale.credit_limit_days = '';
+                this.sale.serie_num = '';
+                this.sale.correlative = '';
 
 				this.model = {
                     article_id: '',
@@ -352,18 +356,6 @@
             });
         },
         watch: {
-            // 'sale.warehouse_document_type_id': function(val) {
-			// 	if ( val != 4 && val != 5 ) {
-			// 		console.log(val);
-			// 		this.sale.perception = 0;
-			// 		this.sale.perception_percentage = 0;
-			// 		this.sale.total_perception = this.sale.total;
-			// 		this.sale.details.map(element => {
-			// 			element.igv_perception = '0.0000';
-			// 			element.total_perception = element.sale_value;
-			// 		});
-			// 	}
-			// },
 			'sale.warehouse_document_type_id': function(val) {
 
                 const data_filter = this.$store.state.sale_series.filter(item => item.warehouse_document_type_id === val)[0];
@@ -371,20 +363,16 @@
                 this.sale.sale_serie_id = data_filter.id;
                 this.sale.referral_serie_number = data_filter.num_serie;
                 this.sale.referral_voucher_number = data_filter.correlative;
+                this.sale.serie_num = data_filter.num_serie;
+                this.sale.correlative = data_filter.correlative;
 
                 let warehouse_document_type = this.warehouse_document_types.find(element => element.id == val);
 
                 this.sale.warehouse_document_type_name = warehouse_document_type ? warehouse_document_type.name : '';
 			},
-			'sale.sale_serie_id': function(val) {
-				let sale_serie = this.sale_series.find(element => element.id == val);
-
-                this.sale.sale_serie_num = sale_serie.num_serie;
-			},
-			// 'sale.sale_serie_id': function(val) {
-			// 	let sale_serie = this.sale_series.find(element => element.id == val);
-			// 	this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : '';
-			// }
+            'sale.sale_serie_num': function(val) {
+                console.log(val)
+            }
         },
         computed: {
             setDetails() {

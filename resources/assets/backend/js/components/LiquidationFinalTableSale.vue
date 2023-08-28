@@ -150,13 +150,20 @@
                             textAlign: 'left',
                         },
 						{
-                            field: 'sale_serie_num',
+                            field: 'sale_serie_id',
+                            title: 'Sale Serie Id',
+                            width: 0,
+                            overflow: 'hidden',
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'serie_num',
                             title: 'Serie de Usuario',
                             width: 120,
                             textAlign: 'left',
                         },
 						{
-                            field: 'referral_serie_number',
+                            field: 'correlative',
                             title: 'Correlativo',
                             width: 120,
                             textAlign: 'left',
@@ -245,12 +252,12 @@
                     event.preventDefault();
 
                     let client_id = $(event.target).parents('tr').find('td[data-field="client_id"] span').html();
-                    let sale_serie_num = $(event.target).parents('tr').find('td[data-field="sale_serie_num"] span').html();
+                    let sale_serie_id = $(event.target).parents('tr').find('td[data-field="sale_serie_id"] span').html();
                     let referral_guide_series = $(event.target).parents('tr').find('td[data-field="referral_guide_series"] span').html();
                     let referral_guide_number = $(event.target).parents('tr').find('td[data-field="referral_guide_number"] span').html();
                     let scop = $(event.target).parents('tr').find('td[data-field="scop_number"] span').html();
 
-                    const sale_serie_index = this.$store.state.sale_series.findIndex(item => item.num_serie == sale_serie_num);
+                    const sale_serie_index = this.$store.state.sale_series.findIndex(item => item.id == sale_serie_id);
 
                     this.$store.state.sale_series[sale_serie_index].correlative -= 1;
 
