@@ -307,15 +307,15 @@ class FinanzasDetailTotalReportController extends Controller
 
 			// Cesion de Uso en Efectivo
 			$sheet->setCellValue('F21', 'TOTAL EFECTIVO');
-			$sheet->setCellValue('G21', $cesion_uso_efective );
+			$sheet->setCellValue('G21', $total_efective_day );
 
 			// Cesion de Uso en Deposito
 			$sheet->setCellValue('F22', 'TOTAL DEPOSITO');
-			$sheet->setCellValue('G22', $cesion_uso_deposit );
+			$sheet->setCellValue('G22', $total_deposit_day );
 
 			// Otros ingresos efectivo
 			$sheet->setCellValue('F23', 'TOTAL COBRANZA');
-			$sheet->setCellValue('G23', $otros_efective );
+			$sheet->setCellValue('G23', $total_cobranza_final );
 
 			
 		//	$sheet->getStyle('G'.$row_number)->getNumberFormat()->setFormatCode('0.00');
