@@ -370,7 +370,7 @@ class FinanzasDetailTotalReportController extends Controller
 			$sheet->setCellValue('G21', $otros_efective );
 
 			
-			$sheet->getStyle('G'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+		//	$sheet->getStyle('G'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 
 			$sheet->getColumnDimension('F')->setAutoSize(true);
 			$sheet->getColumnDimension('G')->setAutoSize(true);
