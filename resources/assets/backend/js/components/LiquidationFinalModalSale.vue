@@ -371,7 +371,10 @@
 
                     if (sales.length) {
                         sales.map(sale => {
-                            const { details } = sale;
+                            const {
+                                client_id,
+                                details
+                            } = sale;
 
                             details.map(detail => {
                                 const {
@@ -385,14 +388,21 @@
                                     const {id} = dat;
                                     const quantityDat = dat.quantity;
 
-                                    if (article_id === id) {
+                                    let add = true;
+
+                                    if (article_id == id && client_id == val) {
+                                        add = false;
                                         const rest = quantityDat - parseQuantity;
 
                                         if (rest > 0) {
+                                            add = true;
                                             dat.quantity = rest;
-                                            dataParse.push(dat);
                                         };
-                                    }
+                                    };
+
+                                    if (add) {
+                                        dataParse.push(dat);
+                                    };
                                 })
                             })
                         });
