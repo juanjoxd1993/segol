@@ -496,7 +496,7 @@ class LiquidationFinalController extends Controller
 
 		foreach ($sales as $sale) {
 			$total_sale_amount = $sale['total'];
-			$sales_models = [];
+			$first_sale = null;
 			$warehouse_document_type_id = $sale['warehouse_document_type_id'];
 			$client = Client::find($sale['client_id'], ['id', 'code', 'business_name','bol_name','bol_number', 'link_client_id', 'payment_id', 'credit_limit_days','credit_limit', 'credit_balance','route_id', 'perception_percentage_id','document_type_id']);
 			$rates = Rate::find($client->perception_percentage_id,['id','value']);
@@ -516,25 +516,35 @@ class LiquidationFinalController extends Controller
 			if ($warehouse_document_type_id == 7) {
 				foreach ($sale['details'] as $detail) {
 					$quantity = $detail['quantity'];
-					$quantity_div = floor($quantity / 2);
+
 					$rest = $quantity % 2;
 
-				//	$total = $sale['total'];
+					$unit_price = $detail['total_perception'] / $quantity;
+
+					echo 'quantity: ' . $quantity;
+					echo 'rest: ' . $rest;
+					echo 'unit_price: ' . $unit_price;
+				}
+				// foreach ($sale['details'] as $detail) {
+				// 	$quantity = $detail['quantity'];
+				// 	$quantity_div = floor($quantity / 2);
+				// 	$rest = $quantity % 2;
+
+				// 	// $total = $sale['total'];
+
+				// 	$precio= round($detail['price_igv'], 4);
 					
-					$precio= round($detail['price_igv'], 4);
-					
-					$total_base = ($rest*$precio);
-					$rest_total = $total_base/1.18;
-					$total_div= ($precio*2);
-					$rest_div=($total_div/1.18);
+				// 	$total_base = ($rest*$precio);
+				// 	$rest_total = $total_base/1.18;
+				// 	$total_div= ($precio*2);
+				// 	$rest_div=($total_div/1.18);
 
+				// 	// $sale_value = $total_div;
+				// 	// $rest_sale_value = $sale_value % $quantity;
+				// 	// $sale_value_div = $total_div/1.18;
+				// };
 
-				//	$sale_value = $total_div;
-				//	$rest_sale_value = $sale_value % $quantity;
-				//	$sale_value_div = $total_div/1.18;
-				};
-
-				if ($rest) {
+				for ($i=1; $i <= ($quantity / 2); $i++) { 
 					$sale_model = new Sale();
 					$sale_model->company_id = $model['company_id'];
 					$sale_model->sale_date = $sale_date;
@@ -552,243 +562,7 @@ class LiquidationFinalController extends Controller
 					$sale_model->cede = $warehouse_type_id;
 
 					if ( $sale['warehouse_document_type_id'] >= 4 && $sale['warehouse_document_type_id'] <= 9 ) {
-						switch ($sale['warehouse_document_type_id']) {
-							case 4:
-								$voucher_type_id = 5;
-								break;
-							case 5:
-								$voucher_type_id = 1;
-								break;
-							case 6:
-								$voucher_type_id = 6;
-								break;
-							case 7:
-								$voucher_type_id = 2;
-								break;
-							case 8:
-								$voucher_type_id = 7;
-								break;
-							case 9:
-								$voucher_type_id = 3;
-								break;
-						}
-		
-						$voucher_type = VoucherType::find($voucher_type_id, ['id', 'serie_type']);
-						$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
-						$last_voucher_number = Voucher::where('company_id', $model['company_id'])
-																					->where('voucher_type_id', $voucher_type->id)
-																					->where('serie_number', $serie_number)
-																					->max('voucher_number');
-		
-						$voucher = new Voucher();
-						$voucher->company_id = $model['company_id'];
-						$voucher->client_id = $client->id;
-						$voucher->original_client_id = $client->id;
-						$voucher->client_name = $client->bol_name;
-						$voucher->client_address = 'S/N';
-						$voucher->voucher_type_id = $voucher_type->id;
-						$voucher->serie_number = $serie_number;
-						$voucher->voucher_number = ++$last_voucher_number;
-						$voucher->referral_guide_series = ( $sale['referral_guide_series'] ? $sale['referral_guide_series'] : $warehouse_movement->referral_guide_series );
-						$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
-						$voucher->issue_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
-						$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->traslate_date));
-						$voucher->expiry_date = $expiry_date;
-						$voucher->currency_id = $sale['currency_id'];
-						$voucher->payment_id = $sale['payment_id'];
-						// $voucher->payment_id = $client->payment_id;
-						$voucher->total = $total_base;
-						$voucher->igv_perception = $sale['perception'];
-						$voucher->total_perception = $total_base;
-						$voucher->igv_percentage = $rate->value;
-						// $voucher->igv_perception_percentage = $sale['perception_percentage'] / 100;
-						$voucher->igv_perception_percentage = $rate->value / 100;
-						if ( $voucher_type->id >= 1 && $voucher_type->id <= 4 ) {
-							$voucher->ose = 0;
-						} else {
-							$voucher->ose = 1;
-						}
-						$voucher->user = Auth::user()->user;
-						$voucher->save();
-		
-						$taxed_operation = 0;
-						$igv = 0;
-						foreach ($sale['details'] as $detail) {
-							$article = Article::find($detail['article_id'], ['id','name', 'sale_unit_id']);
-		
-							$voucher_detail = new VoucherDetail();
-							$voucher_detail->voucher_id = $voucher->id;
-							$voucher_detail->unit_id = $article->sale_unit_id;
-							$voucher_detail->name = $article->name;
-							$voucher_detail->quantity = $rest;
-							$voucher_detail->original_price = round($detail['price_igv'], 4);
-							$voucher_detail->unit_price = round($detail['price_igv'] / $igv_percentage, 4);
-							$voucher_detail->sale_value = round($detail['price_igv'], 4);
-							$voucher_detail->exonerated_value = 0;
-							$voucher_detail->inaccurate_value = 0;
-							$voucher_detail->igv = round($total_base, 4) - round($rest_total, 4);
-							$voucher_detail->total = round($total_base, 4);
-							$voucher_detail->user = Auth::user()->user;
-							$voucher_detail->article_id = $article->id;
-							$voucher_detail->save();
-		
-							if ( $detail['igv'] == 1 ) {
-								$taxed_operation += round($rest_total, 4);
-								$igv += round($total_base, 4) - round($rest_total, 4);
-							} else {
-								$taxed_operation += round($rest_total, 4);
-							}
-						}
-		
-						$voucher->taxed_operation = round($taxed_operation, 4);
-						$voucher->unaffected_operation = 0;
-						$voucher->exonerated_operation = 0;
-						$voucher->igv = round($igv, 4);
-						$voucher->save();
-		
-						$sale_model->referral_serie_number = $sale['referral_serie_number'];
-						$sale_model->referral_voucher_number = $voucher->voucher_number;
-					} else {
-						$referral_serie_number = CarbonImmutable::now()->format('Ym');
-						$last_voucher_number = Sale::where('company_id', $model['company_id'])
-																			->where('warehouse_document_type_id', $sale['warehouse_document_type_id'])
-																			->where('referral_serie_number', $referral_serie_number)
-																			->max('referral_voucher_number');
-		
-						if ( $sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 6 || $sale['warehouse_document_type_id'] == 8 ) {
-							$sale_model->referral_serie_number = $sale['referral_serie_number'];
-							$sale_model->referral_voucher_number = $sale['referral_voucher_number'];
-						} else {
-							$int_last_voucher_number = (int)$last_voucher_number;
-							$sale_model->referral_serie_number = $referral_serie_number;
-							$sale_model->referral_voucher_number = $last_voucher_number != '' ? ++$int_last_voucher_number : 1 ;
-						}
-		
-					}
-
-					$sale_model->scop_number = $warehouse_movement->scop_number;
-					$sale_model->license_plate = $warehouse_movement->license_plate;
-
-					$sale_value = 0;
-					$igv = 0;
-					foreach ($sale['details'] as $detail) {
-						if ( $detail['igv'] == 1 ) {
-							$sale_value += round($rest_total, 4);
-							$igv += round($total_base, 4) - round($rest_total, 4);
-						} else {
-							$sale_value += round($rest_total, 4);
-						}
-					}
-
-					$total = $total_base;
-					$total_perception = $total_base;
-
-					if ( $sale['warehouse_document_type_id'] == 8 || $sale['warehouse_document_type_id'] == 9 || $sale['warehouse_document_type_id'] == 20 || $sale['warehouse_document_type_id'] == 22 ) {
-						$sale_value = abs($sale_value);
-						$igv = abs($igv);
-						$total = abs($total_base);
-						$total_perception = abs($sale['total_perception']);
-					}
-
-					$balance = 0;
-					$pre_balance = 0;
-					$paid = $total_perception;
-
-					if ( $client->payment_id == 2 ) {
-						$balance = $total_perception;
-						$pre_balance = $total_perception;
-						$paid = 0;
-					}
-
-					$sale_model->sale_value = $sale_value;
-					$sale_model->exonerated_value = 0;
-					$sale_model->inaccurate_value = 0;
-					$sale_model->igv = $igv;
-					$sale_model->total = $total;
-					$sale_model->total_perception = $total_perception;
-					$sale_model->balance = $balance;
-					$sale_model->pre_balance = $pre_balance;
-					$sale_model->paid = $paid;
-					$sale_model->created_at_user = Auth::user()->user;
-					$sale_model->updated_at_user = Auth::user()->user;
-					$sale_model->pend = 0;
-					$sale_model->save();
-					$sales_models[] = $sale_model;
-
-					$client->credit_balance += $total_perception;
-					$client->save();
-
-					foreach ($sale['details'] as $index => $detail) {
-						$article = Article::find($detail['article_id'], ['convertion']);
-
-						$sale_detail = new SaleDetail();
-						$sale_detail->sale_id = $sale_model->id;
-						$sale_detail->item_number = ++$index;
-						$sale_detail->article_id = $detail['article_id'];
-						$sale_detail->quantity = 1;
-						$sale_detail->price_igv = round($detail['price_igv'], 4);
-						$sale_detail->sale_value = round($rest_total, 4);
-						$sale_detail->inaccurate_value = 0;
-						$sale_detail->exonerated_value = 0;
-						$sale_detail->igv = round($total_base, 4) - round($rest_total, 4);
-						$sale_detail->total = round($total_base, 4);
-						$sale_detail->total_perception =  round($total_base, 4);
-						$sale_detail->igv_percentage = $rate->value;
-						// $sale_detail->igv_perception_percentage = $sale['perception_percentage'];
-						$sale_detail->igv_perception_percentage = $rate->value;
-						$sale_detail->referential_convertion = $article->convertion;
-						$sale_detail->kg = $rest * $sale_detail['referential_convertion'];
-						$sale_detail->created_at_user = Auth::user()->user;
-						$sale_detail->updated_at_user = Auth::user()->user;
-						$sale_detail->save();
-					}
-
-					SaleSeries::where('id', $sale['sale_serie_id'])
-										->update(
-											['correlative' => $sale['referral_serie_number']]
-										);
-				};
-
-				for ($i=1; $i <= $quantity_div; $i++) { 
-					$sale_model = new Sale();
-					$sale_model->company_id = $model['company_id'];
-					$sale_model->sale_date = $sale_date;
-					$sale_model->expiry_date = $expiry_date;
-					$sale_model->warehouse_movement_id = $warehouse_movement->id;
-					$sale_model->client_id = $client->id;
-					$sale_model->client_code = $client->code;
-					$sale_model->route_id = $client->route_id;
-					$sale_model->payment_id =  $sale['payment_id'];
-					// $sale_model->payment_id =  $client->payment_id;
-					$sale_model->currency_id = $sale['currency_id'];
-					$sale_model->guide_series = $warehouse_movement->referral_guide_series;
-					$sale_model->guide_number = $warehouse_movement->referral_guide_number;
-					$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
-					$sale_model->cede = $warehouse_type_id;
-
-					if ( $sale['warehouse_document_type_id'] >= 4 && $sale['warehouse_document_type_id'] <= 9 ) {
-						switch ($sale['warehouse_document_type_id']) {
-							case 4:
-								$voucher_type_id = 5;
-								break;
-							case 5:
-								$voucher_type_id = 1;
-								break;
-							case 6:
-								$voucher_type_id = 6;
-								break;
-							case 7:
-								$voucher_type_id = 2;
-								break;
-
-							case 8:
-								$voucher_type_id = 7;
-									break;
-							
-							case 9:
-								$voucher_type_id = 3;
-								break;
-						}
+						$voucher_type_id = 2;
 
 						$voucher_type = VoucherType::find($voucher_type_id, ['id', 'serie_type']);
 						$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
@@ -814,17 +588,13 @@ class LiquidationFinalController extends Controller
 						$voucher->currency_id = $sale['currency_id'];
 						$voucher->payment_id = $sale['payment_id'];
 						// $voucher->payment_id = $client->payment_id;
-						$voucher->total = $total_div;
+						$voucher->total = $unit_price * 2;
 						$voucher->igv_perception = $sale['perception'];
-						$voucher->total_perception = $sale['total_perception'];
+						$voucher->total_perception = $unit_price * 2;
 						$voucher->igv_percentage = $rate->value;
 						// $voucher->igv_perception_percentage = $sale['perception_percentage'] / 100;
 						$voucher->igv_perception_percentage = $rate->value / 100;
-						if ( $voucher_type->id >= 1 && $voucher_type->id <= 4 ) {
-							$voucher->ose = 0;
-						} else {
-							$voucher->ose = 1;
-						}
+						$voucher->ose = 0;
 						$voucher->user = Auth::user()->user;
 						$voucher->save();
 
@@ -843,17 +613,17 @@ class LiquidationFinalController extends Controller
 							$voucher_detail->sale_value = round($detail['price_igv'], 4);
 							$voucher_detail->exonerated_value = 0;
 							$voucher_detail->inaccurate_value = 0;
-							$voucher_detail->igv = round($total_div, 4) - round($rest_div, 4);
-							$voucher_detail->total = round($total_div, 4);
+							$voucher_detail->igv = round($unit_price * 2, 4) - round($unit_price * 2, 4);
+							$voucher_detail->total = round($unit_price * 2, 4);
 							$voucher_detail->user = Auth::user()->user;
 							$voucher_detail->article_id = $article->id;
 							$voucher_detail->save();
 
 							if ( $detail['igv'] == 1 ) {
-								$taxed_operation += round($rest_div, 4);
-								$igv += round($total_div, 4) - round($rest_div, 4);
+								$taxed_operation += round($unit_price * 2, 4);
+								$igv += round($unit_price * 2, 4) - round($unit_price * 2, 4);
 							} else {
-								$taxed_operation += round($rest_div, 4);
+								$taxed_operation += round($unit_price * 2, 4);
 							}
 						}
 
@@ -865,22 +635,6 @@ class LiquidationFinalController extends Controller
 
 						$sale_model->referral_serie_number = $sale['referral_serie_number'];
 						$sale_model->referral_voucher_number = $voucher->voucher_number;
-					} else {
-						$referral_serie_number = CarbonImmutable::now()->format('Ym');
-						$last_voucher_number = Sale::where('company_id', $model['company_id'])
-																			->where('warehouse_document_type_id', $sale['warehouse_document_type_id'])
-																			->where('referral_serie_number', $referral_serie_number)
-																			->max('referral_voucher_number');
-
-						if ( $sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 6 || $sale['warehouse_document_type_id'] == 8 ) {
-							$sale_model->referral_serie_number = $sale['referral_serie_number'];
-							$sale_model->referral_voucher_number = $sale['referral_voucher_number'];
-						} else {
-							$int_last_voucher_number = (int)$last_voucher_number;
-							$sale_model->referral_serie_number = $referral_serie_number;
-							$sale_model->referral_voucher_number = $last_voucher_number != '' ? ++$int_last_voucher_number : 1 ;
-						}
-
 					}
 
 					$sale_model->scop_number = $warehouse_movement->scop_number;
@@ -890,33 +644,26 @@ class LiquidationFinalController extends Controller
 					$igv = 0;
 					foreach ($sale['details'] as $detail) {
 						if ( $detail['igv'] == 1 ) {
-							$sale_value += round($rest_div, 4);
-							$igv += round($total_div, 4) - round($rest_div, 4);
+							$sale_value += round($unit_price * 2, 4);
+							$igv += round($unit_price * 2, 4) - round($unit_price * 2, 4);
 						} else {
-							$sale_value += round($rest_div, 4);
+							$sale_value += round($unit_price * 2, 4);
 						}
 					}
 
-					$total = $total_div;
-					$total_perception = $total_div;
+					$total = $unit_price * 2;
+					$total_perception = $unit_price * 2;
 
-					if ( $sale['warehouse_document_type_id'] == 8 || $sale['warehouse_document_type_id'] == 9 || $sale['warehouse_document_type_id'] == 20 || $sale['warehouse_document_type_id'] == 22 ) {
-						$sale_value = abs($sale_value);
-						$igv = abs($igv);
-						$total = abs($total_div);
-						$total_perception = abs($sale['total_perception']);
-					}
-		
 					$balance = 0;
 					$pre_balance = 0;
 					$paid = $total_perception;
-		
+
 					if ( $client->payment_id == 2 ) {
 						$balance = $total_perception;
 						$pre_balance = $total_perception;
 						$paid = 0;
 					}
-		
+
 					$sale_model->sale_value = $sale_value;
 					$sale_model->exonerated_value = 0;
 					$sale_model->inaccurate_value = 0;
@@ -930,7 +677,10 @@ class LiquidationFinalController extends Controller
 					$sale_model->updated_at_user = Auth::user()->user;
 					$sale_model->pend = 0;
 					$sale_model->save();
-					$sales_models[] = $sale_model;
+
+					if ($i == 1) {
+						$first_sale = $sale_model;
+					};
 
 					$client->credit_balance += $total_perception;
 					$client->save();
@@ -944,11 +694,11 @@ class LiquidationFinalController extends Controller
 						$sale_detail->article_id = $detail['article_id'];
 						$sale_detail->quantity = 2;
 						$sale_detail->price_igv = round($detail['price_igv'], 4);
-						$sale_detail->sale_value = round($rest_div, 4);
+						$sale_detail->sale_value = round($unit_price * 2, 4);
 						$sale_detail->inaccurate_value = 0;
 						$sale_detail->exonerated_value = 0;
-						$sale_detail->igv = round($total_div, 4) - round($rest_div, 4);
-						$sale_detail->total = round($total_div, 4);
+						$sale_detail->igv = round($unit_price * 2, 4) - round($unit_price * 2, 4);
+						$sale_detail->total = round($unit_price * 2, 4);
 						$sale_detail->total_perception = round($detail['total_perception'], 4);
 						$sale_detail->igv_percentage = $rate->value;
 						// $sale_detail->igv_perception_percentage = $sale['perception_percentage'];
@@ -965,60 +715,39 @@ class LiquidationFinalController extends Controller
 											['correlative' => $sale['referral_serie_number']]
 										);
 				}
-			} 
-			
-			
-		
-			else {
-				$sale_model = new Sale();
-				$sale_model->company_id = $model['company_id'];
-				$sale_model->sale_date = $sale_date;
-				$sale_model->expiry_date = $expiry_date;
-				$sale_model->warehouse_movement_id = $warehouse_movement->id;
-				$sale_model->client_id = $client->id;
-				$sale_model->client_code = $client->code;
-				$sale_model->route_id = $client->route_id;
-				$sale_model->payment_id =  $sale['payment_id'];
-				// $sale_model->payment_id =  $client->payment_id;
-				$sale_model->currency_id = $sale['currency_id'];
-				$sale_model->guide_series = $warehouse_movement->referral_guide_series;
-				$sale_model->guide_number = $warehouse_movement->referral_guide_number;
-				$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
-				$sale_model->cede = $warehouse_type_id;
-	
-				if ( $sale['warehouse_document_type_id'] = 4  || $sale['warehouse_document_type_id'] = 5 ) {
-					switch ($sale['warehouse_document_type_id']) {
-						case 4:
-							$voucher_type_id = 5;
-							break;
-						case 5:
-							$voucher_type_id = 1;
-							break;
-						case 6:
-							$voucher_type_id = 6;
-							break;
-						case 7:
-							$voucher_type_id = 2;
-							break;
-						
-						case 8:
-							$voucher_type_id = 3;
-							break;
-					}
-	
+
+				if ($rest) {
+					$sale_model = new Sale();
+					$sale_model->company_id = $model['company_id'];
+					$sale_model->sale_date = $sale_date;
+					$sale_model->expiry_date = $expiry_date;
+					$sale_model->warehouse_movement_id = $warehouse_movement->id;
+					$sale_model->client_id = $client->id;
+					$sale_model->client_code = $client->code;
+					$sale_model->route_id = $client->route_id;
+					$sale_model->payment_id =  $sale['payment_id'];
+					// $sale_model->payment_id =  $client->payment_id;
+					$sale_model->currency_id = $sale['currency_id'];
+					$sale_model->guide_series = $warehouse_movement->referral_guide_series;
+					$sale_model->guide_number = $warehouse_movement->referral_guide_number;
+					$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
+					$sale_model->cede = $warehouse_type_id;
+
+					$voucher_type_id = 2;
+
 					$voucher_type = VoucherType::find($voucher_type_id, ['id', 'serie_type']);
 					$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
 					$last_voucher_number = Voucher::where('company_id', $model['company_id'])
 																				->where('voucher_type_id', $voucher_type->id)
 																				->where('serie_number', $serie_number)
 																				->max('voucher_number');
-	
+
 					$voucher = new Voucher();
 					$voucher->company_id = $model['company_id'];
 					$voucher->client_id = $client->id;
 					$voucher->original_client_id = $client->id;
-					$voucher->client_name = $client->business_name;
-					$voucher->client_address = $client_address->address;
+					$voucher->client_name = $client->bol_name;
+					$voucher->client_address = 'S/N';
 					$voucher->voucher_type_id = $voucher_type->id;
 					$voucher->serie_number = $serie_number;
 					$voucher->voucher_number = ++$last_voucher_number;
@@ -1030,240 +759,423 @@ class LiquidationFinalController extends Controller
 					$voucher->currency_id = $sale['currency_id'];
 					$voucher->payment_id = $sale['payment_id'];
 					// $voucher->payment_id = $client->payment_id;
-					$voucher->total = $sale['total'];
+					$voucher->total = $unit_price;
 					$voucher->igv_perception = $sale['perception'];
-					$voucher->total_perception = $sale['total_perception'];
+					$voucher->total_perception = $unit_price;
 					$voucher->igv_percentage = $rate->value;
 					// $voucher->igv_perception_percentage = $sale['perception_percentage'] / 100;
 					$voucher->igv_perception_percentage = $rate->value / 100;
-					if ( $voucher_type->id >= 1 && $voucher_type->id <= 4 ) {
-						$voucher->ose = 0;
-					} else {
-						$voucher->ose = 1;
-					}
+					$voucher->ose = 0;
 					$voucher->user = Auth::user()->user;
 					$voucher->save();
-	
+
 					$taxed_operation = 0;
 					$igv = 0;
 					foreach ($sale['details'] as $detail) {
 						$article = Article::find($detail['article_id'], ['id','name', 'sale_unit_id']);
-	
+
 						$voucher_detail = new VoucherDetail();
 						$voucher_detail->voucher_id = $voucher->id;
 						$voucher_detail->unit_id = $article->sale_unit_id;
 						$voucher_detail->name = $article->name;
-						$voucher_detail->quantity = $detail['quantity'];
+						$voucher_detail->quantity = 1;
 						$voucher_detail->original_price = round($detail['price_igv'], 4);
 						$voucher_detail->unit_price = round($detail['price_igv'] / $igv_percentage, 4);
 						$voucher_detail->sale_value = round($detail['price_igv'], 4);
 						$voucher_detail->exonerated_value = 0;
 						$voucher_detail->inaccurate_value = 0;
-						$voucher_detail->igv = round($detail['sale_value'], 4) - round($detail['sale_value'] / $igv_percentage, 4);
-						$voucher_detail->total = round($detail['sale_value'], 4);
+						// $voucher_detail->igv = round($unit_price, 4) - round($rest_total, 4);
+						$voucher_detail->igv = round($unit_price, 4) - round($unit_price, 4);
+						$voucher_detail->total = round($unit_price, 4);
 						$voucher_detail->user = Auth::user()->user;
 						$voucher_detail->article_id = $article->id;
 						$voucher_detail->save();
-	
+
 						if ( $detail['igv'] == 1 ) {
-							$taxed_operation += round($detail['sale_value'] / $igv_percentage, 4);
-							$igv += round($detail['sale_value'], 4) - round($detail['sale_value'] / $igv_percentage, 4);
+							$taxed_operation += round($unit_price, 4);
+							$igv += round($unit_price, 4) - round($unit_price, 4);
 						} else {
-							$taxed_operation += round($detail['sale_value'], 4);
+							$taxed_operation += round($unit_price, 4);
 						}
 					}
-	
+
 					$voucher->taxed_operation = round($taxed_operation, 4);
 					$voucher->unaffected_operation = 0;
 					$voucher->exonerated_operation = 0;
 					$voucher->igv = round($igv, 4);
 					$voucher->save();
-	
+
 					$sale_model->referral_serie_number = $sale['referral_serie_number'];
 					$sale_model->referral_voucher_number = $voucher->voucher_number;
-				} else {
-					$referral_serie_number = CarbonImmutable::now()->format('Ym');
-					$last_voucher_number = Sale::where('company_id', $model['company_id'])
-																		->where('warehouse_document_type_id', $sale['warehouse_document_type_id'])
-																		->where('referral_serie_number', $referral_serie_number)
-																		->max('referral_voucher_number');
-	
-					if ( $sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 6 || $sale['warehouse_document_type_id'] == 8 ) {
-						$sale_model->referral_serie_number = $sale['referral_serie_number'];
-						$sale_model->referral_voucher_number = $sale['referral_voucher_number'];
-					} else {
-						$int_last_voucher_number = (int)$last_voucher_number;
-						$sale_model->referral_serie_number = $referral_serie_number;
-						$sale_model->referral_voucher_number = $last_voucher_number != '' ? ++$int_last_voucher_number : 1 ;
+
+					$sale_model->scop_number = $warehouse_movement->scop_number;
+					$sale_model->license_plate = $warehouse_movement->license_plate;
+
+					$sale_value = 0;
+					$igv = 0;
+					foreach ($sale['details'] as $detail) {
+						if ( $detail['igv'] == 1 ) {
+							$sale_value += round($unit_price, 4);
+							$igv += round($unit_price, 4) - round($unit_price, 4);
+						} else {
+							$sale_value += round($unit_price, 4);
+						}
 					}
-	
+
+					$total = $unit_price;
+					$total_perception = $unit_price;
+
+					$balance = 0;
+					$pre_balance = 0;
+					$paid = $total_perception;
+
+					if ( $client->payment_id == 2 ) {
+						$balance = $total_perception;
+						$pre_balance = $total_perception;
+						$paid = 0;
+					}
+
+					$sale_model->sale_value = $sale_value;
+					$sale_model->exonerated_value = 0;
+					$sale_model->inaccurate_value = 0;
+					$sale_model->igv = $igv;
+					$sale_model->total = $total;
+					$sale_model->total_perception = $total_perception;
+					$sale_model->balance = $balance;
+					$sale_model->pre_balance = $pre_balance;
+					$sale_model->paid = $paid;
+					$sale_model->created_at_user = Auth::user()->user;
+					$sale_model->updated_at_user = Auth::user()->user;
+					$sale_model->pend = 0;
+					$sale_model->save();
+
+					$client->credit_balance += $total_perception;
+					$client->save();
+
+					foreach ($sale['details'] as $index => $detail) {
+						$article = Article::find($detail['article_id'], ['convertion']);
+
+						$sale_detail = new SaleDetail();
+						$sale_detail->sale_id = $sale_model->id;
+						$sale_detail->item_number = ++$index;
+						$sale_detail->article_id = $detail['article_id'];
+						$sale_detail->quantity = 1;
+						$sale_detail->price_igv = round($detail['price_igv'], 4);
+						$sale_detail->sale_value = round($unit_price, 4);
+						$sale_detail->inaccurate_value = 0;
+						$sale_detail->exonerated_value = 0;
+						$sale_detail->igv = round($unit_price, 4) - round($unit_price, 4);
+						$sale_detail->total = round($unit_price, 4);
+						$sale_detail->total_perception =  round($unit_price, 4);
+						$sale_detail->igv_percentage = $rate->value;
+						// $sale_detail->igv_perception_percentage = $sale['perception_percentage'];
+						$sale_detail->igv_perception_percentage = $rate->value;
+						$sale_detail->referential_convertion = $article->convertion;
+						$sale_detail->kg = $rest * $sale_detail['referential_convertion'];
+						$sale_detail->created_at_user = Auth::user()->user;
+						$sale_detail->updated_at_user = Auth::user()->user;
+						$sale_detail->save();
+					}
+
+					SaleSeries::where('id', $sale['sale_serie_id'])
+										->update(
+											['correlative' => $sale['referral_serie_number']]
+										);
+				};
+			};
+
+			$sale_model = new Sale();
+			$sale_model->company_id = $model['company_id'];
+			$sale_model->sale_date = $sale_date;
+			$sale_model->expiry_date = $expiry_date;
+			$sale_model->warehouse_movement_id = $warehouse_movement->id;
+			$sale_model->client_id = $client->id;
+			$sale_model->client_code = $client->code;
+			$sale_model->route_id = $client->route_id;
+			$sale_model->payment_id =  $sale['payment_id'];
+			// $sale_model->payment_id =  $client->payment_id;
+			$sale_model->currency_id = $sale['currency_id'];
+			$sale_model->guide_series = $warehouse_movement->referral_guide_series;
+			$sale_model->guide_number = $warehouse_movement->referral_guide_number;
+			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
+			$sale_model->cede = $warehouse_type_id;
+
+			if ( $sale['warehouse_document_type_id'] = 4  || $sale['warehouse_document_type_id'] = 5 ) {
+				switch ($sale['warehouse_document_type_id']) {
+					case 4:
+						$voucher_type_id = 5;
+						break;
+					case 5:
+						$voucher_type_id = 1;
+						break;
+					case 6:
+						$voucher_type_id = 6;
+						break;
+					case 7:
+						$voucher_type_id = 2;
+						break;
+					
+					case 8:
+						$voucher_type_id = 3;
+						break;
 				}
-	
-				$sale_model->scop_number = $warehouse_movement->scop_number;
-				$sale_model->license_plate = $warehouse_movement->license_plate;
-	
-				$sale_value = 0;
+
+				$voucher_type = VoucherType::find($voucher_type_id, ['id', 'serie_type']);
+				$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
+				$last_voucher_number = Voucher::where('company_id', $model['company_id'])
+																			->where('voucher_type_id', $voucher_type->id)
+																			->where('serie_number', $serie_number)
+																			->max('voucher_number');
+
+				$voucher = new Voucher();
+				$voucher->company_id = $model['company_id'];
+				$voucher->client_id = $client->id;
+				$voucher->original_client_id = $client->id;
+				$voucher->client_name = $client->business_name;
+				$voucher->client_address = $client_address->address;
+				$voucher->voucher_type_id = $voucher_type->id;
+				$voucher->serie_number = $serie_number;
+				$voucher->voucher_number = ++$last_voucher_number;
+				$voucher->referral_guide_series = ( $sale['referral_guide_series'] ? $sale['referral_guide_series'] : $warehouse_movement->referral_guide_series );
+				$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
+				$voucher->issue_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
+				$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->traslate_date));
+				$voucher->expiry_date = $expiry_date;
+				$voucher->currency_id = $sale['currency_id'];
+				$voucher->payment_id = $sale['payment_id'];
+				// $voucher->payment_id = $client->payment_id;
+				$voucher->total = $sale['total'];
+				$voucher->igv_perception = $sale['perception'];
+				$voucher->total_perception = $sale['total_perception'];
+				$voucher->igv_percentage = $rate->value;
+				// $voucher->igv_perception_percentage = $sale['perception_percentage'] / 100;
+				$voucher->igv_perception_percentage = $rate->value / 100;
+				if ( $voucher_type->id >= 1 && $voucher_type->id <= 4 ) {
+					$voucher->ose = 0;
+				} else {
+					$voucher->ose = 1;
+				}
+				$voucher->user = Auth::user()->user;
+				$voucher->save();
+
+				$taxed_operation = 0;
 				$igv = 0;
 				foreach ($sale['details'] as $detail) {
+					$article = Article::find($detail['article_id'], ['id','name', 'sale_unit_id']);
+
+					$voucher_detail = new VoucherDetail();
+					$voucher_detail->voucher_id = $voucher->id;
+					$voucher_detail->unit_id = $article->sale_unit_id;
+					$voucher_detail->name = $article->name;
+					$voucher_detail->quantity = $detail['quantity'];
+					$voucher_detail->original_price = round($detail['price_igv'], 4);
+					$voucher_detail->unit_price = round($detail['price_igv'] / $igv_percentage, 4);
+					$voucher_detail->sale_value = round($detail['price_igv'], 4);
+					$voucher_detail->exonerated_value = 0;
+					$voucher_detail->inaccurate_value = 0;
+					$voucher_detail->igv = round($detail['sale_value'], 4) - round($detail['sale_value'] / $igv_percentage, 4);
+					$voucher_detail->total = round($detail['sale_value'], 4);
+					$voucher_detail->user = Auth::user()->user;
+					$voucher_detail->article_id = $article->id;
+					$voucher_detail->save();
+
 					if ( $detail['igv'] == 1 ) {
-						$sale_value += round($detail['sale_value'] / $igv_percentage, 4);
+						$taxed_operation += round($detail['sale_value'] / $igv_percentage, 4);
 						$igv += round($detail['sale_value'], 4) - round($detail['sale_value'] / $igv_percentage, 4);
 					} else {
-						$sale_value += round($detail['sale_value'], 4);
+						$taxed_operation += round($detail['sale_value'], 4);
 					}
 				}
-	
-				$total = $sale['total'];
-				$total_perception = $sale['total_perception'];
-	
-				if ( $sale['warehouse_document_type_id'] == 8 || $sale['warehouse_document_type_id'] == 9 || $sale['warehouse_document_type_id'] == 20 || $sale['warehouse_document_type_id'] == 22 ) {
-					$sale_value = abs($sale_value);
-					$igv = abs($igv);
-					$total = abs($sale['total']);
-					$total_perception = abs($sale['total_perception']);
-				}
-	
-				$balance = 0;
-				$pre_balance = 0;
-				$paid = $total_perception;
-	
-				if ( $client->payment_id == 2 ) {
-					$balance = $total_perception;
-					$pre_balance = $total_perception;
-					$paid = 0;
-				}
-	
-				$sale_model->sale_value = $sale_value;
-				$sale_model->exonerated_value = 0;
-				$sale_model->inaccurate_value = 0;
-				$sale_model->igv = $igv;
-				$sale_model->total = $total;
-				$sale_model->total_perception = $total_perception;
-				$sale_model->balance = $balance;
-				$sale_model->pre_balance = $pre_balance;
-				$sale_model->paid = $paid;
-				$sale_model->created_at_user = Auth::user()->user;
-				$sale_model->updated_at_user = Auth::user()->user;
-				$sale_model->pend = 0;
-				$sale_model->save();
-				$sales_models[] = $sale_model;
 
-				$client->credit_balance += $total_perception;
-				$client->save();
+				$voucher->taxed_operation = round($taxed_operation, 4);
+				$voucher->unaffected_operation = 0;
+				$voucher->exonerated_operation = 0;
+				$voucher->igv = round($igv, 4);
+				$voucher->save();
 
-				foreach ($sale['details'] as $index => $detail) {
-					$article = Article::find($detail['article_id'], ['convertion']);
-	
-					$sale_detail = new SaleDetail();
-					$sale_detail->sale_id = $sale_model->id;
-					$sale_detail->item_number = ++$index;
-					$sale_detail->article_id = $detail['article_id'];
-					$sale_detail->quantity = $detail['quantity'];
-					$sale_detail->price_igv = round($detail['price_igv'], 4);
-					$sale_detail->sale_value = round($detail['sale_value'], 4);
-					$sale_detail->inaccurate_value = 0;
-					$sale_detail->exonerated_value = 0;
-					$sale_detail->igv = round($detail['sale_value'], 4) - round($detail['sale_value'] / $igv_percentage, 4);
-					$sale_detail->total = round($detail['sale_value'], 4);
-					$sale_detail->total_perception = round($detail['total_perception'], 4);
-					$sale_detail->igv_percentage = $rate->value;
-					// $sale_detail->igv_perception_percentage = $sale['perception_percentage'];
-					$sale_detail->igv_perception_percentage = $rate->value;
-					$sale_detail->referential_convertion = $article->convertion;
-					$sale_detail->kg = $detail['quantity'] * $sale_detail['referential_convertion'];
-					$sale_detail->created_at_user = Auth::user()->user;
-					$sale_detail->updated_at_user = Auth::user()->user;
-					$sale_detail->save();
+				$sale_model->referral_serie_number = $sale['referral_serie_number'];
+				$sale_model->referral_voucher_number = $voucher->voucher_number;
+			} else {
+				$referral_serie_number = CarbonImmutable::now()->format('Ym');
+				$last_voucher_number = Sale::where('company_id', $model['company_id'])
+																	->where('warehouse_document_type_id', $sale['warehouse_document_type_id'])
+																	->where('referral_serie_number', $referral_serie_number)
+																	->max('referral_voucher_number');
+
+				if ( $sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 6 || $sale['warehouse_document_type_id'] == 8 ) {
+					$sale_model->referral_serie_number = $sale['referral_serie_number'];
+					$sale_model->referral_voucher_number = $sale['referral_voucher_number'];
+				} else {
+					$int_last_voucher_number = (int)$last_voucher_number;
+					$sale_model->referral_serie_number = $referral_serie_number;
+					$sale_model->referral_voucher_number = $last_voucher_number != '' ? ++$int_last_voucher_number : 1 ;
 				}
-	
-				SaleSeries::where('id', $sale['sale_serie_id'])
-									->update(
-										['correlative' => $sale['referral_serie_number']]
-									);
-				
 			}
+
+			$sale_model->scop_number = $warehouse_movement->scop_number;
+			$sale_model->license_plate = $warehouse_movement->license_plate;
+
+			$sale_value = 0;
+			$igv = 0;
+			foreach ($sale['details'] as $detail) {
+				if ( $detail['igv'] == 1 ) {
+					$sale_value += round($detail['sale_value'] / $igv_percentage, 4);
+					$igv += round($detail['sale_value'], 4) - round($detail['sale_value'] / $igv_percentage, 4);
+				} else {
+					$sale_value += round($detail['sale_value'], 4);
+				}
+			}
+
+			$total = $sale['total'];
+			$total_perception = $sale['total_perception'];
+
+			if ( $sale['warehouse_document_type_id'] == 8 || $sale['warehouse_document_type_id'] == 9 || $sale['warehouse_document_type_id'] == 20 || $sale['warehouse_document_type_id'] == 22 ) {
+				$sale_value = abs($sale_value);
+				$igv = abs($igv);
+				$total = abs($sale['total']);
+				$total_perception = abs($sale['total_perception']);
+			}
+
+			$balance = 0;
+			$pre_balance = 0;
+			$paid = $total_perception;
+
+			if ( $client->payment_id == 2 ) {
+				$balance = $total_perception;
+				$pre_balance = $total_perception;
+				$paid = 0;
+			}
+
+			$sale_model->sale_value = $sale_value;
+			$sale_model->exonerated_value = 0;
+			$sale_model->inaccurate_value = 0;
+			$sale_model->igv = $igv;
+			$sale_model->total = $total;
+			$sale_model->total_perception = $total_perception;
+			$sale_model->balance = $balance;
+			$sale_model->pre_balance = $pre_balance;
+			$sale_model->paid = $paid;
+			$sale_model->created_at_user = Auth::user()->user;
+			$sale_model->updated_at_user = Auth::user()->user;
+			$sale_model->pend = 0;
+			$sale_model->save();
+
+			$client->credit_balance += $total_perception;
+			$client->save();
+
+			foreach ($sale['details'] as $index => $detail) {
+				$article = Article::find($detail['article_id'], ['convertion']);
+
+				$sale_detail = new SaleDetail();
+				$sale_detail->sale_id = $sale_model->id;
+				$sale_detail->item_number = ++$index;
+				$sale_detail->article_id = $detail['article_id'];
+				$sale_detail->quantity = $detail['quantity'];
+				$sale_detail->price_igv = round($detail['price_igv'], 4);
+				$sale_detail->sale_value = round($detail['sale_value'], 4);
+				$sale_detail->inaccurate_value = 0;
+				$sale_detail->exonerated_value = 0;
+				$sale_detail->igv = round($detail['sale_value'], 4) - round($detail['sale_value'] / $igv_percentage, 4);
+				$sale_detail->total = round($detail['sale_value'], 4);
+				$sale_detail->total_perception = round($detail['total_perception'], 4);
+				$sale_detail->igv_percentage = $rate->value;
+				// $sale_detail->igv_perception_percentage = $sale['perception_percentage'];
+				$sale_detail->igv_perception_percentage = $rate->value;
+				$sale_detail->referential_convertion = $article->convertion;
+				$sale_detail->kg = $detail['quantity'] * $sale_detail['referential_convertion'];
+				$sale_detail->created_at_user = Auth::user()->user;
+				$sale_detail->updated_at_user = Auth::user()->user;
+				$sale_detail->save();
+			}
+
+			SaleSeries::where('id', $sale['sale_serie_id'])
+								->update(
+									['correlative' => $sale['referral_serie_number']]
+								);
 
 			if ( array_key_exists('liquidations', $sale) ) {
 				if ( count($sale['liquidations']) > 0 ) {
 					foreach ($sale['liquidations'] as $liquidation) {
-						foreach($sales_models as $sale_model) {
-							$payment_method_id = $liquidation['payment_method']['id'];
-							$total_sale_amount -= $liquidation['amount'];
+						$payment_method_id = $liquidation['payment_method']['id'];
+						$total_sale_amount -= $liquidation['amount'];
 
-							$liquidation_model = new Liquidation();
+						$liquidation_model = new Liquidation();
+						if ($first_sale) {
+							$liquidation_model->sale_id = $first_sale->id;
+						} else {
 							$liquidation_model->sale_id = $sale_model->id;
-							$liquidation_model->company_id = $model['company_id'];
-							$liquidation_model->payment_method_id = $payment_method_id;
-							$liquidation_model->currency_id = $liquidation['currency']['id'];
-							$liquidation_model->exchange_rate = $liquidation['exchange_rate'];
-							$liquidation_model->bank_account_id = $liquidation['bank_account']['id'];
-							$liquidation_model->operation_number = $liquidation['operation_number'];
-							$liquidation_model->amount = round($liquidation['amount'], 4);
-							if ($liquidation['payment_date']) {
-								$liquidation_model->rem_date = $liquidation['payment_date'];
-							}
-							if ($liquidation['payment_sede']) {
-								$liquidation_model->payment_sede = $liquidation['payment_sede'];
-							}
-							$liquidation_model->created_at_user = Auth::user()->user;
-							$liquidation_model->updated_at_user = Auth::user()->user;
-							$liquidation_model->cede = $warehouse_type_id;
-							$liquidation_model->save();
-
-							if ($payment_method_id == 7) {
-								$sale_model->pend = $sale_model->pend + round($liquidation['amount'], 4);
-							}
-
-							if ($payment_method_id == 7 || $payment_method_id == 5) {
-								$sale_model->balance = $sale_model->balance + round($liquidation['amount'], 4);
-							}
-
-							if ( $liquidation['payment_id'] == 1 ) {
-									if ($payment_method_id == 1) {
-											$sale_model->payment_method_efective = 1;
-											$sale_model->efective += round($liquidation['amount'], 4);
-									} elseif ($payment_method_id == 2) {
-											$sale_model->payment_method_deposit = 4;
-											$sale_model->deposit += round($liquidation['amount'], 4);
-									}
-
-									$sale_model->save();
-							}
-
-							if ( $client->payment_id ==2 ) {
-								$sale_model->balance -= $liquidation['amount'];
-								$sale_model->pre_balance -= $liquidation['amount'];
-								$sale_model->paid += $liquidation['amount'];
-								$sale_model->payment_method_credit = 3;
-								$sale_model->save();
-
-								DB::table('credits')
-									->insert([
-											'sale_id' => $sale_model->id,
-											'company_id' => $model['company_id'],
-											'client_id' => $sale['client_id'],
-											'currency_id' =>  $liquidation['currency']['id'],
-											'amount' => round($sale_model['pre_balance'], 4),
-											'created_at_user' => auth()->user()->name,
-											'created_at' => Carbon::now(),
-									]);
-							}
-
-							if ( $payment_method_id == 10 ) {
-								$saldo_favor_search = Sale::find($liquidation['saldo_favor_id']);
-	
-								if ($total_sale_amount > 0) {
-									$saldo_favor_search->total_perception = 0;
-								} else {
-									$saldo_favor_search->total_perception = $total_sale_amount * -1;
-								};
-	
-								$saldo_favor_search->save();
-							}
-
-							$client->credit_balance -= $liquidation['amount'];
-							$client->save();
 						}
+						$liquidation_model->company_id = $model['company_id'];
+						$liquidation_model->payment_method_id = $payment_method_id;
+						$liquidation_model->currency_id = $liquidation['currency']['id'];
+						$liquidation_model->exchange_rate = $liquidation['exchange_rate'];
+						$liquidation_model->bank_account_id = $liquidation['bank_account']['id'];
+						$liquidation_model->operation_number = $liquidation['operation_number'];
+						$liquidation_model->amount = round($liquidation['amount'], 4);
+						if ($liquidation['payment_date']) {
+							$liquidation_model->rem_date = $liquidation['payment_date'];
+						}
+						if ($liquidation['payment_sede']) {
+							$liquidation_model->payment_sede = $liquidation['payment_sede'];
+						}
+						$liquidation_model->created_at_user = Auth::user()->user;
+						$liquidation_model->updated_at_user = Auth::user()->user;
+						$liquidation_model->cede = $warehouse_type_id;
+						$liquidation_model->save();
+
+						if ($payment_method_id == 7) {
+							$sale_model->pend = $sale_model->pend + round($liquidation['amount'], 4);
+						}
+
+						if ($payment_method_id == 7 || $payment_method_id == 5) {
+							$sale_model->balance = $sale_model->balance + round($liquidation['amount'], 4);
+						}
+
+						if ( $liquidation['payment_id'] == 1 ) {
+								if ($payment_method_id == 1) {
+										$sale_model->payment_method_efective = 1;
+										$sale_model->efective += round($liquidation['amount'], 4);
+								} elseif ($payment_method_id == 2) {
+										$sale_model->payment_method_deposit = 4;
+										$sale_model->deposit += round($liquidation['amount'], 4);
+								}
+
+								$sale_model->save();
+						}
+
+						if ( $client->payment_id ==2 ) {
+							$sale_model->balance -= $liquidation['amount'];
+							$sale_model->pre_balance -= $liquidation['amount'];
+							$sale_model->paid += $liquidation['amount'];
+							$sale_model->payment_method_credit = 3;
+							$sale_model->save();
+
+							DB::table('credits')
+								->insert([
+										'sale_id' => $sale_model->id,
+										'company_id' => $model['company_id'],
+										'client_id' => $sale['client_id'],
+										'currency_id' =>  $liquidation['currency']['id'],
+										'amount' => round($sale_model['pre_balance'], 4),
+										'created_at_user' => auth()->user()->name,
+										'created_at' => Carbon::now(),
+								]);
+						}
+
+						if ( $payment_method_id == 10 ) {
+							$saldo_favor_search = Sale::find($liquidation['saldo_favor_id']);
+
+							if ($total_sale_amount > 0) {
+								$saldo_favor_search->total_perception = 0;
+							} else {
+								$saldo_favor_search->total_perception = $total_sale_amount * -1;
+							};
+
+							$saldo_favor_search->save();
+						}
+
+						$client->credit_balance -= $liquidation['amount'];
+						$client->save();
 					}
 				}
 			}
