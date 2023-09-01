@@ -71,6 +71,13 @@
                                         <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
+								<div class="col-lg-3" v-if="this.sale.warehouse_document_type_id === 4 || this.sale.warehouse_document_type_id === 5 || this.sale.warehouse_document_type_id === 18">
+									<div class="form-group">
+                                        <label class="form-control-label">Nº SCOP:</label>
+                                        <input type="text" class="form-control"  v-model="sale.scop_number" name="scop_number" id="scop_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageScopNumber">
+                                        <div id="scop_number-error" class="error invalid-feedback"></div>
+                                    </div>
+								</div>
 								<div class="col-lg-3">
 									<div class="form-group">
                                         <label class="form-control-label">Moneda:</label>
@@ -247,7 +254,8 @@
                     credit_limit: '',
                     sale_serie_id: '',
                     serie_num: '',
-                    correlative: ''
+                    correlative: '',
+                    scop_number: ''
                 },
                 filterArticles: [],
                 edit_flag: false,
@@ -628,7 +636,9 @@
                     this.$store.commit('addGuideNumber', {
                         serie_number: this.sale.referral_guide_series,
                         guide_number: this.sale.referral_guide_number,
-                    })
+                    });
+
+                    this.$store.commit('addScop', this.sale.scop_number);
 
 					axios.post(this.url_verify_document_type, {
 						'model': this.$store.state.model,
@@ -877,6 +887,58 @@
                             $('#liquidar').prop('disabled', true);
                             $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
                             $('#referral_guide_number-error').show();
+                        });
+                    }
+                }
+            },
+            manageScopNumber() {
+                if (!(this.sale.scop_number.length === 11 || this.sale.scop_number == '')) {
+                    
+                    $('#liquidar').prop('disabled', true);
+                    $('#scop_number-error').text('El Nro. de Scop tiene que ser de 11 digitos u omitirlo');
+                    $('#scop_number-error').show();
+                    return
+                }
+                if (
+                    this.sale.warehouse_document_type_id === 4 ||
+                    this.sale.warehouse_document_type_id === 5 ||
+                    this.sale.warehouse_document_type_id === 18
+                ) {
+                    EventBus.$emit('loading', true);
+                    $('#liquidar').prop('disabled', true);
+                    $('#scop_number-error').hide();
+                    $('#scop_number-error').text('');
+
+                    let find = false;
+
+                    if (this.$store.state.scops.length) {
+                        const exists = this.$store.state.scops.find(item => item == this.sale.scop_number);
+
+                        if (exists) {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                            $('#scop_number-error').show();
+                            find = true;
+                        };
+                    };
+
+                    if (!find) {
+                        axios.post('/facturacion/liquidaciones-glp/get-scop-number', {
+                            params: {
+                                scop_number: this.sale.scop_number,
+                            }
+                        }).then(response => {
+                            console.log('bien');
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', false);
+                            $('#scop_number-error').text('');
+                            $('#scop_number-error').hide();
+                        }).catch(error => {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                            $('#scop_number-error').show();
                         });
                     }
                 }
