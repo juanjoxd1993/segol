@@ -1002,26 +1002,34 @@
                             $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
                             $('#scop_number-error').show();
                             find = true;
+                        } else {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', false);
                         };
                     };
 
                     if (!find) {
-                        axios.post('/facturacion/liquidaciones-glp/get-scop-number', {
-                            params: {
-                                scop_number: this.sale.scop_number,
-                            }
-                        }).then(response => {
-                            console.log('bien');
+                        if (this.sale.scop_number.trim()) {
+                            axios.post('/facturacion/liquidaciones-glp/get-scop-number', {
+                                params: {
+                                    scop_number: this.sale.scop_number,
+                                }
+                            }).then(response => {
+                                console.log('bien');
+                                EventBus.$emit('loading', false);
+                                $('#liquidar').prop('disabled', false);
+                                $('#scop_number-error').text('');
+                                $('#scop_number-error').hide();
+                            }).catch(error => {
+                                EventBus.$emit('loading', false);
+                                $('#liquidar').prop('disabled', true);
+                                $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                                $('#scop_number-error').show();
+                            });
+                        } else {
                             EventBus.$emit('loading', false);
                             $('#liquidar').prop('disabled', false);
-                            $('#scop_number-error').text('');
-                            $('#scop_number-error').hide();
-                        }).catch(error => {
-                            EventBus.$emit('loading', false);
-                            $('#liquidar').prop('disabled', true);
-                            $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
-                            $('#scop_number-error').show();
-                        });
+                        }
                     }
                 }
             },
