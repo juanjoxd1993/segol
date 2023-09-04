@@ -121,8 +121,8 @@ class FinanzasDetailTotalReportController extends Controller
 							//	->whereNotIn('sales.client_id', $client_ids)
 								->where(DB::Raw('DATE_FORMAT(sales.sale_date, "%Y-%m-%d") '), '=', $initial_date)
 								->whereIn('sales.warehouse_document_type_id', [13,7,5])
-								->select('sales.pre_balance')
-								->sum('sales.pre_balance');
+								->select('sales.balance')
+								->sum('sales.balance');
 
 		$total_liquidado = $remesa + $efective + $deposit + $credit;
 
