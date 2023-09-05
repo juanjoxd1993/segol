@@ -632,9 +632,9 @@ class GuidesRegisterController extends Controller
 
 		foreach ($articles as $item) {
 			$article = Article::where('warehouse_type_id', $warehouse_type_id)
-						->where('group_id', 26)
-						->where('code', $item['code'])
-						->first();
+												->where('group_id', 26)
+												->where('code', $item['code'])
+												->first();
 
 			if ($article) {
 
