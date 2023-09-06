@@ -139,6 +139,10 @@ export default {
                 data: {
                     type: 'local',
                     source: data,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
                 },
 
                 // layout definition
@@ -150,7 +154,7 @@ export default {
 
                 // column sorting
                 sortable: true,
-                pagination: false,
+                pagination: true,
 
                 translate: {
                     records: {
