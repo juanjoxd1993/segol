@@ -164,7 +164,7 @@ class LiquidationReportController extends Controller
 				$liquidation->total = '';
 				$liquidation->perception = '';
 				$liquidation->total_perception = '';
-				$liquidation->payment_name = $sale['payment_name'];
+				$liquidation->payment_name = 'Contado';
 				$liquidation->credit = '';
 				$liquidation->cash_liquidation_amount = $liquidation->payment_method_id == 1 ? $liquidation->amount : '';
 				$liquidation->deposit_liquidation_amount = $liquidation->payment_method_id !== 1 ? $liquidation->amount : '';
