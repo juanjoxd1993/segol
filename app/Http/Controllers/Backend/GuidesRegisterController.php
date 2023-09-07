@@ -210,7 +210,7 @@ class GuidesRegisterController extends Controller
 		}
 
 		// Obtener artículos
-		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged')
+		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged','presentacion','convertion','group_id')
 			->where('warehouse_type_id', $warehouse_type_id)
 			->orderBy('code', 'asc')
 			->get();
@@ -685,6 +685,7 @@ class GuidesRegisterController extends Controller
 
 						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
 										->where('presentacion', $article->presentacion)
+										->where('group_id', 7)
 										->first();
 
 						if ($warehouse_account_type_id == 1) {
