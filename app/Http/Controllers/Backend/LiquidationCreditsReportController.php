@@ -299,7 +299,8 @@ class LiquidationCreditsReportController extends Controller
 			$sheet->setCellValue('J3', '# Serie');
 			$sheet->setCellValue('K3', '# Documento');
 			$sheet->setCellValue('L3', 'Total');
-			$sheet->setCellValue('M3', 'Total Percepción');
+			// $sheet->setCellValue('M3', 'Total Percepción');
+			$sheet->setCellValue('M3', 'Total Venta');
 	//		$sheet->setCellValue('N3', 'Condición de Pago');
 			$sheet->setCellValue('O3', 'Crédito');
 			$sheet->setCellValue('P3', 'Efectivo');
