@@ -333,8 +333,9 @@ class LiquidationReportController extends Controller
 			$sheet->setCellValue('I3', 'Varlor Venta');
 			$sheet->setCellValue('J3', 'IGV');
 			$sheet->setCellValue('K3', 'Total');
-			$sheet->setCellValue('L3', 'Percepción');
-			$sheet->setCellValue('M3', 'Total Percepción');
+			// $sheet->setCellValue('L3', 'Percepción');
+			// $sheet->setCellValue('M3', 'Total Percepción');
+			$sheet->setCellValue('M3', 'Total Ventas');
 			$sheet->setCellValue('N3', 'Condición de Pago');
 			$sheet->setCellValue('O3', 'Crédito');
 			$sheet->setCellValue('P3', 'Efectivo');
@@ -375,7 +376,7 @@ class LiquidationReportController extends Controller
 				$sheet->setCellValue('I'.$row_number, $element->sale_value);
 				$sheet->setCellValue('J'.$row_number, $element->igv);
 				$sheet->setCellValue('K'.$row_number, $element->total);
-				$sheet->setCellValue('L'.$row_number, $element->perception);
+				// $sheet->setCellValue('L'.$row_number, $element->perception);
 				$sheet->setCellValue('M'.$row_number, $element->total_perception);
 				$sheet->setCellValue('N'.$row_number, $element->payment_name);
 				$sheet->setCellValue('O'.$row_number, $element->credit);
