@@ -210,7 +210,7 @@ class GuidesRegisterController extends Controller
 		}
 
 		// Obtener artículos
-		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged')
+		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged','presentacion','convertion','group_id')
 			->where('warehouse_type_id', $warehouse_type_id)
 			->orderBy('code', 'asc')
 			->get();
@@ -276,6 +276,7 @@ class GuidesRegisterController extends Controller
 				'operation_types.name as operation_type_name',
 				'business_type',
 				'convertion',
+				'presentacion',
 				'group_id'
 				)
 			->first();
@@ -683,7 +684,8 @@ class GuidesRegisterController extends Controller
 						$article->save();
 
 						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
-										->where('convertion', $article->convertion)
+										->where('presentacion', $article->presentacion)
+										->where('group_id', 7)
 										->first();
 
 						if ($warehouse_account_type_id == 1) {
@@ -695,7 +697,7 @@ class GuidesRegisterController extends Controller
 						}
 					} elseif ($difference < 0) {
 						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
-										->where('convertion', $article->convertion)
+										->where('presentacion', $article->presentacion)
 										->first();
 
 						$difference_parse = $difference * -1;
@@ -789,7 +791,7 @@ class GuidesRegisterController extends Controller
 						$article->save();
 
 						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
-										->where('convertion', $article->convertion)
+										->where('presentacion', $article->presentacion)
 										->first();
 
 						if ($warehouse_account_type_id == 1) {

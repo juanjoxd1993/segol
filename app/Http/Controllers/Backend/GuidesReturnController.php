@@ -212,7 +212,7 @@ class GuidesReturnController extends Controller
                 ->first();
 
             $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
-                ->where('convertion', $articleWT->convertion)
+                ->where('presentacion', $articleWT->presentacion)
                 ->where('group_id', 7)
                 ->first();
 
@@ -560,7 +560,7 @@ class GuidesReturnController extends Controller
         $articleGeneral = Article::find($article_id);
 
         $articleBalon = Article::where('warehouse_type_id', 5)
-            ->where('convertion', $articleGeneral->convertion)
+            ->where('presentacion', $articleGeneral->presentacion)
             ->where('group_id', 7)
             ->first();
 
@@ -598,7 +598,7 @@ class GuidesReturnController extends Controller
                 $articleGeneral = Article::find($article_id);
 
                 $articleBalon = Article::where('warehouse_type_id', 5)
-                                    ->where('convertion', $articleGeneral->convertion)
+                                    ->where('presentacion', $articleGeneral->presentacion)
                                     ->where('group_id', 7)
                                     ->first();
 
@@ -677,7 +677,7 @@ class GuidesReturnController extends Controller
                 ->first();
 
             $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
-                ->where('convertion', $articleWT->convertion)
+                ->where('presentacion', $articleWT->presentacion)
                 ->where('group_id', 7)
                 ->first();
 

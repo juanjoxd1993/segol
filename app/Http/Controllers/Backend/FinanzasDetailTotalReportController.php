@@ -111,7 +111,7 @@ class FinanzasDetailTotalReportController extends Controller
 								//	->whereNotIn('sales.client_id', $client_ids)
 									->where(DB::Raw('DATE_FORMAT(sales.sale_date, "%Y-%m-%d") '), '=', $initial_date)
 									->whereIn('liquidations.payment_method_id', [2,3])
-									->where('liquidations.collection',0)
+									->whereIn('liquidations.collection',[0,1])
 									->select('liquidations.amount')
 									->sum('liquidations.amount');
 

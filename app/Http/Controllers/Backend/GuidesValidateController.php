@@ -221,7 +221,7 @@ class GuidesValidateController extends Controller
 
         if ($article->group_id != 7) {
             $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
-                ->where('convertion', $article->convertion)
+                ->where('presentacion', $article->presentacion)
                 ->where('group_id', 7)
                 ->first();
     
@@ -280,7 +280,7 @@ class GuidesValidateController extends Controller
                     ->first();
 
                 $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
-                    ->where('convertion', $article->convertion)
+                    ->where('presentacion', $article->presentacion)
                     ->where('group_id', 7)
                     ->first();
 
@@ -398,7 +398,7 @@ class GuidesValidateController extends Controller
                     ->first();
 
                 $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
-                    ->where('convertion', $article->convertion)
+                    ->where('presentacion', $article->presentacion)
                     ->where('name', 'like', '%BALON%')
                     ->first();
 
@@ -524,6 +524,7 @@ class GuidesValidateController extends Controller
 				'operation_types.name as operation_type_name',
 				'business_type',
 				'convertion',
+                'presentacion',
 				'group_id'
 				)
             ->get();
