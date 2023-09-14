@@ -258,7 +258,7 @@ class LiquidationChannelReportController extends Controller
 			$spreadsheet = new Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
 			$sheet->mergeCells('A1:AK1');
-			$sheet->setCellValue('A1', 'REPORTE DE VENTAS '.' '.'DEL'.'$initial_date'.' AL '.'$final_date'.' '.'DESCARGADO'.CarbonImmutable::now()->format('d/m/Y H:m:s'));
+			$sheet->setCellValue('A1', 'REPORTE DE VENTAS '.' '.'DEL'.$initial_date.' AL '.$final_date.' '.'DESCARGADO'.CarbonImmutable::now()->format('d/m/Y H:m:s'));
 			$sheet->getStyle('A1')->applyFromArray([
 				'font' => [
 					'bold' => true,
