@@ -236,7 +236,7 @@ class LiquidationChannelReportController extends Controller
 		$totals->manager = '';
 		$totals->grupo = '';
         $totals->estado = '';
-		$totals->document_name = '';
+		$totals->client_document_name = '';
 		$totals->document_number = '';
 		$totals->int_name = '';
 		$totals->expiry_date = '';
