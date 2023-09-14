@@ -333,8 +333,6 @@ class LiquidationReportController extends Controller
 			$sheet->setCellValue('I3', 'Varlor Venta');
 			$sheet->setCellValue('J3', 'IGV');
 			$sheet->setCellValue('K3', 'Total');
-			// $sheet->setCellValue('L3', 'Percepción');
-			// $sheet->setCellValue('M3', 'Total Percepción');
 			$sheet->setCellValue('M3', 'Total Ventas');
 			$sheet->setCellValue('N3', 'Condición de Pago');
 			$sheet->setCellValue('O3', 'Crédito');
