@@ -183,7 +183,7 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->expiry_date = $saledetail['expiry_date'];
 	            $saledetail->sale_value = $saledetail['sale_value'];
 				$saledetail->igv = $saledetail['igv'];
-				$saledetail->kgs = $saledetail->sum_total/1000;
+				$saledetail->kgs = $saledetail->sum_total*1000;
 				if ($saledetail->business_unit_name == 'Granel' || $saledetail->business_unit_name == 'Grifo')
 				{
 					$saledetail->glns = $saledetail->kgs/2.018;
@@ -196,7 +196,7 @@ class LiquidationChannelReportController extends Controller
 
 				if ($saledetail->balance > 0)
 				{
-					$saledetail->condition = 'Credito'. $saledetail->credit_limit_days.'días';
+					$saledetail->condition = 'Credito'.' '. $saledetail->credit_limit_days.' '.'días';
 				}
 				else{
 					$saledetail->condition = 'Contado';
