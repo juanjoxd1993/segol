@@ -335,33 +335,46 @@ class LiquidationChannelReportController extends Controller
 
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
+				$sheet->setCellValue('C'.$row_number, $element->seller_id);
+				$sheet->setCellValue('D'.$row_number, $element->manager);	
+                $sheet->setCellValue('E'.$row_number, $element->client_route_id);
+				$sheet->setCellValue('F'.$row_number, $element->business_unit_name);
+                $sheet->setCellValue('G'.$row_number, $element->client_channel_name);
+                $sheet->setCellValue('H'.$row_number, $element->client_sector_name);
+				$sheet->setCellValue('I'.$row_number, $element->guide);
+				$sheet->setCellValue('J'.$row_number, $element->warehouse_document_type_short_name);
+				$sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
+				$sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
+				$sheet->setCellValue('M'.$row_number, $saleDateYear);
+				$sheet->setCellValue('N'.$row_number, $saleDateYear);
+				$sheet->setCellValue('O'.$row_number, $element->client_id);
+				$sheet->setCellValue('P'.$row_number, $element->client_document_name);
+				$sheet->setCellValue('Q'.$row_number, $element->document_number);
+				$sheet->setCellValue('R'.$row_number, $element->client_business_name);
+				$sheet->setCellValue('S'.$row_number, $element->int_name);	
+				$sheet->setCellValue('T'.$row_number, $element->condition);
+				$sheet->setCellValue('U'.$row_number, $element->expiry_date);
+				
+				$sheet->setCellValue('W'.$row_number, $element->client_zone_name);
+				$sheet->setCellValue('X'.$row_number, $element->district);
+				$sheet->setCellValue('Y'.$row_number, $element->province);
+				$sheet->setCellValue('Z'.$row_number, $element->department);	
+				$sheet->setCellValue('AA'.$row_number, $element->plate);
+
+				$sheet->setCellValue('AC'.$row_number, $element->article_name);
+                $sheet->setCellValue('AD'.$row_number, $element->sum_total);
+				$sheet->setCellValue('AE'.$row_number, $element->kgs);
+				$sheet->setCellValue('AF'.$row_number, $element->kgs);
+				$sheet->setCellValue('AG'.$row_number, $element->glns);
+				$sheet->setCellValue('AH'.$row_number, $element->price);
+				$sheet->setCellValue('AI'.$row_number, $element->sale_value); 
+				$sheet->setCellValue('AJ'.$row_number, $element->igv); 
+				$sheet->setCellValue('AK'.$row_number, $element->total);
+
 			
-				$sheet->setCellValue('C'.$row_number, $saleDateYear);
-				$sheet->setCellValue('D'.$row_number, $element->business_unit_name);
-                $sheet->setCellValue('E'.$row_number, $element->client_channel_name);
-                $sheet->setCellValue('F'.$row_number, $element->client_sector_name);
-                $sheet->setCellValue('G'.$row_number, $element->client_route_id);
-				$sheet->setCellValue('H'.$row_number, $element->warehouse_document_type_short_name);
-				$sheet->setCellValue('I'.$row_number, $element->referral_serie_number);
-				$sheet->setCellValue('J'.$row_number, $element->referral_voucher_number);
-				$sheet->setCellValue('K'.$row_number, $element->client_id);
-				$sheet->setCellValue('L'.$row_number, $element->client_business_name);
-                $sheet->setCellValue('M'.$row_number, $element->article_name);
-                $sheet->setCellValue('N'.$row_number, $element->sum_total);
-				$sheet->setCellValue('O'.$row_number, $element->price); 
-				$sheet->setCellValue('P'.$row_number, $element->total);
-				$sheet->setCellValue('Q'.$row_number, $element->warehouse_movement_movement_number);
-				$sheet->setCellValue('R'.$row_number, $element->movement_type_name);
-				$sheet->setCellValue('S'.$row_number, $element->guide);
-				$sheet->setCellValue('T'.$row_number, $element->plate);
-				$sheet->setCellValue('U'.$row_number, $element->client_zone_name);				
-				$sheet->setCellValue('V'.$row_number, $element->district);
-				$sheet->setCellValue('W'.$row_number, $element->province);
-				$sheet->setCellValue('X'.$row_number, $element->department);
-				$sheet->setCellValue('Y'.$row_number, $element->seller_id);
-				$sheet->setCellValue('Z'.$row_number, $element->manager);	
-				$sheet->setCellValue('AA'.$row_number, $element->grupo);
-				$sheet->setCellValue('AB'.$row_number, $element->estado);				
+
+
+								
              //   $sheet->getStyle('N'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('O'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.00');			
