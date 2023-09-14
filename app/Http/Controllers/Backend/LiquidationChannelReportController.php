@@ -207,34 +207,42 @@ class LiquidationChannelReportController extends Controller
 
 			$sheet->setCellValue('A3', '#');
 			$sheet->setCellValue('B3', 'Compañía');
-		//	$sheet->setCellValue('C3', 'Año de Despacho');
-		//	$sheet->setCellValue('D3', 'Mes de Despacho');
-			$sheet->setCellValue('C3', 'Fecha de Despacho');
+			$sheet->setCellValue('Y3', 'Chofer Vendedor');
+			$sheet->setCellValue('Z3', 'Supervisor');
+		 	$sheet->setCellValue('G3', 'Ruta');
 			$sheet->setCellValue('D3', 'Unidad de Negocio');
             $sheet->setCellValue('E3', 'Canal'); 
-            $sheet->setCellValue('F3', 'Sector');
-            $sheet->setCellValue('G3', 'Ruta');
-			$sheet->setCellValue('H3', 'Tipo');
-			$sheet->setCellValue('I3', '# Serie');
-			$sheet->setCellValue('J3', '# Documento');
-			$sheet->setCellValue('K3', 'ID');
-			$sheet->setCellValue('L3', 'Razón Social');
-			$sheet->setCellValue('M3', 'Articulo');
-			$sheet->setCellValue('N3', 'TM');
-            $sheet->setCellValue('O3', 'Precio');
-            $sheet->setCellValue('P3', 'Total');
-			$sheet->setCellValue('Q3', '# de Parte');
-			$sheet->setCellValue('R3', 'Tipo Movimiento');
+			$sheet->setCellValue('F3', 'Sector');
 			$sheet->setCellValue('S3', 'Guía');
-			$sheet->setCellValue('T3', 'Placa');
+			$sheet->setCellValue('H3', 'Tipo Doc.');
+			$sheet->setCellValue('I3', 'N° Serie');
+			$sheet->setCellValue('J3', 'N° Documento');
+			$sheet->setCellValue('C3', 'Fecha de Despacho');
+			$sheet->setCellValue('C3', 'Fecha de Emisión');
+            $sheet->setCellValue('K3', 'ID Cliente');
+			$sheet->setCellValue('K3', 'Tipo de Doc. Id.');
+			$sheet->setCellValue('K3', 'N° Doc.');
+			$sheet->setCellValue('L3', 'Razón Social');
+			$sheet->setCellValue('L3', 'Punto de Venta');
+			$sheet->setCellValue('L3', 'Condición de Pago');
+			$sheet->setCellValue('L3', 'Fecha de Vencimiento');
+			$sheet->setCellValue('L3', 'N° SCOP');
 			$sheet->setCellValue('U3', 'Zona');
 			$sheet->setCellValue('V3', 'Distrito');
 			$sheet->setCellValue('W3', 'Provincia');
 			$sheet->setCellValue('X3', 'Departamento');
-			$sheet->setCellValue('Y3', 'Chofer Vendedor');
-			$sheet->setCellValue('Z3', 'Supervisor');
-			$sheet->setCellValue('AA3', 'Grupo');
-			$sheet->setCellValue('AB3', 'Estado');
+			$sheet->setCellValue('T3', 'Placa Tracto');
+			$sheet->setCellValue('T3', 'Placa Cisterna');
+			$sheet->setCellValue('M3', 'Articulo');
+			$sheet->setCellValue('N3', 'TM');
+			$sheet->setCellValue('N3', 'Cantidad Facturada');
+			$sheet->setCellValue('N3', 'Cantidad KG.');
+			$sheet->setCellValue('N3', 'Cantidad GL.');
+            $sheet->setCellValue('O3', 'Precio');
+			$sheet->setCellValue('P3', 'SubTotal');
+			$sheet->setCellValue('P3', 'IGV');
+            $sheet->setCellValue('P3', 'Total');
+			
 			
 			$sheet->getStyle('A3:AB3')->applyFromArray([
 				'font' => [
