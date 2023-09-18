@@ -64,12 +64,12 @@ class LiquidationChannelReportController extends Controller
 
 		$export = request('export');
 
-	    $initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d');
+		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d');
 		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d');
 		$business_unit_id = request('model.business_unit_id');
 		$client_id = request('model.client_id');
 		
-					$elements = SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
+		$elements = SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 					    ->leftjoin('clients', 'sales.client_id', '=', 'clients.id')    
                         ->leftjoin('business_units', 'clients.business_unit_id', '=', 'business_units.id')
 						->leftjoin('document_types', 'clients.document_type_id', '=', 'document_types.id')                                          
@@ -100,13 +100,16 @@ class LiquidationChannelReportController extends Controller
 			'client_routes.short_name as client_route_id',
 			'warehouse_document_types.short_name as warehouse_document_type_short_name', 
 			'sales.referral_serie_number', 
+			'sales.guide_series', 
 			'sales.referral_voucher_number',
 			'sales.expiry_date as expiry_date',
 			'sales.sale_value as sale_value',
 			'sales.igv as igv',
 			'sales.balance as balance',
 			'articles.name as article_name',
+			'sale_details.quantity',
 			DB::Raw('(SELECT SUM(sale_details.quantity * (SELECT articles.convertion FROM articles WHERE articles.id = sale_details.article_id ))/1000 ) AS sum_total'),
+			'sale_details.referential_convertion',
 			'sale_details.price_igv as price',
 			'sale_details.total', 
 			'clients.id as client_id',
@@ -140,13 +143,7 @@ class LiquidationChannelReportController extends Controller
 			->get();
 			$response=[];
 
-			
-
-
 			foreach ($elements as $saledetail) {
-
-				
-
 
 				$saledetail->company_short_name = $saledetail['company_short_name'];
 				$saledetail->sale_date = $saledetail ['sale_date'];
@@ -156,6 +153,7 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->client_sector_name = $saledetail['client_sector_name'];
 				$saledetail->client_route_id = $saledetail['client_route_id'];
 				$saledetail->warehouse_document_type_short_name = $saledetail['warehouse_document_type_short_name'];
+				$saledetail->guide_series = $saledetail['guide_series'];
 				$saledetail->referral_serie_number = $saledetail['referral_serie_number'];
 				$saledetail->referral_voucher_number = $saledetail['referral_voucher_number'];
 				$saledetail->article_name =$saledetail ['article_name'];
@@ -175,14 +173,16 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->seller_id = $saledetail['seller_id'];
 				$saledetail->manager = $saledetail['manager'];
 				$saledetail->grupo = $saledetail['grupo'];
-                $saledetail->estado = $saledetail['estado'];
+				$saledetail->estado = $saledetail['estado'];
 				$saledetail->client_document_name = $saledetail['client_document_name'];
 				$saledetail->document_number = $saledetail['document_number'];
 				$saledetail->int_name = $saledetail['int_name'];
 				$saledetail->credit_limit_days = $saledetail['credit_limit_days'];
 				$saledetail->expiry_date = $saledetail['expiry_date'];
-	            $saledetail->sale_value = $saledetail['sale_value'];
+				$saledetail->sale_value = $saledetail['sale_value'];
+				$saledetail->quantity = $saledetail['quantity'];
 				$saledetail->igv = $saledetail['igv'];
+				$saledetail->referential_convertion = $saledetail['referential_convertion'];
 				$saledetail->kgs = $saledetail->sum_total*1000;
 				if ($saledetail->business_unit_name == 'Granel' || $saledetail->business_unit_name == 'Grifo')
 				{
@@ -206,7 +206,6 @@ class LiquidationChannelReportController extends Controller
 
 			}
 
-
 		$totals = new stdClass();
 		$totals->company_short_name = 'TOTAL';
 		$totals->sale_date = '';
@@ -216,6 +215,7 @@ class LiquidationChannelReportController extends Controller
 		$totals->client_sector_name = '';
 		$totals->client_route_id = '';
 		$totals->warehouse_document_type_short_name = '';
+		$totals->guide_series = '';
 		$totals->referral_serie_number = '';
 		$totals->referral_voucher_number = '';
 		$totals->article_name = '';
@@ -235,24 +235,20 @@ class LiquidationChannelReportController extends Controller
 		$totals->seller_id = '';
 		$totals->manager = '';
 		$totals->grupo = '';
-        $totals->estado = '';
+		$totals->estado = '';
 		$totals->client_document_name = '';
 		$totals->document_number = '';
 		$totals->int_name = '';
 		$totals->expiry_date = '';
 		$totals->sale_value = '';
 		$totals->igv = '';
+		$totals->quantity = '';
+		$totals->referential_convertion = '';
 		$totals->kgs = '';
 		$totals->glns = '';
 		$totals->condition = '';
 
-
 		$response[] = $totals;
-
-
-
-
-
 
 		if ( $export) {
 			$spreadsheet = new Spreadsheet();
@@ -269,14 +265,13 @@ class LiquidationChannelReportController extends Controller
 				]
 			]);
 
-
 			$sheet->setCellValue('A3', '#');
 			$sheet->setCellValue('B3', 'Compañía');
 			$sheet->setCellValue('C3', 'Chofer Vendedor');
 			$sheet->setCellValue('D3', 'Supervisor');
-		 	$sheet->setCellValue('E3', 'Ruta');
+			$sheet->setCellValue('E3', 'Ruta');
 			$sheet->setCellValue('F3', 'Unidad de Negocio');
-            $sheet->setCellValue('G3', 'Canal'); 
+			$sheet->setCellValue('G3', 'Canal'); 
 			$sheet->setCellValue('H3', 'Sector');
 			$sheet->setCellValue('I3', 'Guía');
 			$sheet->setCellValue('J3', 'Tipo Doc.');
@@ -284,7 +279,7 @@ class LiquidationChannelReportController extends Controller
 			$sheet->setCellValue('L3', 'N° Documento');
 			$sheet->setCellValue('M3', 'Fecha de Despacho');
 			$sheet->setCellValue('N3', 'Fecha de Emisión');
-            $sheet->setCellValue('O3', 'ID Cliente');
+			$sheet->setCellValue('O3', 'ID Cliente');
 			$sheet->setCellValue('P3', 'Tipo de Doc. Id.');
 			$sheet->setCellValue('Q3', 'N° Doc.');
 			$sheet->setCellValue('R3', 'Razón Social');
@@ -303,12 +298,11 @@ class LiquidationChannelReportController extends Controller
 			$sheet->setCellValue('AE3', 'Cantidad Facturada');
 			$sheet->setCellValue('AF3', 'Cantidad KG.');
 			$sheet->setCellValue('AG3', 'Cantidad GL.');
-            $sheet->setCellValue('AH3', 'Precio');
+			$sheet->setCellValue('AH3', 'Precio');
 			$sheet->setCellValue('AI3', 'SubTotal');
 			$sheet->setCellValue('AJ3', 'IGV');
-            $sheet->setCellValue('AK3', 'Total');
-			
-			
+			$sheet->setCellValue('AK3', 'Total');
+
 			$sheet->getStyle('A3:AK3')->applyFromArray([
 				'font' => [
 					'bold' => true,
@@ -330,21 +324,20 @@ class LiquidationChannelReportController extends Controller
 			//		$saleDateDay = str_pad($saleDateObject->day, 2, '0', STR_PAD_LEFT);
 				}
 
-          
-
-
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
 				$sheet->setCellValue('C'.$row_number, $element->seller_id);
 				$sheet->setCellValue('D'.$row_number, $element->manager);	
-                $sheet->setCellValue('E'.$row_number, $element->client_route_id);
+				$sheet->setCellValue('E'.$row_number, $element->client_route_id);
 				$sheet->setCellValue('F'.$row_number, $element->business_unit_name);
-                $sheet->setCellValue('G'.$row_number, $element->client_channel_name);
-                $sheet->setCellValue('H'.$row_number, $element->client_sector_name);
+				$sheet->setCellValue('G'.$row_number, $element->client_channel_name);
+				$sheet->setCellValue('H'.$row_number, $element->client_sector_name);
 				$sheet->setCellValue('I'.$row_number, $element->guide);
 				$sheet->setCellValue('J'.$row_number, $element->warehouse_document_type_short_name);
-				$sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
-				$sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
+				$sheet->setCellValue('K'.$row_number, $element->guide_series);
+				// $sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
+				$sheet->setCellValue('L'.$row_number, $element->referral_serie_number);
+				// $sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
 				$sheet->setCellValue('M'.$row_number, $saleDateYear);
 				$sheet->setCellValue('N'.$row_number, $saleDateYear);
 				$sheet->setCellValue('O'.$row_number, $element->client_id);
@@ -354,7 +347,7 @@ class LiquidationChannelReportController extends Controller
 				$sheet->setCellValue('S'.$row_number, $element->int_name);	
 				$sheet->setCellValue('T'.$row_number, $element->condition);
 				$sheet->setCellValue('U'.$row_number, $element->expiry_date);
-				
+
 				$sheet->setCellValue('W'.$row_number, $element->client_zone_name);
 				$sheet->setCellValue('X'.$row_number, $element->district);
 				$sheet->setCellValue('Y'.$row_number, $element->province);
@@ -362,24 +355,20 @@ class LiquidationChannelReportController extends Controller
 				$sheet->setCellValue('AA'.$row_number, $element->plate);
 
 				$sheet->setCellValue('AC'.$row_number, $element->article_name);
-                $sheet->setCellValue('AD'.$row_number, $element->sum_total);
-				$sheet->setCellValue('AE'.$row_number, $element->kgs);
-				$sheet->setCellValue('AF'.$row_number, $element->kgs);
+				$sheet->setCellValue('AD'.$row_number, $element->sum_total);
+				$sheet->setCellValue('AE'.$row_number, $element->quantity);
+				// $sheet->setCellValue('AF'.$row_number, $element->kgs);
+				$sheet->setCellValue('AF'.$row_number, (floatval($element->quantity) * floatval($element->referential_convertion)));
 				$sheet->setCellValue('AG'.$row_number, $element->glns);
 				$sheet->setCellValue('AH'.$row_number, $element->price);
 				$sheet->setCellValue('AI'.$row_number, $element->sale_value); 
 				$sheet->setCellValue('AJ'.$row_number, $element->igv); 
 				$sheet->setCellValue('AK'.$row_number, $element->total);
 
-			
-
-
-								
-             //   $sheet->getStyle('N'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				// $sheet->getStyle('N'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('O'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.00');			
 
-		
 				$row_number++;
 			}
 
@@ -403,22 +392,22 @@ class LiquidationChannelReportController extends Controller
 			$sheet->getColumnDimension('R')->setAutoSize(true);
 			$sheet->getColumnDimension('S')->setAutoSize(true);
 			$sheet->getColumnDimension('T')->setAutoSize(true);
-            $sheet->getColumnDimension('U')->setAutoSize(true); 
+			$sheet->getColumnDimension('U')->setAutoSize(true); 
 			$sheet->getColumnDimension('V')->setAutoSize(true);
 			$sheet->getColumnDimension('W')->setAutoSize(true);
 			$sheet->getColumnDimension('X')->setAutoSize(true);
 			$sheet->getColumnDimension('Y')->setAutoSize(true);
 			$sheet->getColumnDimension('Z')->setAutoSize(true);
 			$sheet->getColumnDimension('AA')->setAutoSize(true);
-            $sheet->getColumnDimension('AB')->setAutoSize(true);
+			$sheet->getColumnDimension('AB')->setAutoSize(true);
 
 			$writer = new Xls($spreadsheet);
+			// echo json_encode($response);
 			return $writer->save('php://output');
 		} 
-		
-		    else {
+		else {
 			return response()->json($response);
-		    }
+		}
 		
 	}
 }
