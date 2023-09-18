@@ -254,7 +254,7 @@ class CollectionReportController extends Controller
 			$spreadsheet = new Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
 			$sheet->mergeCells('A1:W1');
-			$sheet->setCellValue('A1', 'RELACIÓN DE COBRANZAS '.$initial_date->format('d/m/Y').' AL '.$final_date->format('d/m/Y'));
+			$sheet->setCellValue('A1', 'REPORTE DE CANCELACIONES '.$initial_date->format('d/m/Y').' AL '.$final_date->format('d/m/Y'));
 			$sheet->getStyle('A1')->applyFromArray([
 				'font' => [
 					'bold' => true,
@@ -266,27 +266,35 @@ class CollectionReportController extends Controller
 			]);
 			$sheet->setCellValue('A3', '#');
 			$sheet->setCellValue('B3', 'Compañía');
-			$sheet->setCellValue('C3', 'ID Cliente');
-			$sheet->setCellValue('D3', 'Cód. Cliente');
-			$sheet->setCellValue('E3', 'Doc. Cliente');
-			$sheet->setCellValue('F3', 'Ruta');
+			$sheet->setCellValue('C3', 'Ruta');
+			$sheet->setCellValue('D3', 'ID Cliente');
+			$sheet->setCellValue('E3', 'Cód. Cliente');
+			$sheet->setCellValue('F3', 'Tipo de Doc. Id.');
 			$sheet->setCellValue('G3', 'Nº Doc.');
 			$sheet->setCellValue('H3', 'Razón Social');
-			$sheet->setCellValue('I3', 'Origen');
-			$sheet->setCellValue('J3', 'Fecha cobranza');
-			$sheet->setCellValue('K3', 'Fecha emisión');
-			$sheet->setCellValue('L3', 'Fecha venc.');
-			$sheet->setCellValue('M3', 'Tipo Doc.');
-			$sheet->setCellValue('N3', 'Nº Serie');
-			$sheet->setCellValue('O3', 'Nº Doc.');
-			$sheet->setCellValue('P3', 'Monto S/');
-			$sheet->setCellValue('Q3', 'Monto US$');
-			$sheet->setCellValue('R3', 'Tip. cambio');
-			$sheet->setCellValue('S3', 'Forma pago');
-			$sheet->setCellValue('T3', 'Banco');
+			$sheet->setCellValue('I3', 'Punto Venta');
+			$sheet->setCellValue('J3', 'Tipo Doc.');
+			$sheet->setCellValue('K3', 'Nº Serie');
+			$sheet->setCellValue('L3', 'Nº Doc.');
+			$sheet->setCellValue('M3', 'Fecha emisión');
+            $sheet->setCellValue('N3', 'Fecha venc.');
+			$sheet->setCellValue('O3', 'Monto S/');
+			$sheet->setCellValue('P3', 'Monto US$');
+			$sheet->setCellValue('Q3', 'Tip. cambio');
+			$sheet->setCellValue('R3', 'Autogenerado'); //es '' si no es remesa viene de operation number
+			$sheet->setCellValue('S3', 'Entidad Financiera');
+			$sheet->setCellValue('T3', 'Cuenta Bancaria Descripción');
 			$sheet->setCellValue('U3', 'Nº Operación');
-			$sheet->setCellValue('V3', 'Fecha de Remesa');
-			$sheet->setCellValue('W3', 'Sede Remesa');
+			$sheet->setCellValue('V3', 'Fecha de Pago'); //Fecha de voucher si hay voucher
+			$sheet->setCellValue('W3', 'Fecha de Remesa');
+			$sheet->setCellValue('X3', 'Sede Remesa');
+			$sheet->setCellValue('Y3', 'Forma pago');
+			$sheet->setCellValue('Z3', 'Monto Deposito Total'); // del voucher
+			$sheet->setCellValue('AA3', 'Monto Cancelación Crédito'); //lo usado para liquidar
+			$sheet->setCellValue('AB3', 'Origen');
+			$sheet->setCellValue('AC', 'Fecha de Cobranza'); //fecha de liquidación
+			
+			
 			$sheet->getStyle('A3:W3')->applyFromArray([
 				'font' => [
 					'bold' => true,

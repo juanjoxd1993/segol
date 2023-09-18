@@ -900,11 +900,9 @@ class LiquidationFinalController extends Controller
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
 			$sale_model->cede = $warehouse_type_id;
 
-			if ( $sale['warehouse_document_type_id'] = 4  || $sale['warehouse_document_type_id'] = 5 ) {
+			if ( $sale['warehouse_document_type_id'] = 5 ) {
 				switch ($sale['warehouse_document_type_id']) {
-					case 4:
-						$voucher_type_id = 5;
-						break;
+					
 					case 5:
 						$voucher_type_id = 1;
 						break;
