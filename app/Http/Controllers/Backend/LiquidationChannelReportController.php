@@ -19,6 +19,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use PhpParser\Node\Stmt\Else_;
 use stdClass;
 
 
@@ -103,8 +104,6 @@ class LiquidationChannelReportController extends Controller
 			'sales.guide_series', 
 			'sales.referral_voucher_number',
 			'sales.expiry_date as expiry_date',
-			'sales.sale_value as sale_value',
-			'sales.igv as igv',
 			'sales.balance as balance',
 			'articles.name as article_name',
 			'sale_details.quantity',
@@ -152,10 +151,24 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->client_zone_name =$saledetail ['client_zone_name'];
 				$saledetail->client_sector_name = $saledetail['client_sector_name'];
 				$saledetail->client_route_id = $saledetail['client_route_id'];
+
 				$saledetail->warehouse_document_type_short_name = $saledetail['warehouse_document_type_short_name'];
 				$saledetail->guide_series = $saledetail['guide_series'];
-				$saledetail->referral_serie_number = $saledetail['referral_serie_number'];
+				if ($saledetail->warehouse_document_type_short_name == 'FE')
+				{
+				$saledetail->referral_serie_number = 'F'.$saledetail['referral_serie_number'];
+				}
+				elseif($saledetail->warehouse_document_type_short_name == 'BE'){
+				$saledetail->referral_serie_number = 'B'.$saledetail['referral_serie_number'];
+				}
+				else{
+					$saledetail->referral_serie_number = $saledetail['referral_serie_number'];
+				}
+
+
 				$saledetail->referral_voucher_number = $saledetail['referral_voucher_number'];
+
+
 				$saledetail->article_name =$saledetail ['article_name'];
 				$saledetail->sum_total = $saledetail['sum_total'];
 				$saledetail->price = $saledetail['price'];
@@ -179,9 +192,9 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->int_name = $saledetail['int_name'];
 				$saledetail->credit_limit_days = $saledetail['credit_limit_days'];
 				$saledetail->expiry_date = $saledetail['expiry_date'];
-				$saledetail->sale_value = $saledetail['sale_value'];
+				$saledetail->sale_value = $saledetail->total/1.18;
 				$saledetail->quantity = $saledetail['quantity'];
-				$saledetail->igv = $saledetail['igv'];
+				$saledetail->igv =  $saledetail->total-$saledetail->sale_value;
 				$saledetail->referential_convertion = $saledetail['referential_convertion'];
 				$saledetail->kgs = $saledetail->sum_total*1000;
 				if ($saledetail->business_unit_name == 'Granel' || $saledetail->business_unit_name == 'Grifo')
@@ -333,10 +346,12 @@ class LiquidationChannelReportController extends Controller
 				$sheet->setCellValue('G'.$row_number, $element->client_channel_name);
 				$sheet->setCellValue('H'.$row_number, $element->client_sector_name);
 				$sheet->setCellValue('I'.$row_number, $element->guide);
+
 				$sheet->setCellValue('J'.$row_number, $element->warehouse_document_type_short_name);
-				$sheet->setCellValue('K'.$row_number, $element->guide_series);
+
+				$sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
 				// $sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
-				$sheet->setCellValue('L'.$row_number, $element->referral_serie_number);
+				$sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
 				// $sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
 				$sheet->setCellValue('M'.$row_number, $saleDateYear);
 				$sheet->setCellValue('N'.$row_number, $saleDateYear);
