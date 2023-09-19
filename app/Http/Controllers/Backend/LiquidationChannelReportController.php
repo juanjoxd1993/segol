@@ -348,11 +348,10 @@ class LiquidationChannelReportController extends Controller
 				$sheet->setCellValue('I'.$row_number, $element->guide);
 
 				$sheet->setCellValue('J'.$row_number, $element->warehouse_document_type_short_name);
-
+				// $sheet->setCellValue('K'.$row_number, $element->guide_series);
 				$sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
-				// $sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
+				// $sheet->setCellValue('L'.$row_number, $element->referral_serie_number);
 				$sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
-				// $sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
 				$sheet->setCellValue('M'.$row_number, $saleDateYear);
 				$sheet->setCellValue('N'.$row_number, $saleDateYear);
 				$sheet->setCellValue('O'.$row_number, $element->client_id);
