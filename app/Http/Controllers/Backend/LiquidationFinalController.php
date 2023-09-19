@@ -560,6 +560,7 @@ class LiquidationFinalController extends Controller
 					$sale_model->guide_number = $warehouse_movement->referral_guide_number;
 					$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
 					$sale_model->cede = $warehouse_type_id;
+					$sale_model->if_bol= 1;
 
 					if ( $sale['warehouse_document_type_id'] >= 4 && $sale['warehouse_document_type_id'] <= 9 ) {
 						$voucher_type_id = 2;
@@ -732,6 +733,7 @@ class LiquidationFinalController extends Controller
 					$sale_model->guide_number = $warehouse_movement->referral_guide_number;
 					$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
 					$sale_model->cede = $warehouse_type_id;
+					$sale_model->if_bol =1;
 
 					$voucher_type_id = 2;
 
@@ -883,7 +885,8 @@ class LiquidationFinalController extends Controller
 										);
 				};
 			};
-
+     //termina el boleteo
+	 
 			$sale_model = new Sale();
 			$sale_model->company_id = $model['company_id'];
 			$sale_model->sale_date = $sale_date;
