@@ -72,7 +72,7 @@ class FinanzasDetailTotalReportController extends Controller
 	//	$client_ids = [1031, 427, 13326, 13775, 14072,14258];
 
 		$total_venta_del_dia = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
-															->whereNotIn('sales.if_bol', 1)
+															->whereNotIn('sales.if_bol', [1])
 															->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 															->whereIn('sales.cede', $warehouse_types)
 															->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',  $initial_date)
@@ -81,7 +81,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$efective = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 		                                ->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
-										->whereNotIn('sales.if_bol', 1)
+										->whereNotIn('sales.if_bol', [1])
 										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 										->whereIn('sales.cede', $warehouse_types)
 										->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',  $initial_date)
@@ -94,7 +94,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 			$remesa = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 		                                ->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
-										->whereNotIn('sales.if_bol', 1)
+										->whereNotIn('sales.if_bol', [1])
 										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 										->whereIn('sales.cede', $warehouse_types)
 										->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',  $initial_date)
@@ -106,7 +106,7 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$deposit = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 									->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
-									->whereNotIn('sales.if_bol', 1)
+									->whereNotIn('sales.if_bol', [1])
 									->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 									->whereIn('sales.cede', $warehouse_types)
 									->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
@@ -116,7 +116,7 @@ class FinanzasDetailTotalReportController extends Controller
 									->sum('liquidations.amount');
 
 		$credit = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
-								->whereNotIn('sales.if_bol', 1)
+								->whereNotIn('sales.if_bol', [1])
 								->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 								->whereIn('sales.cede', $warehouse_types)
 								->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
