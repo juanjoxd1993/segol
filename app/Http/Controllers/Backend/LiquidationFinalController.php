@@ -886,7 +886,7 @@ class LiquidationFinalController extends Controller
 				};
 			};
      //termina el boleteo
-	 
+
 			$sale_model = new Sale();
 			$sale_model->company_id = $model['company_id'];
 			$sale_model->sale_date = $sale_date;
@@ -902,6 +902,7 @@ class LiquidationFinalController extends Controller
 			$sale_model->guide_number = $warehouse_movement->referral_guide_number;
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
 			$sale_model->cede = $warehouse_type_id;
+			$sale_model->if_bol = 0;
 
 			if ( $sale['warehouse_document_type_id'] = 5 ) {
 				switch ($sale['warehouse_document_type_id']) {
