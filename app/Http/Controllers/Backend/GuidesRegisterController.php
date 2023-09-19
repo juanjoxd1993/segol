@@ -826,7 +826,7 @@ class GuidesRegisterController extends Controller
 				->where('company_addresses.type', '=', 2);
 		})
 			->leftjoin('employees', 'warehouse_movements.account_id', '=', 'employees.id')
-			->select('warehouse_movements.id', 'warehouse_movements.company_id', 'company_addresses.address as company_address', 'company_addresses.district as company_district', 'company_addresses.province as company_province', 'company_addresses.department as company_department', 'warehouse_type_id', 'movement_class_id', 'movement_type_id', 'movement_number', 'warehouse_account_type_id', 'account_id', 'account_document_number', 'account_name', 'referral_guide_series', 'referral_guide_number', 'scop_number', 'license_plate', 'total', 'warehouse_movements.created_at', 'warehouse_movements.traslate_date', 'employees.license as employee_license')
+			->select('warehouse_movements.id', 'warehouse_movements.company_id', 'company_addresses.address as company_address', 'company_addresses.district as company_district', 'company_addresses.province as company_province', 'company_addresses.department as company_department', 'warehouse_type_id', 'movement_class_id', 'movement_type_id', 'movement_number', 'warehouse_account_type_id', 'account_id', 'account_document_number', 'account_name', 'referral_guide_series', 'referral_guide_number', 'scop_number', 'license_plate'/*, 'total'*/, 'warehouse_movements.created_at', 'warehouse_movements.traslate_date', 'employees.license as employee_license')
 			->where('warehouse_movements.id', $warehouseMovement->id)
 			->first();
 
