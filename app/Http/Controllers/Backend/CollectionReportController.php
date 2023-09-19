@@ -81,6 +81,7 @@ class CollectionReportController extends Controller
 			->leftjoin('payment_methods', 'liquidations.payment_method_id', '=', 'payment_methods.id')
 			->leftjoin('bank_accounts', 'liquidations.bank_account_id', '=', 'bank_accounts.id')
 			->leftjoin('banks', 'bank_accounts.bank_id', '=', 'banks.id')
+			->whereNotIn('sales.if_bol', [1])
 			->when($company_id, function ($query, $company_id) {
 				return $query->where('sales.company_id', $company_id);
 			})
