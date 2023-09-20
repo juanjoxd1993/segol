@@ -77,7 +77,7 @@ class FinanceSettlementsController extends Controller
 		$totals_igv = 0;
 		$totals_total = 0;
 		$totals_perception = 0;
-		$totals_total_perception = 0;
+		$totals_sum_soles = 0;
 		$totals_remesa = 0;
 		$totals_efective = 0;
 		$totals_deposits = 0;
@@ -163,7 +163,7 @@ class FinanceSettlementsController extends Controller
 
 
 
-			$totals_total_perception += $sum_soles;
+			$totals_sum_soles += $sum_soles;
 			$totals_remesa += $remesa;
 			$totals_efective += $sum_efective;
 			$totals_deposits += $sum_deposits;
@@ -192,7 +192,7 @@ class FinanceSettlementsController extends Controller
 		}
 		$totals = new stdClass();
 		$totals->liquidation_date = 'TOTAL';
-		$totals->total_perception = number_format($totals_total_perception, 2, '.', '');
+		$totals->sum_soles = number_format($totals_sum_soles, 2, '.', '');
 		$totals->remesa = number_format($totals_remesa, 2, '.', '');
 		$totals->efective = number_format($totals_efective, 2, '.', '');
 		$totals->deposit = number_format($totals_deposits, 2, '.', '');
