@@ -73,10 +73,6 @@ class FinanceSettlementsController extends Controller
 		->get();
 
 		$response = [];
-		$totals_sale_value = 0;
-		$totals_igv = 0;
-		$totals_total = 0;
-		$totals_perception = 0;
 		$totals_sum_soles = 0;
 		$totals_remesa = 0;
 		$totals_efective = 0;
@@ -86,11 +82,8 @@ class FinanceSettlementsController extends Controller
 		$totals_payment_method_deposit = 0;
 		$totals_total_efective_cobranza = 0;
 		$totals_total_deposit_cobranza = 0;
-		$totals_credit = 0;
-		$totals_cash_liquidation_amount = 0;
-		$totals_deposit_liquidation_amount = 0;
+		
 	
-		$totals_sum_total = 0;
 
 		
 		foreach ($elements as $sale) {
@@ -102,7 +95,6 @@ class FinanceSettlementsController extends Controller
 										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 										->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
 										->whereIn('liquidations.payment_method_id', [9])
-									//	->where('liquidations.collection',0)
 										->select('liquidations.amount')
 										->sum('liquidations.amount');
 
@@ -159,10 +151,6 @@ class FinanceSettlementsController extends Controller
 
 
 
-
-
-
-
 			$totals_sum_soles += $sum_soles;
 			$totals_remesa += $remesa;
 			$totals_efective += $sum_efective;
@@ -174,28 +162,27 @@ class FinanceSettlementsController extends Controller
 			$totals_total_deposit_cobranza += $total_depositos;
 	
 
-			/*$credit = new stdClass();
+			$credit = new stdClass();
 			$credit->company_short_name = $sale['company_short_name'];
-			$credit->sale_date = $sale['sale_date'];
-			$credit->perception = $sale['perception'];
-			$credit->total_perception = $sale['total_perception'];
+			$credit->liquidation_date = $sale['liquidation_date'];
+			$credit->sum_soles= $sale['sum_soles'];
 			$credit->efective = $sale['efective'];
 			$credit->remesa = $remesa;
-			$credit->deposit = $sale['deposit'];
+			$credit->deposits = $sale['deposit'];
 			$credit->pre_balance = $sale['pre_balance'];
 			$credit->payment_method_efective = number_format($sale['payment_method_efective'], 2, '.', '');
 			$credit->payment_method_deposit = number_format($sale['payment_method_deposit'], 2, '.', '');
 			$credit->total_efective_cobranza = number_format($sale['remesa'] +$sale['efective'] + $sale['payment_method_efective'], 2, '.', '');
 			$credit->total_deposit_cobranza = number_format($sale['deposit'] + $sale['payment_method_deposit'], 2, '.', '');
 			
-			$response[] = $credit;*/
+			$response[] = $credit;
 		}
 		$totals = new stdClass();
 		$totals->liquidation_date = 'TOTAL';
 		$totals->sum_soles = number_format($totals_sum_soles, 2, '.', '');
 		$totals->remesa = number_format($totals_remesa, 2, '.', '');
 		$totals->efective = number_format($totals_efective, 2, '.', '');
-		$totals->deposit = number_format($totals_deposits, 2, '.', '');
+		$totals->deposits = number_format($totals_deposits, 2, '.', '');
 		$totals->pre_balance = number_format($totals_pre_balance, 2, '.', '');
 		$totals->payment_method_efective = number_format($totals_payment_method_efective, 2, '.', '');
 		$totals->payment_method_deposit = number_format($totals_payment_method_deposit, 2, '.', '');
