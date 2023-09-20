@@ -59,9 +59,6 @@ class FinanceSettlementsController extends Controller
 		->leftjoin('bank_accounts', 'liquidations.bank_account_id', '=', 'bank_accounts.id')
 		->leftjoin('banks', 'bank_accounts.bank_id', '=', 'banks.id')
 		->leftjoin('document_types', 'clients.document_type_id', '=', 'document_types.id')
-		->leftjoin('warehouse_movements', 'sales.warehouse_movement_id', '=', 'warehouse_movements.id')
-		->leftjoin('movent_types', 'warehouse_movements.movement_type_id', '=', 'movent_types.id')
-		->leftjoin('sale_details', 'sales.id', '=', 'sale_details.sale_id')
 		->where('sales.created_at', '>=', $initial_date)
 		->where('sales.created_at', '<=', $final_date)
 		->select('sales.id', 
@@ -98,7 +95,6 @@ class FinanceSettlementsController extends Controller
 										->sum('liquidations.amount');
 
 
-									
 						
 			$sum_soles = Sale::where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
 										->whereIn('sales.warehouse_document_type_id',[13,5,7,4])			
@@ -110,13 +106,12 @@ class FinanceSettlementsController extends Controller
 										->select('sales.deposit')
 										->sum('sales.deposit');
 						
-			$sum_efective = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
-										->whereIn('sales.warehouse_document_type_id',[13,5,7,4])
-										->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
+			$sum_efective = Sale::where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
+										->whereIn('sales.warehouse_document_type_id',[13,5,7,4])										
 										->select('sales.efective')
 										->sum('sales.efective');
 						
-			$sum_pre_balance = Sale::leftjoinwhere(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
+			$sum_pre_balance = Sale::where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
 										->whereIn('sales.warehouse_document_type_id',[13,5,7,4])
 										->select('sales.pre_balance')
 										->sum('sales.pre_balance');
