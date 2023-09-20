@@ -832,7 +832,7 @@ class GuidesRegisterController extends Controller
 
 		$elements = WarehouseMovementDetail::select('warehouse_movement_details.id', 'item_number', 'article_code', 'converted_amount', 'price', 'warehouse_movement_details.total', 'warehouse_movements.id')
 			->join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
-			->where('warehouse_movement_id', $warehouse_movement->id)
+			->where('warehouse_movement_details.warehouse_movement_id', $warehouse_movement->id)
 			->where('company_id', $warehouse_movement->company_id)
 			->where('warehouse_type_id', $warehouse_movement->warehouse_type_id)
 			->get();
@@ -840,7 +840,7 @@ class GuidesRegisterController extends Controller
 		$packaging = WarehouseMovementDetail::join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
 			->join('articles', 'articles.id', '=', 'warehouse_movement_details.article_code')
 			->join('classifications', 'classifications.id', '=', 'articles.subgroup_id')
-			->where('warehouse_movement_id', $warehouse_movement->id)
+			->where('warehouse_movement_details.warehouse_movement_id', $warehouse_movement->id)
 			->where('company_id', $warehouse_movement->company_id)
 			->where('warehouse_movements.warehouse_type_id', $warehouse_movement->warehouse_type_id)
 			->where('articles.subgroup_id', '>=', 55)
@@ -857,7 +857,7 @@ class GuidesRegisterController extends Controller
 		$packaging = WarehouseMovementDetail::join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
 			->join('articles', 'articles.id', '=', 'warehouse_movement_details.article_code')
 			->join('classifications', 'classifications.id', '=', 'articles.subgroup_id')
-			->where('warehouse_movement_id', $warehouse_movement->id)
+			->where('warehouse_movement_details.warehouse_movement_id', $warehouse_movement->id)
 			->where('company_id', $warehouse_movement->company_id)
 			->where('warehouse_movements.warehouse_type_id', $warehouse_movement->warehouse_type_id)
 			->where('articles.subgroup_id', '>=', 55)
