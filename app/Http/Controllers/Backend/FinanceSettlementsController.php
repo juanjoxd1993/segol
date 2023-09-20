@@ -67,7 +67,7 @@ class FinanceSettlementsController extends Controller
 		->select('sales.id', 
 		'companies.short_name as company_short_name', 
 		DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'),  
-		'sale_date','sales.warehouse_document_type_id','total_perception', 'liquidations.amount','liquidations.payment_method_id', 'sales.deposit' )
+		'sales.sale_date','sales.warehouse_document_type_id','sales.total_perception', 'liquidations.amount','liquidations.payment_method_id', 'sales.deposit' )
 		->groupBy('liquidation_date')
 
 		->get();
