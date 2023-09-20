@@ -230,7 +230,7 @@ class FinanceSettlementsController extends Controller
 				$index++;
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->liquidation_date);
-				$sheet->setCellValue('C'.$row_number, $element->$sum_soles);
+				$sheet->setCellValue('C'.$row_number, $sum_soles);
 				$sheet->setCellValue('D'.$row_number, $remesa);
 				$sheet->setCellValue('E'.$row_number, $sum_efective);
 				$sheet->setCellValue('F'.$row_number, $sum_deposits);
