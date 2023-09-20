@@ -67,7 +67,7 @@ class FinanceSettlementsController extends Controller
 		->select('sales.id', 
 		'companies.short_name as company_short_name', 
 		DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'),  
-		'sale_date')
+		'sale_date','sales.warehouse_document_type_id','total_perception', 'liquidations.amount','liquidations.payment_method_id', 'sales.deposit' )
 		->groupBy('liquidation_date')
 
 		->get();
@@ -90,8 +90,7 @@ class FinanceSettlementsController extends Controller
 
             $warehouse_document_type_ids = [13,5,7];
 
-			$remesa = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
-		                                ->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
+			$remesa = Sale::leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
 										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 										->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
 										->whereIn('liquidations.payment_method_id', [9])
@@ -101,17 +100,13 @@ class FinanceSettlementsController extends Controller
 
 									
 						
-			$sum_soles = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+			$sum_soles = Sale::where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
 										->whereIn('sales.warehouse_document_type_id',[13,5,7,4])			
-										->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
 										->select('sales.total_perception')
 										->sum('sales.total_perception');
 						
-			$sum_deposits = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+			$sum_deposits = Sale::where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',$sale['liquidation_date'])
 										->whereIn('sales.warehouse_document_type_id',[13,5,7,4])
-										->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',$sale['liquidation_date'])
-										->where('clients.business_unit_id', '=', $sale['business_unit_id'])
-										->where('clients.channel_id', '=', $sale['channel_id'])
 										->select('sales.deposit')
 										->sum('sales.deposit');
 						
@@ -121,24 +116,19 @@ class FinanceSettlementsController extends Controller
 										->select('sales.efective')
 										->sum('sales.efective');
 						
-			$sum_pre_balance = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+			$sum_pre_balance = Sale::leftjoinwhere(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
 										->whereIn('sales.warehouse_document_type_id',[13,5,7,4])
-										->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
 										->select('sales.pre_balance')
 										->sum('sales.pre_balance');
 
 
-			$cobranza_efective =Liquidation::leftjoin('sales','liquidations.sale_id','=','sales.id')
-										->leftjoin('clients', 'sales.client_id', '=', 'clients.id')				
-										->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])	 
+			$cobranza_efective =Liquidation::where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
 										->where('liquidations.payment_method_id',[1])
 										->Where('liquidations.collection',[1])
 										->select('liquidations.amount')
 										->sum('liquidations.amount');
 
-			$cobranza_deposit =Liquidation::leftjoin('sales','liquidations.sale_id','=','sales.id')
-										->leftjoin('clients', 'sales.client_id', '=', 'clients.id')	
-										->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=',$sale['liquidation_date'])	 
+			$cobranza_deposit =Liquidation::where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=',$sale['liquidation_date'])	 
 										->where('liquidations.payment_method_id',[2])
 										->where('liquidations.collection',[1])
 										->select('liquidations.amount')				
