@@ -191,7 +191,7 @@ class FinanceSettlementsController extends Controller
 			$response[] = $credit;*/
 		}
 		$totals = new stdClass();
-		$totals->sale_date = 'TOTAL';
+		$totals->liquidation_date = 'TOTAL';
 		$totals->total_perception = number_format($totals_total_perception, 2, '.', '');
 		$totals->remesa = number_format($totals_remesa, 2, '.', '');
 		$totals->efective = number_format($totals_efective, 2, '.', '');
