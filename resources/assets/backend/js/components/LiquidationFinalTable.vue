@@ -151,9 +151,71 @@
 						element.total_perception = accounting.unformat(element.total_perception);
 					});
 
+                    const boletas = [
+                        ...unformatSales
+                    ];
+
+                    unformatSales.map((item) => {
+                        const {
+                            warehouse_document_type_id,
+                            details
+                        } = item;
+
+                        if (warehouse_document_type_id == 7) {
+                            details.map((i) => {
+                                const {
+                                    quantity,
+                                    sale_value,
+                                    total_perception,
+                                    price_igv
+                                } = i;
+
+                                const rest = quantity % 2;
+
+                                const div = (quantity / 2);
+
+                                const price = (sale_value / quantity).toFixed(4);
+
+                                for (let e = 1; e <= div; e++) {
+                                    const element = {
+                                        ...item,
+                                        details: [
+                                            {
+                                                ...i,
+                                                sale_value: price * 2,
+                                                total_perception: price * 2,
+                                                quantity: 2
+                                            }
+                                        ]
+                                    };
+
+                                    boletas.push(element);
+                                };
+
+                                if (rest) {
+                                    const element = {
+                                        ...item,
+                                        details: [
+                                            {
+                                                ...i,
+                                                sale_value: price,
+                                                total_perception: price,
+                                                quantity: 1
+                                            }
+                                        ]
+                                    };
+
+                                    boletas.push(element);
+                                };
+                            })
+                        };
+                    });
+
+                    EventBus.$emit('loading', false);
+
 					axios.post(this.url_store, {
 						'model': this.$store.state.model,
-						'sales': unformatSales
+						'sales': boletas
 					}).then(response => {
 						// console.log(response);
 						this.$store.commit('resetState');
