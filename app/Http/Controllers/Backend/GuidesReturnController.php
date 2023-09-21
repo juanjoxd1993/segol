@@ -278,7 +278,7 @@ class GuidesReturnController extends Controller
                     'total' => $article['retorno_press'],
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
-                    'warehouse_movement_id' => $warehouse_movement_id,
+                    'warehouse_movement' => $warehouse_movement_id,
                 ]);
 
                 WarehouseMovementDetail::insert([
