@@ -44,27 +44,13 @@ class FinanceSettlementsController extends Controller
 
 	public function list() {
 		$export = request('export');
-		error_log('Some message here.');
 		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d H:i:s');
 		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d H:i:s');
 		
-		DB::enableQueryLog();
-
-		$elements = Sale::leftjoin('companies', 'sales.company_id', '=', 'companies.id')
-		->leftjoin('clients', 'sales.client_id', '=', 'clients.id')
-		->leftjoin('business_units', 'clients.business_unit_id', '=', 'business_units.id')
-		->leftjoin('warehouse_document_types', 'sales.warehouse_document_type_id', '=', 'warehouse_document_types.id')
-		->leftjoin('payments', 'sales.payment_id', '=', 'payments.id')
-		->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
-		->leftjoin('bank_accounts', 'liquidations.bank_account_id', '=', 'bank_accounts.id')
-		->leftjoin('banks', 'bank_accounts.bank_id', '=', 'banks.id')
-		->leftjoin('document_types', 'clients.document_type_id', '=', 'document_types.id')
+		$elements = Sale::leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
 		->where('sales.created_at', '>=', $initial_date)
 		->where('sales.created_at', '<=', $final_date)
-		->select('sales.id', 
-		'companies.short_name as company_short_name', 
-		DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'),  
-		'sales.sale_date','sales.warehouse_document_type_id','sales.total_perception', 'liquidations.amount','liquidations.payment_method_id', 'sales.deposit' )
+		->select(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date') )
 		->groupBy('liquidation_date')
 
 		->get();
@@ -79,12 +65,12 @@ class FinanceSettlementsController extends Controller
 		$totals_payment_method_deposit = 0;
 		$totals_total_efective_cobranza = 0;
 		$totals_total_deposit_cobranza = 0;
-		
-	
 
-		
+
 		foreach ($elements as $sale) {
 
+			$sale->liquidation_date = $sale['liquidation_date'];
+		
             $warehouse_document_type_ids = [13,5,7];
 
 			$remesa = Sale::leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
@@ -118,7 +104,7 @@ class FinanceSettlementsController extends Controller
 
 
 			$cobranza_efective =Liquidation::where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $sale['liquidation_date'])
-										->where('liquidations.payment_method_id',[1])
+										->where('liquidations.payment_method_id',[1,9])
 										->Where('liquidations.collection',[1])
 										->select('liquidations.amount')
 										->sum('liquidations.amount');
@@ -130,37 +116,33 @@ class FinanceSettlementsController extends Controller
 										->sum('liquidations.amount');
 
 
-			$total_cobranza = $remesa+$sum_soles+$sum_efective;
+			$total_cobranza = $remesa+$sum_efective;
 			$total_depositos = $sum_deposits+$cobranza_deposit;
 
 
+			$sale->sum_soles = $sum_soles;
+			$sale->remesa = $remesa;
+			$sale->deposits = $sum_deposits;
+            $sale->efective = $sum_efective;
+            $sale->pre_balance = $sum_pre_balance;			    
+			$sale->payment_method_efective = $cobranza_efective;
+			$sale->payment_method_deposit = $cobranza_deposit;
+			$sale->total_efective_cobranza = $total_cobranza;
+			$sale->total_deposit_cobranza = $total_depositos;
 
 
-			$totals_sum_soles += $sum_soles;
-			$totals_remesa += $remesa;
-			$totals_efective += $sum_efective;
-			$totals_deposits += $sum_deposits;
-			$totals_pre_balance += $sum_pre_balance;
-			$totals_payment_method_efective += $cobranza_efective;
-			$totals_payment_method_deposit += $cobranza_deposit;
-			$totals_total_efective_cobranza += $total_cobranza;
-			$totals_total_deposit_cobranza += $total_depositos;
-	
-
-			$credit = new stdClass();
-			$credit->company_short_name = $sale['company_short_name'];
-			$credit->liquidation_date = $sale['liquidation_date'];
-			$credit->sum_soles= $sale['sum_soles'];
-			$credit->efective = $sale['efective'];
-			$credit->remesa = $remesa;
-			$credit->deposits = $sale['deposit'];
-			$credit->pre_balance = $sale['pre_balance'];
-			$credit->payment_method_efective = number_format($sale['payment_method_efective'], 2, '.', '');
-			$credit->payment_method_deposit = number_format($sale['payment_method_deposit'], 2, '.', '');
-			$credit->total_efective_cobranza = number_format($sale['remesa'] +$sale['efective'] + $sale['payment_method_efective'], 2, '.', '');
-			$credit->total_deposit_cobranza = number_format($sale['deposit'] + $sale['payment_method_deposit'], 2, '.', '');
-			
-			$response[] = $credit;
+			$totals_sum_soles += $sale['sum_soles'];
+			$totals_remesa += $sale['remesa'];
+			$totals_efective += $sale['efective'];
+			$totals_deposits += $sale['deposits'];
+			$totals_pre_balance += $sale['pre_balance'];
+			$totals_payment_method_efective += $sale['payment_method_efective'];
+			$totals_payment_method_deposit += $sale['payment_method_deposit'];
+			$totals_total_efective_cobranza += $sale['total_efective_cobranza'];
+			$totals_total_deposit_cobranza += $sale['total_deposit_cobranza'];
+	    
+			$response[] = $sale;
+        
 		}
 		$totals = new stdClass();
 		$totals->liquidation_date = 'TOTAL';
@@ -215,15 +197,15 @@ class FinanceSettlementsController extends Controller
 				$index++;
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->liquidation_date);
-				$sheet->setCellValue('C'.$row_number, $sum_soles);
-				$sheet->setCellValue('D'.$row_number, $remesa);
-				$sheet->setCellValue('E'.$row_number, $sum_efective);
-				$sheet->setCellValue('F'.$row_number, $sum_deposits);
-				$sheet->setCellValue('G'.$row_number, $sum_pre_balance);
-				$sheet->setCellValue('H'.$row_number, $cobranza_efective);
-				$sheet->setCellValue('I'.$row_number, $cobranza_deposit);
-				$sheet->setCellValue('J'.$row_number, $total_cobranza);
-				$sheet->setCellValue('K'.$row_number, $total_depositos);
+				$sheet->setCellValue('C'.$row_number, $element->sum_soles);
+				$sheet->setCellValue('D'.$row_number, $element->remesa);
+				$sheet->setCellValue('E'.$row_number, $element->efective);
+				$sheet->setCellValue('F'.$row_number, $element->deposits);
+				$sheet->setCellValue('G'.$row_number, $element->pre_balance);
+				$sheet->setCellValue('H'.$row_number, $element->payment_method_efective);
+				$sheet->setCellValue('I'.$row_number, $element->payment_method_deposit);
+				$sheet->setCellValue('J'.$row_number, $element->total_efective_cobranza);
+				$sheet->setCellValue('K'.$row_number, $element->total_deposit_cobranza);
 				
 
 
