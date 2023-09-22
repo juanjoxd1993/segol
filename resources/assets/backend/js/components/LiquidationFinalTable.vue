@@ -158,10 +158,17 @@
                     unformatSales.map((item) => {
                         const {
                             warehouse_document_type_id,
-                            details
+                            details,
+                            correlative
                         } = item;
 
+                        item.if_bol = 0;
+
+                        let last_correlative = correlative;
+
                         if (warehouse_document_type_id == 7) {
+                            item.warehouse_document_type_id = 13;
+                            item.if_bol = 1;
                             details.map((i) => {
                                 const {
                                     quantity,
@@ -177,8 +184,12 @@
                                 const price = (sale_value / quantity).toFixed(4);
 
                                 for (let e = 1; e <= div; e++) {
+                                    last_correlative = last_correlative + 1;
+
                                     const element = {
                                         ...item,
+                                        correlative: last_correlative,
+                                        if_bol: 0,
                                         details: [
                                             {
                                                 ...i,
@@ -193,8 +204,13 @@
                                 };
 
                                 if (rest) {
+
+                                    last_correlative = last_correlative + 1;
+
                                     const element = {
                                         ...item,
+                                        correlative: last_correlative,
+                                        if_bol: 0,
                                         details: [
                                             {
                                                 ...i,
@@ -211,38 +227,40 @@
                         };
                     });
 
+                    console.log(boletas)
+
                     EventBus.$emit('loading', false);
 
-					axios.post(this.url_store, {
-						'model': this.$store.state.model,
-						'sales': boletas
-					}).then(response => {
-						// console.log(response);
-						this.$store.commit('resetState');
+					// axios.post(this.url_store, {
+					// 	'model': this.$store.state.model,
+					// 	'sales': boletas
+					// }).then(response => {
+					// 	// console.log(response);
+					// 	this.$store.commit('resetState');
 
-						EventBus.$emit('loading', false);
-						EventBus.$emit('clear_form_sale');
-						EventBus.$emit('refresh_table_sale');
-						EventBus.$emit('refresh_table_liquidation');
+					// 	EventBus.$emit('loading', false);
+					// 	EventBus.$emit('clear_form_sale');
+					// 	EventBus.$emit('refresh_table_sale');
+					// 	EventBus.$emit('refresh_table_liquidation');
 
-						Swal.fire({
-							title: '¡Ok!',
-							text: 'Se creo el registro correctamente.',
-							type: "success",
-							heightAuto: false,
-						});
-					}).catch(error => {
-						EventBus.$emit('loading', false);
-						console.log(error);
-						console.log(error.response);
+					// 	Swal.fire({
+					// 		title: '¡Ok!',
+					// 		text: 'Se creo el registro correctamente.',
+					// 		type: "success",
+					// 		heightAuto: false,
+					// 	});
+					// }).catch(error => {
+					// 	EventBus.$emit('loading', false);
+					// 	console.log(error);
+					// 	console.log(error.response);
 
-						Swal.fire({
-							title: '¡Error!',
-							text: error,
-							type: "error",
-							heightAuto: false,
-						});
-					});
+					// 	Swal.fire({
+					// 		title: '¡Error!',
+					// 		text: error,
+					// 		type: "error",
+					// 		heightAuto: false,
+					// 	});
+					// });
 				}
 			},
             fillTableX: function() {

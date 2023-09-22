@@ -65,8 +65,10 @@ class LiquidationChannelReportController extends Controller
 
 		$export = request('export');
 
-		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d');
-		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d');
+		// $initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d');
+		$initial_date = CarbonImmutable::createFromDate('23-09-2023')->startOfDay()->format('Y-m-d');
+		// $final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d');
+		$final_date = CarbonImmutable::createFromDate('23-09-2023')->endOfDay()->format('Y-m-d');
 		$business_unit_id = request('model.business_unit_id');
 		$client_id = request('model.client_id');
 		
@@ -155,20 +157,19 @@ class LiquidationChannelReportController extends Controller
 
 				$saledetail->warehouse_document_type_short_name = $saledetail['warehouse_document_type_short_name'];
 				$saledetail->guide_series = $saledetail['guide_series'];
-				if ($saledetail->warehouse_document_type_short_name == 'FE')
-				{
-				$saledetail->referral_serie_number = 'F'.$saledetail['referral_serie_number'];
-				}
-				elseif($saledetail->warehouse_document_type_short_name == 'BE'){
-				$saledetail->referral_serie_number = 'B'.$saledetail['referral_serie_number'];
-				}
-				else{
-					$saledetail->referral_serie_number = $saledetail['referral_serie_number'];
-				}
-
+				// if ($saledetail->warehouse_document_type_short_name == 'FE')
+				// {
+				// $saledetail->referral_serie_number = 'F'.$saledetail['referral_serie_number'];
+				// }
+				// elseif($saledetail->warehouse_document_type_short_name == 'BE'){
+				// $saledetail->referral_serie_number = 'B'.$saledetail['referral_serie_number'];
+				// }
+				// else{
+				// 	$saledetail->referral_serie_number = $saledetail['referral_serie_number'];
+				// }
+				$saledetail->referral_serie_number = $saledetail['referral_serie_number'];
 
 				$saledetail->referral_voucher_number = $saledetail['referral_voucher_number'];
-
 
 				$saledetail->article_name =$saledetail ['article_name'];
 				$saledetail->sum_total = $saledetail['sum_total'];

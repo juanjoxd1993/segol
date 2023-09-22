@@ -884,12 +884,12 @@ class LiquidationFinalController extends Controller
 			$sale_model->guide_number = $warehouse_movement->referral_guide_number;
 			$sale_model->cede = $warehouse_type_id;
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
-			// if ($warehouse_document_type_id == 7) {
-			// 	$sale_model->if_bol = 1;
-			// } else {
-			// 	$sale_model->if_bol = 0;
-			// };
-			$sale_model->if_bol = 0;
+			if (array_key_exists('if_bol', $sale)) {
+				$sale_model->if_bol = $sale['if_bol'];
+			} else {
+				$sale_model->if_bol = 0;
+			};
+			
 
 			if ( $sale['warehouse_document_type_id'] = 5 ) {
 				switch ($sale['warehouse_document_type_id']) {
@@ -930,7 +930,7 @@ class LiquidationFinalController extends Controller
 				$voucher->client_name = $client->business_name;
 				$voucher->client_address = $client_address->address;
 				$voucher->voucher_type_id = $voucher_type->id;
-				$voucher->serie_number = $serie_number;
+				$voucher->serie_number = $sale['serie_num'];
 				$voucher->voucher_number = ++$last_voucher_number;
 				$voucher->referral_guide_series = ( $sale['referral_guide_series'] ? $sale['referral_guide_series'] : $warehouse_movement->referral_guide_series );
 				$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
@@ -989,8 +989,9 @@ class LiquidationFinalController extends Controller
 				$voucher->igv = round($igv, 4);
 				$voucher->save();
 
-				$sale_model->referral_serie_number = $sale['referral_serie_number'];
-				$sale_model->referral_voucher_number = $voucher->voucher_number;
+				$sale_model->referral_serie_number = $sale['serie_num'];
+				// $sale_model->referral_voucher_number = $voucher->voucher_number;
+				$sale_model->referral_voucher_number = $sale['correlative'];
 			} else {
 				$referral_serie_number = CarbonImmutable::now()->format('Ym');
 				$last_voucher_number = Sale::where('company_id', $model['company_id'])
@@ -1087,7 +1088,7 @@ class LiquidationFinalController extends Controller
 
 			SaleSeries::where('id', $sale['sale_serie_id'])
 								->update(
-									['correlative' => $sale['referral_serie_number']]
+									['correlative' => $sale['correlative']]
 								);
 
 			if ( array_key_exists('liquidations', $sale) ) {
@@ -1187,8 +1188,9 @@ class LiquidationFinalController extends Controller
 				$sale_saldo_favor->payment_id =  1;
 				$sale_saldo_favor->currency_id = $sale['currency_id'];
 				$sale_saldo_favor->warehouse_document_type_id = 30;
-				$sale_saldo_favor->referral_serie_number = $sale['referral_serie_number'];
-				$sale_saldo_favor->referral_voucher_number = $sale['referral_voucher_number'];
+				$sale_saldo_favor->referral_serie_number = $sale['serie_num'];
+				// $sale_saldo_favor->referral_voucher_number = $sale['referral_voucher_number'];
+				$sale_saldo_favor->referral_voucher_number = $sale['correlative'];
 				$sale_saldo_favor->sale_value = 0;
 				$sale_saldo_favor->exonerated_value = 0;
 				$sale_saldo_favor->inaccurate_value = $total_sale_amount * -1;
