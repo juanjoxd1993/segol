@@ -891,7 +891,7 @@ class LiquidationFinalController extends Controller
 			};
 			
 
-			if ( $sale['warehouse_document_type_id'] = 5 ) {
+			if ( $sale['warehouse_document_type_id'] >= 5 && $sale['warehouse_document_type_id'] <= 8 ) {
 				switch ($sale['warehouse_document_type_id']) {
 					case 5:
 						$voucher_type_id = 1;
