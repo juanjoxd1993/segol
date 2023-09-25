@@ -227,40 +227,40 @@
                         };
                     });
 
-                    console.log(boletas)
+                    // console.log(boletas)
 
                     EventBus.$emit('loading', false);
 
-					// axios.post(this.url_store, {
-					// 	'model': this.$store.state.model,
-					// 	'sales': boletas
-					// }).then(response => {
-					// 	// console.log(response);
-					// 	this.$store.commit('resetState');
+					axios.post(this.url_store, {
+						'model': this.$store.state.model,
+						'sales': boletas
+					}).then(response => {
+						// console.log(response);
+						this.$store.commit('resetState');
 
-					// 	EventBus.$emit('loading', false);
-					// 	EventBus.$emit('clear_form_sale');
-					// 	EventBus.$emit('refresh_table_sale');
-					// 	EventBus.$emit('refresh_table_liquidation');
+						EventBus.$emit('loading', false);
+						EventBus.$emit('clear_form_sale');
+						EventBus.$emit('refresh_table_sale');
+						EventBus.$emit('refresh_table_liquidation');
 
-					// 	Swal.fire({
-					// 		title: '¡Ok!',
-					// 		text: 'Se creo el registro correctamente.',
-					// 		type: "success",
-					// 		heightAuto: false,
-					// 	});
-					// }).catch(error => {
-					// 	EventBus.$emit('loading', false);
-					// 	console.log(error);
-					// 	console.log(error.response);
+						Swal.fire({
+							title: '¡Ok!',
+							text: 'Se creo el registro correctamente.',
+							type: "success",
+							heightAuto: false,
+						});
+					}).catch(error => {
+						EventBus.$emit('loading', false);
+						console.log(error);
+						console.log(error.response);
 
-					// 	Swal.fire({
-					// 		title: '¡Error!',
-					// 		text: error,
-					// 		type: "error",
-					// 		heightAuto: false,
-					// 	});
-					// });
+						Swal.fire({
+							title: '¡Error!',
+							text: error,
+							type: "error",
+							heightAuto: false,
+						});
+					});
 				}
 			},
             fillTableX: function() {

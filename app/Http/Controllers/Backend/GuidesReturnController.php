@@ -493,7 +493,7 @@ class GuidesReturnController extends Controller
         foreach ($prestamos as $prestamo) {
             $press = new Container;
             $press->client_id = $prestamo['client_id'];
-            $press->warehouse_movement_id = $request->warehouse_movement_id;
+            $press->warehouse_movement = $request->warehouse_movement_id;
             $press->if_devol = $prestamo['if_devol'];
             $press->date = $date;
             if ($prestamo['if_devol']) {
