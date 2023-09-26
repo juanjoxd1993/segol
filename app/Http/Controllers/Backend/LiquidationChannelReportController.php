@@ -365,7 +365,7 @@ class LiquidationChannelReportController extends Controller
 				$sheet->setCellValue('S'.$row_number, $element->int_name);	
 				$sheet->setCellValue('T'.$row_number, $element->condition);
 				$sheet->setCellValue('U'.$row_number, $element->expiry_date);
-				$sheet->setCellValue('V'.$row_number, $element->scop_number;
+				$sheet->setCellValue('V'.$row_number, $element->scop_number);
 				$sheet->setCellValue('W'.$row_number, $element->client_zone_name);
 				$sheet->setCellValue('X'.$row_number, $element->district);
 				$sheet->setCellValue('Y'.$row_number, $element->province);
