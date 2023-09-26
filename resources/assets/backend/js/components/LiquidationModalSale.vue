@@ -59,18 +59,6 @@
                                         <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                        <!--       <div class="col-lg-3">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Dirección:</label>
-                                        <select class="form-control" name="address_id" id="address_id" v-model="client_address.id" @focus="$parent.clearErrorMsg($event)">
-                                            <option value="">Seleccionar</option>
-                                            <option v-for="client_address in client_addresses" :value="client_address.id" v-bind:key="client_address.id">{{ client_address.address }}</option>
-                                        </select>
-                                        <div id="address_id-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div> -->
-
-                            
 								<div class="col-lg-3">
 									<div class="form-group">
                                         <label class="form-control-label">Moneda:</label>
@@ -170,7 +158,6 @@
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success" @click.prevent="liquidationModal()">Liquidar</button>
-                        <!-- <button type="submit" class="btn btn-success" v-if="sale.payment_id == 2" @click.prevent="addSale()">{{ button_text }}</button> -->
                         <button type="button" class="btn btn-secondary" @click.prevent="closeModal()">Cerrar</button>
                     </div>
                 </div>
@@ -188,8 +175,6 @@
                 type: Array,
                 default: '',
             },
-
-        
 			currencies: {
                 type: Array,
                 default: '',
@@ -314,18 +299,6 @@
             });
         },
         watch: {
-            // 'sale.warehouse_document_type_id': function(val) {
-			// 	if ( val != 4 && val != 5 ) {
-			// 		console.log(val);
-			// 		this.sale.perception = 0;
-			// 		this.sale.perception_percentage = 0;
-			// 		this.sale.total_perception = this.sale.total;
-			// 		this.sale.details.map(element => {
-			// 			element.igv_perception = '0.0000';
-			// 			element.total_perception = element.sale_value;
-			// 		});
-			// 	}
-			// },
 			'sale.warehouse_document_type_id': function(val) {
 				let warehouse_document_type = this.warehouse_document_types.find(element => element.id == val);
 				this.sale.warehouse_document_type_name = warehouse_document_type ? warehouse_document_type.name : '';
@@ -581,7 +554,7 @@
 								total_perception: '',
 								payment_id: '',
 								currency_id: 1,
-                              credit_limit: '',
+                                credit_limit: '',
 							};
 						}
 					}).catch(error => {
