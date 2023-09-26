@@ -190,6 +190,8 @@
                                         ...item,
                                         warehouse_document_type_id: 7,
                                         correlative: last_correlative,
+                                        total: price * 2,
+                                        total_perception: price * 2,
                                         if_bol: 0,
                                         details: [
                                             {
@@ -212,6 +214,8 @@
                                         ...item,
                                         warehouse_document_type_id: 7,
                                         correlative: last_correlative,
+                                        total: price,
+                                        total_perception: price,
                                         if_bol: 0,
                                         details: [
                                             {
