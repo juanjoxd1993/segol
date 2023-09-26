@@ -188,6 +188,7 @@
 
                                     const element = {
                                         ...item,
+                                        warehouse_document_type_id: 7,
                                         correlative: last_correlative,
                                         if_bol: 0,
                                         details: [
@@ -209,6 +210,7 @@
 
                                     const element = {
                                         ...item,
+                                        warehouse_document_type_id: 7,
                                         correlative: last_correlative,
                                         if_bol: 0,
                                         details: [
