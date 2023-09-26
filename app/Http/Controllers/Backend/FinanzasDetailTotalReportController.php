@@ -68,11 +68,11 @@ class FinanzasDetailTotalReportController extends Controller
 		$totals_total = 0;
 		$totals_sum_total = 0;
 
-		$warehouse_document_type_ids = [13,5,7];
+		$warehouse_document_type_ids = [13,5];
 	//	$client_ids = [1031, 427, 13326, 13775, 14072,14258];
 
 		$total_venta_del_dia = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
-															->whereNotIn('sales.if_bol', [1])
+														//	->whereNotIn('sales.if_bol', [1])
 															->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 															->whereIn('sales.cede', $warehouse_types)
 															->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',  $initial_date)
