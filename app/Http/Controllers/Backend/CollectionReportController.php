@@ -293,7 +293,7 @@ class CollectionReportController extends Controller
 			$sheet->setCellValue('Z3', 'Monto Deposito Total'); // del voucher
 			$sheet->setCellValue('AA3', 'Monto Cancelación Crédito'); //lo usado para liquidar
 			$sheet->setCellValue('AB3', 'Origen');
-			$sheet->setCellValue('AC', 'Fecha de Cobranza'); //fecha de liquidación
+			$sheet->setCellValue('AC3', 'Fecha de Cobranza'); //fecha de liquidación
 			
 			
 			$sheet->getStyle('A3:W3')->applyFromArray([
