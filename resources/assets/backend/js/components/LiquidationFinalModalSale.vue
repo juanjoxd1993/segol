@@ -257,6 +257,7 @@
                     correlative: '',
                     scop_number: ''
                 },
+                articles: {},
                 filterArticles: [],
                 edit_flag: false,
                 sale_series: [],
@@ -270,9 +271,28 @@
 
             EventBus.$on('create_modal', function() {
                 document.getElementById('client_id').disabled = false;
-                this.clients = this.$store.state.clients;
+                if (!this.clients.length) {
+                    this.clients = this.$store.state.clients;
+                    const warehouse_movement_id = this.$store.state.model.warehouse_movement_id;
 
-                let vm = this;
+                    let vm = this;
+
+                    this.clients.map(item => {
+                        const { id } = item;
+
+                        axios.post(this.url_get_articles_clients,{
+                            client_id: id,
+                            warehouse_movement_id
+                        }).then(response => {
+                            let data = response.data;
+
+                            vm.articles[id] = data;
+                        }).catch(error => {
+                            console.log(error);
+                            console.log(error.response);
+                        });
+                    })
+                };
 
                 this.button_text = 'Crear';
                 this.sale.client_id = 0;
@@ -367,63 +387,68 @@
                 this.sale.payment_id = client.payment_id;
                 this.sale.credit_limit = client.credit_limit;
 
-                axios.post(this.url_get_articles_clients,{
-                    client_id,
-                    warehouse_movement_id
-                }).then(response => {
-                    document.getElementById('client_id').disabled = true;
-                    const data = response.data;
-                    let dataParse = [];
+                const articles = this.articles[client_id];
+                document.getElementById('client_id').disabled = true;
 
-                    const sales = this.$store.state.sales;
+                this.filterArticles = articles;
+                this.$store.state.articles_filter = articles;
+                // axios.post(this.url_get_articles_clients,{
+                //     client_id,
+                //     warehouse_movement_id
+                // }).then(response => {
+                //     document.getElementById('client_id').disabled = true;
+                //     let data = response.data;
 
-                    if (sales.length) {
-                        sales.map(sale => {
-                            const {
-                                client_id,
-                                details
-                            } = sale;
+                //     const sales = this.$store.state.sales;
 
-                            details.map(detail => {
-                                const {
-                                    article_id,
-                                    quantity
-                                } = detail;
+                //     if (sales.length) {
+                //         sales.map(sale => {
+                //             const {
+                //                 client_id,
+                //                 details
+                //             } = sale;
 
-                                const parseQuantity = parseInt(quantity);
+                //             details.map(detail => {
+                //                 const {
+                //                     article_id,
+                //                     quantity
+                //                 } = detail;
 
-                                data.map(dat => {
-                                    const {id} = dat;
-                                    const quantityDat = dat.quantity;
+                //                 data = data.filter(item => item.id != article_id && client_id != val);
+                //                 console.log('val: ', val);
+                //                 console.log('article id: ', article_id);
+                //                 console.log('client id: ', client_id);
 
-                                    let add = true;
+                //                 // data.map(dat => {
+                //                 //     const {id} = dat;
+                //                 //     const quantityDat = dat.quantity;
 
-                                    if (article_id == id && client_id == val) {
-                                        add = false;
-                                        const rest = quantityDat - parseQuantity;
+                //                 //     let add = true;
 
-                                        if (rest > 0) {
-                                            add = true;
-                                            dat.quantity = rest;
-                                        };
-                                    };
+                //                 //     if (article_id == id && client_id == val) {
+                //                 //         add = false;
+                //                 //         const rest = quantityDat - parseQuantity;
 
-                                    if (add) {
-                                        dataParse.push(dat);
-                                    };
-                                })
-                            })
-                        });
-                    } else {
-                        dataParse = data;
-                    };
+                //                 //         if (rest > 0) {
+                //                 //             add = true;
+                //                 //             dat.quantity = rest;
+                //                 //         };
+                //                 //     };
 
-                    this.filterArticles = dataParse;
-                    this.$store.state.articles_filter = data;
-                }).catch(error => {
-                    console.log(error);
-                    console.log(error.response);
-                });
+                //                 //     if (add) {
+                //                 //         dataParse.push(dat);
+                //                 //     };
+                //                 // })
+                //             })
+                //         });
+                //     };
+
+                //     this.filterArticles = data;
+                //     this.$store.state.articles_filter = data;
+                // }).catch(error => {
+                //     console.log(error);
+                //     console.log(error.response);
+                // });
             },
             'model.article_id': function(val) {
                 const article = this.filterArticles.find(item => item.id === val);
@@ -561,6 +586,13 @@
 						total_perception: '',
 					};
 
+                    if (!articlesFilter.length) {
+                        const clients = this.clients.filter(item => item.id != this.sale.client_id);
+
+                        this.clients = clients;
+                    };
+
+                    this.articles[this.sale.client_id] = articlesFilter;
                     this.filterArticles = articlesFilter;
 
                     this.addTotals();

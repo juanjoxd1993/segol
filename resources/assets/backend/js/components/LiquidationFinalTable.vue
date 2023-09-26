@@ -155,16 +155,23 @@
                         ...unformatSales
                     ];
 
+                    const correlatives = {};
+
                     unformatSales.map((item) => {
                         const {
                             warehouse_document_type_id,
                             details,
-                            correlative
+                            correlative,
+                            serie_num,
+                            sale_serie_id
                         } = item;
 
                         item.if_bol = 0;
+                        if (!correlatives[serie_num]) {
+                            const sale_serie_index = this.$store.state.sale_series.findIndex(item => item.id == sale_serie_id);
 
-                        let last_correlative = correlative;
+                            correlatives[serie_num] = this.$store.state.sale_series[sale_serie_index].correlative;
+                        }
 
                         if (warehouse_document_type_id == 7) {
                             item.warehouse_document_type_id = 13;
@@ -184,12 +191,10 @@
                                 const price = (sale_value / quantity).toFixed(4);
 
                                 for (let e = 1; e <= div; e++) {
-                                    last_correlative = last_correlative + 1;
-
                                     const element = {
                                         ...item,
                                         warehouse_document_type_id: 7,
-                                        correlative: last_correlative,
+                                        correlative: correlatives[serie_num],
                                         total: price * 2,
                                         total_perception: price * 2,
                                         if_bol: 0,
@@ -203,17 +208,16 @@
                                         ]
                                     };
 
+                                    correlatives[serie_num] = correlatives[serie_num] + 1;
+
                                     boletas.push(element);
                                 };
 
                                 if (rest) {
-
-                                    last_correlative = last_correlative + 1;
-
                                     const element = {
                                         ...item,
                                         warehouse_document_type_id: 7,
-                                        correlative: last_correlative,
+                                        correlative: correlatives[serie_num],
                                         total: price,
                                         total_perception: price,
                                         if_bol: 0,
@@ -226,6 +230,8 @@
                                             }
                                         ]
                                     };
+
+                                    correlatives[serie_num] = correlatives[serie_num] + 1;
 
                                     boletas.push(element);
                                 };
