@@ -141,6 +141,7 @@ class LiquidationChannelReportController extends Controller
 			->orderBy('sales.referral_voucher_number')
 			->get();
 			$response=[];
+			echo 'elements: ' . json_encode($elements);
 
 			foreach ($elements as $saledetail) {
 
@@ -261,6 +262,7 @@ class LiquidationChannelReportController extends Controller
 		$totals->condition = '';
 
 		$response[] = $totals;
+		echo 'response: ' . json_encode($response);
 
 		if ( $export) {
 			$spreadsheet = new Spreadsheet();
