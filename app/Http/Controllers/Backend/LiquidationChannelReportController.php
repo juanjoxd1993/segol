@@ -111,6 +111,7 @@ class LiquidationChannelReportController extends Controller
 			'sale_details.referential_convertion',
 			'sale_details.price_igv as price',
 			'sale_details.total', 
+			'sales.scop_number as scop_number',
 			'clients.id as client_id',
 			'clients.code as client_code', 
 			'clients.business_name as client_business_name', 
@@ -187,6 +188,7 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->manager = $saledetail['manager'];
 				$saledetail->grupo = $saledetail['grupo'];
 				$saledetail->estado = $saledetail['estado'];
+				$saledetail->scop_number = $saledetail['scop_number'];
 				$saledetail->client_document_name = $saledetail['client_document_name'];
 				$saledetail->document_number = $saledetail['document_number'];
 				$saledetail->int_name = $saledetail['int_name'];
@@ -253,6 +255,7 @@ class LiquidationChannelReportController extends Controller
 		$totals->document_number = '';
 		$totals->int_name = '';
 		$totals->expiry_date = '';
+		$totals->scop_number = '';
 		$totals->sale_value = '';
 		$totals->igv = '';
 		$totals->quantity = '';
@@ -362,7 +365,7 @@ class LiquidationChannelReportController extends Controller
 				$sheet->setCellValue('S'.$row_number, $element->int_name);	
 				$sheet->setCellValue('T'.$row_number, $element->condition);
 				$sheet->setCellValue('U'.$row_number, $element->expiry_date);
-
+				$sheet->setCellValue('V'.$row_number, $element->scop_number);
 				$sheet->setCellValue('W'.$row_number, $element->client_zone_name);
 				$sheet->setCellValue('X'.$row_number, $element->district);
 				$sheet->setCellValue('Y'.$row_number, $element->province);
