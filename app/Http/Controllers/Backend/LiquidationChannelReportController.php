@@ -19,7 +19,6 @@ use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
-use PhpParser\Node\Stmt\Else_;
 use stdClass;
 
 
@@ -65,10 +64,8 @@ class LiquidationChannelReportController extends Controller
 
 		$export = request('export');
 
-		// $initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d');
-		$initial_date = CarbonImmutable::createFromDate('23-09-2023')->startOfDay()->format('Y-m-d');
-		// $final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d');
-		$final_date = CarbonImmutable::createFromDate('23-09-2023')->endOfDay()->format('Y-m-d');
+		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d');
+		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d');
 		$business_unit_id = request('model.business_unit_id');
 		$client_id = request('model.client_id');
 		
@@ -93,7 +90,7 @@ class LiquidationChannelReportController extends Controller
 			            ->where('sales.sale_date', '>=', $initial_date)
 			            ->where('sales.sale_date', '<=', $final_date)
 						->whereNotIn('sales.warehouse_document_type_id', [2,3,8,9,10,11,14,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30])
-						->whereNotIn('sales.if_bol', [1])
+					//	->whereNotIn('sales.if_bol', [1])
 						->select('sale_details.id', 
 			'companies.short_name as company_short_name',
 			'sale_date',
