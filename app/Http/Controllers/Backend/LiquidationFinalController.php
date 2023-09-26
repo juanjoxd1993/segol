@@ -939,6 +939,7 @@ class LiquidationFinalController extends Controller
 				$voucher->expiry_date = $expiry_date;
 				$voucher->currency_id = $sale['currency_id'];
 				$voucher->payment_id = $sale['payment_id'];
+				$voucher->scop = $scop;
 				// $voucher->payment_id = $client->payment_id;
 				$voucher->total = $sale['total'];
 				$voucher->igv_perception = $sale['perception'];
@@ -1009,7 +1010,7 @@ class LiquidationFinalController extends Controller
 				}
 			}
 
-			$sale_model->scop_number = $warehouse_movement->scop_number;
+			// $sale_model->scop_number = $warehouse_movement->scop_number;
 			$sale_model->license_plate = $warehouse_movement->license_plate;
 
 			$sale_value = 0;
