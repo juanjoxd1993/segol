@@ -381,8 +381,8 @@ class LiquidationChannelReportController extends Controller
 				$sheet->setCellValue('AK'.$row_number, $element->total);
 
 				// $sheet->getStyle('N'.$row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('O'.$row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.00');			
+				$sheet->getStyle('AH'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('AI'.$row_number)->getNumberFormat()->setFormatCode('0.00');			
 
 				$row_number++;
 			}
