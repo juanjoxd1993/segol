@@ -42,10 +42,11 @@ class LiquidationFinalController extends Controller
 	public function index() {
 		$companies = Company::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')
-																										->where('name', 'Factura Electrónica')
-																										->orWhere('name', 'Boleta de Venta Electrónica')
-																										->orWhere('name', 'Nota Interna')
-																										->get();
+						->where('name', 'Factura Electrónica')
+						->orWhere('name', 'Boleta de Venta Electrónica')
+						->orWhere('name', 'Nota de Pedido')
+						->orWhere('name', 'Cesión de Uso')
+						->get();
 		$payment_methods = PaymentMethod::select('id', 'name', 'payment_id')->get();
 		$currencies = Currency::select('id', 'name')->get();
 		$payments = Payment::all();
