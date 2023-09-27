@@ -80,7 +80,7 @@ class LiquidationReportController extends Controller
 			->leftjoin('sale_details', 'sales.id', '=', 'sale_details.sale_id')
 			->where('sales.created_at', '>=', $initial_date)
 			->where('sales.created_at', '<=', $final_date)
-			->whereNotIn('sales.warehouse_document_type_id', [7])
+			->whereNotIn('sales.warehouse_document_type_id', [7,30])
 			->select('sales.id', 'companies.short_name as company_short_name', DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'), 'sale_date', 'business_units.name as business_unit_name', 'warehouse_document_types.short_name as warehouse_document_type_short_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_value', 'sales.igv', 'sales.total', DB::Raw('(sales.total_perception - sales.total) as perception'), 'sales.total_perception', 'payments.name as payment_name', 'banks.short_name as bank_short_name', 'clients.code as client_code', 'clients.business_name as client_business_name', 'document_types.name as document_type_name', 'clients.document_number as client_document_number', 'warehouse_movements.movement_number as warehouse_movement_movement_number', 'movent_types.name as movement_type_name', DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'), 
 			DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.code FROM articles WHERE articles.id = sale_details.article_id) = 3) as gallons'), 
 			DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.code FROM articles WHERE articles.id = sale_details.article_id) = 1) as sum_1k'), 
