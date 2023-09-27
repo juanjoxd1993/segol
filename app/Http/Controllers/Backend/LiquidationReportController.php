@@ -109,6 +109,7 @@ class LiquidationReportController extends Controller
 		$totals_total_perception = 0;
 		$totals_credit = 0;
 		$totals_cash_liquidation_amount = 0;
+		$totals_remesa_liquidation_amount = 0;
 		$totals_deposit_liquidation_amount = 0;
 		$totals_gallons = 0;
 		$totals_sum_1k = 0;
@@ -125,7 +126,12 @@ class LiquidationReportController extends Controller
 				->sum('amount');
 
 			$deposit_liquidation_amount = Liquidation::where('sale_id', $sale['id'])
-				->where('payment_method_id', '!=', 1)
+				->whereIn('payment_method_id', [2,3] )
+				->select('amount')
+				->sum('amount');
+
+			$remesa_liquidation_amount = Liquidation::where('sale_id', $sale['id'])
+				->where('payment_method_id', 9)
 				->select('amount')
 				->sum('amount');
 
@@ -137,6 +143,7 @@ class LiquidationReportController extends Controller
 			$totals_perception += $sale['perception'];
 			$totals_total_perception += $sale['total_perception'];
 			$totals_cash_liquidation_amount += $cash_liquidation_amount;
+			$totals_remesa_liquidation_amount += $remesa_liquidation_amount;
 			$totals_deposit_liquidation_amount += $deposit_liquidation_amount;
 			$totals_gallons += $sale['gallons'];
 			$totals_sum_1k += $sale['sum_1k'];
@@ -168,7 +175,8 @@ class LiquidationReportController extends Controller
 				$liquidation->payment_name = 'Contado';
 				$liquidation->credit = '';
 				$liquidation->cash_liquidation_amount = $liquidation->payment_method_id == 1 ? $liquidation->amount : '';
-				$liquidation->deposit_liquidation_amount = $liquidation->payment_method_id !== 1 ? $liquidation->amount : '';
+				$liquidation->deposit_liquidation_amount = $liquidation->payment_method_id == 2 || $liquidation->payment_method_id == 3 ? $liquidation->amount : '';
+				$liquidation->remesa_liquidation_amount = $liquidation->payment_method_id == 9 ? $liquidation->amount : '';
 				$liquidation->bank_short_name = $liquidation['bank_short_name'];
 				$liquidation->operation_number =$liquidation['operation_number'];
 				$liquidation->client_code = $sale['client_code'];
@@ -204,7 +212,7 @@ class LiquidationReportController extends Controller
 				$response[] = $liquidation;
 			}
 
-			$totals_credit = number_format($sale['total_perception'] - $cash_liquidation_amount - $deposit_liquidation_amount, 2, '.', '');
+			$totals_credit = number_format($sale['total_perception'] - $cash_liquidation_amount - $deposit_liquidation_amount - $remesa_liquidation_amount , 2, '.', '');
 
 			if ( $totals_credit > 0 ) {
 				$credit = new stdClass();
@@ -223,6 +231,7 @@ class LiquidationReportController extends Controller
 				$credit->payment_name = $sale['payment_name'];
 				$credit->credit = $totals_credit;
 				$credit->cash_liquidation_amount = '';
+				$credit->remesa_liquidation_amount = '';
 				$credit->deposit_liquidation_amount = '';
 				$credit->bank_short_name = '';
 				$credit->operation_number = '';
@@ -250,6 +259,7 @@ class LiquidationReportController extends Controller
 					$credit->operation_number = $sale['operation_number'];
 					$credit->credit = $totals_credit;
 					$credit->cash_liquidation_amount = $cash_liquidation_amount;
+					$credit->remesa_liquidation_amount = $remesa_liquidation_amount;
 					$credit->deposit_liquidation_amount = $deposit_liquidation_amount;
 					$credit->sale_value = $sale['sale_value'];
 					$credit->igv = $sale['igv'];
@@ -265,7 +275,7 @@ class LiquidationReportController extends Controller
 					$credit->sum_total = $sale['sum_total'];
 				}
 
-				$totals_credit += $totals_credit;
+				$totals_credit += $credit['credit'];
 
 				$response[] = $credit;
 			}
@@ -287,6 +297,7 @@ class LiquidationReportController extends Controller
 		$totals->payment_name = '';
 		$totals->credit = $totals_credit;
 		$totals->cash_liquidation_amount = $totals_cash_liquidation_amount;
+		$totals->remesa_liquidation_amount = $totals_remesa_liquidation_amount;
 		$totals->deposit_liquidation_amount = $totals_deposit_liquidation_amount;
 		$totals->bank_short_name = '';
 		$totals->operation_number = '';
@@ -331,11 +342,12 @@ class LiquidationReportController extends Controller
 			$sheet->setCellValue('F3', 'Tipo');
 			$sheet->setCellValue('G3', '# Serie');
 			$sheet->setCellValue('H3', '# Documento');
-			$sheet->setCellValue('I3', 'Varlor Venta');
+			$sheet->setCellValue('I3', 'Valor Venta');
 			$sheet->setCellValue('J3', 'IGV');
 			$sheet->setCellValue('K3', 'Total');
-			$sheet->setCellValue('M3', 'Total Ventas');
-			$sheet->setCellValue('N3', 'Condición de Pago');
+			$sheet->setCellValue('L3', 'Total Ventas');
+			$sheet->setCellValue('M3', 'Condición de Pago');
+			$sheet->setCellValue('N3', 'Remesa');
 			$sheet->setCellValue('O3', 'Crédito');
 			$sheet->setCellValue('P3', 'Efectivo');
 			$sheet->setCellValue('Q3', 'Depósito/Transferencia');
@@ -375,14 +387,13 @@ class LiquidationReportController extends Controller
 				$sheet->setCellValue('I'.$row_number, $element->sale_value);
 				$sheet->setCellValue('J'.$row_number, $element->igv);
 				$sheet->setCellValue('K'.$row_number, $element->total);
-				// $sheet->setCellValue('L'.$row_number, $element->perception);
 				$sheet->setCellValue('M'.$row_number, $element->total_perception);
 				$sheet->setCellValue('N'.$row_number, $element->payment_name);
 				$sheet->setCellValue('O'.$row_number, $element->credit);
 				$sheet->setCellValue('P'.$row_number, $element->cash_liquidation_amount);
 				$sheet->setCellValue('Q'.$row_number, $element->deposit_liquidation_amount);
 				$sheet->setCellValue('R'.$row_number, $element->bank_short_name);
-				$sheet->setCellValue('s'.$row_number, $element->operation_number);
+				$sheet->setCellValue('S'.$row_number, $element->operation_number);
 				$sheet->setCellValue('T'.$row_number, $element->client_code);
 				$sheet->setCellValue('U'.$row_number, $element->client_business_name);
 				$sheet->setCellValue('V'.$row_number, $element->document_type_name);
@@ -398,7 +409,7 @@ class LiquidationReportController extends Controller
 				$sheet->setCellValue('AF'.$row_number, $element->sum_45k);
 				$sheet->setCellValue('AG'.$row_number, $element->sum_total);
 
-				$sheet->getStyle('H'.$row_number)->getNumberFormat()->setFormatCode('0');
+			
 				$sheet->getStyle('I'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('J'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('K'.$row_number)->getNumberFormat()->setFormatCode('0.00');
@@ -406,7 +417,7 @@ class LiquidationReportController extends Controller
 				$sheet->getStyle('M'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('O'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('T'.$row_number)->getNumberFormat()->setFormatCode('0');
+				$sheet->getStyle('Q'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('W'.$row_number)->getNumberFormat()->setFormatCode('0');
 				$sheet->getStyle('X'.$row_number)->getNumberFormat()->setFormatCode('0');
 				$sheet->getStyle('AA'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
