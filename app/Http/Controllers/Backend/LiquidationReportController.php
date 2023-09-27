@@ -275,7 +275,7 @@ class LiquidationReportController extends Controller
 					$credit->sum_total = $sale['sum_total'];
 				}
 
-				$totals_credit += $credit['credit'];
+				$totals_credit += $totals_credit;
 
 				$response[] = $credit;
 			}
