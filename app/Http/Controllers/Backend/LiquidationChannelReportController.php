@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\SaleDetail;
 use App\Sale;
+use App\Employee;
 use App\BusinessUnit;
 use Carbon\CarbonImmutable;
 use Carbon\Carbon;
@@ -71,6 +72,7 @@ class LiquidationChannelReportController extends Controller
 		
 		$elements = SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 					    ->leftjoin('clients', 'sales.client_id', '=', 'clients.id')    
+					    ->leftjoin('employees', 'sales.account_id', '=', 'employees.id')    
                         ->leftjoin('business_units', 'clients.business_unit_id', '=', 'business_units.id')
 						->leftjoin('document_types', 'clients.document_type_id', '=', 'document_types.id')                                          
                         ->leftjoin('companies', 'sales.company_id', '=', 'companies.id')		
@@ -113,6 +115,7 @@ class LiquidationChannelReportController extends Controller
 			'sale_details.total', 
 			'sales.scop_number as scop_number',
 			'clients.id as client_id',
+			'employees.first_name as employee',
 			'clients.code as client_code', 
 			'clients.business_name as client_business_name', 
 			'clients.document_number as document_number', 
@@ -185,6 +188,7 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->province = $saledetail['province'];
 				$saledetail->department = $saledetail['department'];
 				$saledetail->seller_id = $saledetail['seller_id'];
+				$saledetail->employee = $saledetail['employee'];
 				$saledetail->manager = $saledetail['manager'];
 				$saledetail->grupo = $saledetail['grupo'];
 				$saledetail->estado = $saledetail['estado'];
@@ -248,6 +252,7 @@ class LiquidationChannelReportController extends Controller
 		$totals->province = '';
 		$totals->department = '';
 		$totals->seller_id = '';
+		$totals->employee = '';
 		$totals->manager = '';
 		$totals->grupo = '';
 		$totals->estado = '';
@@ -343,7 +348,8 @@ class LiquidationChannelReportController extends Controller
 
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
-				$sheet->setCellValue('C'.$row_number, $element->seller_id);
+				// $sheet->setCellValue('C'.$row_number, $element->seller_id);
+				$sheet->setCellValue('C'.$row_number, $element->employee);
 				$sheet->setCellValue('D'.$row_number, $element->manager);	
 				$sheet->setCellValue('E'.$row_number, $element->client_route_id);
 				$sheet->setCellValue('F'.$row_number, $element->business_unit_name);
