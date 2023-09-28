@@ -487,7 +487,7 @@ class LiquidationFinalController extends Controller
 		$model = request('model');
 		$sales = request('sales');
 
-		$warehouse_movement = WarehouseMovement::find($model['warehouse_movement_id'], ['id', 'referral_guide_series', 'referral_guide_number', 'scop_number', 'license_plate', 'state', 'traslate_date']);
+		$warehouse_movement = WarehouseMovement::find($model['warehouse_movement_id'], ['id', 'referral_guide_series', 'referral_guide_number', 'scop_number', 'license_plate', 'state', 'traslate_date', 'account_id']);
 		$rate = Rate::where('description', 'IGV')
 			->where('state', 1)
 			->select('id', 'value')
@@ -872,6 +872,7 @@ class LiquidationFinalController extends Controller
 
 			$sale_model = new Sale();
 			$sale_model->company_id = $model['company_id'];
+			$sale_model->account_id = $warehouse_movement->account_id;
 			$sale_model->sale_date = $sale_date;
 			$sale_model->expiry_date = $expiry_date;
 			$sale_model->warehouse_movement_id = $warehouse_movement->id;
