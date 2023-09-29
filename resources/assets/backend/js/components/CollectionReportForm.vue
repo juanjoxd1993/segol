@@ -29,7 +29,7 @@
 							<select class="form-control" name="date_type_id" id="date_type_id" v-model="model.date_type_id" @focus="$parent.clearErrorMsg($event)">
 								<option value="">Seleccionar</option>
 								<option value="1">Fecha de Emisión</option>
-								<option value="2">Fecha de Liquidación</option>
+								<option value="2">Fecha de Cobranza</option>
 							</select>
 							<div id="date_type_id-error" class="error invalid-feedback"></div>
 						</div>
