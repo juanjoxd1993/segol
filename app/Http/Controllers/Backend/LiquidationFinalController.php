@@ -933,7 +933,8 @@ class LiquidationFinalController extends Controller
 				$voucher->client_address = $client_address->address;
 				$voucher->voucher_type_id = $voucher_type->id;
 				$voucher->serie_number = $sale['serie_num'];
-				$voucher->voucher_number = ++$last_voucher_number;
+				// $voucher->voucher_number = ++$last_voucher_number;
+				$voucher->voucher_number = $sale['correlative'];
 				$voucher->referral_guide_series = ( $sale['referral_guide_series'] ? $sale['referral_guide_series'] : $warehouse_movement->referral_guide_series );
 				$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
 				$voucher->issue_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
