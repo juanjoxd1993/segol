@@ -11,7 +11,7 @@
                 <div class="kt-portlet__head-wrapper">
                     <div class="dropdown dropdown-inline">
                         <a href="#" @click.prevent="openModal()" class="btn btn-success disabled" id="add_article">
-                            <i class="fa fa-plus"></i> Crear cliente
+                            <i class="fa fa-plus"></i> Crear Empleado
                         </a>
                     </div>
                 </div>
