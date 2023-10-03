@@ -526,7 +526,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/contabilidad/volumen-ventas/listar', 'SalesVolumeReportController@list')->name('dashboard.report.sales_volume.list');
 	Route::post('/contabilidad/volumen-ventas/exportar', 'SalesVolumeReportController@export')->name('dashboard.report.sales_volume.export');
 
-	/** Contabilidad > Volumen de Cordia*/
+	/** Contabilidad > Volumen */
 	Route::get('/contabilidad/volumen-cordia', 'CordiaVolumeReportController@index')->name('dashboard.report.cordia_volume');
 	Route::post('/contabilidad/volumen-cordia/validar-formulario', 'CordiaVolumeReportController@validateForm')->name('dashboard.report.cordia_volume.validate_form');
 	Route::post('/contabilidad/volumen-cordia/listar', 'CordiaVolumeReportController@list')->name('dashboard.report.cordia_volume.list');
@@ -705,6 +705,18 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/finanzas-liquidaciones/obtener-clientes', 'FinanceSettlementsController@getClients')->name('dashboard.report.finance_settlements.get_clients');
 	Route::post('/reporte/finanzas-liquidaciones/validar-formulario', 'FinanceSettlementsController@validateForm')->name('dashboard.report.finance_settlements.validate_form');
 	Route::post('reporte/finanzas-liquidaciones/listar', 'FinanceSettlementsController@list')->name('dashboard.report.finance_settlements.list');
+
+	/** RRHH > Planilla General */
+	Route::get('/rrhh/calculo-planilla', 'PlanillaTotalReportController@index')->name('dashboard.report.planilla_total');
+	Route::post('/rrhh/calculo-planilla/validar-formulario', 'PlanillaTotalReportController@validateForm')->name('dashboard.report.planilla_total.validate_form');
+	Route::post('/rrhh/calculo-planilla/obtener-clientes', 'PlanillaTotalReportController@getClients')->name('dashboard.report.planilla_total.get_clients');
+	Route::post('/rrhh/calculo-planilla/listar', 'PlanillaTotalReportController@list')->name('dashboard.report.planilla_total.list');
+
+
+
+
+
+
 });
 
 
