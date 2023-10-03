@@ -720,7 +720,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/empleados/validar-formulario', 'EmployeeController@validateForm')->name('dashboard.rrhh.employees.validate_form');
 	Route::post('/rrhh/empleados/detalle', 'EmployeeController@detail')->name('dashboard.rrhh.employees.detail');
 	Route::post('/rrhh/empleados/obtener-ubigeos', 'EmployeeController@getUbigeos')->name('dashboard.rrhh.employees.get_ubigeos');
-	Route::post('/rrhh/empleados/obtener-Employeees', 'EmployeeController@getEmployees')->name('dashboard.rrhh.employees.get_Employees');
+	Route::post('/rrhh/empleados/obtener-Employeees', 'EmployeeController@getEmployees')->name('dashboard.rrhh.employees.get_clients');
 	Route::post('/rrhh/empleados/obtener-select2', 'EmployeeController@getSelect2')->name('dashboard.rrhh.employees.get_select2');
 	Route::post('/rrhh/empleados/eliminar', 'EmployeeController@delete')->name('dashboard.rrhh.employees.delete');
 	Route::post('/rrhh/empleados/listar-direcciones', 'EmployeeController@addressList')->name('dashboard.rrhh.employees.address_list');
