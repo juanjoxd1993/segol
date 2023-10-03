@@ -68,7 +68,7 @@ class PlanillaTotalReportController extends Controller
 	                           
 
 
-						$elements = planilla::leftjoin('employees', 'planillas.employee_id', '=', 'employees.id')
+						$elements = planilla::leftjoin('employees', 'planillas.employ_id', '=', 'employees.id')
 							            ->where('planillas.año', '=', $price_year)
 			            ->where('planillas.mes', '<=', $price_mes)			            
 			            ->select('planillas.id as planilla_id',
