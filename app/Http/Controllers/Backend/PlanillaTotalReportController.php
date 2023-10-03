@@ -68,33 +68,33 @@ class PlanillaTotalReportController extends Controller
 	                           
 
 
-						$elements = planilla::leftjoin('employees', 'planilla.employee_id', '=', 'employees.id')
-							            ->where('planilla.año', '=', $price_year)
-			            ->where('planilla.mes', '<=', $price_mes)			            
-			            ->select('planilla.id as planilla_id',
-                        'planilla.año as año',
-                        'planilla.mes as mes',
-                        'planilla.employ_id as employ_id',
-                        'planilla.employ_name as employ_name',
-                        'planilla.cargo as cargo',
-                        'planilla.sueldo as sueldo',
-                        'planilla.familiar as familiar',
-                        'planilla.otros as otros',
-                        'planilla.bruto as bruto',
-                        'planilla.horas_extra as horas_extra',
-                        'planilla.noc_25 as noc_25',
-                        'planilla.noc_35 as noc_35',
-                        'planilla.afp_id as afp_id',
-                        'planilla.afp_name as afp_name',
-                        'planilla.afp_base as afp_base',
-                        'planilla.afp_com as afp_com',
-                        'planilla.afp_prima as afp_prima',
-                        'planilla.quincena as quincena',
-                        'planilla.total_desc as total_desc',
-                        'planilla.neto as neto',
-                        'planilla.salud as salud',
-                        'planilla.sctr as sctr',
-                        'planilla.total_apor as total_apor',
+						$elements = planilla::leftjoin('employees', 'planillas.employee_id', '=', 'employees.id')
+							            ->where('planillas.año', '=', $price_year)
+			            ->where('planillas.mes', '<=', $price_mes)			            
+			            ->select('planillas.id as planilla_id',
+                        'planillas.año as año',
+                        'planillas.mes as mes',
+                        'planillas.employ_id as employ_id',
+                        'planillas.employ_name as employ_name',
+                        'planillas.cargo as cargo',
+                        'planillas.sueldo as sueldo',
+                        'planillas.familiar as familiar',
+                        'planillas.otros as otros',
+                        'planillas.bruto as bruto',
+                        'planillas.horas_extra as horas_extra',
+                        'planillas.noc_25 as noc_25',
+                        'planillas.noc_35 as noc_35',
+                        'planillas.afp_id as afp_id',
+                        'planillas.afp_name as afp_name',
+                        'planillas.afp_base as afp_base',
+                        'planillas.afp_com as afp_com',
+                        'planillas.afp_prima as afp_prima',
+                        'planillas.quincena as quincena',
+                        'planillas.total_desc as total_desc',
+                        'planillas.neto as neto',
+                        'planillas.salud as salud',
+                        'planillas.sctr as sctr',
+                        'planillas.total_apor as total_apor',
                         'employees.document_number as document_number')
 			        
 				
