@@ -26,7 +26,7 @@ use DB;
 use stdClass;
 use App\Services\ClientDataService;
 
-class EmployeesController extends Controller
+class EmployeeController extends Controller
 {
 	public function index() {
 		$companies = Company::select('id','name')->get();
