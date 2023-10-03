@@ -966,6 +966,26 @@
 							</li>
 
 
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.rrhh.employees' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.rrhh.employees') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Gestión de Empleados</span>
+								</a>
+							</li>
+
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.rrhh.asistencia' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.rrhh.asistencia') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Gestión de Asistencia</span>
+								</a>
+							</li>
+
+
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.planilla_total' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.report.planilla_total') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
