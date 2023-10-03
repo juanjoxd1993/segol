@@ -28,7 +28,6 @@
 		:client_channels = "{{ $client_channels }}"
 		:client_routes = "{{ $client_routes }}"
 		:client_sectors = "{{ $client_sectors }}"
-		:url_search_client = "'{{ route('dashboard.rrhh.employees.search_client') }}'"
 	></employee-modal>
 
 	<employee-address-modal

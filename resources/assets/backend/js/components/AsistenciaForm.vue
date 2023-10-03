@@ -27,7 +27,7 @@
                     
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Artículo:</label>
+                            <label class="form-control-label">Área:</label>
                             <select class="form-control kt-select2" name="article_id" id="article_id" v-model="model.article_id" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
                                 <option v-for="article in articles" :value="article.id" v-bind:key="article.id">{{ article.text }}</option>
@@ -37,38 +37,7 @@
                     </div>
 
 
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Sector:</label>
-                            <select class="form-control" name="sector_id" id="sector_id" v-model="model.sector_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="client_sector in client_sectors" :value="client_sector.id" v-bind:key="client_sector.id">{{ client_sector.name }}</option>
-                            </select>
-                            <div id="sector_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Canal:</label>
-                            <select class="form-control" name="channel_id" id="channel_id" v-model="model.channel_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="client_channel in client_channels" :value="client_channel.id" v-bind:key="client_channel.id">{{ client_channel.name }}</option>
-                            </select>
-                            <div id="channel_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Ruta:</label>
-                            <select class="form-control" name="route_id" id="route_id" v-model="model.route_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="client_route in client_routes" :value="client_route.id" v-bind:key="client_route.id">{{ client_route.name }}</option>
-                            </select>
-                            <div id="route_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
             <div class="kt-portlet__foot">
