@@ -135,7 +135,7 @@ class CollectionRegisterController extends Controller
 			->where('sales.balance', '>', 0)
 			->where('sales.company_id', $company_id)
 			->where('sales.client_id', $client_id)
-			->select('sales.id', 'warehouse_document_types.name as warehouse_document_type_name', 'referral_serie_number', 'referral_voucher_number', 'total_perception', 'balance', 'paid', 'sale_date', 'expiry_date')
+			->select('sales.id', 'warehouse_document_types.name as warehouse_document_type_name', 'referral_serie_number', 'referral_voucher_number', 'total_perception', 'balance', 'paid', 'sale_date', 'expiry_date', 'warehouse_document_type_id', 'if_bol')
 			->get();
 
 		return $sales;
