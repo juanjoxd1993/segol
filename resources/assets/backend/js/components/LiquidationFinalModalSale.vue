@@ -118,7 +118,7 @@
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Cantidad:</label>
-                                        <input type="number" class="form-control" name="quantity" id="quantity" v-model="model.quantity" @focus="$parent.clearErrorMsg($event)" readonly>
+                                        <input type="number" class="form-control" name="quantity" id="quantity" v-model="model.quantity" @focus="$parent.clearErrorMsg($event)">
                                         <div id="quantity-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -500,11 +500,39 @@
                 }
             },
             addArticle: function() {
-                let article = this.$store.state.articles.find(element => element.article_id == this.model.article_id);
+                // let article = this.$store.state.articles.find(element => element.article_id == this.model.article_id);
                 const articleQuantity = this.filterArticles.find(item => item.id === this.model.article_id);
-                const articlesFilter = this.filterArticles.filter(item => item.id !== this.model.article_id);
+                let errorQuantity = false;
+                const articlesFilter = [];
+                const quantity = parseInt(this.model.quantity)
 
-                if ( this.sale.client_id == '' ) {
+                this.filterArticles.map(item => {
+                    if (item.id == this.model.article_id) {
+
+                        if(quantity <= 0) errorQuantity = true;
+                        if(quantity > item.quantity) errorQuantity = true;
+
+                        const newQuantity = item.quantity - quantity;
+
+                        if(newQuantity > 0) articlesFilter.push({
+                            ...item,
+                            quantity: newQuantity
+                        });
+                    } else {
+                        articlesFilter.push(item);
+                    };
+                });
+
+                if ( errorQuantity ) {
+                    Swal.fire({
+                        title: '¡Error!',
+                        text: 'Debe indicar una cantidad valida del producto.',
+                        type: "error",
+                        heightAuto: false,
+                        showCancelButton: false,
+                        confirmButtonText: 'Ok',
+                    });
+                } else if ( this.sale.client_id == '' ) {
                     Swal.fire({
                         title: '¡Error!',
                         text: 'Debe seleccionar un Cliente.',
@@ -531,7 +559,7 @@
                         showCancelButton: false,
                         confirmButtonText: 'Ok',
                     });
-                } else if ( this.model.quantity <= 0 ) {
+                } else if ( quantity <= 0 ) {
                     Swal.fire({
                         title: '¡Error!',
                         text: 'La Cantidad no puede estar vacía o ser igual 0.',
@@ -540,7 +568,7 @@
                         showCancelButton: false,
                         confirmButtonText: 'Ok',
                     });
-                } else if ( this.model.quantity > articleQuantity.quantity ) {
+                } else if ( quantity > articleQuantity.quantity ) {
                     Swal.fire({
                         title: '¡Error!',
                         text: `La Cantidad supera el Saldo del Artículo ( ${articleQuantity.quantity} ).`,
@@ -589,9 +617,18 @@
                     if (!articlesFilter.length) {
                         const clients = this.clients.filter(item => item.id != this.sale.client_id);
 
+                        this.$store.state.clients = clients;
                         this.clients = clients;
                     };
 
+                    // document.getElementById('warehouse_document_type_id').disabled = true;
+                    // document.getElementById('sale_serie_id').disabled = true;
+                    // document.getElementById('referral_serie_number').disabled = true;
+                    // document.getElementById('referral_voucher_number').disabled = true;
+                    // document.getElementById('referral_guide_series').disabled = true;
+                    // document.getElementById('referral_guide_number').disabled = true;
+                    // document.getElementById('scop_number').disabled = true;
+                    // document.getElementById('currency_id').disabled = true;
                     this.articles[this.sale.client_id] = articlesFilter;
                     this.filterArticles = articlesFilter;
 

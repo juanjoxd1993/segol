@@ -1008,8 +1008,8 @@ class LiquidationFinalController extends Controller
 																	->max('referral_voucher_number');
 
 				if ( $sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 6 || $sale['warehouse_document_type_id'] == 8 ) {
-					$sale_model->referral_serie_number = $sale['referral_serie_number'];
-					$sale_model->referral_voucher_number = $sale['referral_voucher_number'];
+					$sale_model->referral_serie_number = $sale['serie_num'];
+					$sale_model->referral_voucher_number = $sale['correlative'];
 				} else {
 					$int_last_voucher_number = (int)$last_voucher_number;
 					$sale_model->referral_serie_number = $referral_serie_number;

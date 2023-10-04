@@ -114,6 +114,21 @@
 						element.paid = accounting.toFixed(0, 2);
 					});
 
+                    const newArr = [];
+
+                    vm.items.map(item => {
+                        if (item.warehouse_document_type_id != 7) {
+                            const obj = {
+                                ...item,
+                                warehouse_document_type_name: "Boleta de Venta Electronica"
+                            };
+
+                            newArr.push(obj);
+                        }
+                    })
+
+                    vm.items = newArr;
+
 					if ( vm.collection_register_datatable == undefined ) {
 						vm.fillTableX();
 					} else {
