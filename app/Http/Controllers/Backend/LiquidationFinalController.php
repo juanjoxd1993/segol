@@ -88,8 +88,12 @@ class LiquidationFinalController extends Controller
                                               ->where('user_id', $user_id)
                                               ->first();
 
-		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
+	//	$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
+	    
+		$warehouse_type_id = request('warehouse_type_id');
+
 		$company_id = request('company_id');
+		
 
 			$guide_state = GuidesState::select('id')
 																->where('name', 'Por Liquidar')

@@ -13,7 +13,7 @@
         <form class="kt-form" @submit.prevent="formController(url, $event)">
             <div class="kt-portlet__body">
                 <div class="row">
-                    <input type="hidden" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id">
+                    <input type="hidden" name="company_id" id="company_id" v-model="model.company_id">
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
@@ -28,7 +28,7 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Sede:</label>
-                            <select class="form-control" name="warehouse_type" id="warehouse_type" v-model="model.warehouse_type" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
                                 <option value= 4>PLANTA ATE</option>
                                 <option value= 13>PLANTA CALLAO</option>                    
@@ -91,7 +91,7 @@
                 model: {
                     company_id: '',
                     warehouse_movement_id: '',
-                    warehouse_type_id: 5,
+                    warehouse_type_id: '',
                 },
                 warehouse_movements: [],
             }
@@ -119,7 +119,7 @@
                 this.model = {
 					company_id: '',
 					warehouse_movement_id: '',
-                    warehouse_type_id: 5,
+                    warehouse_type_id: '',
 				}
             }.bind(this));
         },
