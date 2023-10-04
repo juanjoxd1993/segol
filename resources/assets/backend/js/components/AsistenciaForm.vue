@@ -24,29 +24,20 @@
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-
+                    
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Sede:</label>
-                            <select class="form-control" name="warehouse_type" id="warehouse_type" v-model="model.warehouse_type" @focus="$parent.clearErrorMsg($event)">
+                            <label class="form-control-label">Área:</label>
+                            <select class="form-control kt-select2" name="article_id" id="article_id" v-model="model.article_id" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                <option value= 4>PLANTA ATE</option>
-                                <option value= 13>PLANTA CALLAO</option>                    
+                                <option v-for="article in articles" :value="article.id" v-bind:key="article.id">{{ article.text }}</option>
                             </select>
-                            <div id="warehouse_type-error" class="error invalid-feedback"></div>
+                            <div id="article_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
 
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Nº de Parte:</label>
-                            <select class="form-control" name="warehouse_movement_id" id="warehouse_movement_id" v-model="model.warehouse_movement_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id" v-bind:key="warehouse_movement.id">#{{ warehouse_movement.movement_number }} | {{ warehouse_movement.referral_guide_series }}-{{ warehouse_movement.referral_guide_number }} | {{ warehouse_movement.license_plate }} | {{ warehouse_movement.traslate_date }}</option>
-                            </select>
-                            <div id="warehouse_movement_id-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
+
+                    
                 </div>
             </div>
             <div class="kt-portlet__foot">
@@ -73,15 +64,23 @@
                 type: Array,
                 default: ''
             },
+              client_sectors: {
+                type: Array,
+                default: ''
+            },
+             client_channels: {
+                type: Array,
+                default: ''
+            },
+            client_routes: {
+                type: Array,
+                default: ''
+            },
+            articles: {
+                type: Array,
+                default: ''
+            },
             url: {
-                type: String,
-                default: ''
-            },
-            url_get_warehouse_movements: {
-                type: String,
-                default: ''
-            },
-            url_get_sale_series: {
                 type: String,
                 default: ''
             },
@@ -90,66 +89,55 @@
             return {
                 model: {
                     company_id: '',
-                    warehouse_movement_id: '',
+                    article_id: '',
+                    client_sector:'',
+                    client_channel:'',
+                    client_route:'',
                     warehouse_type_id: 5,
                 },
-                warehouse_movements: [],
             }
         },
         created() {
 
         },
         mounted() {
-            axios.post(this.url_get_sale_series)
-            .then(response => {
-                const data = response.data;
-                
-                this.$store.state.sale_series = data;
-            })
-            .catch(error => {
-                this.$store.state.sale_series = [];
-                console.log(error);
-            });
-
-            EventBus.$on('clear_form_sale', function() {
-				$('.kt-form').find('input').prop('disabled', false);
-				$('.kt-form').find('select').prop('disabled', false);
-				$('.kt-form').find('button').prop('disabled', false);
-				
-                this.model = {
-					company_id: '',
-					warehouse_movement_id: '',
-                    warehouse_type_id: 5,
-				}
-            }.bind(this));
+            this.newSelect2();
         },
         watch: {
-            'model.company_id': function(val) {
-                if ( val != '' ) {
-                    EventBus.$emit('loading', true);
 
-                    axios.post(this.url_get_warehouse_movements, {
-                        company_id: this.model.company_id
-                    }).then(response => {
-                        // console.log(response);
-                        this.model.warehouse_movement_id = '';
-                        this.warehouse_movements = response.data;
-
-                        EventBus.$emit('loading', false);
-                    }).catch(error => {
-                        console.log(error);
-                        console.log(error.response)
-                    });
-                } else {
-                    this.model.warehouse_movement_id = '';
-                    this.warehouse_movements = '';
-                }
-            }
         },
         computed: {
 
         },
         methods: {
+            newSelect2: function() {
+                let vm = this;
+                let token = document.head.querySelector('meta[name="csrf-token"]').content;
+                $("#article_id").select2({
+                    placeholder: "Buscar",
+                    allowClear: true,
+                    language: {
+                        noResults: function() {
+                            return 'No hay resultados';
+                        },
+                        searching: function() {
+                            return 'Buscando...';
+                        },
+                        inputTooShort: function() {
+                            return 'Ingresa 1 o más caracteres';
+                        },
+                        errorLoading: function() {
+                            return 'No se pudo cargar la información'
+                        }
+                    },
+                    minimumInputLength: 0,
+                }).on('select2:select', function(e) {
+                    var selected_element = $(e.currentTarget);
+                    vm.model.article_id = parseInt(selected_element.val());
+                }).on('select2:unselect', function(e) {
+                    vm.model.article_id = '';
+                });
+            },
             formController: function(url, event) {
                 var vm = this;
 
@@ -158,16 +146,12 @@
                 var fd = new FormData(event.target);
 
                 EventBus.$emit('loading', true);
-				this.$store.commit('resetState');
 
                 axios.post(url, fd, { headers: {
                         'Content-type': 'application/x-www-form-urlencoded',
                     }
                 }).then(response => {
-                    // console.log(response);
-					target.find('input').prop('disabled', true);
-                    target.find('select').prop('disabled', true);
-                    target.find('button').prop('disabled', true);
+                    console.log(response);
                     EventBus.$emit('show_table', response.data);
                 }).catch(error => {
                     EventBus.$emit('loading', false);

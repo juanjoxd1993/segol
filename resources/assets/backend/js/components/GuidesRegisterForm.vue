@@ -88,6 +88,13 @@
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Brevete:</label>
+                            <input type="text" class="form-control" name="account_document_number" id="account_document_number" v-model="model.account_document_number" @focus="$parent.clearErrorMsg($event)"> 
+                            <div id="account_document_number-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
                     <!-- <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Ruta:</label>
@@ -235,6 +242,7 @@
                     traslate_date: this.min_datetime,
                     since_date: this.current_date,
                     warehouse_account_type_id: '',
+                    account_document_number: '',
                     warehouse_account_id: '',
                     referral_guide_series: '',
                     referral_guide_number: '',
@@ -254,6 +262,7 @@
                 this.model.traslate_date = this.traslate_date;
                 this.model.since_date = this.current_date;
                 this.model.warehouse_account_type_id = '';
+                this.model.account_document_number = '';
                 this.model.warehouse_account_id = '';
                 this.model.referral_guide_series = '';
                 this.model.referral_guide_number = '';

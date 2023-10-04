@@ -938,7 +938,68 @@
 					</div>
 				</li>
 
-             <!-- cierre Menú de Finanzas-->
+             <!-- cierre Menú de RRHH-->
+
+
+			 <li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/rrhh/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+						<span class="kt-menu__link-icon">
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+								<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+									<rect x="0" y="0" width="24" height="24"></rect>
+									<rect fill="#000000" opacity="0.3" x="2" y="3" width="20" height="18" rx="2"></rect>
+									<path d="M9.9486833,13.3162278 C9.81256925,13.7245699 9.43043041,14 9,14 L5,14 C4.44771525,14 4,13.5522847 4,13 C4,12.4477153 4.44771525,12 5,12 L8.27924078,12 L10.0513167,6.68377223 C10.367686,5.73466443 11.7274983,5.78688777 11.9701425,6.75746437 L13.8145063,14.1349195 L14.6055728,12.5527864 C14.7749648,12.2140024 15.1212279,12 15.5,12 L19,12 C19.5522847,12 20,12.4477153 20,13 C20,13.5522847 19.5522847,14 19,14 L16.118034,14 L14.3944272,17.4472136 C13.9792313,18.2776054 12.7550291,18.143222 12.5298575,17.2425356 L10.8627389,10.5740611 L9.9486833,13.3162278 Z" fill="#000000" fill-rule="nonzero"></path>
+									<circle fill="#000000" opacity="0.3" cx="19" cy="6" r="1"></circle>
+								</g>
+							</svg>
+						</span>
+						<span class="kt-menu__link-text">Recursos Humanos</span>
+						<i class="kt-menu__ver-arrow la la-angle-right"></i>
+					</a>
+					<div class="kt-menu__submenu ">
+						<span class="kt-menu__arrow"></span>
+						<ul class="kt-menu__subnav">
+							<li class="kt-menu__item kt-menu__item--parent" aria-haspopup="true">
+								<span class="kt-menu__link">
+									<span class="kt-menu__link-text">Recursos Humanos</span>
+								</span>
+							</li>
+
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.rrhh.employees' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.rrhh.employees') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Gestión de Empleados</span>
+								</a>
+							</li>
+
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.rrhh.asistencia' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.rrhh.asistencia') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Gestión de Asistencia</span>
+								</a>
+							</li>
+
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.planilla_total' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.planilla_total') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Calculo de Planilla</span>
+								</a>
+							</li>
+
+					  </ul>
+					</div>
+				</li>
+
+             <!-- cierre Menú de RRHH-->
 
 
 

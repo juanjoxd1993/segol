@@ -526,7 +526,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/contabilidad/volumen-ventas/listar', 'SalesVolumeReportController@list')->name('dashboard.report.sales_volume.list');
 	Route::post('/contabilidad/volumen-ventas/exportar', 'SalesVolumeReportController@export')->name('dashboard.report.sales_volume.export');
 
-	/** Contabilidad > Volumen de Cordia*/
+	/** Contabilidad > Volumen */
 	Route::get('/contabilidad/volumen-cordia', 'CordiaVolumeReportController@index')->name('dashboard.report.cordia_volume');
 	Route::post('/contabilidad/volumen-cordia/validar-formulario', 'CordiaVolumeReportController@validateForm')->name('dashboard.report.cordia_volume.validate_form');
 	Route::post('/contabilidad/volumen-cordia/listar', 'CordiaVolumeReportController@list')->name('dashboard.report.cordia_volume.list');
@@ -705,6 +705,49 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/finanzas-liquidaciones/obtener-clientes', 'FinanceSettlementsController@getClients')->name('dashboard.report.finance_settlements.get_clients');
 	Route::post('/reporte/finanzas-liquidaciones/validar-formulario', 'FinanceSettlementsController@validateForm')->name('dashboard.report.finance_settlements.validate_form');
 	Route::post('reporte/finanzas-liquidaciones/listar', 'FinanceSettlementsController@list')->name('dashboard.report.finance_settlements.list');
+
+	/** RRHH > Planilla General */
+	Route::get('/rrhh/calculo-planilla', 'PlanillaTotalReportController@index')->name('dashboard.report.planilla_total');
+	Route::post('/rrhh/calculo-planilla/validar-formulario', 'PlanillaTotalReportController@validateForm')->name('dashboard.report.planilla_total.validate_form');
+	Route::post('/rrhh/calculo-planilla/obtener-clientes', 'PlanillaTotalReportController@getClients')->name('dashboard.report.planilla_total.get_clients');
+	Route::post('/rrhh/calculo-planilla/listar', 'PlanillaTotalReportController@list')->name('dashboard.report.planilla_total.list');
+
+
+
+	/** creditos > Clientes */
+	Route::get('/rrhh/empleados', 'EmployeeController@index')->name('dashboard.rrhh.employees');
+	Route::post('/rrhh/empleados/guardar', 'EmployeeController@store')->name('dashboard.rrhh.employees.store');
+	Route::post('/rrhh/empleados/validar-formulario', 'EmployeeController@validateForm')->name('dashboard.rrhh.employees.validate_form');
+	Route::post('/rrhh/empleados/detalle', 'EmployeeController@detail')->name('dashboard.rrhh.employees.detail');
+	Route::post('/rrhh/empleados/obtener-ubigeos', 'EmployeeController@getUbigeos')->name('dashboard.rrhh.employees.get_ubigeos');
+	Route::post('/rrhh/empleados/obtener-Employeees', 'EmployeeController@getEmployees')->name('dashboard.rrhh.employees.get_clients');
+	Route::post('/rrhh/empleados/obtener-select2', 'EmployeeController@getSelect2')->name('dashboard.rrhh.employees.get_select2');
+	Route::post('/rrhh/empleados/eliminar', 'EmployeeController@delete')->name('dashboard.rrhh.employees.delete');
+	Route::post('/rrhh/empleados/listar-direcciones', 'EmployeeController@addressList')->name('dashboard.rrhh.employees.address_list');
+	Route::post('/rrhh/empleados/guardar-direccion', 'EmployeeController@addressStore')->name('dashboard.rrhh.employees.address_store');
+	Route::post('/rrhh/empleados/detalle-direccion', 'EmployeeController@addressDetail')->name('dashboard.rrhh.employees.address_detail');
+	Route::post('/rrhh/empleados/eliminar-direccion', 'EmployeeController@addressDelete')->name('dashboard.rrhh.employees.address_delete');
+	Route::post('/rrhh/empleados/listar-precios', 'EmployeeController@priceList')->name('dashboard.rrhh.employees.price_list');
+	Route::post('/rrhh/empleados/listar-articulos', 'EmployeeController@priceArticles')->name('dashboard.rrhh.employees.price_articles');
+	Route::post('/rrhh/empleados/obtener-dia', 'EmployeeController@priceMinEffectiveDate')->name('dashboard.rrhh.employees.price_min_effective_date');
+	Route::post('/rrhh/empleados/guardar-precio', 'EmployeeController@priceStore')->name('dashboard.rrhh.employees.price_store');
+	Route::post('/rrhh/empleados/listar', 'EmployeeController@list')->name('dashboard.rrhh.employees.list');
+	
+
+	/** Comercial > Lista de Precios */
+	Route::get('/rrhh/asistencia', 'AsistenciaController@index')->name('dashboard.rrhh.asistencia');
+	Route::post('/rrhh/asistencia/validar-formulario', 'AsistenciaController@validateForm')->name('dashboard.rrhh.asistencia.validate_form');
+	Route::post('/rrhh/asistencia/listar', 'AsistenciaController@list')->name('dashboard.rrhh.asistencia.list');
+	Route::post('/rrhh/asistencia/obtener-dia', 'AsistenciaController@getMinEffectiveDate')->name('dashboard.rrhh.asistencia.get_min_effective_date');
+	Route::post('/rrhh/asistencia/guardar', 'AsistenciaController@store')->name('dashboard.rrhh.asistencia.store');
+
+
+
+
+
+
+
+
 });
 
 
