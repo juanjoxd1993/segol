@@ -126,6 +126,7 @@ class CollectionReportController extends Controller
 			$item->autogen = ' ';
 			if ( $item->payment_method_id == 9 ) {
 				$item->autogen = $item->operation_number;
+				$item->operation_number='';
 			}
 			
 			$item->amount_soles = $item->amount;
@@ -138,8 +139,10 @@ class CollectionReportController extends Controller
 
 			$item->exchange_rate = $item->exchange_rate ? $item->exchange_rate : '';
 			$item->bank_account = $item->bank_account ? $item->bank_account : '';
-			$item->operation_number = $item->operation_number ? $item->operation_number : '';
 
+            if ( $item->payment_method_id == 2 || $item->payment_method_id == 3 || $item->payment_method_id == 11 ) {
+			$item->operation_number = $item->operation_number ? $item->operation_number : '';
+		 	}
 			return $item;
 		});
 

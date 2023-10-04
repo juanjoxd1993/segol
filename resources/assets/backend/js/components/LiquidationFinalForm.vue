@@ -24,6 +24,19 @@
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Sede:</label>
+                            <select class="form-control" name="warehouse_type" id="warehouse_type" v-model="model.warehouse_type" @focus="$parent.clearErrorMsg($event)">
+                                <option disabled value="">Seleccionar</option>
+                                <option value= 4>PLANTA ATE</option>
+                                <option value= 13>PLANTA CALLAO</option>                    
+                            </select>
+                            <div id="warehouse_type-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Nº de Parte:</label>

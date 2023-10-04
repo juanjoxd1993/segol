@@ -116,7 +116,14 @@
                             <div id="operation_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-					<div class="col-lg-3">
+                    <div class="col-lg-3" v-if="model.payment_method_id === 9">
+                        <div class="form-group">
+                            <label class="form-control-label">Nº Hermeticase:</label>
+							<input type="text" class="form-control" name="operation_number" id="operation_number" v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)">
+                            <div id="operation_number-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+					<div class="col-lg-3" v-if="model.payment_method_id === 2 || model.payment_method_id === 3">
                         <div class="form-group">
                             <label class="form-control-label">Nº Detracción:</label>
 							<input type="text" class="form-control" name="detraction_number" id="detraction_number" v-model="model.detraction_number" @focus="$parent.clearErrorMsg($event)">
