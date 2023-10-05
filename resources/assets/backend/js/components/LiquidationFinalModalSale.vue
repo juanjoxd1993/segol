@@ -67,14 +67,14 @@
                                 <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id == 5 || this.sale.warehouse_document_type_id == 7 || this.sale.warehouse_document_type_id == 9 || this.sale.warehouse_document_type_id == 17">
                                     <div class="form-group">
                                         <label class="form-control-label">Número de Guía:</label>
-                                        <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageNumberGuide">
+                                        <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)" @input="manageNumberGuide">
                                         <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
 								<div class="col-lg-3" v-if="this.sale.warehouse_document_type_id === 4 || this.sale.warehouse_document_type_id === 5 || this.sale.warehouse_document_type_id === 18">
 									<div class="form-group">
                                         <label class="form-control-label">Nº SCOP:</label>
-                                        <input type="text" class="form-control"  v-model="sale.scop_number" name="scop_number" id="scop_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageScopNumber">
+                                        <input type="text" class="form-control"  v-model="sale.scop_number" name="scop_number" id="scop_number" @focus="$parent.clearErrorMsg($event)" @input="manageScopNumber">
                                         <div id="scop_number-error" class="error invalid-feedback"></div>
                                     </div>
 								</div>
@@ -177,7 +177,6 @@
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success" @click.prevent="liquidationModal()">Liquidar</button>
-                        <!-- <button type="submit" class="btn btn-success" v-if="sale.payment_id == 2" @click.prevent="addSale()">{{ button_text }}</button> -->
                         <button type="button" class="btn btn-secondary" @click.prevent="closeModal()">Cerrar</button>
                     </div>
                 </div>
@@ -272,27 +271,51 @@
             EventBus.$on('create_modal', function() {
                 document.getElementById('client_id').disabled = false;
                 if (!this.clients.length) {
-                    this.clients = this.$store.state.clients;
-                    const warehouse_movement_id = this.$store.state.model.warehouse_movement_id;
-
-                    let vm = this;
-
-                    this.clients.map(item => {
-                        const { id } = item;
-
-                        axios.post(this.url_get_articles_clients,{
-                            client_id: id,
-                            warehouse_movement_id
-                        }).then(response => {
-                            let data = response.data;
-
-                            vm.articles[id] = data;
-                        }).catch(error => {
-                            console.log(error);
-                            console.log(error.response);
-                        });
-                    })
                 };
+                this.clients = this.$store.state.clients;
+                const warehouse_movement_id = this.$store.state.model.warehouse_movement_id;
+
+                let vm = this;
+                const clients = [];
+
+                this.clients.map(item => {
+                    const { id } = item;
+
+                    axios.post(this.url_get_articles_clients,{
+                        client_id: id,
+                        warehouse_movement_id
+                    }).then(response => {
+                        let data = response.data;
+                        let articles = [];
+
+                        if (this.$store.state.sales.length) {
+                            this.$store.state.sales.map(item => {
+                                data.map(i => {
+                                    const art = item.details.find(e => e.article_id == i.id);
+    
+                                    if (art) {
+                                        i.quantity = i.quantity - parseInt(art.quantity);
+    
+                                        if(i.quantity > 0) articles.push(i);
+                                    } else {
+                                        articles.push(i);
+                                    };
+                                });
+                            });
+                        } else {
+                            articles = data;
+                        };
+
+                        if (articles.length) {
+                            vm.articles[id] = articles;
+                        } else {
+                            this.clients = this.clients.filter(e => e.id != id);
+                        };
+                    }).catch(error => {
+                        console.log(error);
+                        console.log(error.response);
+                    });
+                })
 
                 this.button_text = 'Crear';
                 this.sale.client_id = 0;
@@ -500,7 +523,6 @@
                 }
             },
             addArticle: function() {
-                // let article = this.$store.state.articles.find(element => element.article_id == this.model.article_id);
                 const articleQuantity = this.filterArticles.find(item => item.id === this.model.article_id);
                 let errorQuantity = false;
                 const articlesFilter = [];
@@ -614,22 +636,14 @@
 						total_perception: '',
 					};
 
-                    if (!articlesFilter.length) {
-                        const clients = this.clients.filter(item => item.id != this.sale.client_id);
+                    // if (!articlesFilter.length) {
+                    //     const clients = this.clients.filter(item => item.id != this.sale.client_id);
 
-                        this.$store.state.clients = clients;
-                        this.clients = clients;
-                    };
+                    //     this.$store.state.clients = clients;
+                    //     this.clients = clients;
+                    // };
 
-                    // document.getElementById('warehouse_document_type_id').disabled = true;
-                    // document.getElementById('sale_serie_id').disabled = true;
-                    // document.getElementById('referral_serie_number').disabled = true;
-                    // document.getElementById('referral_voucher_number').disabled = true;
-                    // document.getElementById('referral_guide_series').disabled = true;
-                    // document.getElementById('referral_guide_number').disabled = true;
-                    // document.getElementById('scop_number').disabled = true;
-                    // document.getElementById('currency_id').disabled = true;
-                    this.articles[this.sale.client_id] = articlesFilter;
+                    // this.articles[this.sale.client_id] = articlesFilter;
                     this.filterArticles = articlesFilter;
 
                     this.addTotals();
@@ -759,124 +773,6 @@
 					});
                 }
             },
-            addSale: function() {
-				if ( this.sale.warehouse_document_type_id == '' ) {
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'Debe seleccionar un Tipo de Referencia.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-                } else if ( (this.sale.warehouse_document_type_id == 4 || this.sale.warehouse_document_type_id == 5) && this.sale.document_type_id != 1 ) {
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'El Cliente no cuenta con un Nº de RUC registrado.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				} else if ( this.sale.warehouse_document_type_id != 4 && this.sale.warehouse_document_type_id != 5 && accounting.unformat(this.sale.perception) > 0 ) {
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'La Percepción no puede ser mayor a 0 para este Tipo de Referencia.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				} else if ( this.sale.warehouse_document_type_id >= 4 && this.sale.warehouse_document_type_id <= 9 && this.sale.referral_serie_number == '' ) {
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'La Serie de Referencia es obligatoria.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				} else if ( (this.sale.warehouse_document_type_id == 4 || this.sale.warehouse_document_type_id == 6 || this.sale.warehouse_document_type_id == 8) && this.sale.referral_voucher_number == '' ) {
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'El Número de Referencia es obligatorio.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				} else if ( this.sale.details.length < 1 ) {
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'Debe agregar al menos 1 Artículo.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-                } else {
-					EventBus.$emit('loading', true);
-
-					axios.post(this.url_verify_document_type, {
-						'model': this.$store.state.model,
-						'warehouse_document_type_id': this.sale.warehouse_document_type_id,
-						'referral_serie_number': this.sale.referral_serie_number,
-						'referral_voucher_number': this.sale.referral_voucher_number
-					}).then(response => {
-						// console.log(response);
-						if ( response.data.verify == false ) {
-							EventBus.$emit('loading', false);
-
-							Swal.fire({
-								title: '¡Error!',
-								text: response.data.msg,
-								type: "error",
-								heightAuto: false,
-								showCancelButton: false,
-								confirmButtonText: 'Ok',
-							});
-						} else {
-							EventBus.$emit('loading', false);
-							
-							let sale = this.sale;
-							this.$store.commit('addSale', sale);
-
-							let store_sale = this.$store.state.sale;
-
-							store_sale.details.forEach(element => {
-								let article_id = element.article_id;
-								let quantity = element.quantity;
-
-								this.$store.commit('changeBalanceValue', {
-									article_id,
-									quantity
-								});
-							});
-
-							EventBus.$emit('refresh_table_sale');
-
-							this.model = {
-								article_id: '',
-								article_name: '',
-								price_igv: '',
-								quantity: '',
-								igv: '',
-								perception: '',
-								sale_value: '',
-								igv_perception: '',
-								total_perception: '',
-							};
-
-							$('#modal-sale').modal('hide');
-
-							EventBus.$emit('refresh_table_liquidation');
-						}
-					}).catch(error => {
-						console.log(error);
-						console.log(error.response);
-					});
-				}
-            },
 			closeModal: function() {
 				this.model = {
                     article_id: '',
@@ -917,7 +813,7 @@
                     this.sale.warehouse_document_type_id == 9 ||
                     this.sale.warehouse_document_type_id == 17
                 ) {
-                    EventBus.$emit('loading', true);
+                    // EventBus.$emit('loading', true);
                     $('#liquidar').prop('disabled', true);
                     $('#referral_guide_number-error').hide();
                     $('#referral_guide_number-error').text('');
@@ -947,12 +843,12 @@
                                 guide_number: this.sale.referral_guide_number,
                             }
                         }).then(response => {
-                            EventBus.$emit('loading', false);
+                            // EventBus.$emit('loading', false);
                             $('#liquidar').prop('disabled', false);
                             $('#referral_guide_number-error').text('');
                             $('#referral_guide_number-error').hide();
                         }).catch(error => {
-                            EventBus.$emit('loading', false);
+                            // EventBus.$emit('loading', false);
                             $('#liquidar').prop('disabled', true);
                             $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
                             $('#referral_guide_number-error').show();
@@ -961,6 +857,9 @@
                 }
             },
             manageScopNumber() {
+                if (this.sale.scop_number.length > 11) {
+                    this.sale.scop_number = this.sale.scop_number.slice(0, 11);
+                }
                 if (!(this.sale.scop_number.length === 11 || this.sale.scop_number == '')) {
                     
                     $('#liquidar').prop('disabled', true);
@@ -973,7 +872,7 @@
                     this.sale.warehouse_document_type_id === 5 ||
                     this.sale.warehouse_document_type_id === 18
                 ) {
-                    EventBus.$emit('loading', true);
+                    // EventBus.$emit('loading', true);
                     $('#liquidar').prop('disabled', true);
                     $('#scop_number-error').hide();
                     $('#scop_number-error').text('');
@@ -999,12 +898,12 @@
                             }
                         }).then(response => {
                             console.log('bien');
-                            EventBus.$emit('loading', false);
+                            // EventBus.$emit('loading', false);
                             $('#liquidar').prop('disabled', false);
                             $('#scop_number-error').text('');
                             $('#scop_number-error').hide();
                         }).catch(error => {
-                            EventBus.$emit('loading', false);
+                            // EventBus.$emit('loading', false);
                             $('#liquidar').prop('disabled', true);
                             $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
                             $('#scop_number-error').show();

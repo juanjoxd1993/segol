@@ -5,7 +5,7 @@
             <div class="kt-portlet__head">
                 <div class="kt-portlet__head-label">
                     <h3 class="kt-portlet__head-title">
-                        Ventas
+                        Ventas Total: <span>${{total}}</span>
                     </h3>
                 </div>
                 <div class="kt-portlet__head-toolbar">
@@ -40,6 +40,7 @@
                 sale_datatable: undefined,
                 show_table: false,
                 flag_add: false,
+                total: "0.00"
             }
         },
         created() {},
@@ -60,6 +61,14 @@
 
             EventBus.$on('refresh_table_sale', () => {
                 if ( this.sale_datatable != undefined ) {
+                    let total = 0;
+
+                    this.$store.state.sales.map(item => {
+                        total += parseInt(item.total);
+                    });
+
+                    this.total = total;
+
                     this.sale_datatable.originalDataSet = this.$store.state.sales;
                     this.sale_datatable.load();
                 }

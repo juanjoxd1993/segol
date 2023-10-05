@@ -163,19 +163,30 @@
                             details,
                             correlative,
                             serie_num,
-                            sale_serie_id
+                            sale_serie_id,
+                            liquidations
                         } = item;
+
+                        const bolLiquidations = JSON.parse(JSON.stringify(liquidations));
 
                         item.if_bol = 0;
                         if (!correlatives[serie_num]) {
                             const sale_serie_index = this.$store.state.sale_series.findIndex(item => item.id == sale_serie_id);
 
-                            correlatives[serie_num] = this.$store.state.sale_series[sale_serie_index].correlative;
+                            correlatives[serie_num] = this.$store.state.sale_series[sale_serie_index].correlative - 1;
                         }
 
                         if (warehouse_document_type_id == 7) {
-                            item.warehouse_document_type_id = 13;
+                            item.warehouse_document_type_id = 31;
                             item.if_bol = 1;
+
+                            let serie = 'RBV';
+
+                            serie_num.split('').map(e => {
+                                if(!isNaN(e)) serie = serie + e;
+                            })
+
+                            item.serie_num = serie + `-${correlative}`
                             details.map((i) => {
                                 const {
                                     quantity,
@@ -191,10 +202,36 @@
                                 const price = (sale_value / quantity).toFixed(4);
 
                                 for (let e = 1; e <= div; e++) {
+                                    const newLiquidations = [];
+                                    let amount = price * 2;
+
+                                    bolLiquidations.map(l => {
+                                        if ((amount > 0) && (l.amount > 0)) {
+                                            if (l.amount > amount) {
+                                                l.amount = l.amount - amount;
+
+                                                newLiquidations.push({
+                                                    ...l,
+                                                    amount
+                                                });
+
+                                                amount = 0;
+                                            } else if (l.amount <= amount) {
+                                                newLiquidations.push({
+                                                    ...l,
+                                                });
+
+                                                amount = amount - l.amount;
+                                                l.amount = 0;
+                                            };
+                                        }
+                                    })
+
                                     const element = {
                                         ...item,
                                         warehouse_document_type_id: 7,
                                         correlative: correlatives[serie_num],
+                                        serie_num,
                                         total: price * 2,
                                         total_perception: price * 2,
                                         if_bol: 0,
@@ -205,8 +242,11 @@
                                                 total_perception: price * 2,
                                                 quantity: 2
                                             }
-                                        ]
+                                        ],
+                                        liquidations: newLiquidations
                                     };
+
+                                    item.correlative = correlatives[serie_num];
 
                                     correlatives[serie_num] = correlatives[serie_num] + 1;
 
@@ -214,10 +254,36 @@
                                 };
 
                                 if (rest) {
+                                    const newLiquidations = [];
+                                    let amount = price;
+
+                                    bolLiquidations.map(l => {
+                                        if ((amount > 0) && (l.amount > 0)) {
+                                            if (l.amount > amount) {
+                                                l.amount = l.amount - amount;
+
+                                                newLiquidations.push({
+                                                    ...l,
+                                                    amount
+                                                });
+
+                                                amount = 0;
+                                            } else if (l.amount <= amount) {
+                                                newLiquidations.push({
+                                                    ...l,
+                                                });
+
+                                                amount = amount - l.amount;
+                                                l.amount = 0;
+                                            };
+                                        }
+                                    })
+
                                     const element = {
                                         ...item,
                                         warehouse_document_type_id: 7,
                                         correlative: correlatives[serie_num],
+                                        serie_num,
                                         total: price,
                                         total_perception: price,
                                         if_bol: 0,
@@ -228,8 +294,11 @@
                                                 total_perception: price,
                                                 quantity: 1
                                             }
-                                        ]
+                                        ],
+                                        liquidations: newLiquidations
                                     };
+
+                                    item.correlative = correlatives[serie_num];
 
                                     correlatives[serie_num] = correlatives[serie_num] + 1;
 

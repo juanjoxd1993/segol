@@ -1010,8 +1010,8 @@ class LiquidationFinalController extends Controller
 					$sale_model->referral_voucher_number = $sale['correlative'];
 				} else {
 					$int_last_voucher_number = (int)$last_voucher_number;
-					$sale_model->referral_serie_number = $referral_serie_number;
-					$sale_model->referral_voucher_number = $last_voucher_number != '' ? ++$int_last_voucher_number : 1 ;
+					$sale_model->referral_serie_number = $sale['serie_num'];
+					$sale_model->referral_voucher_number = $sale['correlative'] ;
 				}
 			}
 
