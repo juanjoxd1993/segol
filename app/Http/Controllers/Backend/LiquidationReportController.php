@@ -310,6 +310,7 @@ class LiquidationReportController extends Controller
 		$totals->cash_liquidation_amount = $totals_cash_liquidation_amount;
 		$totals->remesa_liquidation_amount = $totals_remesa_liquidation_amount;
 		$totals->deposit_liquidation_amount = $totals_deposit_liquidation_amount;
+		$totals->yape_liquidation_amount = $totals_yape_liquidation_amount;
 		$totals->bank_short_name = '';
 		$totals->operation_number = '';
 		$totals->client_code = '';
