@@ -30,8 +30,8 @@
                             <label class="form-control-label">Sede:</label>
                             <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                <option value= 4>PLANTA ATE</option>
-                                <option value= 13>PLANTA CALLAO</option>                    
+                                <option value="4">PLANTA ATE</option>
+                                <option value="13">PLANTA CALLAO</option>                    
                             </select>
                             <div id="warehouse_type-error" class="error invalid-feedback"></div>
                         </div>
@@ -124,12 +124,34 @@
             }.bind(this));
         },
         watch: {
-            'model.company_id': function(val) {
+            // 'model.company_id': function(val) {
+            //     if ( val != '' ) {
+            //         EventBus.$emit('loading', true);
+
+            //         axios.post(this.url_get_warehouse_movements, {
+            //             company_id: this.model.company_id
+            //         }).then(response => {
+            //             // console.log(response);
+            //             this.model.warehouse_movement_id = '';
+            //             this.warehouse_movements = response.data;
+
+            //             EventBus.$emit('loading', false);
+            //         }).catch(error => {
+            //             console.log(error);
+            //             console.log(error.response)
+            //         });
+            //     } else {
+            //         this.model.warehouse_movement_id = '';
+            //         this.warehouse_movements = '';
+            //     }
+            // },
+            'model.warehouse_type_id': function(val) {
                 if ( val != '' ) {
                     EventBus.$emit('loading', true);
 
                     axios.post(this.url_get_warehouse_movements, {
-                        company_id: this.model.company_id
+                        company_id: this.model.company_id,
+                        warehouse_type_id: this.model.warehouse_type_id
                     }).then(response => {
                         // console.log(response);
                         this.model.warehouse_movement_id = '';
@@ -144,7 +166,7 @@
                     this.model.warehouse_movement_id = '';
                     this.warehouse_movements = '';
                 }
-            }
+            },
         },
         computed: {
 

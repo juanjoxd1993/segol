@@ -21,6 +21,7 @@ export default {
 			currency_id: 1,
 		},
 		clients: [],
+		clientsFilter: [],
 		prestamos: [],
 		articles_for_liquidations: [],
 		balones: [],

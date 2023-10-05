@@ -88,12 +88,10 @@ class LiquidationFinalController extends Controller
                                               ->where('user_id', $user_id)
                                               ->first();
 
-	//	$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
-	    
-		$warehouse_type_id = request('warehouse_type_id');
+		//	$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 
+		$warehouse_type_id = request('warehouse_type_id');
 		$company_id = request('company_id');
-		
 
 			$guide_state = GuidesState::select('id')
 																->where('name', 'Por Liquidar')
@@ -1012,8 +1010,8 @@ class LiquidationFinalController extends Controller
 					$sale_model->referral_voucher_number = $sale['correlative'];
 				} else {
 					$int_last_voucher_number = (int)$last_voucher_number;
-					$sale_model->referral_serie_number = $referral_serie_number;
-					$sale_model->referral_voucher_number = $last_voucher_number != '' ? ++$int_last_voucher_number : 1 ;
+					$sale_model->referral_serie_number = $sale['serie_num'];
+					$sale_model->referral_voucher_number = $sale['correlative'] ;
 				}
 			}
 
