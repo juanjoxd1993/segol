@@ -221,7 +221,7 @@ class LiquidationReportController extends Controller
 				$response[] = $liquidation;
 			}
 
-			$totals_credit = number_format($sale['total_perception'] - $cash_liquidation_amount - $deposit_liquidation_amount - $remesa_liquidation_amount , 2, '.', '');
+			$totals_credit = number_format($sale['total_perception'] - $cash_liquidation_amount - $deposit_liquidation_amount - $remesa_liquidation_amount - $yape_liquidation_amount, 2, '.', '');
 
 			if ( $totals_credit > 0 ) {
 				$credit = new stdClass();
