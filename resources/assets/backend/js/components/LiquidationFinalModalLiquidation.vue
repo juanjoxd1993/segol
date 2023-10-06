@@ -44,7 +44,6 @@
                                         <div id="payment_sede-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-
                                 <div class="col-lg-3" v-if="model.payment_method == 9">
                                     <div class="form-group">
                                         <label class="form-control-label">Nº de Hermeticase:</label>
@@ -61,7 +60,7 @@
                                         </select>
                                         <div id="saldo_favor_id-error" class="error invalid-feedback"></div>
                                     </div>
-                                </div>
+                                </div>                
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Moneda:</label>
@@ -79,7 +78,7 @@
                                         <div id="exchange_rate-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3" v-if="model.payment_method == 2 || model.payment_method == 3 || model.payment_method == 11">
+                                <div class="col-lg-3" v-if="model.payment_method == 2 || model.payment_method == 3 ">
                                     <div class="form-group">
                                         <label class="form-control-label">Banco:</label>
                                         <select class="form-control" name="bank_account_id" id="bank_account_id" v-model="model.bank_account" @focus="$parent.clearErrorMsg($event)">
@@ -89,7 +88,7 @@
                                         <div id="bank_account_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3" v-if="model.payment_method == 1 || model.payment_method == 2 || model.payment_method == 3 || model.payment_method == 11">
+                                <div class="col-lg-3" v-if=" model.payment_method == 2 || model.payment_method == 3 || model.payment_method == 11">
                                     <div class="form-group">
                                         <label class="form-control-label">Nº de Operación:</label>
                                         <input type="text" class="form-control" name="operation_number" id="operation_number" v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageOperationNumber">

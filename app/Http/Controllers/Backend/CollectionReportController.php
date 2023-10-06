@@ -105,12 +105,34 @@ class CollectionReportController extends Controller
 			->when($business_unit_id, function ($query, $business_unit_id) {
 				return $query->where('clients.business_unit_id', $business_unit_id);
 			})
-			->select('companies.short_name as company_short_name', 'clients.id as client_id', 'clients.code as client_code', 'document_types.name as document_type_name',
-			'clients.document_number', 'clients.business_name','liquidations.collection', DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") as liquidation_created_at'),
-			'sales.sale_date', 'sales.expiry_date', 'warehouse_document_types.name as warehouse_document_type_name', 'liquidations.payment_method_id', 
-			'sales.referral_serie_number', 'sales.referral_voucher_number', 'liquidations.amount', 'liquidations.currency_id',
-			'liquidations.exchange_rate', 'payment_methods.name as payment_method_name', 'clients.route_id as route_id', 'client_routes.short_name as route_name','liquidations.rem_date as remesa_date','liquidations.payment_sede as payment_sede',
-			  'banks.name as bank_name',DB::Raw('CONCAT(banks.short_name, "-", bank_accounts.account_number) as bank_account'), 'liquidations.operation_number')
+			->select('companies.short_name as company_short_name',
+			 'clients.id as client_id',
+			  'clients.code as client_code', 
+			  'document_types.name as document_type_name',
+			  'sales.warehouse_document_type_id as warehouse_document_type_id',
+			'clients.document_number', 
+			'clients.business_name',
+			'clients.int_name as int_name',
+			'clients.bol_name as bol_name',
+			'liquidations.collection',
+			 DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") as liquidation_created_at'),
+			'sales.sale_date', 
+			'sales.expiry_date', 
+			'warehouse_document_types.name as warehouse_document_type_name',
+			 'liquidations.payment_method_id', 
+			'sales.referral_serie_number', 
+			'sales.referral_voucher_number',
+			 'liquidations.amount', 
+			 'liquidations.currency_id',DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'),
+			'liquidations.exchange_rate', 
+			'payment_methods.name as payment_method_name',
+			 'clients.route_id as route_id', 
+			 'client_routes.short_name as route_name',
+			 'liquidations.rem_date as remesa_date',
+			 'liquidations.payment_sede as payment_sede',
+			  'banks.name as bank_name',
+			  DB::Raw('CONCAT(banks.short_name, "-", bank_accounts.account_number) as bank_account'), 
+			  'liquidations.operation_number')
 			->orderBy('company_short_name')
 			->orderBy('liquidation_created_at')
 			->orderBy('sale_date')
@@ -123,11 +145,18 @@ class CollectionReportController extends Controller
 				$item->origin = 'Cobranza';
 			}
 
+			$item->sede_name = $item->int_name;
+			if ( $item->warehouse_document_type_id == 7 ) {
+				$item->sede_name = $item->bol_name;
+			}
+
 			$item->autogen = ' ';
 			if ( $item->payment_method_id == 9 ) {
 				$item->autogen = $item->operation_number;
 				$item->operation_number='';
 			}
+
+		
 			
 			$item->amount_soles = $item->amount;
 			$item->amount_dolares = 0;
@@ -164,7 +193,6 @@ class CollectionReportController extends Controller
 				$total->company_short_name = '';
 				$total->client_id = '';
 				$total->client_code = '';
-				$total->client_code = '';
 				$total->route_name = '';
 				$total->document_type_name = '';
 				$total->document_number = '';
@@ -184,6 +212,8 @@ class CollectionReportController extends Controller
 				$total->autogen = '';
 				$total->operation_number = '';
 				$total->origin = '';
+				$total->sede_name= '';
+				$total->guide = '';
 				$total->remesa_date = '';
 				$total->payment_sede = '';
 
@@ -225,6 +255,8 @@ class CollectionReportController extends Controller
 				$total->autogen = '';
 				$total->operation_number = '';
 				$total->origin = '';
+				$total->sede_name = '';
+				$total->guide = '';
 				$total->remesa_date = '';
 				$total->payment_sede = '';
 
@@ -258,6 +290,8 @@ class CollectionReportController extends Controller
 				$sumTotal->autogen = '';
 				$sumTotal->operation_number = '';
 				$sumTotal->origin = '';
+				$sumTotal->sede_name = '';
+				$sumTotal->guide= '';
 				$sumTotal->remesa_date = '';
 				$sumTotal->payment_sede = '';
 
@@ -293,21 +327,23 @@ class CollectionReportController extends Controller
 			$sheet->setCellValue('L3', 'Nº Doc.');
 			$sheet->setCellValue('M3', 'Fecha emisión');
             $sheet->setCellValue('N3', 'Fecha venc.');
-			$sheet->setCellValue('O3', 'Monto S/');
-			$sheet->setCellValue('P3', 'Monto US$');
-			$sheet->setCellValue('Q3', 'Tip. cambio');
-			$sheet->setCellValue('R3', 'Autogenerado'); //es '' si no es remesa viene de operation number
-			$sheet->setCellValue('S3', 'Entidad Financiera');
-			$sheet->setCellValue('T3', 'Cuenta Bancaria Descripción');
-			$sheet->setCellValue('U3', 'Nº Operación');
-			$sheet->setCellValue('V3', 'Fecha de Pago'); //Fecha de voucher si hay voucher
-			$sheet->setCellValue('W3', 'Fecha de Remesa');
-			$sheet->setCellValue('X3', 'Sede Remesa');
-			$sheet->setCellValue('Y3', 'Forma pago');
-			$sheet->setCellValue('Z3', 'Monto Deposito Total'); // del voucher
-			$sheet->setCellValue('AA3', 'Monto Cancelación Crédito'); //lo usado para liquidar
-			$sheet->setCellValue('AB3', 'Origen');
-			$sheet->setCellValue('AC3', 'Fecha de Cobranza'); //fecha de liquidación
+			$sheet->setCellValue('O3', 'Origen');
+			$sheet->setCellValue('P3', 'Guía');
+			$sheet->setCellValue('Q3', 'Monto S/');
+			$sheet->setCellValue('R3', 'Monto US$');
+			$sheet->setCellValue('S3', 'Tip. cambio');
+			$sheet->setCellValue('T3', 'Autogenerado'); //es '' si no es remesa viene de operation number
+			$sheet->setCellValue('U3', 'Entidad Financiera');
+			$sheet->setCellValue('V3', 'Cuenta Bancaria Descripción');
+			$sheet->setCellValue('W3', 'Nº Operación');
+			$sheet->setCellValue('X3', 'Fecha de Pago'); //Fecha de voucher si hay voucher
+			$sheet->setCellValue('Y3', 'Fecha de Remesa');
+			$sheet->setCellValue('Z3', 'Sede Remesa');
+			$sheet->setCellValue('AA3', 'Forma pago');
+			$sheet->setCellValue('AB3', 'Monto Deposito Total'); // del voucher
+			$sheet->setCellValue('AC3', 'Monto Cancelación Crédito'); //lo usado para liquidar
+			$sheet->setCellValue('AD3', 'Origen');
+			$sheet->setCellValue('AE3', 'Fecha de Cobranza'); //fecha de liquidación
 			
 			
 			$sheet->getStyle('A3:AC3')->applyFromArray([
@@ -327,31 +363,33 @@ class CollectionReportController extends Controller
 				$sheet->setCellValue('F'.$row_number, $element->document_type_name);
 				$sheet->setCellValue('G'.$row_number, $element->document_number);
 				$sheet->setCellValue('H'.$row_number, $element->business_name);
-				$sheet->setCellValue('I'.$row_number, $element->origin);
+				$sheet->setCellValue('I'.$row_number, $element->sede_name);
 				$sheet->setCellValue('J'.$row_number, $element->warehouse_document_type_name);
 				$sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
 				$sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
 				$sheet->setCellValue('M'.$row_number, $element->sale_date);
 				$sheet->setCellValue('N'.$row_number, $element->expiry_date);
-				$sheet->setCellValue('O'.$row_number, $element->amount_soles);
-				$sheet->setCellValue('P'.$row_number, $element->amount_dolares);
-				$sheet->setCellValue('Q'.$row_number, $element->exchange_rate);
-				$sheet->setCellValue('R'.$row_number, $element->autogen);
-				$sheet->setCellValue('S'.$row_number, $element->bank_name);
-				$sheet->setCellValue('T'.$row_number, $element->bank_account);
-				$sheet->setCellValue('U'.$row_number, $element->operation_number);
-				$sheet->setCellValue('W'.$row_number, $element->remesa_date);
-				$sheet->setCellValue('X'.$row_number, $element->payment_sede);
-				$sheet->setCellValue('Y'.$row_number, $element->payment_method_name);
-				$sheet->setCellValue('AC'.$row_number, $element->liquidation_created_at);
+				$sheet->setCellValue('O'.$row_number, $element->origin);
+				$sheet->setCellValue('P'.$row_number, $element->guide);				
+				$sheet->setCellValue('Q'.$row_number, $element->amount_soles);
+				$sheet->setCellValue('R'.$row_number, $element->amount_dolares);
+				$sheet->setCellValue('S'.$row_number, $element->exchange_rate);
+				$sheet->setCellValue('T'.$row_number, $element->autogen);
+				$sheet->setCellValue('U'.$row_number, $element->bank_name);
+				$sheet->setCellValue('V'.$row_number, $element->bank_account);
+				$sheet->setCellValue('W'.$row_number, $element->operation_number);
+				$sheet->setCellValue('Y'.$row_number, $element->remesa_date);
+				$sheet->setCellValue('Z'.$row_number, $element->payment_sede);
+				$sheet->setCellValue('AA'.$row_number, $element->payment_method_name);
+				$sheet->setCellValue('AE'.$row_number, $element->liquidation_created_at);
 
 
-				$sheet->getStyle('O'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
-				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 				$sheet->getStyle('Q'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
+				$sheet->getStyle('R'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
+				$sheet->getStyle('S'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 
 				if ( $element->company_short_name == '' ) {
-					$sheet->getStyle('B'.$row_number.':U'.$row_number)->applyFromArray([
+					$sheet->getStyle('B'.$row_number.':AE'.$row_number)->applyFromArray([
 						'font' => [
 							'bold' => true,
 						],
@@ -393,6 +431,8 @@ class CollectionReportController extends Controller
 			$sheet->getColumnDimension('AA')->setAutoSize(true);
 			$sheet->getColumnDimension('AB')->setAutoSize(true);
 			$sheet->getColumnDimension('AC')->setAutoSize(true);
+			$sheet->getColumnDimension('AD')->setAutoSize(true);
+			$sheet->getColumnDimension('AE')->setAutoSize(true);
 
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');

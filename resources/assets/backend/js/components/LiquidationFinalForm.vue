@@ -42,7 +42,7 @@
                             <label class="form-control-label">Nº de Parte:</label>
                             <select class="form-control" name="warehouse_movement_id" id="warehouse_movement_id" v-model="model.warehouse_movement_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
-                                <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id" v-bind:key="warehouse_movement.id">#{{ warehouse_movement.movement_number }} | {{ warehouse_movement.referral_guide_series }}-{{ warehouse_movement.referral_guide_number }} | {{ warehouse_movement.license_plate }} | {{ warehouse_movement.traslate_date }}</option>
+                                <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id" v-bind:key="warehouse_movement.id"> {{ warehouse_movement.referral_guide_series }}-{{ warehouse_movement.referral_guide_number }} | {{ warehouse_movement.license_plate }} | {{ warehouse_movement.traslate_date }}</option>
                             </select>
                             <div id="warehouse_movement_id-error" class="error invalid-feedback"></div>
                         </div>
