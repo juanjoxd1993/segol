@@ -141,6 +141,7 @@ class PendingDocumentReportController extends Controller
 			if ( $company_short_name !== $element->company_short_name ) {
 				$total = new stdClass();
 				$total->company_short_name = '';
+				$total->warehouse_document_type_id = '';
 				$total->warehouse_document_type_name = '';
 				$total->referral_serie_number = '';
 				$total->referral_voucher_number = '';
@@ -185,6 +186,7 @@ class PendingDocumentReportController extends Controller
 			if ( $index == $last_element ) {
 				$total = new stdClass();
 				$total->company_short_name = '';
+				$total->warehouse_document_type_id = '';
 				$total->warehouse_document_type_name = '';
 				$total->referral_serie_number = '';
 				$total->referral_voucher_number = '';
@@ -223,6 +225,7 @@ class PendingDocumentReportController extends Controller
 				$sumTotal = new stdClass();
 				$sumTotal->company_short_name = '';
 				$sumTotal->warehouse_document_type_name = '';
+				$sumTotal->warehouse_document_type_id= '';
 				$sumTotal->referral_serie_number = '';
 				$sumTotal->referral_voucher_number = '';
 				$sumTotal->sale_date = '';
