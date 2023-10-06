@@ -110,7 +110,7 @@ class PendingDocumentReportController extends Controller
 										->where('sales.balance', '!=', 0)
 										->whereNotIn('sales.client_id', [1031,427,13326,14072,13783,14269,14274,14294,14328,14329,14258])
 										->whereNotIn('sales.warehouse_document_type_id', [1, 2, 3, 4,6,9,10,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29])
-										->select('companies.short_name as company_short_name', 'warehouse_document_types.name as warehouse_document_type_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_date', 'sales.expiry_date', 'clients.id as client_id', DB::Raw('CONCAT("R-", client_routes.id) as client_route_id'),'clients.code as client_code', 'document_types.name as document_type_name', 'clients.document_number', 'clients.business_name', 'payments.name as payment_name', 'currencies.symbol as currency_symbol', 'sales.total_perception', 'sales.balance', 'sales.paid','sales.account_name','business_units.name as business_unit_name','managers.name as manager')
+										->select('companies.short_name as company_short_name', 'sales.warehouse_document_type_id', 'warehouse_document_types.name as warehouse_document_type_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_date', 'sales.expiry_date', 'clients.id as client_id', DB::Raw('CONCAT("R-", client_routes.id) as client_route_id'),'clients.code as client_code', 'document_types.name as document_type_name', 'clients.document_number', 'clients.business_name','clients.bol_name','clients.int_name', 'payments.name as payment_name', 'currencies.symbol as currency_symbol', 'sales.total_perception', 'sales.balance', 'sales.paid','sales.account_name','business_units.name as business_unit_name','managers.name as manager')
 										->orderBy('clients.business_name')
 										->orderBy('company_short_name')
 										->orderBy('warehouse_document_type_name')
@@ -149,6 +149,7 @@ class PendingDocumentReportController extends Controller
 				$total->client_route_id = '';
 				$total->client_id = '';
 				$total->client_code = '';
+				$total->int_name = '';
 				$total->document_type_name = '';
 				$total->document_number = '';
 				$total->business_name = 'TOTAL ' . $company_short_name;
@@ -192,6 +193,7 @@ class PendingDocumentReportController extends Controller
 				$total->client_route_id = '';
 				$total->client_id = '';
 				$total->client_code = '';
+				$total->int_name = '';
 				$total->document_type_name = '';
 				$total->document_number = '';
 				$total->business_name = 'TOTAL ' . $company_short_name;
@@ -228,6 +230,7 @@ class PendingDocumentReportController extends Controller
 				$sumTotal->client_route_id = '';
 				$sumTotal->client_id = '';
 				$sumTotal->client_code = '';
+				$sumTotal->int_name = '';
 				$sumTotal->document_type_name = '';
 				$sumTotal->document_number = '';
 				$sumTotal->business_name = 'TOTAL GENERAL';
@@ -272,18 +275,19 @@ class PendingDocumentReportController extends Controller
 			$sheet->setCellValue('K3', 'Doc. Cliente');
 			$sheet->setCellValue('L3', 'Nº Doc.');
 			$sheet->setCellValue('M3', 'Razón Social');
-			$sheet->setCellValue('N3', 'Tipo Venta');
-			$sheet->setCellValue('O3', 'Moneda');
-			$sheet->setCellValue('P3', 'Total');
-			$sheet->setCellValue('Q3', 'Pago a cuenta');
-			$sheet->setCellValue('R3', 'Saldo');
-			$sheet->setCellValue('S3', 'Saldo Acumulado');
-			$sheet->setCellValue('T3', 'Unidad Negocio');
-			$sheet->setCellValue('U3', 'Vendedor');
-			$sheet->setCellValue('V3', 'Supervisor');
-			$sheet->setCellValue('W3', 'Dias de Morosidad');
+			$sheet->setCellValue('N3', 'Punto de Venta');
+			$sheet->setCellValue('O3', 'Tipo Venta');
+			$sheet->setCellValue('P3', 'Moneda');
+			$sheet->setCellValue('Q3', 'Total');
+			$sheet->setCellValue('R3', 'Pago a cuenta');
+			$sheet->setCellValue('S3', 'Saldo');
+			$sheet->setCellValue('T3', 'Saldo Acumulado');
+			$sheet->setCellValue('U3', 'Unidad Negocio');
+			$sheet->setCellValue('V3', 'Vendedor');
+			$sheet->setCellValue('W3', 'Supervisor');
+			$sheet->setCellValue('X3', 'Dias de Morosidad');
 
-			$sheet->getStyle('A3:W3')->applyFromArray([
+			$sheet->getStyle('A3:X3')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
@@ -305,6 +309,11 @@ class PendingDocumentReportController extends Controller
 					$acumulate = $element->balance;
 				}
 
+			
+			    if ( $element->warehouse_document_type_id == 7 ) {
+				$element->int_name = $element->bol_name;
+			    }
+
 
 				$date1 = Carbon::now();
 				$date2 = Carbon::parse($element->expiry_date);
@@ -317,6 +326,8 @@ class PendingDocumentReportController extends Controller
 				} else{
 				$days= 0;
 		    	}
+
+
 
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
@@ -331,22 +342,23 @@ class PendingDocumentReportController extends Controller
 				$sheet->setCellValue('K'.$row_number, $element->document_type_name);
 				$sheet->setCellValue('L'.$row_number, $element->document_number);
 				$sheet->setCellValue('M'.$row_number, $element->business_name);
-				$sheet->setCellValue('N'.$row_number, $element->payment_name);
-				$sheet->setCellValue('O'.$row_number, $element->currency_symbol);
-				$sheet->setCellValue('P'.$row_number, $element->total_perception);
-				$sheet->setCellValue('Q'.$row_number, $element->paid);
-				$sheet->setCellValue('R'.$row_number, $element->balance);
-				$sheet->setCellValue('S'.$row_number, $acumulate);
-				$sheet->setCellValue('T'.$row_number, $element->business_unit_name);
-			//	$sheet->setCellValue('U'.$row_number, $element->account_name);
+				$sheet->setCellValue('N'.$row_number, $element->int_name);
+				$sheet->setCellValue('O'.$row_number, $element->payment_name);
+				$sheet->setCellValue('P'.$row_number, $element->currency_symbol);
+				$sheet->setCellValue('Q'.$row_number, $element->total_perception);
+				$sheet->setCellValue('R'.$row_number, $element->paid);
+				$sheet->setCellValue('S'.$row_number, $element->balance);
+				$sheet->setCellValue('T'.$row_number, $acumulate);
+				$sheet->setCellValue('U'.$row_number, $element->business_unit_name);
 				$sheet->setCellValue('V'.$row_number, $element->manager);
-				$sheet->setCellValue('W'.$row_number, $days);
+				$sheet->setCellValue('W'.$row_number, $element->manager);
+				$sheet->setCellValue('X'.$row_number, $days);
 				
 
-				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('Q'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('R'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('S'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('T'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 
 				if ( $element->company_short_name == '' ) {
 					$sheet->getStyle('B'.$row_number.':W'.$row_number)->applyFromArray([
