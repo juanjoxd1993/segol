@@ -5,7 +5,7 @@
             <div class="kt-portlet__head">
                 <div class="kt-portlet__head-label">
                     <h3 class="kt-portlet__head-title">
-                        Ventas Total: <span>${{total}}</span>
+                        Ventas Total: <span>S./{{total}}</span>
                     </h3>
                 </div>
                 <div class="kt-portlet__head-toolbar">
