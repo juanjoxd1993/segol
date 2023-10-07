@@ -44,7 +44,6 @@ class CollectionReportController extends Controller
 			'date_type_id.required'					=> 'Debe seleccionar un Tipo de Fecha.',
 			'initial_date.required'					=> 'Debe seleccionar una Fecha inicial.',
 			'final_date.required'					=> 'Debe seleccionar una Fecha final.',
-			'client_type_id.required_with'			=> 'Debe seleccionar un Tipo de Cliente.',
 			'client_id.required_if'					=> 'Debe seleccionar un Cliente.',
 		];
 
@@ -52,7 +51,6 @@ class CollectionReportController extends Controller
 			'date_type_id'					=> 'required',
 			'initial_date'					=> 'required',
 			'final_date'					=> 'required',
-			'client_type_id'				=> 'required_with:client_id',
 			'client_id'						=> 'required_if:client_type_id,0,1',
 		];
 
