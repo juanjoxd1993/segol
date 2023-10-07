@@ -101,6 +101,7 @@ class LiquidationChannelReportController extends Controller
 			'client_zones.name as client_zone_name',
 			'client_sectors.name as client_sector_name', 
 			'client_routes.short_name as client_route_id',
+			'sales.warehouse_document_type_id as warehouse_document_type_id',
 			'warehouse_document_types.short_name as warehouse_document_type_short_name', 
 			'sales.referral_serie_number', 
 			'sales.guide_series', 
@@ -120,6 +121,7 @@ class LiquidationChannelReportController extends Controller
 			'clients.business_name as client_business_name', 
 			'clients.document_number as document_number', 
 			'clients.int_name as int_name',
+			'clients.bol_name as bol_name',
 			'clients.credit_limit_days as credit_limit_days',
 			'document_types.name as client_document_name', 
 			'warehouse_movements.movement_number as warehouse_movement_movement_number', 
@@ -148,6 +150,8 @@ class LiquidationChannelReportController extends Controller
 			
 
 			foreach ($elements as $saledetail) {
+
+				$saledetail->warehouse_document_type_id = $saledetail['warehouse_document_type_id'];
 
 				$saledetail->company_short_name = $saledetail['company_short_name'];
 				$saledetail->sale_date = $saledetail ['sale_date'];
@@ -179,7 +183,12 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->total = $saledetail['total'];
 				$saledetail->client_id = $saledetail['client_id'];
 				$saledetail->client_code = $saledetail['client_code'];
-				$saledetail->client_business_name =$saledetail ['client_business_name'];
+				if($saledetail->warehouse_document_type_id ==7){
+					$saledetail->client_business_name =$saledetail ['bol_name'];
+				}
+				else{
+					$saledetail->client_business_name =$saledetail ['client_business_name'];
+				}
 				$saledetail->warehouse_movement_movement_number = $saledetail['warehouse_movement_movement_number'];
 				$saledetail->movement_type_name = $saledetail['movement_type_name'];
 				$saledetail->guide = $saledetail['guide'];
