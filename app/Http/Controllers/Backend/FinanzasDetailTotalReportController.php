@@ -123,7 +123,7 @@ class FinanzasDetailTotalReportController extends Controller
 								->select('sales.balance')
 								->sum('sales.balance');
 
-		$favor = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+		$saldo_favor = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 								->whereIn('sales.cede', $warehouse_types)
 								->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
 								->whereIn('sales.warehouse_document_type_id', [30])
@@ -140,12 +140,14 @@ class FinanzasDetailTotalReportController extends Controller
 								->select('liquidations.amount')
 								->sum('liquidations.amount');
 
-		$total_liquidado = $remesa + $efective + $deposit + $credit+ $yape -$favor;
+		$total_liquidado = $remesa + $efective + $deposit + $credit+ $yape;
 
 
 		$diference = number_format($total_venta_del_dia - $total_liquidado , 2, '.', '');
 
-		$diference_final=  number_format($total_venta_del_dia-$total_liquidado , 2, '.', '');
+		$favor=number_format($saldo_favor , 2, '.', '');
+
+		$diference_final=  number_format($diference+$favor , 2, '.', '');
 
 		$cobranza_efective =Liquidation::leftjoin('sales','liquidations.sale_id','=','sales.id')
 																	->leftjoin('clients', 'sales.client_id', '=', 'clients.id')				
@@ -333,6 +335,10 @@ class FinanzasDetailTotalReportController extends Controller
 			// Diferencia
 			$sheet->setCellValue('F15', 'DIFERENCIA');
 			$sheet->setCellValue('G15', $diference );
+
+			// Saldo a Favor
+			$sheet->setCellValue('F16', 'SALDO A FAVOR');
+			$sheet->setCellValue('G16', $favor );
 
 			// Diferencia Final
 			$sheet->setCellValue('F17', 'CUADRE FINAL');
