@@ -145,9 +145,9 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$diference = number_format($total_venta_del_dia - $total_liquidado , 2, '.', '');
 
-		$favor=number_format($saldo_favor , 2, '.', '');
+		$favor=number_format($saldo_favor , 4, '.', '');
 
-		$diference_final=  number_format($diference+$favor , 2, '.', '');
+		$diference_final=  number_format($diference - $favor , 4, '.', '');
 
 		$cobranza_efective =Liquidation::leftjoin('sales','liquidations.sale_id','=','sales.id')
 																	->leftjoin('clients', 'sales.client_id', '=', 'clients.id')				
