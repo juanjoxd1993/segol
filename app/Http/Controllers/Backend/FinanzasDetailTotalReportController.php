@@ -140,12 +140,12 @@ class FinanzasDetailTotalReportController extends Controller
 								->select('liquidations.amount')
 								->sum('liquidations.amount');
 
-		$total_liquidado = $remesa + $efective + $deposit + $credit+ $yape;
+		$total_liquidado = $remesa + $efective + $deposit + $credit+ $yape -$favor;
 
 
 		$diference = number_format($total_venta_del_dia - $total_liquidado , 2, '.', '');
 
-		$diference_final=  number_format($total_venta_del_dia-$total_liquidado - $favor , 2, '.', '');
+		$diference_final=  number_format($total_venta_del_dia-$total_liquidado , 2, '.', '');
 
 		$cobranza_efective =Liquidation::leftjoin('sales','liquidations.sale_id','=','sales.id')
 																	->leftjoin('clients', 'sales.client_id', '=', 'clients.id')				
