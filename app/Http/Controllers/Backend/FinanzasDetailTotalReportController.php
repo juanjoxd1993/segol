@@ -127,8 +127,8 @@ class FinanzasDetailTotalReportController extends Controller
 								->whereIn('sales.cede', $warehouse_types)
 								->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
 								->whereIn('sales.warehouse_document_type_id', [30])
-								->select('sales.total_perception')
-								->sum('sales.total_perception');
+								->select('sales.inaccurate_value')
+								->sum('sales.inaccurate_value');
 
 		$yape = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 								->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
@@ -145,9 +145,9 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$diference = number_format($total_venta_del_dia - $total_liquidado , 2, '.', '');
 
-		$favor=number_format($saldo_favor , 4, '.', '');
+		$favor=number_format($saldo_favor , 2, '.', '');
 
-		$diference_final=  number_format($diference - $favor , 4, '.', '');
+		$diference_final=  number_format($diference - $favor , 2, '.', '');
 
 		$cobranza_efective =Liquidation::leftjoin('sales','liquidations.sale_id','=','sales.id')
 																	->leftjoin('clients', 'sales.client_id', '=', 'clients.id')				
@@ -323,9 +323,7 @@ class FinanzasDetailTotalReportController extends Controller
 			$sheet->setCellValue('F10', 'YAPE');
 			$sheet->setCellValue('G10', $yape );
 
-			// Saldo a Favor
-			$sheet->setCellValue('F11', 'SALDO A FAVOR');
-			$sheet->setCellValue('G11', $favor );
+		
 
 			// Diferencia
 			$sheet->setCellValue('F13', 'TOTAL LIQUIDADO');
