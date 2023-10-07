@@ -91,12 +91,10 @@ class CollectionReportController extends Controller
 				return $query->where('liquidations.created_at', '>=', $initial_date->startOfDay()->format('Y-m-d H:i:s'))
 							 ->where('liquidations.created_at', '<=', $final_date->endOfDay()->format('Y-m-d H:i:s'));
 			})
-			->when($client_type_id == 1, function ($query) use ($client_id) {
+			->when($client_id, function ($query, $client_id) {
 				return $query->where('clients.id', $client_id);
 			})
-			->when($client_type_id == 2, function ($query) use ($client_id) {
-				return $query->where('clients.link_client_id', $client_id);
-			})
+			
 			->when($warehouse_document_type_id, function ($query, $warehouse_document_type_id) {
 				return $query->where('sales.warehouse_document_type_id', $warehouse_document_type_id);
 			})
