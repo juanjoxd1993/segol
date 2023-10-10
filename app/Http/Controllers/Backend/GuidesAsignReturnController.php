@@ -100,7 +100,7 @@ class GuidesAsignReturnController extends Controller
                                         'id',
                                         'client_id'
                                     )
-                                    ->where('warehouse_movement_id', $element->id)
+                                    ->where('warehouse_movement', $element->id)
                                     ->where('if_devol', 1)
                                     ->where('if_asign', 0)
                                     ->get();
@@ -125,7 +125,7 @@ class GuidesAsignReturnController extends Controller
                                     'id',
                                     'client_id'
                                 )
-                                ->where('warehouse_movement_id', $id)
+                                ->where('warehouse_movement', $id)
                                 ->where('if_devol', 1)
                                 ->where('if_asign', 0)
                                 ->get();

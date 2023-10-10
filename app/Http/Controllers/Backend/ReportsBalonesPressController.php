@@ -42,7 +42,7 @@ class ReportsBalonesPressController extends Controller {
 
       if ($container_detail) {
         $client = Client::find($container->client_id);
-        $warehouse_movement = WarehouseMovement::find($container->warehouse_movement_id);
+        $warehouse_movement = WarehouseMovement::find($container->warehouse_movement);
 
         $article = Article::find($container_detail->article_id);
 
