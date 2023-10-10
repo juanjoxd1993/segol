@@ -33,7 +33,7 @@ class ReportsBalonesPressController extends Controller {
                             ->select('id',
                                     'client_id',
                                     'if_devol',
-                                    'warehouse_movement_id',
+                                    'warehouse_movement',
                                     'date')
                             ->get();
 
