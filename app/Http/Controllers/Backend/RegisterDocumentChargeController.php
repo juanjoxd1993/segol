@@ -163,7 +163,7 @@ class RegisterDocumentChargeController extends Controller
 			'igv_percentage' => $igv_percentage
 		]);
 
-		if ( $referral_warehouse_document_type_id != '' || $referral_serie_number != '' || $referral_voucher_number != '' ) {
+		if ( $referral_warehouse_document_type_id != '3' ) {
 			$sale = Voucher::where('company_id', $company_id)
 				->where('voucher_type_id', $referral_warehouse_document_type_id)
 				->where('serie_number', $referral_serie_number)
@@ -490,7 +490,7 @@ class RegisterDocumentChargeController extends Controller
 		$referral_warehouse_document_type_id = request('referral_warehouse_document_type_id');
 
 		if ($referral_warehouse_document_type_id == 3) {
-			$references = WarehouseMovement::select('id', 'referral_serie_number', 'referral_voucher_number')->where('if_comodato', true)->get();
+			$references = WarehouseMovement::select('id', 'referral_guide_series', 'referral_guide_number', 'account_name', 'created_at')->where('if_comodato', true)->get();
 
 			return $references;
 		};
