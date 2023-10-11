@@ -72,7 +72,7 @@ class MasaReportController extends Controller
 						$elements = Container::leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
 					    ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                         ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
-                        ->leftjoin('container_details', 'container.id', '=', 'container_details.container_id')
+                        ->leftjoin('container_details', 'containers.id', '=', 'container_details.container_id')
 						->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')	            
 			            ->select('clients.id as client_id','clients.business_name as business_name','articles.convertion as convertion','warehouse_movements.if_comodato as comodato')
 			        
