@@ -379,6 +379,42 @@ class MasaReportController extends Controller
 			]);
 
 
+        $sheet->setCellValue('B3', 'STOCK INICIAL GLOBAL 2022 ');
+        $sheet->setCellValue('B4', ' COMPRAS');
+        $sheet->setCellValue('B5', ' CILINDROS EN CALIDAD CESION DE USO');
+        $sheet->setCellValue('B6', ' DONACIONES');
+        $sheet->setCellValue('B7', ' PERDIDAS REGISTRADAS');
+        $sheet->setCellValue('B8', ' STOCK TEORICO ');
+
+        $sheet->setCellValue('B10', ' STOCK REAL ');
+
+        $sheet->setCellValue('B12', ' CILINDROS EN PLATAFORMA LLENOS');
+        $sheet->setCellValue('B13', ' CILINDROS EN PLATAFORMA VACIOS');
+        $sheet->setCellValue('B14', ' CILINDROS EN COMODATO');
+        $sheet->setCellValue('B15', ' CILINDROS EN CALIDAD DE PRESTAMO ');
+        $sheet->setCellValue('B16', ' CILINDROS EN TRÁNSITO');
+        $sheet->setCellValue('B17', ' CILINDROS EN MANTENIMIENTO EXTERNO');
+        $sheet->setCellValue('B18', ' CILINDROS EN GRANALLADO ');
+        $sheet->setCellValue('B19', ' CILINDROS AJENOS');
+        $sheet->setCellValue('B20', ' TOTAL DE CILINDROS STOCK REAL'); 
+
+        $sheet->setCellValue('C3', '5K');
+        $sheet->setCellValue('D3', '10K');
+        $sheet->setCellValue('E3', '15K');
+        $sheet->setCellValue('F3', '45K');
+        $sheet->setCellValue('G3', 'M-15');
+
+        $sheet->setCellValue('C11', '5K ');
+        $sheet->setCellValue('D11', '10K ');
+        $sheet->setCellValue('E11', '15K');
+        $sheet->setCellValue('F11', '45K');
+        $sheet->setCellValue('G11', 'M-15');
+
+
+
+
+
+
         //  $sheet->mergeCells('B29:B29');
 		  $sheet->setCellValue('B29', 'CLIENTE');
 		  $sheet->getStyle('B29')->applyFromArray([
