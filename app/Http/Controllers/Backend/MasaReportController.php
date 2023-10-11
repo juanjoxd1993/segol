@@ -69,7 +69,7 @@ class MasaReportController extends Controller
 	    $initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d H:i:s');
 	
 		
-						$elements = Container::leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+						$elements = Container::leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
 					    ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                         ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                         ->leftjoin('container_details', 'container.id', '=', 'container_details.container_id')
