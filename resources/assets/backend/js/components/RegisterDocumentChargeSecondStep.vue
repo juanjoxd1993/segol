@@ -146,7 +146,7 @@
                             <label class="form-control-label">Referencia:</label>
                             <select class="form-control" name="reference" id="reference" v-model="model.referencce" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-								<option v-for="reference in references" :value="reference.id" v-bind:key="reference.id">{{ reference.referral_serie_number }} | {{ reference.referral_voucher_number }}</option>
+								<option v-for="reference in references" :value="reference.id" v-bind:key="reference.id">{{ reference.created_at }} | {{ reference.referral_guide_series }} | {{ reference.referral_guide_number }} | {{ reference.account_name }}</option>
                             </select>
                             <div id="reference-error" class="error invalid-feedback"></div>
                         </div>

@@ -118,7 +118,7 @@ class GuidesValidatePressController extends Controller
 
         $movementDetails = WarehouseMovementDetail::select(
             'id',
-            'warehouse_movement_id',
+            'warehouse_movement',
             'item_number',
             'article_code',
             'digit_amount',
@@ -126,7 +126,7 @@ class GuidesValidatePressController extends Controller
             'new_stock_repair',
             'new_stock_cesion'
             )
-            ->where('warehouse_movement_id', $warehouse_movement_id)
+            ->where('warehouse_movement', $warehouse_movement_id)
             ->orderBy('item_number', 'asc')
             ->get();
 
@@ -243,7 +243,7 @@ class GuidesValidatePressController extends Controller
                                     'id',
                                     'client_id'
                                 )
-                                ->where('warehouse_movement_id', $id)
+                                ->where('warehouse_movement', $id)
                                 ->where('if_devol', 0)
                                 ->get();
 
