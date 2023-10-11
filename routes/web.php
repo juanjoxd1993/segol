@@ -498,6 +498,13 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/relacion-de-documentos-pendientes-internos/validar-formulario', 'PendingDocumentIntReportController@validateForm')->name('dashboard.report.pending_document_int_report.validate_form');
 	Route::post('/reporte/relacion-de-documentos-pendientes-internos/listar', 'PendingDocumentIntReportController@list')->name('dashboard.report.pending_document_int_report.list');
 
+	/** Creditos y Cobranzas > Reporte de Masa */
+	Route::get('creditos/reporte/reporte-masa', 'MasaReportController@index')->name('dashboard.report.masa');
+	Route::post('creditos/reporte/reporte-masa/validar-formulario', 'MasaReportController@validateForm')->name('dashboard.report.masa.validate_form');
+	Route::post('creditos/reporte/reporte-masa/obtener-clientes', 'MasaReportController@getClients')->name('dashboard.report.masa.get_clients');
+	Route::post('creditos/reporte/reporte-masa/listar', 'MasaReportController@list')->name('dashboard.report.masa.list');
+
+
 	/** Contabilidad > Generación masiva de Comprobantes */
 	Route::get('/contabilidad/generacion-masiva-comprobantes', 'VoucherMassiveGenerationController@index')->name('dashboard.voucher.massive_generation');
 	Route::post('/contabilidad/generacion-masiva-comprobantes/validar-formulario', 'VoucherMassiveGenerationController@validateForm')->name('dashboard.voucher.massive_generation.validate_form');

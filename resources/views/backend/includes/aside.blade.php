@@ -630,12 +630,12 @@
 								</a>
 							</li> 
 
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.pending_document_int_report' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.report.pending_document_int_report') }}" class="kt-menu__link ">
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.masa' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.masa') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Documentos Pendientes Internos</span>
+									<span class="kt-menu__link-text">Reporte de Control de Masa</span>
 								</a>
 							</li>
 
