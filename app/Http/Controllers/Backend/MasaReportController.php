@@ -117,7 +117,7 @@ class MasaReportController extends Controller
 
 		       
 				$sum_5kt = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -128,7 +128,7 @@ class MasaReportController extends Controller
 				->sum('rest_devol');
 
                 $sum_10kt = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -139,7 +139,7 @@ class MasaReportController extends Controller
 				->sum('rest_devol');
 
                 $sum_15kt = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -150,7 +150,7 @@ class MasaReportController extends Controller
 				->sum('rest_devol');
 
                 $sum_m15kt = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -161,7 +161,7 @@ class MasaReportController extends Controller
 				->sum('rest_devol');
 
                 $sum_45kt = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -172,7 +172,7 @@ class MasaReportController extends Controller
 				->sum('rest_devol');
 
                 $sum_5kc = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -183,7 +183,7 @@ class MasaReportController extends Controller
 				->sum('rest_devol');
 
                 $sum_10kc = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -194,7 +194,7 @@ class MasaReportController extends Controller
 				->sum('rest_devol');
 
                 $sum_15kc = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -205,7 +205,7 @@ class MasaReportController extends Controller
 				->sum('rest_devol');
 
                 $sum_m15kc = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -216,7 +216,7 @@ class MasaReportController extends Controller
 				->sum('rest_devol');
 
                 $sum_45kc = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -227,7 +227,7 @@ class MasaReportController extends Controller
 				->sum('rest_devol');
 
                 $sum_5kd = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -238,7 +238,7 @@ class MasaReportController extends Controller
 				->sum('devol');
 
                 $sum_10kd = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -249,7 +249,7 @@ class MasaReportController extends Controller
 				->sum('devol');
 
                 $sum_15kd = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -260,7 +260,7 @@ class MasaReportController extends Controller
 				->sum('devol');
 
                 $sum_m15kd = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
@@ -271,7 +271,7 @@ class MasaReportController extends Controller
 				->sum('devol');
 
                 $sum_45kd = ContainerDetail::leftjoin('containers', 'container_details.container_id', '=', 'containers.id') 
-                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movement.id')
+                ->leftjoin('warehouse_movements', 'containers.warehouse_movement', '=', 'warehouse_movements.id')
                 ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                 ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                 ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')
