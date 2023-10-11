@@ -438,7 +438,7 @@ class CollectionReportController extends Controller
 				$sheet->setCellValue('V'.$row_number, $element->bank_account);
 				$sheet->setCellValue('W'.$row_number, $element->operation_number);
 				$sheet->setCellValue('X'.$row_number, $payDateYear);
-				$sheet->setCellValue('Y'.$row_number, $element->$remesaDateYear);
+				$sheet->setCellValue('Y'.$row_number, $remesaDateYear);
 				$sheet->setCellValue('Z'.$row_number, $element->payment_sede);
 				$sheet->setCellValue('AA'.$row_number, $element->payment_method_name);
 				$sheet->setCellValue('AE'.$row_number, $element->liquidation_created_at);
