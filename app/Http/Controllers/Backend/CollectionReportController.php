@@ -399,17 +399,18 @@ class CollectionReportController extends Controller
 				$saleDateYear = $saleDateObject;
 			}
 			if ($element->expiry_date) {
-				$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+				$saleDateObject = date('d/m/Y',strtotime($element->expiry_date) );
 				$expiryDateYear= $saleDateObject;
 			}
 			if ($element->remesa_date) {
-				$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+				$saleDateObject = date('d/m/Y',strtotime($element->remesa_date) );
 				$remesaDateYear = $saleDateObject;
 			}
 			if ($element->pay_date) {
-				$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+				$saleDateObject = date('d/m/Y',strtotime($element->pay_date) );
 				$payDateYear = $saleDateObject;
 			}
+
 
 
 
