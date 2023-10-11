@@ -98,7 +98,8 @@
               model: {
                 date_init: '',
                 date_end: '',
-                movement_type_id: 0
+                movement_type_id: 0,
+                export: false,
               },
               max_date_time: new Date(),
           }
@@ -118,7 +119,10 @@
                   ...model
               }).then(response => {
                   const data = response.data;
-                  EventBus.$emit('show_table', data);
+                  EventBus.$emit('show_table', {
+                    data,
+                    model
+                  });
               }).catch(error => {
                   console.log(error);
                   console.log(error.response);
