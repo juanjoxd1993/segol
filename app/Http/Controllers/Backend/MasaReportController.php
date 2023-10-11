@@ -74,7 +74,7 @@ class MasaReportController extends Controller
                         ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                         ->leftjoin('container_details', 'container.id', '=', 'container_details.container_id')
 						->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')	            
-			            ->select('clients.id as client_id','clients.business_name as business_name','articles.convertion as convertion','warehouse_movement.if_comodato as comodato')
+			            ->select('clients.id as client_id','clients.business_name as business_name','articles.convertion as convertion','warehouse_movements.if_comodato as comodato')
 			        
 				
 			
