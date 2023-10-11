@@ -62,10 +62,10 @@
 						vm.fillTableX();
 					} else {
 						vm.masa_report_datatable.setDataSourceParam('model', vm.model);
-						vm.masa_report_datatable_report_datatable.load();
+						vm.masa_report_datatable.load();
 					}
 				
-					vm.masa_report_datatable_report_datatable.on('kt-datatable--on-ajax-done', function() {
+					vm.masa_report_datatable.on('kt-datatable--on-ajax-done', function() {
 						EventBus.$emit('loading', false);
 					});
 				});
