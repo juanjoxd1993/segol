@@ -136,6 +136,9 @@ class PendingDocumentReportController extends Controller
 				
 			}
 
+
+			
+
 			
 
 			if ( $company_short_name !== $element->company_short_name ) {
@@ -332,13 +335,49 @@ class PendingDocumentReportController extends Controller
 
 
 
+				$saleDateYear = null;
+				$expiryDateYear = null;
+				
+				if ($element->sale_date) {
+					$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+					$saleDateYear = $saleDateObject;
+				}
+				if ($element->expiry_date) {
+					$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+					$expiryDateYear= $saleDateObject;
+				}
+
+				if ( $element->referral_serie_number == 'B001' ) {
+					$element->referral_serie_number = '001';
+				}
+				else if ( $element->referral_serie_number == 'B002' ) {
+					$element->referral_serie_number = '003';
+				}
+				else if ( $element->referral_serie_number == 'B003' ) {
+					$element->referral_serie_number = '003';
+				}
+				else if ( $element->referral_serie_number == 'B009' ) {
+					$element->referral_serie_number = '009';
+				}
+				else if ( $element->referral_serie_number == 'B012' ) {
+					$element->referral_serie_number = '012';
+				}
+				else if ( $element->referral_serie_number == 'B018' ) {
+					$element->referral_serie_number = '018';
+				}
+				else {
+					$element->referral_serie_number = $element->referral_serie_number;
+				}
+
+
+
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
 				$sheet->setCellValue('C'.$row_number, $element->warehouse_document_type_name);
 				$sheet->setCellValue('D'.$row_number, $element->referral_serie_number);
 				$sheet->setCellValue('E'.$row_number, $element->referral_voucher_number);
-				$sheet->setCellValue('F'.$row_number, $element->sale_date);
-				$sheet->setCellValue('G'.$row_number, $element->expiry_date);
+				$sheet->setCellValue('F'.$row_number, $saleDateYear);
+				$sheet->setCellValue('G'.$row_number, $expiryDateYear);
 				$sheet->setCellValue('H'.$row_number, $element->client_route_id);
 				$sheet->setCellValue('I'.$row_number, $element->client_id);
 				$sheet->setCellValue('J'.$row_number, $element->client_code);

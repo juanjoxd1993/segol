@@ -425,8 +425,8 @@ class LiquidationFinalController extends Controller
 
 		$voucher_type = VoucherType::find($warehouse_document_type->voucher_type_id, ['id', 'serie_type']);
 		if ( $voucher_type ) {
-			if ( $voucher_type->id == 3 || $voucher_type->id == 4 ) {
-				$serie_number = $voucher_type->serie_type . sprintf('%02d', $referral_serie_number);
+			if ( $voucher_type->id == 3 || $voucher_type->id == 4 || $voucher_type->id == 7 ) {
+				$serie_number =  $referral_serie_number;
 			} else {
 				$serie_number = $voucher_type->serie_type . sprintf('%03d', $referral_serie_number);
 			}
@@ -921,12 +921,19 @@ class LiquidationFinalController extends Controller
 				$sale_model->scop_number = $scop;
 
 				$voucher_type = VoucherType::find($voucher_type_id, ['id', 'serie_type']);
+			  //$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
+			    if ( $voucher_type->id == 3 || $voucher_type->id == 4 || $voucher_type->id == 7 ) {
+				$serie_number = $sale[ 'referral_serie_number'];
+			    } else {
 				$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
+			    }
+
 				$last_voucher_number = Voucher::where('company_id', $model['company_id'])
 																			->where('voucher_type_id', $voucher_type->id)
 																			->where('serie_number', $serie_number)
 																			->max('voucher_number');
 
+										
 				$voucher = new Voucher();
 				$voucher->company_id = $model['company_id'];
 				$voucher->client_id = $client->id;

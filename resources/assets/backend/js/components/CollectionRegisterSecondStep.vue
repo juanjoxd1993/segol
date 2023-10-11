@@ -55,9 +55,9 @@
                             <div id="payment_sede-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3" v-if="model.payment_method_id == 9">
+                    <div class="col-lg-3" v-if="model.payment_method_id == 9 || model.payment_method_id == 2 || model.payment_method_id == 3 || model.payment_method_id == 11">
                         <div class="form-group">
-                            <label class="form-control-label">Fecha Final:</label>
+                            <label class="form-control-label">Fecha de Pago:</label>
                             <datetime
                                 v-model="model.payment_date"
                                 placeholder="Selecciona una Fecha"

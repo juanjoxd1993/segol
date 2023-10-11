@@ -142,14 +142,44 @@ class CollectionReportController extends Controller
 			}
 
 			$item->sede_name = $item->int_name;
+
 			if ( $item->warehouse_document_type_id == 7 ) {
-				$item->sede_name = $item->bol_name;
+				$item->sede_name = $item->business_name;
+				$item->business_name = $item->bol_name;
 			}
 
 			$item->autogen = ' ';
 			if ( $item->payment_method_id == 9 ) {
 				$item->autogen = $item->operation_number;
 				$item->operation_number='';
+			}
+
+			$item->pay_date = ' ';
+			if ( $item->payment_method_id == 2 || $item->payment_method_id == 3 || $item->payment_method_id == 11  ) {
+				$item->pay_date = $item->remesa_date;
+				$item->remesa_date='';
+			}
+
+			if ( $item->referral_serie_number == 'B001' ) {
+				$item->referral_serie_number = '001';
+			}
+			else if ( $item->referral_serie_number == 'B002' ) {
+				$item->referral_serie_number = '003';
+			}
+			else if ( $item->referral_serie_number == 'B003' ) {
+				$item->referral_serie_number = '003';
+			}
+			else if ( $item->referral_serie_number == 'B009' ) {
+				$item->referral_serie_number = '009';
+			}
+			else if ( $item->referral_serie_number == 'B012' ) {
+				$item->referral_serie_number = '012';
+			}
+			else if ( $item->referral_serie_number == 'B018' ) {
+				$item->referral_serie_number = '018';
+			}
+			else {
+				$item->referral_serie_number = $item->referral_serie_number;
 			}
 
 		
@@ -165,9 +195,12 @@ class CollectionReportController extends Controller
 			$item->exchange_rate = $item->exchange_rate ? $item->exchange_rate : '';
 			$item->bank_account = $item->bank_account ? $item->bank_account : '';
 
+
+
             if ( $item->payment_method_id == 2 || $item->payment_method_id == 3 || $item->payment_method_id == 11 ) {
 			$item->operation_number = $item->operation_number ? $item->operation_number : '';
 		 	}
+
 			return $item;
 		});
 
@@ -351,6 +384,32 @@ class CollectionReportController extends Controller
 			$row_number = 4;
 			foreach ($response as $index => $element) {
 				$index++;
+
+				$saleDateYear = null;
+				$expiryDateYear = null;
+				$remesaDateYear = null;
+				$payDateYear = null;
+
+				
+			if ($element->sale_date) {
+				$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+				$saleDateYear = $saleDateObject;
+			}
+			if ($element->expiry_date) {
+				$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+				$expiryDateYear= $saleDateObject;
+			}
+			if ($element->remesa_date) {
+				$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+				$remesaDateYear = $saleDateObject;
+			}
+			if ($element->pay_date) {
+				$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+				$payDateYear = $saleDateObject;
+			}
+
+
+
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
 				$sheet->setCellValue('C'.$row_number, $element->route_name);
@@ -363,8 +422,8 @@ class CollectionReportController extends Controller
 				$sheet->setCellValue('J'.$row_number, $element->warehouse_document_type_name);
 				$sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
 				$sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
-				$sheet->setCellValue('M'.$row_number, $element->sale_date);
-				$sheet->setCellValue('N'.$row_number, $element->expiry_date);
+				$sheet->setCellValue('M'.$row_number, $element->$saleDateYear);
+				$sheet->setCellValue('N'.$row_number, $element->$expiryDateYear);
 				$sheet->setCellValue('O'.$row_number, $element->origin);
 				$sheet->setCellValue('P'.$row_number, $element->guide);				
 				$sheet->setCellValue('Q'.$row_number, $element->amount_soles);
@@ -374,7 +433,8 @@ class CollectionReportController extends Controller
 				$sheet->setCellValue('U'.$row_number, $element->bank_name);
 				$sheet->setCellValue('V'.$row_number, $element->bank_account);
 				$sheet->setCellValue('W'.$row_number, $element->operation_number);
-				$sheet->setCellValue('Y'.$row_number, $element->remesa_date);
+				$sheet->setCellValue('X'.$row_number, $element->$payDateYear);
+				$sheet->setCellValue('Y'.$row_number, $element->$remesaDateYear);
 				$sheet->setCellValue('Z'.$row_number, $element->payment_sede);
 				$sheet->setCellValue('AA'.$row_number, $element->payment_method_name);
 				$sheet->setCellValue('AE'.$row_number, $element->liquidation_created_at);
