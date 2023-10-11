@@ -426,8 +426,8 @@ class CollectionReportController extends Controller
 				$sheet->setCellValue('J'.$row_number, $element->warehouse_document_type_name);
 				$sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
 				$sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
-				$sheet->setCellValue('M'.$row_number, $element->$saleDateYear);
-				$sheet->setCellValue('N'.$row_number, $element->$expiryDateYear);
+				$sheet->setCellValue('M'.$row_number, $saleDateYear);
+				$sheet->setCellValue('N'.$row_number, $expiryDateYear);
 				$sheet->setCellValue('O'.$row_number, $element->origin);
 				$sheet->setCellValue('P'.$row_number, $element->guide);				
 				$sheet->setCellValue('Q'.$row_number, $element->amount_soles);
@@ -437,7 +437,7 @@ class CollectionReportController extends Controller
 				$sheet->setCellValue('U'.$row_number, $element->bank_name);
 				$sheet->setCellValue('V'.$row_number, $element->bank_account);
 				$sheet->setCellValue('W'.$row_number, $element->operation_number);
-				$sheet->setCellValue('X'.$row_number, $element->$payDateYear);
+				$sheet->setCellValue('X'.$row_number, $payDateYear);
 				$sheet->setCellValue('Y'.$row_number, $element->$remesaDateYear);
 				$sheet->setCellValue('Z'.$row_number, $element->payment_sede);
 				$sheet->setCellValue('AA'.$row_number, $element->payment_method_name);
