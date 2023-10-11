@@ -379,7 +379,7 @@ class MasaReportController extends Controller
 			]);
 
 
-          $sheet->mergeCells('B29');
+        //  $sheet->mergeCells('B29:B29');
 		  $sheet->setCellValue('B29', 'CLIENTE');
 		  $sheet->getStyle('B29')->applyFromArray([
 			'font' => [
@@ -395,7 +395,7 @@ class MasaReportController extends Controller
 				'startColor' => array('rgb' => '44546a')
 			]
 		]);
-        $sheet->mergeCells('C30');
+      //  $sheet->mergeCells('C30');
      //   $sheet->setCellValue('B30', '5K');
         $sheet->getStyle('C30')->applyFromArray([
           'font' => [
@@ -411,7 +411,7 @@ class MasaReportController extends Controller
               'startColor' => array('rgb' => '44546a')
           ]
       ]);
-      $sheet->mergeCells('D30');
+     // $sheet->mergeCells('D30');
       //$sheet->setCellValue('C30', '10K');
       $sheet->getStyle('D30')->applyFromArray([
         'font' => [
@@ -427,7 +427,7 @@ class MasaReportController extends Controller
             'startColor' => array('rgb' => '44546a')
         ]
     ]);
-    $sheet->mergeCells('E30');
+   // $sheet->mergeCells('E30');
     //$sheet->setCellValue('E30', '15K');
     $sheet->getStyle('E30')->applyFromArray([
       'font' => [
@@ -443,7 +443,7 @@ class MasaReportController extends Controller
           'startColor' => array('rgb' => '44546a')
       ]
   ]);
-  $sheet->mergeCells('F30');
+  //$sheet->mergeCells('F30');
   //$sheet->setCellValue('F30', '45K');
   $sheet->getStyle('F30')->applyFromArray([
     'font' => [
@@ -459,7 +459,7 @@ class MasaReportController extends Controller
         'startColor' => array('rgb' => '44546a')
     ]
 ]);
-$sheet->mergeCells('G30');
+//$sheet->mergeCells('G30');
 //$sheet->setCellValue('G30', 'M-15');
 $sheet->getStyle('G30')->applyFromArray([
   'font' => [
@@ -494,7 +494,7 @@ $sheet->getStyle('G30')->applyFromArray([
 			]
 		]);
 
-        $sheet->mergeCells('H30');
+     //   $sheet->mergeCells('H30');
         //$sheet->setCellValue('H30', '5K');
         $sheet->getStyle('H30')->applyFromArray([
           'font' => [
@@ -510,7 +510,7 @@ $sheet->getStyle('G30')->applyFromArray([
               'startColor' => array('rgb' => '44546a')
           ]
       ]);
-      $sheet->mergeCells('I30');
+     // $sheet->mergeCells('I30');
     //  $sheet->setCellValue('I30', '10K');
       $sheet->getStyle('I30')->applyFromArray([
         'font' => [
@@ -526,7 +526,7 @@ $sheet->getStyle('G30')->applyFromArray([
             'startColor' => array('rgb' => '44546a')
         ]
     ]);
-    $sheet->mergeCells('J30');
+   // $sheet->mergeCells('J30');
     //$sheet->setCellValue('J30', '15K');
     $sheet->getStyle('J30')->applyFromArray([
       'font' => [
@@ -542,7 +542,7 @@ $sheet->getStyle('G30')->applyFromArray([
           'startColor' => array('rgb' => '44546a')
       ]
   ]);
-  $sheet->mergeCells('K30');
+ // $sheet->mergeCells('K30');
   //$sheet->setCellValue('K30', '45K');
   $sheet->getStyle('K30')->applyFromArray([
     'font' => [
@@ -558,7 +558,7 @@ $sheet->getStyle('G30')->applyFromArray([
         'startColor' => array('rgb' => '44546a')
     ]
 ]);
-$sheet->mergeCells('L30');
+//$sheet->mergeCells('L30');
 //$sheet->setCellValue('L30', 'M-15');
 $sheet->getStyle('L30')->applyFromArray([
   'font' => [
@@ -592,7 +592,7 @@ $sheet->getStyle('L30')->applyFromArray([
 			]
 		]);
 
-        $sheet->mergeCells('M30');
+       // $sheet->mergeCells('M30');
         //$sheet->setCellValue('M30', '5K');
         $sheet->getStyle('M30')->applyFromArray([
           'font' => [
@@ -608,7 +608,7 @@ $sheet->getStyle('L30')->applyFromArray([
               'startColor' => array('rgb' => '44546a')
           ]
       ]);
-      $sheet->mergeCells('N30');
+      //$sheet->mergeCells('N30');
       //$sheet->setCellValue('N30', '10K');
       $sheet->getStyle('N30')->applyFromArray([
         'font' => [
@@ -624,7 +624,7 @@ $sheet->getStyle('L30')->applyFromArray([
             'startColor' => array('rgb' => '44546a')
         ]
     ]);
-    $sheet->mergeCells('O30');
+   // $sheet->mergeCells('O30');
     //$sheet->setCellValue('O30', '15K');
     $sheet->getStyle('O30')->applyFromArray([
       'font' => [
@@ -640,7 +640,7 @@ $sheet->getStyle('L30')->applyFromArray([
           'startColor' => array('rgb' => '44546a')
       ]
   ]);
-  $sheet->mergeCells('P30');
+  //$sheet->mergeCells('P30');
   //$sheet->setCellValue('P30', '45K');
   $sheet->getStyle('P30')->applyFromArray([
     'font' => [
@@ -656,7 +656,7 @@ $sheet->getStyle('L30')->applyFromArray([
         'startColor' => array('rgb' => '44546a')
     ]
 ]);
-$sheet->mergeCells('Q30');
+//$sheet->mergeCells('Q30');
 //$sheet->setCellValue('Q30', 'M-15');
 $sheet->getStyle('Q30')->applyFromArray([
   'font' => [
@@ -707,7 +707,7 @@ $sheet->getStyle('Q30')->applyFromArray([
 			]
 		]);
 
-        $sheet->mergeCells('R30');
+       // $sheet->mergeCells('R30');
         //$sheet->setCellValue('R30', '5K');
         $sheet->getStyle('R30')->applyFromArray([
           'font' => [
@@ -723,7 +723,7 @@ $sheet->getStyle('Q30')->applyFromArray([
               'startColor' => array('rgb' => '44546a')
           ]
       ]);
-      $sheet->mergeCells('S30');
+     // $sheet->mergeCells('S30');
     //  $sheet->setCellValue('S30', '10K');
       $sheet->getStyle('S30')->applyFromArray([
         'font' => [
@@ -739,7 +739,7 @@ $sheet->getStyle('Q30')->applyFromArray([
             'startColor' => array('rgb' => '44546a')
         ]
     ]);
-    $sheet->mergeCells('T30');
+   // $sheet->mergeCells('T30');
   //  $sheet->setCellValue('T30', '15K');
     $sheet->getStyle('T30')->applyFromArray([
       'font' => [
@@ -755,7 +755,7 @@ $sheet->getStyle('Q30')->applyFromArray([
           'startColor' => array('rgb' => '44546a')
       ]
   ]);
-  $sheet->mergeCells('U30');
+ // $sheet->mergeCells('U30');
 //  $sheet->setCellValue('U30', '45K');
   $sheet->getStyle('U30')->applyFromArray([
     'font' => [
@@ -771,7 +771,7 @@ $sheet->getStyle('Q30')->applyFromArray([
         'startColor' => array('rgb' => '44546a')
     ]
 ]);
-   $sheet->mergeCells('V30');
+   //$sheet->mergeCells('V30');
   //$sheet->setCellValue('V30', 'M-15');
    $sheet->getStyle('V30')->applyFromArray([
   'font' => [
