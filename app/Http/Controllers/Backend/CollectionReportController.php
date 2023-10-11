@@ -243,6 +243,7 @@ class CollectionReportController extends Controller
 				$total->origin = '';
 				$total->sede_name= '';
 				$total->guide = '';
+				$total->pay_date = '';
 				$total->remesa_date = '';
 				$total->payment_sede = '';
 
@@ -286,6 +287,7 @@ class CollectionReportController extends Controller
 				$total->origin = '';
 				$total->sede_name = '';
 				$total->guide = '';
+				$total->pay_date = '';
 				$total->remesa_date = '';
 				$total->payment_sede = '';
 
@@ -321,6 +323,7 @@ class CollectionReportController extends Controller
 				$sumTotal->origin = '';
 				$sumTotal->sede_name = '';
 				$sumTotal->guide= '';
+				$sumTotal->pay_date = '';
 				$sumTotal->remesa_date = '';
 				$sumTotal->payment_sede = '';
 

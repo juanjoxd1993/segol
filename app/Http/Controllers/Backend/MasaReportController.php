@@ -379,24 +379,24 @@ class MasaReportController extends Controller
 			]);
 
 
-        $sheet->setCellValue('B3', 'STOCK INICIAL GLOBAL 2022 ');
-        $sheet->setCellValue('B4', ' COMPRAS');
-        $sheet->setCellValue('B5', ' CILINDROS EN CALIDAD CESION DE USO');
-        $sheet->setCellValue('B6', ' DONACIONES');
-        $sheet->setCellValue('B7', ' PERDIDAS REGISTRADAS');
-        $sheet->setCellValue('B8', ' STOCK TEORICO ');
+        $sheet->setCellValue('B4', 'STOCK INICIAL GLOBAL 2022 ');
+        $sheet->setCellValue('B5', ' COMPRAS');
+        $sheet->setCellValue('B6', ' CILINDROS EN CALIDAD CESION DE USO');
+        $sheet->setCellValue('B7', ' DONACIONES');
+        $sheet->setCellValue('B8', ' PERDIDAS REGISTRADAS');
+        $sheet->setCellValue('B9', ' STOCK TEORICO ');
 
-        $sheet->setCellValue('B10', ' STOCK REAL ');
+        $sheet->setCellValue('B11', ' STOCK REAL ');
 
-        $sheet->setCellValue('B12', ' CILINDROS EN PLATAFORMA LLENOS');
-        $sheet->setCellValue('B13', ' CILINDROS EN PLATAFORMA VACIOS');
-        $sheet->setCellValue('B14', ' CILINDROS EN COMODATO');
-        $sheet->setCellValue('B15', ' CILINDROS EN CALIDAD DE PRESTAMO ');
-        $sheet->setCellValue('B16', ' CILINDROS EN TRÁNSITO');
-        $sheet->setCellValue('B17', ' CILINDROS EN MANTENIMIENTO EXTERNO');
-        $sheet->setCellValue('B18', ' CILINDROS EN GRANALLADO ');
-        $sheet->setCellValue('B19', ' CILINDROS AJENOS');
-        $sheet->setCellValue('B20', ' TOTAL DE CILINDROS STOCK REAL'); 
+        $sheet->setCellValue('B13', ' CILINDROS EN PLATAFORMA LLENOS');
+        $sheet->setCellValue('B14', ' CILINDROS EN PLATAFORMA VACIOS');
+        $sheet->setCellValue('B15', ' CILINDROS EN COMODATO');
+        $sheet->setCellValue('B16', ' CILINDROS EN CALIDAD DE PRESTAMO ');
+        $sheet->setCellValue('B17', ' CILINDROS EN TRÁNSITO');
+        $sheet->setCellValue('B18', ' CILINDROS EN MANTENIMIENTO EXTERNO');
+        $sheet->setCellValue('B19', ' CILINDROS EN GRANALLADO ');
+        $sheet->setCellValue('B20', ' CILINDROS AJENOS');
+        $sheet->setCellValue('B21', ' TOTAL DE CILINDROS STOCK REAL'); 
 
         $sheet->setCellValue('C3', '5K');
         $sheet->setCellValue('D3', '10K');
