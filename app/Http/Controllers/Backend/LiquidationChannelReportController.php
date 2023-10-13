@@ -161,6 +161,33 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->client_sector_name = $saledetail['client_sector_name'];
 				$saledetail->client_route_id = $saledetail['client_route_id'];
 
+				if ( $saledetail->referral_serie_number == 'B001' ) {
+					$saledetail->referral_serie_number = '000000001';
+				}
+				else if ( $saledetail->referral_serie_number == 'B002' ) {
+					$saledetail->referral_serie_number = '00000003';
+				}
+				else if ( $saledetail->referral_serie_number == 'B003' ) {
+					$saledetail->referral_serie_number = '00000003';
+				}
+				else if ( $saledetail->referral_serie_number == 'B009' ) {
+					$saledetail->referral_serie_number = '00000009';
+				}
+				else if ( $saledetail->referral_serie_number == 'B012' ) {
+					$saledetail->referral_serie_number = '00000012';
+				}
+				else if ( $saledetail->referral_serie_number == 'B018' ) {
+					$saledetail->referral_serie_number = '00000018';
+				}
+				else {
+					$saledetail->referral_serie_number = $saledetail->referral_serie_number;
+				}
+
+				$saledetail->referral_voucher_number== str_pad($saledetail->referral_voucher_number, 8, "0", STR_PAD_LEFT);
+
+
+
+
 				$saledetail->warehouse_document_type_short_name = $saledetail['warehouse_document_type_short_name'];
 				$saledetail->guide_series = $saledetail['guide_series'];
 				// if ($saledetail->warehouse_document_type_short_name == 'FE')
@@ -398,7 +425,8 @@ class LiquidationChannelReportController extends Controller
 				$sheet->setCellValue('AJ'.$row_number, $element->igv); 
 				$sheet->setCellValue('AK'.$row_number, $element->total);
 
-				// $sheet->getStyle('N'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('AJ'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('AK'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('AH'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('AI'.$row_number)->getNumberFormat()->setFormatCode('0.00');			
 
@@ -433,6 +461,15 @@ class LiquidationChannelReportController extends Controller
 			$sheet->getColumnDimension('Z')->setAutoSize(true);
 			$sheet->getColumnDimension('AA')->setAutoSize(true);
 			$sheet->getColumnDimension('AB')->setAutoSize(true);
+			$sheet->getColumnDimension('AC')->setAutoSize(true);
+			$sheet->getColumnDimension('AD')->setAutoSize(true);
+			$sheet->getColumnDimension('AE')->setAutoSize(true);
+			$sheet->getColumnDimension('AF')->setAutoSize(true);
+			$sheet->getColumnDimension('AG')->setAutoSize(true);
+			$sheet->getColumnDimension('AH')->setAutoSize(true);
+			$sheet->getColumnDimension('AI')->setAutoSize(true);
+			$sheet->getColumnDimension('AJ')->setAutoSize(true);
+			$sheet->getColumnDimension('AK')->setAutoSize(true);
 
 			$writer = new Xls($spreadsheet);
 			// echo json_encode($response);

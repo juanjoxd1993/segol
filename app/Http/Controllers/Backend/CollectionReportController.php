@@ -164,7 +164,7 @@ class CollectionReportController extends Controller
 				$item->referral_serie_number = '001';
 			}
 			else if ( $item->referral_serie_number == 'B002' ) {
-				$item->referral_serie_number = '003';
+				$item->referral_serie_number = '002';
 			}
 			else if ( $item->referral_serie_number == 'B003' ) {
 				$item->referral_serie_number = '003';
@@ -183,7 +183,8 @@ class CollectionReportController extends Controller
 			}
 
 		
-			
+			$item->referral_voucher_number== str_pad($item->referral_voucher_number, 8, "0", STR_PAD_LEFT);
+
 			$item->amount_soles = $item->amount;
 			$item->amount_dolares = 0;
 			if ( $item->currency_id == 2 ) {
@@ -444,9 +445,9 @@ class CollectionReportController extends Controller
 				$sheet->setCellValue('AE'.$row_number, $element->liquidation_created_at);
 
 
-				$sheet->getStyle('Q'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
-				$sheet->getStyle('R'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
-				$sheet->getStyle('S'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
+				$sheet->getStyle('Q'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('R'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('S'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 
 				if ( $element->company_short_name == '' ) {
 					$sheet->getStyle('B'.$row_number.':AE'.$row_number)->applyFromArray([
