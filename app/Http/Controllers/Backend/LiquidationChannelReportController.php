@@ -162,22 +162,22 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->client_route_id = $saledetail['client_route_id'];
 
 				if ( $saledetail->referral_serie_number == 'B001' ) {
-					$saledetail->referral_serie_number = '000000001';
+					$saledetail->referral_serie_number = '001';
 				}
 				else if ( $saledetail->referral_serie_number == 'B002' ) {
-					$saledetail->referral_serie_number = '00000003';
+					$saledetail->referral_serie_number = '002';
 				}
 				else if ( $saledetail->referral_serie_number == 'B003' ) {
-					$saledetail->referral_serie_number = '00000003';
+					$saledetail->referral_serie_number = '003';
 				}
 				else if ( $saledetail->referral_serie_number == 'B009' ) {
-					$saledetail->referral_serie_number = '00000009';
+					$saledetail->referral_serie_number = '009';
 				}
 				else if ( $saledetail->referral_serie_number == 'B012' ) {
-					$saledetail->referral_serie_number = '00000012';
+					$saledetail->referral_serie_number = '012';
 				}
 				else if ( $saledetail->referral_serie_number == 'B018' ) {
-					$saledetail->referral_serie_number = '00000018';
+					$saledetail->referral_serie_number = '018';
 				}
 				else {
 					$saledetail->referral_serie_number = $saledetail->referral_serie_number;

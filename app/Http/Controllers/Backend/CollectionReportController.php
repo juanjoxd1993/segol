@@ -119,6 +119,8 @@ class CollectionReportController extends Controller
 			'sales.referral_serie_number', 
 			'sales.referral_voucher_number',
 			 'liquidations.amount', 
+			 'sales.quide_series', 
+			'sales.guide_number',
 			 'liquidations.currency_id',DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'),
 			'liquidations.exchange_rate', 
 			'payment_methods.name as payment_method_name',
@@ -231,6 +233,8 @@ class CollectionReportController extends Controller
 				$total->sale_date = '';
 				$total->expiry_date = '';
 				$total->warehouse_document_type_name = '';
+				$total->guide_series = '';
+				$total->guide_number = '';
 				$total->referral_serie_number = '';
 				$total->referral_voucher_number = '';
 				$total->amount_soles = number_format($sum_amount_soles, 4, '.', '');
@@ -275,6 +279,8 @@ class CollectionReportController extends Controller
 				$total->sale_date = '';
 				$total->expiry_date = '';
 				$total->warehouse_document_type_name = '';
+				$total->guide_series = '';
+				$total->guide_number = '';
 				$total->referral_serie_number = '';
 				$total->referral_voucher_number = '';
 				$total->amount_soles = number_format($sum_amount_soles, 4, '.', '');
@@ -311,6 +317,8 @@ class CollectionReportController extends Controller
 				$sumTotal->sale_date = '';
 				$sumTotal->expiry_date = '';
 				$sumTotal->warehouse_document_type_name = '';
+				$sumTotal->guide_series = '';
+				$sumTotal->guide_number = '';
 				$sumTotal->referral_serie_number = '';
 				$sumTotal->referral_voucher_number = '';
 				$sumTotal->amount_soles = number_format($total_sum_amount_soles, 4, '.', '');
@@ -393,7 +401,15 @@ class CollectionReportController extends Controller
 				$expiryDateYear = null;
 				$remesaDateYear = null;
 				$payDateYear = null;
+				$cobranzaDateYear = null;
 
+			$sum_canc=Liquidation::leftjoin('sales', 'liquidation.sale_id', '=', 'sales.id')
+			->where('sales.client_id', '=', $element->$client_id)
+			->where ('sales.warehouse_document_type_id','=',7)
+			->where ('sales.guide_number','=',$element->guide_number)
+			->where ('sales.guide_series','=',$element->guide_series) 
+            ->select ('sales.paid')
+			->sum ('sales.paid');
 				
 			if ($element->sale_date) {
 				$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
@@ -410,6 +426,10 @@ class CollectionReportController extends Controller
 			if ($element->pay_date) {
 				$saleDateObject = date('d/m/Y',strtotime($element->pay_date) );
 				$payDateYear = $saleDateObject;
+			}
+			if ($element->pay_date) {
+				$saleDateObject = date('d/m/Y',strtotime($element->pay_date) );
+				$cobranzaDateYear = $saleDateObject;
 			}
 
 
@@ -442,12 +462,16 @@ class CollectionReportController extends Controller
 				$sheet->setCellValue('Y'.$row_number, $remesaDateYear);
 				$sheet->setCellValue('Z'.$row_number, $element->payment_sede);
 				$sheet->setCellValue('AA'.$row_number, $element->payment_method_name);
-				$sheet->setCellValue('AE'.$row_number, $element->liquidation_created_at);
+				$sheet->setCellValue('AB'.$row_number, $sum_canc);
+				$sheet->setCellValue('AC'.$row_number, $element->amount_soles);
+				$sheet->setCellValue('AE'.$row_number, $cobranzaDateYear);
 
 
 				$sheet->getStyle('Q'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('R'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('S'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('AB'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('AC'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 
 				if ( $element->company_short_name == '' ) {
 					$sheet->getStyle('B'.$row_number.':AE'.$row_number)->applyFromArray([
