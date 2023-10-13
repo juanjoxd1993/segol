@@ -183,7 +183,7 @@ class CollectionReportController extends Controller
 			}
 
 		
-			$item->referral_voucher_number== str_pad($item->referral_voucher_number, 8, "0", STR_PAD_LEFT);
+			$item->referral_voucher_number=str_pad($item->referral_voucher_number, 8, "0", STR_PAD_LEFT);
 
 			$item->amount_soles = $item->amount;
 			$item->amount_dolares = 0;

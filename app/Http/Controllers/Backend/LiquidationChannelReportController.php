@@ -183,7 +183,7 @@ class LiquidationChannelReportController extends Controller
 					$saledetail->referral_serie_number = $saledetail->referral_serie_number;
 				}
 
-				$saledetail->referral_voucher_number== str_pad($saledetail->referral_voucher_number, 8, "0", STR_PAD_LEFT);
+				$saledetail->referral_voucher_number=str_pad($saledetail->referral_voucher_number, 8, "0", STR_PAD_LEFT);
 
 
 
