@@ -404,7 +404,7 @@ class CollectionReportController extends Controller
 				$cobranzaDateYear = null;
 
 			$sum_canc=Liquidation::leftjoin('sales', 'liquidations.sale_id', '=', 'sales.id')
-			->where('sales.client_id', '=', $element->$client_id)
+			->where('sales.client_id', '=', $element->client_id)
 			->where ('sales.warehouse_document_type_id','=',7)
 			->where ('sales.guide_number','=',$element->guide_number)
 			->where ('sales.guide_series','=',$element->guide_series) 
