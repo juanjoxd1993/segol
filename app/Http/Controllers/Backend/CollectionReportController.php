@@ -119,7 +119,7 @@ class CollectionReportController extends Controller
 			'sales.referral_serie_number', 
 			'sales.referral_voucher_number',
 			 'liquidations.amount', 
-			 'sales.quide_series', 
+			 'sales.guide_series', 
 			'sales.guide_number',
 			 'liquidations.currency_id',DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'),
 			'liquidations.exchange_rate', 
