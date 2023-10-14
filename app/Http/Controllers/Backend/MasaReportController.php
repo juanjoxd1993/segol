@@ -398,7 +398,8 @@ class MasaReportController extends Controller
         $sheet->setCellValue('B19', ' CILINDROS EN GRANALLADO ');
         $sheet->setCellValue('B20', ' CILINDROS AJENOS');
         $sheet->setCellValue('B21', ' TOTAL DE CILINDROS STOCK REAL'); 
-
+       
+        // STOCK INICIAL 2022
         $sheet->setCellValue('C3', '5K');
 
         $stock_ini5k=Article::select('id','code','stock_2022')
@@ -409,40 +410,391 @@ class MasaReportController extends Controller
         $sheet->setCellValue('C4', $stock_ini5k);
 
         $sheet->setCellValue('D3', '10K');
+
         $stock_ini10k=Article::select('id','code','stock_2022')
         ->where('articles.id', '=', 4838)
 				->select('stock_2022')
 				->sum('stock_2022');
 
-        $sheet->setCellValue('C4', $stock_ini10k);
+        $sheet->setCellValue('D4', $stock_ini10k);
 
         $sheet->setCellValue('E3', '15K');
+
         $stock_ini15k=Article::select('id','code','stock_2022')
         ->where('articles.id', '=', 4839)
 				->select('stock_2022')
 				->sum('stock_2022');
 
-        $sheet->setCellValue('C4', $stock_ini15k);
+        $sheet->setCellValue('E4', $stock_ini15k);
+
         $sheet->setCellValue('F3', '45K');
         $stock_ini45k=Article::select('id','code','stock_2022')
         ->where('articles.id', '=', 4840)
 				->select('stock_2022')
 				->sum('stock_2022');
 
-        $sheet->setCellValue('C4', $stock_ini45k);
+        $sheet->setCellValue('F4', $stock_ini45k);
+
         $sheet->setCellValue('G3', 'M-15');
+
         $stock_inim15=Article::select('id','code','stock_2022')
         ->where('articles.id', '=', 4500)
 				->select('stock_2022')
 				->sum('stock_2022');
 
-        $sheet->setCellValue('C4', $stock_inim15);
+        $sheet->setCellValue('G4', $stock_inim15);
 
-        $sheet->setCellValue('C11', '5K ');
+        // STOCK CU
+
+        $stock_cu5k=Article::select('id','code','stock_damaged')
+        ->where('articles.id', '=', 4837)
+				->select('stock_damaged')
+				->sum('stock_damaged');
+
+        $sheet->setCellValue('C4', $stock_cu5k);
+
+        $sheet->setCellValue('D3', '10K');
+
+        $stock_cu10k=Article::select('id','code','stock_damaged')
+        ->where('articles.id', '=', 4838)
+				->select('stock_damaged')
+				->sum('stock_damaged');
+
+        $sheet->setCellValue('D4', $stock_cu10k);
+
+        $sheet->setCellValue('E3', '15K');
+
+        $stock_cu15k=Article::select('id','code','stock_damaged')
+        ->where('articles.id', '=', 4839)
+				->select('stock_damaged')
+				->sum('stock_damaged');
+
+        $sheet->setCellValue('E4', $stock_cu15k);
+
+        $sheet->setCellValue('F3', '45K');
+        $stock_cu45k=Article::select('id','code','stock_damaged')
+        ->where('articles.id', '=', 4840)
+				->select('stock_damaged')
+				->sum('stock_damaged');
+
+        $sheet->setCellValue('F4', $stock_cu45k);
+
+        $sheet->setCellValue('G3', 'M-15');
+
+        $stock_cum15=Article::select('id','code','stock_damaged')
+        ->where('articles.id', '=', 4500)
+				->select('stock_damaged')
+				->sum('stock_damaged');
+
+        $sheet->setCellValue('G4', $stock_cum15);
+
+
+
+
+        $sum_teorico5k=$stock_ini5k+ $stock_cu5k;
+        $sum_teorico10k=$stock_ini10k+ $stock_cu10k;
+        $sum_teorico15k=$stock_ini15k+ $stock_cu15k;
+        $sum_teorico45k=$stock_ini45k+ $stock_cu45k;
+        $sum_teoricom15=$stock_inim15+ $stock_cum15;
+
+        // totales
+        $sheet->setCellValue('C9', $sum_teorico5k);
+        $sheet->setCellValue('D9', $sum_teorico10k);
+        $sheet->setCellValue('E9', $sum_teorico15k);
+        $sheet->setCellValue('F9', $sum_teorico45k);
+        $sheet->setCellValue('G9', $sum_teoricom15);
+     
+        // tabla de real
+
+        $sheet->setCellValue('C12', '5K ');
+
+        $stock_good5k=Article::select('id','code','stock_good')
+        ->where('articles.id', '=', 4837)
+				->select('stock_good')
+				->sum('stock_good');
+
+        $sheet->setCellValue('C14', $stock_good5k);
+
+        $stock_como5k=Article::select('id','code','stock_como')
+        ->where('articles.id', '=', 4837)
+				->select('stock_como')
+				->sum('stock_como');
+
+        $sheet->setCellValue('C15', $stock_como5k);
+
+        $stock_repair5k=Article::select('id','code','stock_repair')
+        ->where('articles.id', '=', 4837)
+				->select('stock_repair')
+				->sum('stock_repair');
+
+        $sheet->setCellValue('C16', $stock_repair5k);
+
+        $stock_rep5k=Article::select('id','code','stock_rep')
+        ->where('articles.id', '=', 4837)
+				->select('stock_rep')
+				->sum('stock_rep');
+
+        $sheet->setCellValue('C18', $stock_rep5k);
+
+        $stock_tran5k=Article::select('id','code','stock_return')
+        ->where('articles.id', '=', 4837)
+				->select('stock_return')
+				->sum('stock_return');
+
+        $sheet->setCellValue('C17', $stock_tran5k);
+
+        $stock_gran5k=Article::select('id','code','stock_gran')
+        ->where('articles.id', '=', 4837)
+				->select('stock_gran')
+				->sum('stock_gran');
+
+        $sheet->setCellValue('C19', $stock_gran5k);
+
+        $stock_aje5k=Article::select('id','code','stock_aje')
+        ->where('articles.id', '=', 4837)
+				->select('stock_aje')
+				->sum('stock_aje');
+
+        $sheet->setCellValue('C20', $stock_aje5k);
+
+
+        $sum_table_5k=$stock_good5k+$stock_como5k+$stock_repair5k+ $stock_rep5k+ $stock_tran5k+ $stock_gran5k+ $stock_aje5k;
+
+        $sheet->setCellValue('C21', $sum_table_5k);
+
+
+        // CALCULO 10K
+
         $sheet->setCellValue('D11', '10K ');
+
+        $stock_good10K=Article::select('id','code','stock_good')
+        ->where('articles.id', '=', 4838)
+				->select('stock_good')
+				->sum('stock_good');
+
+        $sheet->setCellValue('D14', $stock_good10K);
+
+        $stock_como10K=Article::select('id','code','stock_como')
+        ->where('articles.id', '=', 4838)
+				->select('stock_como')
+				->sum('stock_como');
+
+        $sheet->setCellValue('D15', $stock_como10K);
+
+        $stock_repair10K=Article::select('id','code','stock_repair')
+        ->where('articles.id', '=', 4838)
+				->select('stock_repair')
+				->sum('stock_repair');
+
+        $sheet->setCellValue('D16', $stock_repair10K);
+
+        $stock_rep10K=Article::select('id','code','stock_rep')
+        ->where('articles.id', '=', 4838)
+				->select('stock_rep')
+				->sum('stock_rep');
+
+        $sheet->setCellValue('D18', $stock_rep10K);
+
+        $stock_tran10K=Article::select('id','code','stock_return')
+        ->where('articles.id', '=', 4838)
+				->select('stock_return')
+				->sum('stock_return');
+
+        $sheet->setCellValue('D17', $stock_tran10K);
+
+        $stock_gran10K=Article::select('id','code','stock_gran')
+        ->where('articles.id', '=', 4838)
+				->select('stock_gran')
+				->sum('stock_gran');
+
+        $sheet->setCellValue('D19', $stock_gran10K);
+
+        $stock_aje10K=Article::select('id','code','stock_aje')
+        ->where('articles.id', '=', 4838)
+				->select('stock_aje')
+				->sum('stock_aje');
+
+        $sheet->setCellValue('D20', $stock_aje10K);
+
+
+        $sum_table_10K=$stock_good10K+$stock_como10K+$stock_repair10K+ $stock_rep10K+ $stock_tran10K+ $stock_gran10K+ $stock_aje10K;
+
+        $sheet->setCellValue('D21', $sum_table_10K);
+
+       //CALCULO 15K
+
         $sheet->setCellValue('E11', '15K');
+
+        $stock_good15K=Article::select('id','code','stock_good')
+        ->where('articles.id', '=', 4839)
+				->select('stock_good')
+				->sum('stock_good');
+
+        $sheet->setCellValue('E14', $stock_good15K);
+
+        $stock_como15K=Article::select('id','code','stock_como')
+        ->where('articles.id', '=', 4839)
+				->select('stock_como')
+				->sum('stock_como');
+
+        $sheet->setCellValue('E15', $stock_como15K);
+
+        $stock_repair15K=Article::select('id','code','stock_repair')
+        ->where('articles.id', '=', 4839)
+				->select('stock_repair')
+				->sum('stock_repair');
+
+        $sheet->setCellValue('E16', $stock_repair15K);
+
+        $stock_rep15K=Article::select('id','code','stock_rep')
+        ->where('articles.id', '=', 4839)
+				->select('stock_rep')
+				->sum('stock_rep');
+
+        $sheet->setCellValue('E18', $stock_rep15K);
+
+        $stock_tran15K=Article::select('id','code','stock_return')
+        ->where('articles.id', '=', 4839)
+				->select('stock_return')
+				->sum('stock_return');
+
+        $sheet->setCellValue('E17', $stock_tran15K);
+
+        $stock_gran15K=Article::select('id','code','stock_gran')
+        ->where('articles.id', '=', 4839)
+				->select('stock_gran')
+				->sum('stock_gran');
+
+        $sheet->setCellValue('E19', $stock_gran15K);
+
+        $stock_aje15K=Article::select('id','code','stock_aje')
+        ->where('articles.id', '=', 4839)
+				->select('stock_aje')
+				->sum('stock_aje');
+
+        $sheet->setCellValue('E20', $stock_aje15K);
+
+
+        $sum_table_15K=$stock_good15K+$stock_como15K+$stock_repair15K+ $stock_rep15K+ $stock_tran15K+ $stock_gran15K+ $stock_aje15K;
+
+        $sheet->setCellValue('E21', $sum_table_15K);
+
+      //CALCULO 45K
+
         $sheet->setCellValue('F11', '45K');
+
+        $stock_good45k=Article::select('id','code','stock_good')
+        ->where('articles.id', '=', 4840)
+				->select('stock_good')
+				->sum('stock_good');
+
+        $sheet->setCellValue('F14', $stock_good45k);
+
+        $stock_como45k=Article::select('id','code','stock_como')
+        ->where('articles.id', '=', 4840)
+				->select('stock_como')
+				->sum('stock_como');
+
+        $sheet->setCellValue('F15', $stock_como45k);
+
+        $stock_repair45k=Article::select('id','code','stock_repair')
+        ->where('articles.id', '=', 4840)
+				->select('stock_repair')
+				->sum('stock_repair');
+
+        $sheet->setCellValue('F16', $stock_repair45k);
+
+        $stock_rep45k=Article::select('id','code','stock_rep')
+        ->where('articles.id', '=', 4840)
+				->select('stock_rep')
+				->sum('stock_rep');
+
+        $sheet->setCellValue('F18', $stock_rep45k);
+
+        $stock_tran45k=Article::select('id','code','stock_return')
+        ->where('articles.id', '=', 4840)
+				->select('stock_return')
+				->sum('stock_return');
+
+        $sheet->setCellValue('F17', $stock_tran45k);
+
+        $stock_gran45k=Article::select('id','code','stock_gran')
+        ->where('articles.id', '=', 4840)
+				->select('stock_gran')
+				->sum('stock_gran');
+
+        $sheet->setCellValue('F19', $stock_gran45k);
+
+        $stock_aje45k=Article::select('id','code','stock_aje')
+        ->where('articles.id', '=', 4840)
+				->select('stock_aje')
+				->sum('stock_aje');
+
+        $sheet->setCellValue('F20', $stock_aje45k);
+
+
+        $sum_table_45k=$stock_good45k+$stock_como45k+$stock_repair45k+ $stock_rep45k+ $stock_tran45k+ $stock_gran45k+ $stock_aje45k;
+
+        $sheet->setCellValue('F21', $sum_table_45k);
+
+
+      //CALCULO M15
+
         $sheet->setCellValue('G11', 'M-15');
+
+        $stock_goodm15=Article::select('id','code','stock_good')
+        ->where('articles.id', '=', 4500)
+				->select('stock_good')
+				->sum('stock_good');
+
+        $sheet->setCellValue('G14', $stock_goodm15);
+
+        $stock_comom15=Article::select('id','code','stock_como')
+        ->where('articles.id', '=', 4500)
+				->select('stock_como')
+				->sum('stock_como');
+
+        $sheet->setCellValue('G15', $stock_comom15);
+
+        $stock_repairm15=Article::select('id','code','stock_repair')
+        ->where('articles.id', '=', 4500)
+				->select('stock_repair')
+				->sum('stock_repair');
+
+        $sheet->setCellValue('G16', $stock_repairm15);
+
+        $stock_repm15=Article::select('id','code','stock_rep')
+        ->where('articles.id', '=', 4500)
+				->select('stock_rep')
+				->sum('stock_rep');
+
+        $sheet->setCellValue('G18', $stock_repm15);
+
+        $stock_tranm15=Article::select('id','code','stock_return')
+        ->where('articles.id', '=', 4500)
+				->select('stock_return')
+				->sum('stock_return');
+
+        $sheet->setCellValue('G17', $stock_tranm15);
+
+        $stock_granm15=Article::select('id','code','stock_gran')
+        ->where('articles.id', '=', 4500)
+				->select('stock_gran')
+				->sum('stock_gran');
+
+        $sheet->setCellValue('G19', $stock_granm15);
+
+        $stock_ajem15=Article::select('id','code','stock_aje')
+        ->where('articles.id', '=', 4500)
+				->select('stock_aje')
+				->sum('stock_aje');
+
+        $sheet->setCellValue('G20', $stock_ajem15);
+
+
+        $sum_table_m15=$stock_goodm15+$stock_comom15+$stock_repairm15+ $stock_repm15+ $stock_tranm15+ $stock_granm15+ $stock_ajem15;
+
+        $sheet->setCellValue('G21', $sum_table_m15);
 
 
 
