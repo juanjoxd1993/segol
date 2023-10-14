@@ -380,6 +380,7 @@ class MasaReportController extends Controller
 
 
         $sheet->setCellValue('B4', 'STOCK INICIAL GLOBAL 2022 ');
+
         $sheet->setCellValue('B5', ' COMPRAS');
         $sheet->setCellValue('B6', ' CILINDROS EN CALIDAD CESION DE USO');
         $sheet->setCellValue('B7', ' DONACIONES');
@@ -399,10 +400,43 @@ class MasaReportController extends Controller
         $sheet->setCellValue('B21', ' TOTAL DE CILINDROS STOCK REAL'); 
 
         $sheet->setCellValue('C3', '5K');
+
+        $stock_ini5k=Article::select('id','code','stock_2022')
+        ->where('articles.id', '=', 4837)
+				->select('stock_2022')
+				->sum('stock_2022');
+
+        $sheet->setCellValue('C4', $stock_ini5k);
+
         $sheet->setCellValue('D3', '10K');
+        $stock_ini10k=Article::select('id','code','stock_2022')
+        ->where('articles.id', '=', 4838)
+				->select('stock_2022')
+				->sum('stock_2022');
+
+        $sheet->setCellValue('C4', $stock_ini10k);
+
         $sheet->setCellValue('E3', '15K');
+        $stock_ini15k=Article::select('id','code','stock_2022')
+        ->where('articles.id', '=', 4839)
+				->select('stock_2022')
+				->sum('stock_2022');
+
+        $sheet->setCellValue('C4', $stock_ini15k);
         $sheet->setCellValue('F3', '45K');
+        $stock_ini45k=Article::select('id','code','stock_2022')
+        ->where('articles.id', '=', 4840)
+				->select('stock_2022')
+				->sum('stock_2022');
+
+        $sheet->setCellValue('C4', $stock_ini45k);
         $sheet->setCellValue('G3', 'M-15');
+        $stock_inim15=Article::select('id','code','stock_2022')
+        ->where('articles.id', '=', 4500)
+				->select('stock_2022')
+				->sum('stock_2022');
+
+        $sheet->setCellValue('C4', $stock_inim15);
 
         $sheet->setCellValue('C11', '5K ');
         $sheet->setCellValue('D11', '10K ');
