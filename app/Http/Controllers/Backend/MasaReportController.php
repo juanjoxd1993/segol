@@ -554,14 +554,14 @@ class MasaReportController extends Controller
         $sheet->setCellValue('C20', $stock_aje5k);
 
 
-        $sum_table_5k=$stock_good5k+$stock_como5k+$stock_repair5k+ $stock_rep5k+ $stock_tran5k+ $stock_gran5k+ $stock_aje5k;
+        $sum_table_5k=$stock_good5k+$stock_como5k+$stock_repair5k+ $stock_rep5k+ $stock_tran5k+ $stock_gran5k- $stock_aje5k;
 
         $sheet->setCellValue('C21', $sum_table_5k);
 
 
         // CALCULO 10K
 
-        $sheet->setCellValue('D11', '10K ');
+        $sheet->setCellValue('D12', '10K ');
 
         $stock_good10K=Article::select('id','code','stock_good')
         ->where('articles.id', '=', 4838)
@@ -613,13 +613,13 @@ class MasaReportController extends Controller
         $sheet->setCellValue('D20', $stock_aje10K);
 
 
-        $sum_table_10K=$stock_good10K+$stock_como10K+$stock_repair10K+ $stock_rep10K+ $stock_tran10K+ $stock_gran10K+ $stock_aje10K;
+        $sum_table_10K=$stock_good10K+$stock_como10K+$stock_repair10K+ $stock_rep10K+ $stock_tran10K+ $stock_gran10K- $stock_aje10K;
 
         $sheet->setCellValue('D21', $sum_table_10K);
 
        //CALCULO 15K
 
-        $sheet->setCellValue('E11', '15K');
+        $sheet->setCellValue('E12', '15K');
 
         $stock_good15K=Article::select('id','code','stock_good')
         ->where('articles.id', '=', 4839)
@@ -671,13 +671,13 @@ class MasaReportController extends Controller
         $sheet->setCellValue('E20', $stock_aje15K);
 
 
-        $sum_table_15K=$stock_good15K+$stock_como15K+$stock_repair15K+ $stock_rep15K+ $stock_tran15K+ $stock_gran15K+ $stock_aje15K;
+        $sum_table_15K=$stock_good15K+$stock_como15K+$stock_repair15K+ $stock_rep15K+ $stock_tran15K+ $stock_gran15K- $stock_aje15K;
 
         $sheet->setCellValue('E21', $sum_table_15K);
 
       //CALCULO 45K
 
-        $sheet->setCellValue('F11', '45K');
+        $sheet->setCellValue('F12', '45K');
 
         $stock_good45k=Article::select('id','code','stock_good')
         ->where('articles.id', '=', 4840)
@@ -729,14 +729,14 @@ class MasaReportController extends Controller
         $sheet->setCellValue('F20', $stock_aje45k);
 
 
-        $sum_table_45k=$stock_good45k+$stock_como45k+$stock_repair45k+ $stock_rep45k+ $stock_tran45k+ $stock_gran45k+ $stock_aje45k;
+        $sum_table_45k=$stock_good45k+$stock_como45k+$stock_repair45k+ $stock_rep45k+ $stock_tran45k+ $stock_gran45k- $stock_aje45k;
 
         $sheet->setCellValue('F21', $sum_table_45k);
 
 
       //CALCULO M15
 
-        $sheet->setCellValue('G11', 'M-15');
+        $sheet->setCellValue('G12', 'M-15');
 
         $stock_goodm15=Article::select('id','code','stock_good')
         ->where('articles.id', '=', 4500)
@@ -788,7 +788,7 @@ class MasaReportController extends Controller
         $sheet->setCellValue('G20', $stock_ajem15);
 
 
-        $sum_table_m15=$stock_goodm15+$stock_comom15+$stock_repairm15+ $stock_repm15+ $stock_tranm15+ $stock_granm15+ $stock_ajem15;
+        $sum_table_m15=$stock_goodm15+$stock_comom15+$stock_repairm15+ $stock_repm15+ $stock_tranm15+ $stock_granm15- $stock_ajem15;
 
         $sheet->setCellValue('G21', $sum_table_m15);
 
