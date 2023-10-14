@@ -428,6 +428,7 @@ class MasaReportController extends Controller
         $sheet->setCellValue('E4', $stock_ini15k);
 
         $sheet->setCellValue('F3', '45K');
+
         $stock_ini45k=Article::select('id','code','stock_2022')
         ->where('articles.id', '=', 4840)
 				->select('stock_2022')
@@ -451,51 +452,46 @@ class MasaReportController extends Controller
 				->select('stock_damaged')
 				->sum('stock_damaged');
 
-        $sheet->setCellValue('C4', $stock_cu5k);
+        $sheet->setCellValue('C6', $stock_cu5k);
 
-        $sheet->setCellValue('D3', '10K');
 
         $stock_cu10k=Article::select('id','code','stock_damaged')
         ->where('articles.id', '=', 4838)
 				->select('stock_damaged')
 				->sum('stock_damaged');
 
-        $sheet->setCellValue('D4', $stock_cu10k);
+        $sheet->setCellValue('D6', $stock_cu10k);
 
-        $sheet->setCellValue('E3', '15K');
 
         $stock_cu15k=Article::select('id','code','stock_damaged')
         ->where('articles.id', '=', 4839)
 				->select('stock_damaged')
 				->sum('stock_damaged');
 
-        $sheet->setCellValue('E4', $stock_cu15k);
 
-        $sheet->setCellValue('F3', '45K');
         $stock_cu45k=Article::select('id','code','stock_damaged')
         ->where('articles.id', '=', 4840)
 				->select('stock_damaged')
 				->sum('stock_damaged');
 
-        $sheet->setCellValue('F4', $stock_cu45k);
+        $sheet->setCellValue('F6', $stock_cu45k);
 
-        $sheet->setCellValue('G3', 'M-15');
 
         $stock_cum15=Article::select('id','code','stock_damaged')
         ->where('articles.id', '=', 4500)
 				->select('stock_damaged')
 				->sum('stock_damaged');
 
-        $sheet->setCellValue('G4', $stock_cum15);
+        $sheet->setCellValue('G6', $stock_cum15);
 
 
 
 
-        $sum_teorico5k=$stock_ini5k+ $stock_cu5k;
-        $sum_teorico10k=$stock_ini10k+ $stock_cu10k;
-        $sum_teorico15k=$stock_ini15k+ $stock_cu15k;
-        $sum_teorico45k=$stock_ini45k+ $stock_cu45k;
-        $sum_teoricom15=$stock_inim15+ $stock_cum15;
+        $sum_teorico5k=$stock_ini5k- $stock_cu5k;
+        $sum_teorico10k=$stock_ini10k- $stock_cu10k;
+        $sum_teorico15k=$stock_ini15k- $stock_cu15k;
+        $sum_teorico45k=$stock_ini45k- $stock_cu45k;
+        $sum_teoricom15=$stock_inim15- $stock_cum15;
 
         // totales
         $sheet->setCellValue('C9', $sum_teorico5k);
