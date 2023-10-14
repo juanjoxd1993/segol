@@ -393,10 +393,29 @@ class LiquidationReportController extends Controller
 			$row_number = 4;
 			foreach ($response as $index => $element) {
 				$index++;
+
+				$saleDateYear = null;
+				$saleDateMonth = null;
+			//	$saleDateDay = null;
+
+				if ($element->sale_date) {
+					$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+					$saleDateYear = $saleDateObject;
+			//		$saleDateMonth = str_pad($saleDateObject->month, 2, '0', STR_PAD_LEFT);
+			//		$saleDateDay = str_pad($saleDateObject->day, 2, '0', STR_PAD_LEFT);
+				}
+
+				if ($element->liquidation_date) {
+					$saleDateObject = date('d/m/Y',strtotime($element->liquidation_date) );
+					$saleDateMonth = $saleDateObject;
+				}
+
+
+
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
-				$sheet->setCellValue('C'.$row_number, $element->liquidation_date);
-				$sheet->setCellValue('D'.$row_number, $element->sale_date);
+				$sheet->setCellValue('C'.$row_number, $saleDateMonth);
+				$sheet->setCellValue('D'.$row_number, $saleDateYear);
 				$sheet->setCellValue('E'.$row_number, $element->business_unit_name);
 				$sheet->setCellValue('F'.$row_number, $element->warehouse_document_type_short_name);
 				$sheet->setCellValue('G'.$row_number, $element->referral_serie_number);

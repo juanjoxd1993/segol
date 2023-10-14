@@ -372,7 +372,7 @@ class LiquidationChannelReportController extends Controller
 				$index++;
 				
 				$saleDateYear = null;
-			//	$saleDateMonth = null;
+				$saleDateMonth = null;
 			//	$saleDateDay = null;
 
 				if ($element->sale_date) {
@@ -380,6 +380,11 @@ class LiquidationChannelReportController extends Controller
 					$saleDateYear = $saleDateObject;
 			//		$saleDateMonth = str_pad($saleDateObject->month, 2, '0', STR_PAD_LEFT);
 			//		$saleDateDay = str_pad($saleDateObject->day, 2, '0', STR_PAD_LEFT);
+				}
+
+				if ($element->expiry_date) {
+					$saleDateObject = date('d/m/Y',strtotime($element->expiry_date) );
+					$saleDateMonth = $saleDateObject;
 				}
 
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
@@ -406,7 +411,7 @@ class LiquidationChannelReportController extends Controller
 				$sheet->setCellValue('R'.$row_number, $element->client_business_name);
 				$sheet->setCellValue('S'.$row_number, $element->int_name);	
 				$sheet->setCellValue('T'.$row_number, $element->condition);
-				$sheet->setCellValue('U'.$row_number, $element->expiry_date);
+				$sheet->setCellValue('U'.$row_number, $saleDateMonth);
 				$sheet->setCellValue('V'.$row_number, $element->scop_number);
 				$sheet->setCellValue('W'.$row_number, $element->client_zone_name);
 				$sheet->setCellValue('X'.$row_number, $element->district);
