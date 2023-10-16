@@ -98,11 +98,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/kardex/validar-formulario', 'KardexController@validateForm')->name('dashboard.report.kardex.validate_form');
 	Route::post('reporte/kardex/listar', 'KardexController@list')->name('dashboard.report.kardex.list');
 
-	/** Reportes > Liquidaciones */
-	Route::get('/reporte/liquidaciones', 'LiquidationReportController@index')->name('dashboard.report.liquidations');
-	Route::post('/reporte/liquidaciones/validar-formulario', 'LiquidationReportController@validateForm')->name('dashboard.report.liquidations.validate_form');
-	Route::post('/reporte/liquidaciones/obtener-clientes', 'LiquidationReportController@getClients')->name('dashboard.report.liquidations.get_clients');
-	Route::post('/reporte/liquidaciones/listar', 'LiquidationReportController@list')->name('dashboard.report.liquidations.list');
 
 	/** Reportes > Liquidaciones Resumido*/
 	Route::get('/reporte/liquidaciones-resumen', 'LiquidationTotalReportController@index')->name('dashboard.report.liquidations_total');
@@ -163,11 +158,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/registro-ventas/exportar', 'SalesRegisterReportController@export')->name('dashboard.report.sales-register.export');
 
 	
-	/** Reportes > Relación de Cobranzas */
-	Route::get('/reporte/relacion-de-cobranzas', 'CollectionReportController@index')->name('dashboard.report.collection_report');
-	Route::post('/reporte/relacion-de-cobranzas/obtener-clientes', 'CollectionReportController@getClients')->name('dashboard.report.collection_report.get_clients');
-	Route::post('/reporte/relacion-de-cobranzas/validar-formulario', 'CollectionReportController@validateForm')->name('dashboard.report.collection_report.validate_form');
-	Route::post('/reporte/relacion-de-cobranzas/listar', 'CollectionReportController@list')->name('dashboard.report.collection_report.list');
+	
 
 	/** Reportes > Reporte de Ventas */
 	Route::get('/reporte/reporte-de-ventas', 'SalesReportController@index')->name('dashboard.report.sales-report');
@@ -186,11 +177,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/reporte/reporte-de-ventas/presupuestos/guardar', 'BudgetController@store')->name('dashboard.report.sales-report.budgets.store');
 	Route::get('/reporte/reporte-de-ventas/presupuestos/guardar', 'BudgetController@store')->name('dashboard.report.sales-report.budgets.store');
 
-	/** Reportes > Relación de Documentos Pendientes */
-	Route::get('/reporte/relacion-de-documentos-pendientes', 'PendingDocumentReportController@index')->name('dashboard.report.pending_document_report');
-	Route::post('/reporte/relacion-de-documentos-pendientes/obtener-clientes', 'PendingDocumentReportController@getClients')->name('dashboard.report.pending_document_report.get_clients');
-	Route::post('/reporte/relacion-de-documentos-pendientes/validar-formulario', 'PendingDocumentReportController@validateForm')->name('dashboard.report.pending_document_report.validate_form');
-	Route::post('/reporte/relacion-de-documentos-pendientes/listar', 'PendingDocumentReportController@list')->name('dashboard.report.pending_document_report.list');
+
 
 	/** Reportes > Relación de Documentos Emitidos */
 	Route::get('/reporte/relacion-de-documentos-por-cobrar', 'UncollectedDocumentReportController@index')->name('dashboard.report.uncollected_document_report');
@@ -504,6 +491,24 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('creditos/reporte/reporte-masa/obtener-clientes', 'MasaReportController@getClients')->name('dashboard.report.masa.get_clients');
 	Route::post('creditos/reporte/reporte-masa/listar', 'MasaReportController@list')->name('dashboard.report.masa.list');
 
+	/** Reportes > Relación de Documentos Pendientes */
+	Route::get('/creditos/relacion-de-documentos-pendientes', 'PendingDocumentReportController@index')->name('dashboard.report.pending_document_report');
+	Route::post('/creditos/relacion-de-documentos-pendientes/obtener-clientes', 'PendingDocumentReportController@getClients')->name('dashboard.report.pending_document_report.get_clients');
+	Route::post('/creditos/relacion-de-documentos-pendientes/validar-formulario', 'PendingDocumentReportController@validateForm')->name('dashboard.report.pending_document_report.validate_form');
+	Route::post('/creditos/relacion-de-documentos-pendientes/listar', 'PendingDocumentReportController@list')->name('dashboard.report.pending_document_report.list');
+
+	/** creditos > Relación de Cobranzas */
+	Route::get('/creditos/relacion-de-cobranzas', 'CollectionReportController@index')->name('dashboard.report.collection_report');
+	Route::post('/creditos/relacion-de-cobranzas/obtener-clientes', 'CollectionReportController@getClients')->name('dashboard.report.collection_report.get_clients');
+	Route::post('/creditos/relacion-de-cobranzas/validar-formulario', 'CollectionReportController@validateForm')->name('dashboard.report.collection_report.validate_form');
+	Route::post('/creditos/relacion-de-cobranzas/listar', 'CollectionReportController@list')->name('dashboard.report.collection_report.list');
+
+	/** Reportes > Liquidaciones */
+	Route::get('/creditos/liquidaciones', 'LiquidationReportController@index')->name('dashboard.report.liquidations');
+	Route::post('/creditos/liquidaciones/validar-formulario', 'LiquidationReportController@validateForm')->name('dashboard.report.liquidations.validate_form');
+	Route::post('/creditos/liquidaciones/obtener-clientes', 'LiquidationReportController@getClients')->name('dashboard.report.liquidations.get_clients');
+	Route::post('/creditos/liquidaciones/listar', 'LiquidationReportController@list')->name('dashboard.report.liquidations.list');
+	
 
 	/** Contabilidad > Generación masiva de Comprobantes */
 	Route::get('/contabilidad/generacion-masiva-comprobantes', 'VoucherMassiveGenerationController@index')->name('dashboard.voucher.massive_generation');
