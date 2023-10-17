@@ -2,9 +2,7 @@
 
 @section('body-class', '')
 @section('title', 'Reportes')
-( Route::currentRouteName() === 'dashboard.operations.stock_seek_register' )
 @section('subtitle', 'Reporte de Guías prueba')
-
 
 
 @section('content')
