@@ -70,8 +70,7 @@ class StockSeekRegisterReportController extends Controller
 		// $license_plate = request('model.license_plate');
 
 		$movements = WarehouseMovement::select('id', 'company_id', 'movement_class_id', 'movement_type_id', 'movement_stock_type_id', 'movement_number', 'created_at', 'warehouse_account_type_id', 'account_id', 'account_document_number', 'account_name', 'referral_guide_series', 'referral_guide_number', 'referral_warehouse_document_type_id', 'referral_serie_number', 'referral_voucher_number', 'scop_number', 'license_plate', 'state','traslate_date','route_id')
-		->where('warehouse_type_id', 5)	
-		->where('movement_class_id', 2)
+		->whereIn('warehouse_type_id', [4,13])	
 		->whereIn('movement_type_id', [11,12])
 			->when($company_id, function($query, $company_id) {
 				return $query->where('company_id', $company_id);
