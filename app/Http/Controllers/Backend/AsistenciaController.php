@@ -61,24 +61,16 @@ class AsistenciaController extends Controller
             ->orderBy('area_id', 'asc')
             ->get();
 
-        $elements->map(function ($item, $key) {
-            $item->article_code = $item->article->code;
-            $item->article_name = $item->article->name . ' ' . $item->article->sale_unit->name . ' x ' . $item->article->package_sale;
-            $item->initial_effective_date = date('d/m/Y', strtotime($item->initial_effective_date));
-            $item->final_effective_date = date('d/m/Y', strtotime($item->final_effective_date));
-            $item->price_igv = number_format($item->price_igv, 4, '.', ',');
-        });
-
         return $elements;
     }
 
     public function getMinEffectiveDate() {
         $today = Carbon::now()->startOfDay();
-        $initial_effective_date = date('d-m-Y', strtotime($today . 'day'));
+    //    $initial_effective_date = date('d-m-Y', strtotime($today . 'day'));
         $min_effective_date = date(DATE_ATOM, strtotime($today . '-3 day'));
 
         return response()->json([
-            'initial_effective_date'    => $initial_effective_date,
+    //        'initial_effective_date'    => $initial_effective_date,
             'min_effective_date'        => $min_effective_date,
         ]);
     }
