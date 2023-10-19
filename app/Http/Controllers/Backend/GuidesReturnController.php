@@ -185,6 +185,8 @@ class GuidesReturnController extends Controller
         $warehouse_movement_id = $request->warehouse_movement_id;
 		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 
+        $warehouse_movement_index = WarehouseMovement::find($warehouse_movement_id);
+
         echo count($prestamos);
         if (count($prestamos)) {
             $guide_state = GuidesState::select('id')
@@ -210,7 +212,7 @@ class GuidesReturnController extends Controller
                 ->first();
 
             $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
-                ->where('convertion', $articleWT->convertion)
+                ->where('presentacion', $articleWT->presentacion)
                 ->where('group_id', 7)
                 ->first();
 
@@ -227,6 +229,10 @@ class GuidesReturnController extends Controller
                     'warehouse_type_id' => 4, //Producción
                     'movement_class_id' => 1, //Ingreso
                     'movement_type_id' => 19, //Retorno de Pre-Venta
+                    'warehouse_account_type_id' => $warehouse_movement_index->warehouse_account_type_id,
+                    'account_id' => $warehouse_movement_index->account_id,
+                    'account_document_number' => $warehouse_movement_index->account_document_number,
+                    'account_name' => $warehouse_movement_index->account_name,
                     'warehouse_account_type_id' => 1,
                     'total' => $article['retorno'],
                     'created_at' => date('Y-m-d'),
@@ -264,11 +270,15 @@ class GuidesReturnController extends Controller
                     'warehouse_type_id' => 4, //Producción
                     'movement_class_id' => 1, //Ingreso
                     'movement_type_id' => 34, //Retorno de Prestamo de Balon
+                    'warehouse_account_type_id' => $warehouse_movement_index->warehouse_account_type_id,
+                    'account_id' => $warehouse_movement_index->account_id,
+                    'account_document_number' => $warehouse_movement_index->account_document_number,
+                    'account_name' => $warehouse_movement_index->account_name,
                     'warehouse_account_type_id' => 1,
                     'total' => $article['retorno_press'],
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
-                    'warehouse_movement_id' => $warehouse_movement_id,
+                    'warehouse_movement' => $warehouse_movement_id,
                 ]);
 
                 WarehouseMovementDetail::insert([
@@ -301,6 +311,10 @@ class GuidesReturnController extends Controller
                     'warehouse_type_id' => 4, //Producción
                     'movement_class_id' => 1, //Ingreso
                     'movement_type_id' => 32, //Retorno por Cambios
+                    'warehouse_account_type_id' => $warehouse_movement_index->warehouse_account_type_id,
+                    'account_id' => $warehouse_movement_index->account_id,
+                    'account_document_number' => $warehouse_movement_index->account_document_number,
+                    'account_name' => $warehouse_movement_index->account_name,
                     'warehouse_account_type_id' => 1,
                     'total' => $article['cambios'],
                     'created_at' => date('Y-m-d'),
@@ -337,12 +351,16 @@ class GuidesReturnController extends Controller
                     'warehouse_type_id' => 4, //Producción
                     'movement_class_id' => 2, //Salida
                     'movement_type_id' => 33, //Préstamos de Balones
+                    'warehouse_account_type_id' => $warehouse_movement_index->warehouse_account_type_id,
+                    'account_id' => $warehouse_movement_index->account_id,
+                    'account_document_number' => $warehouse_movement_index->account_document_number,
+                    'account_name' => $warehouse_movement_index->account_name,
                     'warehouse_account_type_id' => 1,
                     'total' => $article['prestamo'],
                     'press' => 1,
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
-                    'warehouse_movement_id' => $warehouse_movement_id,
+                //    'warehouse_movement_id' => $warehouse_movement_id,
                 ]);
 
                 WarehouseMovementDetail::insert([
@@ -375,6 +393,10 @@ class GuidesReturnController extends Controller
                     'warehouse_type_id' => 4, //Producción
                     'movement_class_id' => 2, //Salida
                     'movement_type_id' => 28, //Cesión de Uso
+                    'warehouse_account_type_id' => $warehouse_movement_index->warehouse_account_type_id,
+                    'account_id' => $warehouse_movement_index->account_id,
+                    'account_document_number' => $warehouse_movement_index->account_document_number,
+                    'account_name' => $warehouse_movement_index->account_name,
                     'warehouse_account_type_id' => 1,
                     'total' => $article['cesion'],
                     'created_at' => date('Y-m-d'),
@@ -414,11 +436,13 @@ class GuidesReturnController extends Controller
                 //     ->update([
                 //         'stock_good' => DB::raw('stock_good + ' .$article['vacios']),
                 //     ]);
+                // echo 'before add: ' . json_encode($articleBalon);
                 $articleBalon->stock_good += $article['vacios'];
             }
 
             $articleWT->save();
             $articleBalon->save();
+            // echo 'after add: ' . json_encode($articleBalon);
             $warehouse_movement_detail->save();
             /**Off */
 
@@ -469,7 +493,7 @@ class GuidesReturnController extends Controller
         foreach ($prestamos as $prestamo) {
             $press = new Container;
             $press->client_id = $prestamo['client_id'];
-            $press->warehouse_movement_id = $request->warehouse_movement_id;
+            $press->warehouse_movement = $request->warehouse_movement_id;
             $press->if_devol = $prestamo['if_devol'];
             $press->date = $date;
             if ($prestamo['if_devol']) {
@@ -536,7 +560,7 @@ class GuidesReturnController extends Controller
         $articleGeneral = Article::find($article_id);
 
         $articleBalon = Article::where('warehouse_type_id', 5)
-            ->where('convertion', $articleGeneral->convertion)
+            ->where('presentacion', $articleGeneral->presentacion)
             ->where('group_id', 7)
             ->first();
 
@@ -574,7 +598,7 @@ class GuidesReturnController extends Controller
                 $articleGeneral = Article::find($article_id);
 
                 $articleBalon = Article::where('warehouse_type_id', 5)
-                                    ->where('convertion', $articleGeneral->convertion)
+                                    ->where('presentacion', $articleGeneral->presentacion)
                                     ->where('group_id', 7)
                                     ->first();
 
@@ -653,7 +677,7 @@ class GuidesReturnController extends Controller
                 ->first();
 
             $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
-                ->where('convertion', $articleWT->convertion)
+                ->where('presentacion', $articleWT->presentacion)
                 ->where('group_id', 7)
                 ->first();
 

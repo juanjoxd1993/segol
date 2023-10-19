@@ -45,7 +45,7 @@
         },
         data() {
             return {
-                liquidation_datatable: undefined,
+                liquidation_final_datatable: undefined,
                 show_table: false,
             }
         },
@@ -68,11 +68,11 @@
                     this.$store.commit('addClients', clients);
                     this.$store.commit('addArticles', movement_details)
                     
-                    if ( this.liquidation_datatable == undefined ) {
+                    if ( this.liquidation_final_datatable == undefined ) {
                         this.fillTableX();
                     } else {
-                        this.liquidation_datatable.originalDataSet = this.articlesState;
-                        this.liquidation_datatable.load();
+                        this.liquidation_final_datatable.originalDataSet = this.articlesState;
+                        this.liquidation_final_datatable.load();
                     }
 
                     EventBus.$emit('loading', false);
@@ -83,10 +83,10 @@
             }.bind(this));
 
             EventBus.$on('refresh_table_liquidation', function() {
-                if ( this.liquidation_datatable != undefined ) {
+                if ( this.liquidation_final_datatable != undefined ) {
 					// console.log(this.articlesState);
-                    this.liquidation_datatable.originalDataSet = this.articlesState;
-                    this.liquidation_datatable.load();
+                    this.liquidation_final_datatable.originalDataSet = this.articlesState;
+                    this.liquidation_final_datatable.load();
                 }
             }.bind(this));
         },
@@ -151,9 +151,170 @@
 						element.total_perception = accounting.unformat(element.total_perception);
 					});
 
+                    const boletas = [
+                        ...unformatSales
+                    ];
+
+                    const correlatives = {};
+
+                    unformatSales.map((item) => {
+                        const {
+                            warehouse_document_type_id,
+                            details,
+                            correlative,
+                            serie_num,
+                            sale_serie_id,
+                            liquidations
+                        } = item;
+
+                        const bolLiquidations = JSON.parse(JSON.stringify(liquidations));
+
+                        item.if_bol = 0;
+                        if (!correlatives[serie_num]) {
+                            const sale_serie_index = this.$store.state.sale_series.findIndex(item => item.id == sale_serie_id);
+
+                            correlatives[serie_num] = this.$store.state.sale_series[sale_serie_index].correlative - 1;
+                        }
+
+                        if (warehouse_document_type_id == 7) {
+                            item.warehouse_document_type_id = 31;
+                            item.if_bol = 1;
+
+                            let serie = 'RBV';
+
+                            serie_num.split('').map(e => {
+                                if(!isNaN(e)) serie = serie + e;
+                            })
+
+                            item.serie_num = serie + `-${correlative}`
+                            details.map((i) => {
+                                const {
+                                    quantity,
+                                    sale_value,
+                                    total_perception,
+                                    price_igv
+                                } = i;
+
+                                const rest = quantity % 2;
+
+                                const div = (quantity / 2);
+
+                                const price = (sale_value / quantity).toFixed(4);
+
+                                for (let e = 1; e <= div; e++) {
+                                    const newLiquidations = [];
+                                    let amount = price * 2;
+
+                                    bolLiquidations.map(l => {
+                                        if ((amount > 0) && (l.amount > 0)) {
+                                            if (l.amount > amount) {
+                                                l.amount = l.amount - amount;
+
+                                                newLiquidations.push({
+                                                    ...l,
+                                                    amount
+                                                });
+
+                                                amount = 0;
+                                            } else if (l.amount <= amount) {
+                                                newLiquidations.push({
+                                                    ...l,
+                                                });
+
+                                                amount = amount - l.amount;
+                                                l.amount = 0;
+                                            };
+                                        }
+                                    })
+
+                                    const element = {
+                                        ...item,
+                                        warehouse_document_type_id: 7,
+                                        correlative: correlatives[serie_num],
+                                        serie_num,
+                                        total: price * 2,
+                                        total_perception: price * 2,
+                                        if_bol: 0,
+                                        details: [
+                                            {
+                                                ...i,
+                                                sale_value: price * 2,
+                                                total_perception: price * 2,
+                                                quantity: 2
+                                            }
+                                        ],
+                                        liquidations: newLiquidations
+                                    };
+
+                                    item.correlative = correlatives[serie_num];
+
+                                    correlatives[serie_num] = correlatives[serie_num] + 1;
+
+                                    boletas.push(element);
+                                };
+
+                                if (rest) {
+                                    const newLiquidations = [];
+                                    let amount = price;
+
+                                    bolLiquidations.map(l => {
+                                        if ((amount > 0) && (l.amount > 0)) {
+                                            if (l.amount > amount) {
+                                                l.amount = l.amount - amount;
+
+                                                newLiquidations.push({
+                                                    ...l,
+                                                    amount
+                                                });
+
+                                                amount = 0;
+                                            } else if (l.amount <= amount) {
+                                                newLiquidations.push({
+                                                    ...l,
+                                                });
+
+                                                amount = amount - l.amount;
+                                                l.amount = 0;
+                                            };
+                                        }
+                                    })
+
+                                    const element = {
+                                        ...item,
+                                        warehouse_document_type_id: 7,
+                                        correlative: correlatives[serie_num],
+                                        serie_num,
+                                        total: price,
+                                        total_perception: price,
+                                        if_bol: 0,
+                                        details: [
+                                            {
+                                                ...i,
+                                                sale_value: price,
+                                                total_perception: price,
+                                                quantity: 1
+                                            }
+                                        ],
+                                        liquidations: newLiquidations
+                                    };
+
+                                    item.correlative = correlatives[serie_num];
+
+                                    correlatives[serie_num] = correlatives[serie_num] + 1;
+
+                                    boletas.push(element);
+                                };
+                            })
+                        };
+                    });
+
+                    // console.log(boletas)
+
+                    EventBus.$emit('loading', false);
+
 					axios.post(this.url_store, {
 						'model': this.$store.state.model,
-						'sales': unformatSales
+						'sales': boletas
 					}).then(response => {
 						// console.log(response);
 						this.$store.commit('resetState');
@@ -187,7 +348,7 @@
                 let vm = this;
                 let token = document.head.querySelector('meta[name="csrf-token"]').content;
 
-                this.liquidation_datatable = $('.kt-datatable-articles').KTDatatable({
+                this.liquidation_final_datatable = $('.kt-datatable-articles').KTDatatable({
                     // datasource definition
                     data: {
                         type: 'local',
@@ -329,7 +490,7 @@
                     ]
                 });
 
-                this.liquidation_datatable.columns('id').visible(false);
+                this.liquidation_final_datatable.columns('id').visible(false);
             },
         }
     };

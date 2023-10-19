@@ -29,7 +29,7 @@
 							<select class="form-control" name="date_type_id" id="date_type_id" v-model="model.date_type_id" @focus="$parent.clearErrorMsg($event)">
 								<option value="">Seleccionar</option>
 								<option value="1">Fecha de Emisión</option>
-								<option value="2">Fecha de Liquidación</option>
+								<option value="2">Fecha de Cobranza</option>
 							</select>
 							<div id="date_type_id-error" class="error invalid-feedback"></div>
 						</div>
@@ -70,17 +70,7 @@
 							<div id="final_date-error" class="error invalid-feedback"></div>
 						</div>
 					</div>
-					<div class="col-lg-3">
-						<div class="form-group">
-							<label class="form-control-label">Tipo de Cliente:</label>
-							<select class="form-control" name="client_type_id" id="client_type_id" v-model="model.client_type_id" @focus="$parent.clearErrorMsg($event)">
-								<option value="">Seleccionar</option>
-								<option value="1">Cliente original</option>
-								<option value="2">Cliente de enlace</option>
-							</select>
-							<div id="client_type_id-error" class="error invalid-feedback"></div>
-						</div>
-					</div>
+					
 					<div class="col-lg-3">
 						<div class="form-group">
 							<label class="form-control-label">Cliente:</label>

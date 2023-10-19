@@ -5,7 +5,7 @@
             <div class="kt-portlet__head">
                 <div class="kt-portlet__head-label">
                     <h3 class="kt-portlet__head-title">
-                        Ventas
+                        Ventas Total: <span>S./{{total}}</span>
                     </h3>
                 </div>
                 <div class="kt-portlet__head-toolbar">
@@ -40,6 +40,7 @@
                 sale_datatable: undefined,
                 show_table: false,
                 flag_add: false,
+                total: "0.00"
             }
         },
         created() {},
@@ -60,6 +61,14 @@
 
             EventBus.$on('refresh_table_sale', () => {
                 if ( this.sale_datatable != undefined ) {
+                    let total = 0;
+
+                    this.$store.state.sales.map(item => {
+                        total += parseInt(item.total);
+                    });
+
+                    this.total = total;
+
                     this.sale_datatable.originalDataSet = this.$store.state.sales;
                     this.sale_datatable.load();
                 }
@@ -149,6 +158,45 @@
                             width: 120,
                             textAlign: 'left',
                         },
+						{
+                            field: 'sale_serie_id',
+                            title: 'Sale Serie Id',
+                            width: 0,
+                            overflow: 'hidden',
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'serie_num',
+                            title: 'Serie de Usuario',
+                            width: 120,
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'correlative',
+                            title: 'Correlativo',
+                            width: 120,
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'scop_number',
+                            title: 'SCOP',
+                            width: 0,
+                            overflow: 'hidden',
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'referral_guide_series',
+                            title: 'Número de serie',
+                            width: 0,
+                            overflow: 'hidden',
+                            textAlign: 'left',
+                        },
+						{
+                            field: 'referral_guide_number',
+                            title: 'Número de guia',
+                            width: 120,
+                            textAlign: 'left',
+                        },
                         {
                             field: 'total',
                             title: 'Valor Venta',
@@ -211,7 +259,24 @@
             manageActions: function(event) {
                 if ( $(event.target).hasClass('delete') ) {
                     event.preventDefault();
+
                     let client_id = $(event.target).parents('tr').find('td[data-field="client_id"] span').html();
+                    let sale_serie_id = $(event.target).parents('tr').find('td[data-field="sale_serie_id"] span').html();
+                    let referral_guide_series = $(event.target).parents('tr').find('td[data-field="referral_guide_series"] span').html();
+                    let referral_guide_number = $(event.target).parents('tr').find('td[data-field="referral_guide_number"] span').html();
+                    let scop = $(event.target).parents('tr').find('td[data-field="scop_number"] span').html();
+
+                    const sale_serie_index = this.$store.state.sale_series.findIndex(item => item.id == sale_serie_id);
+
+                    this.$store.state.sale_series[sale_serie_index].correlative -= 1;
+
+                    const guide_numbers = this.$store.state.guide_numbers.filter(item => (item.serie_number != referral_guide_series && item.guide_number != referral_guide_number));
+
+                    this.$store.state.guide_numbers = guide_numbers;
+
+                    const scops = this.$store.state.scops.filter(item => item != scop);
+
+                    this.$store.state.scops = scops;
 
                     Swal.fire({
                         title: '¡Cuidado!',

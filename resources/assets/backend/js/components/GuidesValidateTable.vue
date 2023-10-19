@@ -582,11 +582,19 @@
                     return parseInt(id);
                 })
 
+                let data = this.data;
+
+                ids.map(id => {
+                    data = data.filter(item => item.id != id);
+                });
+
                 axios.post(this.url_validate,{
                     ids
                 })
                 .then(response => {
                     EventBus.$emit('loading', false);
+                    this.datatable.originalDataSet = data;
+                    this.datatable.load();
                     console.log(response);
                     Swal.fire({
                         title: 'Ok!',

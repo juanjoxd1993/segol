@@ -23,6 +23,7 @@
 		:warehouse_document_types = "{{ $warehouse_document_types }}"
 		:url = "'{{ route('dashboard.voucher.register_document_charge.validate_second_step') }}'"
 		:url_get_clients = "'{{ route('dashboard.voucher.register_document_charge.get_clients') }}'"
+		:url_get_references = "'{{ route('dashboard.voucher.register_document_charge.get_references') }}'"
 	></register-document-charge-second-step>
 
 	<register-document-charge-third-step

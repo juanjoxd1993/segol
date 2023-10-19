@@ -366,6 +366,8 @@ class LiquidacionGlpController extends Controller
 
 		$employe = Employee::find($model['warehouse_account_id']);
 
+		$warehouse_type_id = $model['warehouse_type_id'];
+
 		$igv_percentage = ( $rate->value / 100 ) + 1;
 
 		foreach ($sales as $sale) {
@@ -395,7 +397,7 @@ class LiquidacionGlpController extends Controller
 				->select('id', 'address')
 				->first();
 
-		//	$client->credit_limit_days = $client->credit_limit_days ? $client->credit_limit_days : 0;
+			// $client->credit_limit_days = $client->credit_limit_days ? $client->credit_limit_days : 0;
 			$sale_date = date('Y-m-d', strtotime($sale['sale_date']));
 			$expiry_date = $sale_date;
 			if ( $sale['payment_id'] == 2 ) {
@@ -415,9 +417,9 @@ class LiquidacionGlpController extends Controller
 			$sale_model->guide_number = $sale['referral_guide_number'];
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
 			$sale_model->warehouse_account_type_id = 3;
-			$sale_model->account_id = $employe->id;
-			$sale_model->account_document_number = $employe->document_number;
-			$sale_model->account_name = $employe->first_name . ' ' . $employe->last_name;
+			$sale_model->account_id = $employe ? $employe->id : null;
+			$sale_model->account_document_number = $employe ? $employe->document_number : null;
+			$sale_model->account_name = $employe ? $employe->first_name . ' ' . $employe->last_name : '';
 			$sale_model->credit_limit_days = $client->credit_limit_days;
 			$sale_model->cede = 1;
 
@@ -522,8 +524,8 @@ class LiquidacionGlpController extends Controller
 
 				    // $article = Article::find($detail['article_id'], ['id','name', 'stock_good']);
 
-					$article->stock_good= $article->stock_good-$detail['quantity'];
-					$article->save();
+					// $article->stock_good= $article->stock_good-$detail['quantity'];
+					// $article->save();
 
 					if ( $detail['igv'] == 1 ) {
 						$taxed_operation += round($detail['sale_value'] / $igv_percentage, 4);
@@ -611,51 +613,51 @@ class LiquidacionGlpController extends Controller
 			// }
 
 			foreach ($sale['details'] as $index => $detail) {
+				// validar tipo de articulo por su warehouse_unit_id
+				// el warehouse_type_id determina el almacen
 				$article = Article::find($detail['article_id']);
+				$quantity = $detail['quantity'];
 
-				$article_galon = Article::where('warehouse_type_id', $model['warehouse_type_id'])
-										->where('code', 3)
-										->first();
+				$warehouse_type_id = $article->warehouse_type_id;
+				$warehouse_unit_id = $article->warehouse_unit_id;
 
-				$factor = 0.533 * 3.785412;
+				$article_code_1 = Article::where('warehouse_type_id', $warehouse_type_id)->where('code', 1)->first();
+				$article_code_2 = Article::where('warehouse_type_id', $warehouse_type_id)->where('code', 2)->first();
+				$article_code_3 = Article::where('warehouse_type_id', $warehouse_type_id)->where('code', 3)->first();
 
-				if ($article->code != 3) {
-					$article->stock_good -= $detail['quantity'];
-					$article->save();
-
-					$article_galon->stock_good -= ($detail['quantity'] / $factor);
-					$article_galon->save();
-				} else {
-					$article_galon->stock_good -= $detail['quantity'];
-					$article_galon->save();
-
-					$article_granel = Article::where('warehouse_type_id', $model['warehouse_type_id'])
-											->where('code', 1)
-											->first();
-
-					$article_envasado = Article::where('warehouse_type_id', $model['warehouse_type_id'])
-											->where('code', 2)
-											->first();
-
-					$convertion = $detail['quantity'] * $factor;
-
-					if ($article_granel->stock_good != 0) {
-						if ($article_granel->stock_good < $convertion) {
-							$difference = $convertion - $article_granel->stock_good;
-
-							$article_granel->stock_good = 0;
-							$article_granel->save();
-
-							$article_envasado->stock_good -= $difference;
-							$article_envasado->save();
-						} else {
-							$article_granel->stock_good -= $convertion;
-							$article_granel->save();
-						};
+				if ($warehouse_unit_id == 2) {
+					if ($article_code_2->stock_good > 0) {
+						$article_code_2->stock_good -= $quantity / 2.018;
+						$article_code_2->save();
+					} else if ($article_code_1->stock_good > 0) {
+						$article_code_1->stock_good -= $quantity / 2.018;
+						$article_code_1->save();
 					} else {
-						$article_envasado->stock_good -= $convertion;
-						$article_envasado->save();
+						$article_code_2->stock_good -= $quantity / 2.018;
+						$article_code_2->save();
 					};
+
+					$article_code_3->stock_good -= $quantity;
+					$article_code_3->save();
+				};
+
+				if ($warehouse_unit_id == 4) {
+					if ($article_code_2->stock_good > 0) {
+						$article_code_2->stock_good -= $quantity;
+						echo $article_code_2->stock_good . 'code 2';
+						$article_code_2->save();
+					} else if ($article_code_1->stock_good > 0) {
+						$article_code_1->stock_good -= $quantity;
+						echo $article_code_1->stock_good . 'code 1';
+						$article_code_1->save();
+					} else {
+						$article_code_2->stock_good -= $quantity;
+						echo $article_code_2->stock_good . 'code 2';
+						$article_code_2->save();
+					};
+
+					$article_code_3->stock_good -= $quantity * 2.018;
+					$article_code_3->save();
 				};
 
 				$sale_detail = new SaleDetail();
@@ -714,15 +716,15 @@ class LiquidacionGlpController extends Controller
 						}
 
 						if ( $liquidation['payment_id'] == 1 ) {
-                            if ($liquidation['payment_method'] == 1) {
-                                $sale_model->payment_method_efective = 1;
-                                $sale_model->efective += round($liquidation['amount'], 4);
-                            } elseif ($liquidation['payment_method'] == 2) {
-                                $sale_model->payment_method_deposit = 4;
-                                $sale_model->deposit += round($liquidation['amount'], 4);
-                            }
+							if ($liquidation['payment_method'] == 1) {
+									$sale_model->payment_method_efective = 1;
+									$sale_model->efective += round($liquidation['amount'], 4);
+							} elseif ($liquidation['payment_method'] == 2) {
+									$sale_model->payment_method_deposit = 4;
+									$sale_model->deposit += round($liquidation['amount'], 4);
+							}
 
-                            $sale_model->save();
+							$sale_model->save();
 						}
 
 						if ( $sale['payment_id'] ==2 ) {
@@ -731,7 +733,6 @@ class LiquidacionGlpController extends Controller
 							$sale_model->paid += $liquidation['amount'];
 							$sale_model->payment_method_credit = 3;
 							$sale_model->save();
-
 						}
 
 						if ( $payment_method_id == 10 ) {

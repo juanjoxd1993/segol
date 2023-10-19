@@ -223,7 +223,7 @@
                         const tempUrl = window.URL.createObjectURL(new Blob([response2.data]));
                         const link = document.createElement('a');
                         link.href = tempUrl;
-                        link.download =  'reporte-unidades-de-negocio'+Date.now()+'.xls';
+                        link.download =  'reporte-de-ventas'+Date.now()+'.xls';
                         document.body.appendChild(link);
                         link.click();
 

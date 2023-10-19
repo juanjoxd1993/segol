@@ -74,18 +74,25 @@
                             <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <!-- <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Número de SCOP:</label>
                             <input type="text" class="form-control" name="scop_number" id="scop_number" v-model="model.scop_number" @focus="$parent.clearErrorMsg($event)">
                             <div id="scop_number-error" class="error invalid-feedback"></div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Placa:</label>
                             <input type="text" class="form-control" name="license_plate" id="license_plate" v-model="model.license_plate" @focus="$parent.clearErrorMsg($event)"> 
                             <div id="license_plate-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Brevete:</label>
+                            <input type="text" class="form-control" name="account_document_number" id="account_document_number" v-model="model.account_document_number" @focus="$parent.clearErrorMsg($event)"> 
+                            <div id="account_document_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
                     <!-- <div class="col-lg-3">
@@ -109,7 +116,7 @@
                                 value-zone="America/Lima"
                                 zone="America/Lima"
                                 class="form-control"
-                                :min-datetime="this.current_date"
+                                :min-datetime="this.min_datetime"
                                 :max-datetime="this.max_datetime"
                                 @focus="$parent.clearErrorMsg($event)">
                             </datetime>
@@ -128,7 +135,7 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Número de Guía de Remisión:</label>
-                            <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="model.referral_guide_number" @focus="$parent.clearErrorMsg($event)">
+                            <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="model.referral_guide_number" @focus="$parent.clearErrorMsg($event)" v-on:change="manageNumberGuide()">
                             <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
@@ -187,10 +194,10 @@
                 type: String,
                 default: ''
             },
-			// min_datetime: {
-            //     type: String,
-            //     default: ''
-            // },
+			min_datetime: {
+                type: String,
+                default: ''
+            },
 			max_datetime: {
                 type: String,
                 default: ''
@@ -235,6 +242,7 @@
                     traslate_date: this.min_datetime,
                     since_date: this.current_date,
                     warehouse_account_type_id: '',
+                    account_document_number: '',
                     warehouse_account_id: '',
                     referral_guide_series: '',
                     referral_guide_number: '',
@@ -254,6 +262,7 @@
                 this.model.traslate_date = this.traslate_date;
                 this.model.since_date = this.current_date;
                 this.model.warehouse_account_type_id = '';
+                this.model.account_document_number = '';
                 this.model.warehouse_account_id = '';
                 this.model.referral_guide_series = '';
                 this.model.referral_guide_number = '';
@@ -406,16 +415,41 @@
                     });
                 });
             },
-              getNextCorrelative() {
+            getNextCorrelative() {
                 axios.get(this.url_next_correlative, {
                     params: {
                         guide_serie: $('#referral_guide_series').val(),
                         company: $('#company_id').val()
                     }
                 }).then((response) => {
-                    $('#referral_guide_number').val(response.data);
+                    const { data } = response;
+
+                    $('#referral_guide_number').val(data);
                 }).catch((error) => {
                     console.log(error.response);
+                });
+            },
+            manageNumberGuide() {
+                EventBus.$emit('loading', true);
+                $('#liquidar').prop('disabled', true);
+                $('#referral_guide_number-error').hide();
+                $('#referral_guide_number-error').text('');
+
+                axios.post('/facturacion/liquidaciones-glp/get-guide-number', {
+                    params: {
+                        serie_number: this.model.referral_guide_series,
+                        guide_number: this.model.referral_guide_number,
+                    }
+                }).then(response => {
+                    EventBus.$emit('loading', false);
+                    $('.kt-form').find('button').prop('disabled', false);
+                    $('#referral_guide_number-error').text('');
+                    $('#referral_guide_number-error').hide();
+                }).catch(error => {
+                    EventBus.$emit('loading', false);
+                    $('.kt-form').find('button').prop('disabled', true);
+                    $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                    $('#referral_guide_number-error').show();
                 });
             },
         }

@@ -70,44 +70,15 @@ class StockSeekRegisterReportController extends Controller
 		// $license_plate = request('model.license_plate');
 
 		$movements = WarehouseMovement::select('id', 'company_id', 'movement_class_id', 'movement_type_id', 'movement_stock_type_id', 'movement_number', 'created_at', 'warehouse_account_type_id', 'account_id', 'account_document_number', 'account_name', 'referral_guide_series', 'referral_guide_number', 'referral_warehouse_document_type_id', 'referral_serie_number', 'referral_voucher_number', 'scop_number', 'license_plate', 'state','traslate_date','route_id')
-		->where('warehouse_type_id', 5)	
-		->where('movement_class_id', 2)
-		->whereNotIn('movement_type_id', [1, 2, 3, 4,5,6,7,8,9,10,15,16,17,18,19,20,21,22,23,24,25,26,27,28])
+		->whereIn('warehouse_type_id', [4,13])	
+		->whereIn('movement_type_id', [11,12])
 			->when($company_id, function($query, $company_id) {
 				return $query->where('company_id', $company_id);
 			})
 			->where('created_at', '>=', $initial_date)
 			->where('created_at', '<=', $final_date)
-		//	->when($warehouse_account_type_id, function($query, $warehouse_account_type_id) {
-		//		return $query->where('warehouse_account_type_id', $warehouse_account_type_id);
-		//	})
-		//	->when($warehouse_account_id, function($query, $warehouse_account_id) {
-		//		return $query->where('account_id', $warehouse_account_id);
-		//	})
-			// ->when($referral_guide_series, function($query, $referral_guide_series) {
-			// 	return $query->where('referral_guide_series', $referral_guide_series);
-			// })
-			// ->when($referral_guide_number, function($query, $referral_guide_number) {
-			// 	return $query->where('referral_guide_number', $referral_guide_number);
-			// })
-			// ->when($warehouse_document_type_id, function($query, $warehouse_document_type_id) {
-			// 	return $query->where('referral_warehouse_document_type_id', $warehouse_document_type_id);
-			// })
-			// ->when($referral_serie_number, function($query, $referral_serie_number) {
-			// 	return $query->where('referral_serie_number', $referral_serie_number);
-			// })
-			// ->when($referral_voucher_number, function($query, $referral_voucher_number) {
-			// 	return $query->where('referral_voucher_number', $referral_voucher_number);
-			// })
-			// ->when($scop_number, function($query, $scop_number) {
-			// 	return $query->where('scop_number', $scop_number);
-			// })
-			// ->when($license_plate, function($query, $license_plate) {
-			// 	return $query->where('license_plate', $license_plate);
-			// })
+		
 			->orderBy('company_id', 'asc')
-		//	->orderBy('movement_class_id', 'asc')
-		//	->orderBy('movement_type_id', 'asc')
 			->orderBy('created_at', 'asc')
 			->get();
 

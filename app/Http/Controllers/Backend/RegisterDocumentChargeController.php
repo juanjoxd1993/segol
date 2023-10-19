@@ -20,6 +20,7 @@ use App\Voucher;
 use App\VoucherDetail;
 use App\VoucherType;
 use App\WarehouseDocumentType;
+use App\WarehouseMovement;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +30,7 @@ class RegisterDocumentChargeController extends Controller
 {
 	public function index() {
 		$companies = Company::select('id', 'name')->get();
-		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
+		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->where('id', 9)->orWhere('id', 28)->orWhere('id', 29)->get();
 		$min_sale_date = CarbonImmutable::now()->subWeek()->toAtomString();
 		$max_sale_date = CarbonImmutable::now()->toAtomString();
 		$payments = Payment::select('id', 'name')->get();
@@ -162,7 +163,7 @@ class RegisterDocumentChargeController extends Controller
 			'igv_percentage' => $igv_percentage
 		]);
 
-		if ( $referral_warehouse_document_type_id != '' || $referral_serie_number != '' || $referral_voucher_number != '' ) {
+		if ( $referral_warehouse_document_type_id != '3' ) {
 			$sale = Voucher::where('company_id', $company_id)
 				->where('voucher_type_id', $referral_warehouse_document_type_id)
 				->where('serie_number', $referral_serie_number)
@@ -267,6 +268,7 @@ class RegisterDocumentChargeController extends Controller
 		$voucher_number = request('model.voucher_number');
 		$voucher_type_id = request('model.voucher_type_id');
 		$warehouse_document_type_id = request('model.warehouse_document_type_id');
+		$reference = request('model.reference');
 
 		$items = request('items');
 
@@ -469,10 +471,32 @@ class RegisterDocumentChargeController extends Controller
 			}
 		}
 
+		if ($referral_warehouse_document_type_id == 3) {
+			$warehouse_movement = WarehouseMovement::find($reference);
+
+			$warehouse_movement->sale_id = $sale->id;
+
+			$warehouse_movement->save();
+		};
+
 		$response = new stdClass();
 		$response->title = 'Ok';
 		$response->msg = 'Se ha generado el documento exitosamente.';
 
 		return response()->json($response);
+	}
+
+	public function getReferences() {
+		$referral_warehouse_document_type_id = request('referral_warehouse_document_type_id');
+
+		if ($referral_warehouse_document_type_id == 3) {
+			$references = WarehouseMovement::select('id', 'referral_guide_series', 'referral_guide_number', 'account_name', 'created_at')->where('if_comodato', true)->get();
+
+			return $references;
+		};
+
+		$references = Sale::select('id', 'referral_serie_number', 'referral_voucher_number')->where('balance', '>', 0)->where('warehouse_document_type_id', $referral_warehouse_document_type_id)->get();
+
+		return $references;
 	}
 }

@@ -80,14 +80,11 @@ class LiquidationReportController extends Controller
 			->leftjoin('sale_details', 'sales.id', '=', 'sale_details.sale_id')
 			->where('sales.created_at', '>=', $initial_date)
 			->where('sales.created_at', '<=', $final_date)
-			->select('sales.id', 'companies.short_name as company_short_name', DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'), 'sale_date', 'business_units.name as business_unit_name', 'warehouse_document_types.short_name as warehouse_document_type_short_name', 'sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_value', 'sales.igv', 'sales.total', DB::Raw('(sales.total_perception - sales.total) as perception'), 'sales.total_perception', 'payments.name as payment_name', 'banks.short_name as bank_short_name', 'clients.code as client_code', 'clients.business_name as client_business_name', 'document_types.name as document_type_name', 'clients.document_number as client_document_number', 'warehouse_movements.movement_number as warehouse_movement_movement_number', 'movent_types.name as movement_type_name', DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'),
-			 DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND sale_details.article_id = 24) as gallons'), 
-			 DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND sale_details.article_id = 23) as sum_1k'),
-			 DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 55) AS sum_5k'), 
-			 DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 56) AS sum_10k'), 
-			 DB::Raw('(SELECT SUM(sale_details.quantity) from sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 57) AS sum_15k'), 
-			 DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 58) AS sum_45k'), 
-			 DB::Raw('(SELECT SUM(sale_details.quantity * (SELECT articles.convertion FROM articles WHERE articles.id = sale_details.article_id AND sale_details.article_id <> 24)) FROM sale_details WHERE sale_details.sale_id = sales.id) AS sum_total'))
+			->whereNotIn('sales.warehouse_document_type_id', [7,30])
+			->select('sales.id', 'companies.short_name as company_short_name', DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'), 'sale_date', 'business_units.name as business_unit_name', 'warehouse_document_types.short_name as warehouse_document_type_short_name', 'sales.scop_number as scop_number','sales.referral_serie_number', 'sales.referral_voucher_number', 'sales.sale_value', 'sales.igv', 'sales.total', DB::Raw('(sales.total_perception - sales.total) as perception'), 'sales.total_perception', 'payments.name as payment_name', 'banks.short_name as bank_short_name', 'clients.code as client_code', 'clients.business_name as client_business_name', 'document_types.name as document_type_name', 'clients.document_number as client_document_number', 'warehouse_movements.movement_number as warehouse_movement_movement_number', 'movent_types.name as movement_type_name', DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'), 
+			DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.code FROM articles WHERE articles.id = sale_details.article_id) = 3) as gallons'), 
+			DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.code FROM articles WHERE articles.id = sale_details.article_id) = 1) as sum_1k'), 
+			DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 55) AS sum_5k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 56) AS sum_10k'), DB::Raw('(SELECT SUM(sale_details.quantity) from sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 57) AS sum_15k'), DB::Raw('(SELECT SUM(sale_details.quantity) FROM sale_details WHERE sale_details.sale_id = sales.id AND (SELECT articles.subgroup_id FROM articles WHERE articles.id = sale_details.article_id) = 58) AS sum_45k'), DB::Raw('(SELECT SUM(sale_details.quantity * (SELECT articles.convertion FROM articles WHERE articles.id = sale_details.article_id AND sale_details.article_id <> 24)) FROM sale_details WHERE sale_details.sale_id = sales.id) AS sum_total'))
 			->when($company_id, function($query, $company_id) {
 				return $query->where('sales.company_id', $company_id);
 			})
@@ -112,7 +109,9 @@ class LiquidationReportController extends Controller
 		$totals_total_perception = 0;
 		$totals_credit = 0;
 		$totals_cash_liquidation_amount = 0;
+		$totals_remesa_liquidation_amount = 0;
 		$totals_deposit_liquidation_amount = 0;
+		$totals_yape_liquidation_amount = 0;
 		$totals_gallons = 0;
 		$totals_sum_1k = 0;
 		$totals_sum_5k = 0;
@@ -128,58 +127,20 @@ class LiquidationReportController extends Controller
 				->sum('amount');
 
 			$deposit_liquidation_amount = Liquidation::where('sale_id', $sale['id'])
-				->where('payment_method_id', '!=', 1)
+				->whereIn('payment_method_id', [2,3] )
 				->select('amount')
 				->sum('amount');
 
-			$gallons= SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
-			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-		//	->where('sale_id', $sale['id'])
-			->where('articles.code', 3)
-			->select('sale_details.quantity')
-			->sum('sale_details.quantity');
+			$remesa_liquidation_amount = Liquidation::where('sale_id', $sale['id'])
+				->where('payment_method_id', 9)
+				->select('amount')
+				->sum('amount');
 
-
-			$sum_1k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
-			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-		//	->where('sale_id', $sale['id'])
-			->where('articles.code', 1)
-			->select('sale_details.quantity')
-			->sum('sale_details.quantity');
-
-			$sum_5k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
-			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-		//	->where('sale_id', $sale['id'])
-			->where('articles.subgroup_id', 55)
-			->select('sale_details.quantity')
-			->sum('sale_details.quantity');
-
-
-			$sum_10k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
-			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-		//	->where('sale_id', $sale['id'])
-			->where('articles.subgroup_id', 56)
-			->select('sale_details.quantity')
-			->sum('sale_details.quantity');
-
-			$sum_15k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
-			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-		//	->where('sale_id', $sale['id'])
-			->where('articles.subgroup_id', 57)
-			->select('sale_details.quantity')
-			->sum('sale_details.quantity');
-
-
-			$sum_45k=SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
-			->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
-		//	->where('sale_id', $sale['id'])
-			->where('articles.subgroup_id', 58)
-			->select('sale_details.quantity')
-			->sum('sale_details.quantity');
-
-            
-
-			$kilos=($gallons/2.018)+$sum_1k+($sum_5k*5)+($sum_10k*10)+($sum_15k*15)+($sum_45k*45);
+			$yape_liquidation_amount = Liquidation::where('sale_id', $sale['id'])
+				->where('payment_method_id', 11)
+				->select('amount')
+				->sum('amount');
+					
 
 
 
@@ -189,14 +150,16 @@ class LiquidationReportController extends Controller
 			$totals_perception += $sale['perception'];
 			$totals_total_perception += $sale['total_perception'];
 			$totals_cash_liquidation_amount += $cash_liquidation_amount;
+			$totals_remesa_liquidation_amount += $remesa_liquidation_amount;
+			$totals_yape_liquidation_amount += $yape_liquidation_amount;
 			$totals_deposit_liquidation_amount += $deposit_liquidation_amount;
-			$totals_gallons += $gallons;
-			$totals_sum_1k += $sum_1k;
-			$totals_sum_5k += $sum_5k;
-			$totals_sum_10k += $sum_10k;
-			$totals_sum_15k += $sum_15k;
-			$totals_sum_45k += $sum_45k;
-			$totals_sum_total += $kilos;
+			$totals_gallons += $sale['gallons'];
+			$totals_sum_1k += $sale['sum_1k'];
+			$totals_sum_5k += $sale['sum_5k'];
+			$totals_sum_10k += $sale['sum_10k'];
+			$totals_sum_15k += $sale['sum_15k'];
+			$totals_sum_45k += $sale['sum_45k'];
+			$totals_sum_total += $sale['sum_total'];
 
 			$liquidations = Liquidation::leftjoin('bank_accounts', 'liquidations.bank_account_id', '=', 'bank_accounts.id')
 				->leftjoin('banks', 'bank_accounts.bank_id', '=', 'banks.id')
@@ -217,10 +180,12 @@ class LiquidationReportController extends Controller
 				$liquidation->total = '';
 				$liquidation->perception = '';
 				$liquidation->total_perception = '';
-				$liquidation->payment_name = $sale['payment_name'];
+				$liquidation->payment_name = 'Contado';
 				$liquidation->credit = '';
 				$liquidation->cash_liquidation_amount = $liquidation->payment_method_id == 1 ? $liquidation->amount : '';
-				$liquidation->deposit_liquidation_amount = $liquidation->payment_method_id !== 1 ? $liquidation->amount : '';
+				$liquidation->deposit_liquidation_amount = $liquidation->payment_method_id == 2 || $liquidation->payment_method_id == 3 ? $liquidation->amount : '';
+				$liquidation->remesa_liquidation_amount = $liquidation->payment_method_id == 9 ? $liquidation->amount : '';
+				$liquidation->yape_liquidation_amount = $liquidation->payment_method_id == 11 ? $liquidation->amount : '';
 				$liquidation->bank_short_name = $liquidation['bank_short_name'];
 				$liquidation->operation_number =$liquidation['operation_number'];
 				$liquidation->client_code = $sale['client_code'];
@@ -230,6 +195,7 @@ class LiquidationReportController extends Controller
 				$liquidation->warehouse_movement_movement_number = $sale['warehouse_movement_movement_number'];
 				$liquidation->movement_type_name = $sale['movement_type_name'];
 				$liquidation->guide = $sale['guide'];
+				$liquidation->scop_number = $sale['scop_number'];
 				$liquidation->gallons = '';
 				$liquidation->sum_1k = '';
 				$liquidation->sum_5k = '';
@@ -244,19 +210,19 @@ class LiquidationReportController extends Controller
 					$liquidation->total = $sale['total'];
 					$liquidation->perception = $sale['perception'];
 					$liquidation->total_perception = $sale['total_perception'];
-					$liquidation->gallons = $gallons;
-					$liquidation->sum_1k = $sum_1k;
-					$liquidation->sum_5k = $sum_5k;
-					$liquidation->sum_10k = $sum_10k;
-					$liquidation->sum_15k = $sum_15k;
-					$liquidation->sum_45k = $sum_45k;
-					$liquidation->sum_total = $kilos;
+					$liquidation->gallons = $sale['gallons'];
+					$liquidation->sum_1k = $sale['sum_1k'];
+					$liquidation->sum_5k = $sale['sum_5k'];
+					$liquidation->sum_10k = $sale['sum_10k'];
+					$liquidation->sum_15k = $sale['sum_15k'];
+					$liquidation->sum_45k = $sale['sum_45k'];
+					$liquidation->sum_total = $sale['sum_total'];
 				}
 
 				$response[] = $liquidation;
 			}
 
-			$totals_credit = number_format($sale['total_perception'] - $cash_liquidation_amount - $deposit_liquidation_amount, 2, '.', '');
+			$totals_credit = number_format($sale['total_perception'] - $cash_liquidation_amount - $deposit_liquidation_amount - $remesa_liquidation_amount - $yape_liquidation_amount, 2, '.', '');
 
 			if ( $totals_credit > 0 ) {
 				$credit = new stdClass();
@@ -275,7 +241,9 @@ class LiquidationReportController extends Controller
 				$credit->payment_name = $sale['payment_name'];
 				$credit->credit = $totals_credit;
 				$credit->cash_liquidation_amount = '';
+				$credit->remesa_liquidation_amount = '';
 				$credit->deposit_liquidation_amount = '';
+				$credit->yape_liquidation_amount = '';
 				$credit->bank_short_name = '';
 				$credit->operation_number = '';
 				$credit->client_code = $sale['client_code'];
@@ -285,6 +253,7 @@ class LiquidationReportController extends Controller
 				$credit->warehouse_movement_movement_number = $sale['warehouse_movement_movement_number'];
 				$credit->movement_type_name = $sale['movement_type_name'];
 				$credit->guide = $sale['guide'];
+				$credit->scop_number = $sale['scop_number'];
 				$credit->gallons = '';
 				$credit->sum_1k = '';
 				$credit->sum_5k = '';
@@ -302,19 +271,21 @@ class LiquidationReportController extends Controller
 					$credit->operation_number = $sale['operation_number'];
 					$credit->credit = $totals_credit;
 					$credit->cash_liquidation_amount = $cash_liquidation_amount;
+					$credit->remesa_liquidation_amount = $remesa_liquidation_amount;
 					$credit->deposit_liquidation_amount = $deposit_liquidation_amount;
+					$credit->yape_liquidation_amount = $yape_liquidation_amount;
 					$credit->sale_value = $sale['sale_value'];
 					$credit->igv = $sale['igv'];
 					$credit->total = $sale['total'];
 					$credit->perception = $sale['perception'];
 					$credit->total_perception = $sale['total_perception'];
-					$credit->gallons = $gallons;
-					$credit->sum_1k = $sum_1k;
-					$credit->sum_5k = $sum_5k;
-					$credit->sum_10k = $sum_10k;
-					$credit->sum_15k = $sum_15k;
-					$credit->sum_45k = $sum_45k;
-					$credit->sum_total = $kilos;
+					$credit->gallons = $sale['gallons'];
+					$credit->sum_1k = $sale['sum_1k'];
+					$credit->sum_5k = $sale['sum_5k'];
+					$credit->sum_10k = $sale['sum_10k'];
+					$credit->sum_15k = $sale['sum_15k'];
+					$credit->sum_45k = $sale['sum_45k'];
+					$credit->sum_total = $sale['sum_total'];
 				}
 
 				$totals_credit += $totals_credit;
@@ -339,7 +310,9 @@ class LiquidationReportController extends Controller
 		$totals->payment_name = '';
 		$totals->credit = $totals_credit;
 		$totals->cash_liquidation_amount = $totals_cash_liquidation_amount;
+		$totals->remesa_liquidation_amount = $totals_remesa_liquidation_amount;
 		$totals->deposit_liquidation_amount = $totals_deposit_liquidation_amount;
+		$totals->yape_liquidation_amount = $totals_yape_liquidation_amount;
 		$totals->bank_short_name = '';
 		$totals->operation_number = '';
 		$totals->client_code = '';
@@ -349,6 +322,7 @@ class LiquidationReportController extends Controller
 		$totals->warehouse_movement_movement_number = '';
 		$totals->movement_type_name = '';
 		$totals->guide = '';
+		$totals->scop_number = '';
 		$totals->gallons = $totals_gallons;
 		$totals->sum_1k = $totals_sum_1k;
 		$totals->sum_5k = $totals_sum_5k;
@@ -383,32 +357,34 @@ class LiquidationReportController extends Controller
 			$sheet->setCellValue('F3', 'Tipo');
 			$sheet->setCellValue('G3', '# Serie');
 			$sheet->setCellValue('H3', '# Documento');
-			$sheet->setCellValue('I3', 'Varlor Venta');
-			$sheet->setCellValue('J3', 'IGV');
-			$sheet->setCellValue('K3', 'Total');
-			$sheet->setCellValue('L3', 'Percepción');
-			$sheet->setCellValue('M3', 'Total Percepción');
+			$sheet->setCellValue('I3', 'SCOP');
+			$sheet->setCellValue('J3', 'Valor Venta');
+			$sheet->setCellValue('K3', 'IGV');
+			$sheet->setCellValue('L3', 'Total');
+			$sheet->setCellValue('M3', 'Total Ventas');
 			$sheet->setCellValue('N3', 'Condición de Pago');
-			$sheet->setCellValue('O3', 'Crédito');
-			$sheet->setCellValue('P3', 'Efectivo');
-			$sheet->setCellValue('Q3', 'Depósito/Transferencia');
-			$sheet->setCellValue('R3', 'Banco');
-			$sheet->setCellValue('S3', 'Nº Operación');
-			$sheet->setCellValue('T3', 'Código del Cliente');
-			$sheet->setCellValue('U3', 'Razón Social');
-			$sheet->setCellValue('V3', 'Tipo de Doc.');
-			$sheet->setCellValue('W3', '# de Doc.');
-			$sheet->setCellValue('X3', '# de Parte');
-			$sheet->setCellValue('Y3', 'Tipo Movimiento');
-			$sheet->setCellValue('Z3', 'Guía');
-			$sheet->setCellValue('AA3', 'Galones');
-			$sheet->setCellValue('AB3', '1K');
-			$sheet->setCellValue('AC3', '5K');
-			$sheet->setCellValue('AD3', '10K');
-			$sheet->setCellValue('AE3', '15K');
-			$sheet->setCellValue('AF3', '45K');
-			$sheet->setCellValue('AG3', 'Total Kg.');
-			$sheet->getStyle('A3:AG3')->applyFromArray([
+			$sheet->setCellValue('O3', 'Remesa');
+			$sheet->setCellValue('P3', 'Crédito');
+			$sheet->setCellValue('Q3', 'Efectivo');
+			$sheet->setCellValue('R3', 'Yape');
+			$sheet->setCellValue('S3', 'Depósito/Transferencia');
+			$sheet->setCellValue('T3', 'Banco');
+			$sheet->setCellValue('U3', 'Nº Operación');
+			$sheet->setCellValue('V3', 'Código del Cliente');
+			$sheet->setCellValue('W3', 'Razón Social');
+			$sheet->setCellValue('X3', 'Tipo de Doc.');
+			$sheet->setCellValue('Y3', '# de Doc.');
+			$sheet->setCellValue('Z3', '# de Parte');
+			$sheet->setCellValue('AA3', 'Tipo Movimiento');
+			$sheet->setCellValue('AB3', 'Guía');
+			$sheet->setCellValue('AC3', 'Galones');
+			$sheet->setCellValue('AD3', '1K');
+			$sheet->setCellValue('AE3', '5K');
+			$sheet->setCellValue('AF3', '10K');
+			$sheet->setCellValue('AG3', '15K');
+			$sheet->setCellValue('AH3', '45K');
+			$sheet->setCellValue('AI3', 'Total Kg.');
+			$sheet->getStyle('A3:AI3')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
@@ -417,58 +393,75 @@ class LiquidationReportController extends Controller
 			$row_number = 4;
 			foreach ($response as $index => $element) {
 				$index++;
+
+				$saleDateYear = null;
+				$saleDateMonth = null;
+			//	$saleDateDay = null;
+
+				if ($element->sale_date) {
+					$saleDateObject = date('d/m/Y',strtotime($element->sale_date) );
+					$saleDateYear = $saleDateObject;
+			//		$saleDateMonth = str_pad($saleDateObject->month, 2, '0', STR_PAD_LEFT);
+			//		$saleDateDay = str_pad($saleDateObject->day, 2, '0', STR_PAD_LEFT);
+				}
+
+				if ($element->liquidation_date) {
+					$saleDateObject = date('d/m/Y',strtotime($element->liquidation_date) );
+					$saleDateMonth = $saleDateObject;
+				}
+
+
+
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
-				$sheet->setCellValue('C'.$row_number, $element->liquidation_date);
-				$sheet->setCellValue('D'.$row_number, $element->sale_date);
+				$sheet->setCellValue('C'.$row_number, $saleDateMonth);
+				$sheet->setCellValue('D'.$row_number, $saleDateYear);
 				$sheet->setCellValue('E'.$row_number, $element->business_unit_name);
 				$sheet->setCellValue('F'.$row_number, $element->warehouse_document_type_short_name);
 				$sheet->setCellValue('G'.$row_number, $element->referral_serie_number);
 				$sheet->setCellValue('H'.$row_number, $element->referral_voucher_number);
-				$sheet->setCellValue('I'.$row_number, $element->sale_value);
-				$sheet->setCellValue('J'.$row_number, $element->igv);
-				$sheet->setCellValue('K'.$row_number, $element->total);
-				$sheet->setCellValue('L'.$row_number, $element->perception);
+				$sheet->setCellValue('I'.$row_number, $element->scop_number);
+				$sheet->setCellValue('J'.$row_number, $element->sale_value);
+				$sheet->setCellValue('K'.$row_number, $element->igv);
+				$sheet->setCellValue('L'.$row_number, $element->total);
 				$sheet->setCellValue('M'.$row_number, $element->total_perception);
 				$sheet->setCellValue('N'.$row_number, $element->payment_name);
-				$sheet->setCellValue('O'.$row_number, $element->credit);
-				$sheet->setCellValue('P'.$row_number, $element->cash_liquidation_amount);
-				$sheet->setCellValue('Q'.$row_number, $element->deposit_liquidation_amount);
-				$sheet->setCellValue('R'.$row_number, $element->bank_short_name);
-				$sheet->setCellValue('s'.$row_number, $element->operation_number);
-				$sheet->setCellValue('T'.$row_number, $element->client_code);
-				$sheet->setCellValue('U'.$row_number, $element->client_business_name);
-				$sheet->setCellValue('V'.$row_number, $element->document_type_name);
-				$sheet->setCellValue('W'.$row_number, $element->client_document_number);
-				$sheet->setCellValue('X'.$row_number, $element->warehouse_movement_movement_number);
-				$sheet->setCellValue('Y'.$row_number, $element->movement_type_name);
-				$sheet->setCellValue('Z'.$row_number, $element->guide);
-				$sheet->setCellValue('AA'.$row_number, $gallons);
-				$sheet->setCellValue('AB'.$row_number, $sum_1k);
-				$sheet->setCellValue('AC'.$row_number, $sum_5k);
-				$sheet->setCellValue('AD'.$row_number, $sum_10k);
-				$sheet->setCellValue('AE'.$row_number, $sum_15k);
-				$sheet->setCellValue('AF'.$row_number, $sum_45k);
-				$sheet->setCellValue('AG'.$row_number, $kilos);
+				$sheet->setCellValue('O'.$row_number, $element->remesa_liquidation_amount);
+				$sheet->setCellValue('P'.$row_number, $element->credit);
+				$sheet->setCellValue('Q'.$row_number, $element->cash_liquidation_amount);
+				$sheet->setCellValue('R'.$row_number, $element->yape_liquidation_amount);		
+				$sheet->setCellValue('S'.$row_number, $element->deposit_liquidation_amount);
+				$sheet->setCellValue('T'.$row_number, $element->bank_short_name);
+				$sheet->setCellValue('U'.$row_number, $element->operation_number);
+				$sheet->setCellValue('V'.$row_number, $element->client_code);
+				$sheet->setCellValue('W'.$row_number, $element->client_business_name);
+				$sheet->setCellValue('X'.$row_number, $element->document_type_name);
+				$sheet->setCellValue('Y'.$row_number, $element->client_document_number);
+				$sheet->setCellValue('Z'.$row_number, $element->warehouse_movement_movement_number);
+				$sheet->setCellValue('AA'.$row_number, $element->movement_type_name);
+				$sheet->setCellValue('AB'.$row_number, $element->guide);
+				$sheet->setCellValue('AC'.$row_number, $element->gallons);
+				$sheet->setCellValue('AD'.$row_number, $element->sum_1k);
+				$sheet->setCellValue('AE'.$row_number, $element->sum_5k);
+				$sheet->setCellValue('AF'.$row_number, $element->sum_10k);
+				$sheet->setCellValue('AG'.$row_number, $element->sum_15k);
+				$sheet->setCellValue('AH'.$row_number, $element->sum_45k);
+				$sheet->setCellValue('AI'.$row_number, $element->sum_total);
 
-				$sheet->getStyle('H'.$row_number)->getNumberFormat()->setFormatCode('0');
-				$sheet->getStyle('I'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+			
 				$sheet->getStyle('J'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('K'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('L'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('M'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('O'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('T'.$row_number)->getNumberFormat()->setFormatCode('0');
-				$sheet->getStyle('W'.$row_number)->getNumberFormat()->setFormatCode('0');
-				$sheet->getStyle('X'.$row_number)->getNumberFormat()->setFormatCode('0');
-				$sheet->getStyle('AA'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
-				$sheet->getStyle('AB'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
-				$sheet->getStyle('AC'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
+				$sheet->getStyle('Q'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('R'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('AD'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 				$sheet->getStyle('AE'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 				$sheet->getStyle('AF'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 				$sheet->getStyle('AG'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
+				$sheet->getStyle('AH'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 
 				$row_number++;
 			}
@@ -506,6 +499,8 @@ class LiquidationReportController extends Controller
 			$sheet->getColumnDimension('AE')->setAutoSize(true);
 			$sheet->getColumnDimension('AF')->setAutoSize(true);
 			$sheet->getColumnDimension('AG')->setAutoSize(true);
+			$sheet->getColumnDimension('AH')->setAutoSize(true);
+
 
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');

@@ -67,10 +67,17 @@
                                 <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id == 5 || this.sale.warehouse_document_type_id == 7 || this.sale.warehouse_document_type_id == 9 || this.sale.warehouse_document_type_id == 17">
                                     <div class="form-group">
                                         <label class="form-control-label">Número de Guía:</label>
-                                        <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)">
+                                        <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number" v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)" @input="manageNumberGuide">
                                         <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
+								<div class="col-lg-3" v-if="this.sale.warehouse_document_type_id === 4 || this.sale.warehouse_document_type_id === 5 || this.sale.warehouse_document_type_id === 18">
+									<div class="form-group">
+                                        <label class="form-control-label">Nº SCOP:</label>
+                                        <input type="text" class="form-control"  v-model="sale.scop_number" name="scop_number" id="scop_number" @focus="$parent.clearErrorMsg($event)" @input="manageScopNumber">
+                                        <div id="scop_number-error" class="error invalid-feedback"></div>
+                                    </div>
+								</div>
 								<div class="col-lg-3">
 									<div class="form-group">
                                         <label class="form-control-label">Moneda:</label>
@@ -111,7 +118,7 @@
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="form-control-label">Cantidad:</label>
-                                        <input type="number" class="form-control" name="quantity" id="quantity" v-model="model.quantity" @focus="$parent.clearErrorMsg($event)" readonly>
+                                        <input type="number" class="form-control" name="quantity" id="quantity" v-model="model.quantity" @focus="$parent.clearErrorMsg($event)">
                                         <div id="quantity-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -170,7 +177,6 @@
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success" @click.prevent="liquidationModal()">Liquidar</button>
-                        <!-- <button type="submit" class="btn btn-success" v-if="sale.payment_id == 2" @click.prevent="addSale()">{{ button_text }}</button> -->
                         <button type="button" class="btn btn-secondary" @click.prevent="closeModal()">Cerrar</button>
                     </div>
                 </div>
@@ -245,8 +251,12 @@
                     payment_id: '',
 					currency_id: 1,
                     credit_limit: '',
-                    sale_serie_id: ''
+                    sale_serie_id: '',
+                    serie_num: '',
+                    correlative: '',
+                    scop_number: ''
                 },
+                articles: {},
                 filterArticles: [],
                 edit_flag: false,
                 sale_series: [],
@@ -260,9 +270,52 @@
 
             EventBus.$on('create_modal', function() {
                 document.getElementById('client_id').disabled = false;
+                if (!this.clients.length) {
+                };
                 this.clients = this.$store.state.clients;
+                const warehouse_movement_id = this.$store.state.model.warehouse_movement_id;
 
                 let vm = this;
+                const clients = [];
+
+                this.clients.map(item => {
+                    const { id } = item;
+
+                    axios.post(this.url_get_articles_clients,{
+                        client_id: id,
+                        warehouse_movement_id
+                    }).then(response => {
+                        let data = response.data;
+                        let articles = [];
+
+                        if (this.$store.state.sales.length) {
+                            this.$store.state.sales.map(item => {
+                                data.map(i => {
+                                    const art = item.details.find(e => e.article_id == i.id);
+    
+                                    if (art) {
+                                        i.quantity = i.quantity - parseInt(art.quantity);
+    
+                                        if(i.quantity > 0) articles.push(i);
+                                    } else {
+                                        articles.push(i);
+                                    };
+                                });
+                            });
+                        } else {
+                            articles = data;
+                        };
+
+                        if (articles.length) {
+                            vm.articles[id] = articles;
+                        } else {
+                            this.clients = this.clients.filter(e => e.id != id);
+                        };
+                    }).catch(error => {
+                        console.log(error);
+                        console.log(error.response);
+                    });
+                })
 
                 this.button_text = 'Crear';
                 this.sale.client_id = 0;
@@ -282,6 +335,9 @@
                 this.sale.payment_id = '';
                 this.sale.currency_id = 1;
                 this.sale.credit_limit = '';
+                this.sale.sale_serie_id = '';
+                this.sale.serie_num = '';
+                this.sale.correlative = '';
 
 				this.model = {
                     article_id: '',
@@ -339,6 +395,8 @@
 				let sale_serie = this.sale_series.find(element => element.id == val);
 
                 this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : 0;
+                this.sale.serie_num = sale_serie.num_serie;
+                this.sale.correlative = sale_serie.correlative;
 			},
             'sale.client_id': function(val) {
                 const client_id = val;
@@ -352,18 +410,68 @@
                 this.sale.payment_id = client.payment_id;
                 this.sale.credit_limit = client.credit_limit;
 
-                axios.post(this.url_get_articles_clients,{
-                    client_id,
-                    warehouse_movement_id
-                }).then(response => {
-                    document.getElementById('client_id').disabled = true;
-                    const data = response.data;
-                    this.filterArticles = data;
-                    this.$store.state.articles_filter = data;
-                }).catch(error => {
-                    console.log(error);
-                    console.log(error.response);
-                });
+                const articles = this.articles[client_id];
+                document.getElementById('client_id').disabled = true;
+
+                this.filterArticles = articles;
+                this.$store.state.articles_filter = articles;
+                // axios.post(this.url_get_articles_clients,{
+                //     client_id,
+                //     warehouse_movement_id
+                // }).then(response => {
+                //     document.getElementById('client_id').disabled = true;
+                //     let data = response.data;
+
+                //     const sales = this.$store.state.sales;
+
+                //     if (sales.length) {
+                //         sales.map(sale => {
+                //             const {
+                //                 client_id,
+                //                 details
+                //             } = sale;
+
+                //             details.map(detail => {
+                //                 const {
+                //                     article_id,
+                //                     quantity
+                //                 } = detail;
+
+                //                 data = data.filter(item => item.id != article_id && client_id != val);
+                //                 console.log('val: ', val);
+                //                 console.log('article id: ', article_id);
+                //                 console.log('client id: ', client_id);
+
+                //                 // data.map(dat => {
+                //                 //     const {id} = dat;
+                //                 //     const quantityDat = dat.quantity;
+
+                //                 //     let add = true;
+
+                //                 //     if (article_id == id && client_id == val) {
+                //                 //         add = false;
+                //                 //         const rest = quantityDat - parseQuantity;
+
+                //                 //         if (rest > 0) {
+                //                 //             add = true;
+                //                 //             dat.quantity = rest;
+                //                 //         };
+                //                 //     };
+
+                //                 //     if (add) {
+                //                 //         dataParse.push(dat);
+                //                 //     };
+                //                 // })
+                //             })
+                //         });
+                //     };
+
+                //     this.filterArticles = data;
+                //     this.$store.state.articles_filter = data;
+                // }).catch(error => {
+                //     console.log(error);
+                //     console.log(error.response);
+                // });
             },
             'model.article_id': function(val) {
                 const article = this.filterArticles.find(item => item.id === val);
@@ -415,10 +523,38 @@
                 }
             },
             addArticle: function() {
-                let article = this.$store.state.articles.find(element => element.article_id == this.model.article_id);
                 const articleQuantity = this.filterArticles.find(item => item.id === this.model.article_id);
+                let errorQuantity = false;
+                const articlesFilter = [];
+                const quantity = parseInt(this.model.quantity)
 
-                if ( this.sale.client_id == '' ) {
+                this.filterArticles.map(item => {
+                    if (item.id == this.model.article_id) {
+
+                        if(quantity <= 0) errorQuantity = true;
+                        if(quantity > item.quantity) errorQuantity = true;
+
+                        const newQuantity = item.quantity - quantity;
+
+                        if(newQuantity > 0) articlesFilter.push({
+                            ...item,
+                            quantity: newQuantity
+                        });
+                    } else {
+                        articlesFilter.push(item);
+                    };
+                });
+
+                if ( errorQuantity ) {
+                    Swal.fire({
+                        title: '¡Error!',
+                        text: 'Debe indicar una cantidad valida del producto.',
+                        type: "error",
+                        heightAuto: false,
+                        showCancelButton: false,
+                        confirmButtonText: 'Ok',
+                    });
+                } else if ( this.sale.client_id == '' ) {
                     Swal.fire({
                         title: '¡Error!',
                         text: 'Debe seleccionar un Cliente.',
@@ -445,7 +581,7 @@
                         showCancelButton: false,
                         confirmButtonText: 'Ok',
                     });
-                } else if ( this.model.quantity <= 0 ) {
+                } else if ( quantity <= 0 ) {
                     Swal.fire({
                         title: '¡Error!',
                         text: 'La Cantidad no puede estar vacía o ser igual 0.',
@@ -454,7 +590,7 @@
                         showCancelButton: false,
                         confirmButtonText: 'Ok',
                     });
-                } else if ( this.model.quantity > articleQuantity.quantity ) {
+                } else if ( quantity > articleQuantity.quantity ) {
                     Swal.fire({
                         title: '¡Error!',
                         text: `La Cantidad supera el Saldo del Artículo ( ${articleQuantity.quantity} ).`,
@@ -499,6 +635,16 @@
 						igv_perception: '',
 						total_perception: '',
 					};
+
+                    // if (!articlesFilter.length) {
+                    //     const clients = this.clients.filter(item => item.id != this.sale.client_id);
+
+                    //     this.$store.state.clients = clients;
+                    //     this.clients = clients;
+                    // };
+
+                    // this.articles[this.sale.client_id] = articlesFilter;
+                    this.filterArticles = articlesFilter;
 
                     this.addTotals();
                 }
@@ -570,6 +716,13 @@
                 } else {
 					EventBus.$emit('loading', true);
 
+                    this.$store.commit('addGuideNumber', {
+                        serie_number: this.sale.referral_guide_series,
+                        guide_number: this.sale.referral_guide_number,
+                    });
+
+                    this.$store.commit('addScop', this.sale.scop_number);
+
 					axios.post(this.url_verify_document_type, {
 						'model': this.$store.state.model,
 						'warehouse_document_type_id': this.sale.warehouse_document_type_id,
@@ -620,124 +773,6 @@
 					});
                 }
             },
-            addSale: function() {
-				if ( this.sale.warehouse_document_type_id == '' ) {
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'Debe seleccionar un Tipo de Referencia.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-                } else if ( (this.sale.warehouse_document_type_id == 4 || this.sale.warehouse_document_type_id == 5) && this.sale.document_type_id != 1 ) {
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'El Cliente no cuenta con un Nº de RUC registrado.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				} else if ( this.sale.warehouse_document_type_id != 4 && this.sale.warehouse_document_type_id != 5 && accounting.unformat(this.sale.perception) > 0 ) {
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'La Percepción no puede ser mayor a 0 para este Tipo de Referencia.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				} else if ( this.sale.warehouse_document_type_id >= 4 && this.sale.warehouse_document_type_id <= 9 && this.sale.referral_serie_number == '' ) {
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'La Serie de Referencia es obligatoria.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				} else if ( (this.sale.warehouse_document_type_id == 4 || this.sale.warehouse_document_type_id == 6 || this.sale.warehouse_document_type_id == 8) && this.sale.referral_voucher_number == '' ) {
-					Swal.fire({
-                        title: '¡Error!',
-                        text: 'El Número de Referencia es obligatorio.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-				} else if ( this.sale.details.length < 1 ) {
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'Debe agregar al menos 1 Artículo.',
-                        type: "error",
-                        heightAuto: false,
-                        showCancelButton: false,
-                        confirmButtonText: 'Ok',
-                    });
-                } else {
-					EventBus.$emit('loading', true);
-
-					axios.post(this.url_verify_document_type, {
-						'model': this.$store.state.model,
-						'warehouse_document_type_id': this.sale.warehouse_document_type_id,
-						'referral_serie_number': this.sale.referral_serie_number,
-						'referral_voucher_number': this.sale.referral_voucher_number
-					}).then(response => {
-						// console.log(response);
-						if ( response.data.verify == false ) {
-							EventBus.$emit('loading', false);
-
-							Swal.fire({
-								title: '¡Error!',
-								text: response.data.msg,
-								type: "error",
-								heightAuto: false,
-								showCancelButton: false,
-								confirmButtonText: 'Ok',
-							});
-						} else {
-							EventBus.$emit('loading', false);
-							
-							let sale = this.sale;
-							this.$store.commit('addSale', sale);
-
-							let store_sale = this.$store.state.sale;
-
-							store_sale.details.forEach(element => {
-								let article_id = element.article_id;
-								let quantity = element.quantity;
-
-								this.$store.commit('changeBalanceValue', {
-									article_id,
-									quantity
-								});
-							});
-
-							EventBus.$emit('refresh_table_sale');
-
-							this.model = {
-								article_id: '',
-								article_name: '',
-								price_igv: '',
-								quantity: '',
-								igv: '',
-								perception: '',
-								sale_value: '',
-								igv_perception: '',
-								total_perception: '',
-							};
-
-							$('#modal-sale').modal('hide');
-
-							EventBus.$emit('refresh_table_liquidation');
-						}
-					}).catch(error => {
-						console.log(error);
-						console.log(error.response);
-					});
-				}
-            },
 			closeModal: function() {
 				this.model = {
                     article_id: '',
@@ -771,6 +806,111 @@
 
 				$('#modal-sale').modal('hide');
 			},
+            manageNumberGuide() {
+                if (
+                    this.sale.warehouse_document_type_id == 5 ||
+                    this.sale.warehouse_document_type_id == 7 ||
+                    this.sale.warehouse_document_type_id == 9 ||
+                    this.sale.warehouse_document_type_id == 17
+                ) {
+                    // EventBus.$emit('loading', true);
+                    $('#liquidar').prop('disabled', true);
+                    $('#referral_guide_number-error').hide();
+                    $('#referral_guide_number-error').text('');
+
+                    let find = false;
+
+                    if (this.$store.state.guide_numbers.length) {
+                        this.$store.state.guide_numbers.map(item => {
+                            if (
+                                item.serie_number == this.sale.referral_guide_series &&
+                                item.guide_number == this.sale.referral_guide_number
+                            ) {
+                                EventBus.$emit('loading', false);
+                                $('#liquidar').prop('disabled', true);
+                                $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                                $('#referral_guide_number-error').show();
+
+                                find = true;
+                            };
+                        });
+                    };
+
+                    if (!find) {
+                        axios.post('/facturacion/liquidaciones-glp/get-guide-number', {
+                            params: {
+                                serie_number: this.sale.referral_guide_series,
+                                guide_number: this.sale.referral_guide_number,
+                            }
+                        }).then(response => {
+                            // EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', false);
+                            $('#referral_guide_number-error').text('');
+                            $('#referral_guide_number-error').hide();
+                        }).catch(error => {
+                            // EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                            $('#referral_guide_number-error').show();
+                        });
+                    }
+                }
+            },
+            manageScopNumber() {
+                if (this.sale.scop_number.length > 11) {
+                    this.sale.scop_number = this.sale.scop_number.slice(0, 11);
+                }
+                if (!(this.sale.scop_number.length === 11 || this.sale.scop_number == '')) {
+                    
+                    $('#liquidar').prop('disabled', true);
+                    $('#scop_number-error').text('El Nro. de Scop tiene que ser de 11 digitos u omitirlo');
+                    $('#scop_number-error').show();
+                    return
+                }
+                if (
+                    this.sale.warehouse_document_type_id === 4 ||
+                    this.sale.warehouse_document_type_id === 5 ||
+                    this.sale.warehouse_document_type_id === 18
+                ) {
+                    // EventBus.$emit('loading', true);
+                    $('#liquidar').prop('disabled', true);
+                    $('#scop_number-error').hide();
+                    $('#scop_number-error').text('');
+
+                    let find = false;
+
+                    if (this.$store.state.scops.length) {
+                        const exists = this.$store.state.scops.find(item => item == this.sale.scop_number);
+
+                        if (exists) {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                            $('#scop_number-error').show();
+                            find = true;
+                        };
+                    };
+
+                    if (!find) {
+                        axios.post('/facturacion/liquidaciones-glp/get-scop-number', {
+                            params: {
+                                scop_number: this.sale.scop_number,
+                            }
+                        }).then(response => {
+                            console.log('bien');
+                            // EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', false);
+                            $('#scop_number-error').text('');
+                            $('#scop_number-error').hide();
+                        }).catch(error => {
+                            // EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                            $('#scop_number-error').show();
+                        });
+                    }
+                }
+            },
         }
     };
 </script>

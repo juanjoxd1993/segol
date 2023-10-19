@@ -44,7 +44,7 @@ class GuidesRegisterController extends Controller
 		$current_date = date('d-m-Y');
 		$date = CarbonImmutable::now()->startOfDay();
 		$current_date = $date->startOfDay()->toAtomString();
-		$min_datetime = $date->startOfDay()->toAtomString();
+		$min_datetime = $date->subDays(1)->startOfDay()->toAtomString();
 
 		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
@@ -210,7 +210,7 @@ class GuidesRegisterController extends Controller
 		}
 
 		// Obtener artículos
-		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged')
+		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged','presentacion','convertion','group_id')
 			->where('warehouse_type_id', $warehouse_type_id)
 			->orderBy('code', 'asc')
 			->get();
@@ -276,6 +276,7 @@ class GuidesRegisterController extends Controller
 				'operation_types.name as operation_type_name',
 				'business_type',
 				'convertion',
+				'presentacion',
 				'group_id'
 				)
 			->first();
@@ -526,6 +527,7 @@ class GuidesRegisterController extends Controller
 		$referral_guide_number = request('model.referral_guide_number');
 		$scop_number = request('model.scop_number');
 		$license_plate = request('model.license_plate');
+		$account_document_number = request('model.account_document_number');
 		// $route_id = request('model.route_id');
 		$articles = request('article_list');
 
@@ -575,7 +577,7 @@ class GuidesRegisterController extends Controller
 		$movement->movement_number = $movement_number;
 		$movement->warehouse_account_type_id = $warehouse_account_type_id;
 		$movement->account_id = $warehouse_account_id;
-		$movement->account_document_number = $account ? $account->document_number : '';
+		$movement->account_document_number = $account_document_number ;
 		$movement->account_name = $account ? $account->business_name : '';
 		$movement->referral_guide_series = $referral_guide_series;
 		$movement->referral_guide_number = $referral_guide_number;
@@ -608,7 +610,7 @@ class GuidesRegisterController extends Controller
 		$movement2->movement_number = $movement_number;
 		$movement2->warehouse_account_type_id = $warehouse_account_type_id;
 		$movement2->account_id = $warehouse_account_id;
-		$movement2->account_document_number = $account ? $account->document_number : '';
+		$movement2->account_document_number = $account_document_number ;
 		$movement2->account_name = $account ? $account->business_name : '';
 		$movement2->referral_guide_series = $referral_guide_series;
 		$movement2->referral_guide_number = $referral_guide_number;
@@ -632,9 +634,9 @@ class GuidesRegisterController extends Controller
 
 		foreach ($articles as $item) {
 			$article = Article::where('warehouse_type_id', $warehouse_type_id)
-						->where('group_id', 26)
-						->where('code', $item['code'])
-						->first();
+												->where('group_id', 26)
+												->where('code', $item['code'])
+												->first();
 
 			if ($article) {
 
@@ -683,7 +685,8 @@ class GuidesRegisterController extends Controller
 						$article->save();
 
 						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
-										->where('convertion', $article->convertion)
+										->where('presentacion', $article->presentacion)
+										->where('group_id', 7)
 										->first();
 
 						if ($warehouse_account_type_id == 1) {
@@ -695,7 +698,7 @@ class GuidesRegisterController extends Controller
 						}
 					} elseif ($difference < 0) {
 						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
-										->where('convertion', $article->convertion)
+										->where('presentacion', $article->presentacion)
 										->first();
 
 						$difference_parse = $difference * -1;
@@ -715,6 +718,12 @@ class GuidesRegisterController extends Controller
 								'movement_class_id' => 2,//Salida
 								'movement_type_id' => 5, //Producción
 								'warehouse_account_type_id' => 3, //Trabajador
+								'account_document_number' => $account ? $account->document_number : '',
+								'account_name' => $account ? $account->business_name : '',
+								'referral_guide_series' => $referral_guide_series,
+								'referral_guide_number' => $referral_guide_number,
+								'scop_number' => $scop_number,
+								'license_plate' => $license_plate,
 								'total' => $converted_amount,
 								'created_at' => date('Y-m-d H:i:s'),
 								'updated_at' => date('Y-m-d H:i:s'),
@@ -750,6 +759,12 @@ class GuidesRegisterController extends Controller
 								'movement_class_id' => 2,//Salida
 								'movement_type_id' => 5, //Producción
 								'warehouse_account_type_id' => 3, //Trabajador
+								'account_document_number' => $account ? $account->document_number : '',
+								'account_name' => $account ? $account->business_name : '',
+								'referral_guide_series' => $referral_guide_series,
+								'referral_guide_number' => $referral_guide_number,
+								'scop_number' => $scop_number,
+								'license_plate' => $license_plate,
 								'total' => $converted_amount,
 								'created_at' => date('Y-m-d H:i:s'),
 								'updated_at' => date('Y-m-d H:i:s'),
@@ -777,7 +792,7 @@ class GuidesRegisterController extends Controller
 						$article->save();
 
 						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
-										->where('convertion', $article->convertion)
+										->where('presentacion', $article->presentacion)
 										->first();
 
 						if ($warehouse_account_type_id == 1) {
@@ -812,13 +827,13 @@ class GuidesRegisterController extends Controller
 				->where('company_addresses.type', '=', 2);
 		})
 			->leftjoin('employees', 'warehouse_movements.account_id', '=', 'employees.id')
-			->select('warehouse_movements.id', 'warehouse_movements.company_id', 'company_addresses.address as company_address', 'company_addresses.district as company_district', 'company_addresses.province as company_province', 'company_addresses.department as company_department', 'warehouse_type_id', 'movement_class_id', 'movement_type_id', 'movement_number', 'warehouse_account_type_id', 'account_id', 'account_document_number', 'account_name', 'referral_guide_series', 'referral_guide_number', 'scop_number', 'license_plate', 'total', 'warehouse_movements.created_at', 'warehouse_movements.traslate_date', 'employees.license as employee_license')
+			->select('warehouse_movements.id', 'warehouse_movements.company_id', 'company_addresses.address as company_address', 'company_addresses.district as company_district', 'company_addresses.province as company_province', 'company_addresses.department as company_department', 'warehouse_type_id', 'movement_class_id', 'movement_type_id', 'movement_number' ,'warehouse_account_type_id','warehouse_account_type_id', 'account_id', 'account_document_number', 'account_name', 'referral_guide_series', 'referral_guide_number', 'scop_number', 'license_plate'/*, 'total'*/, 'warehouse_movements.created_at', 'warehouse_movements.traslate_date', 'employees.license as employee_license')
 			->where('warehouse_movements.id', $warehouseMovement->id)
 			->first();
 
 		$elements = WarehouseMovementDetail::select('warehouse_movement_details.id', 'item_number', 'article_code', 'converted_amount', 'price', 'warehouse_movement_details.total', 'warehouse_movements.id')
 			->join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
-			->where('warehouse_movement_id', $warehouse_movement->id)
+			->where('warehouse_movement_details.warehouse_movement_id', $warehouse_movement->id)
 			->where('company_id', $warehouse_movement->company_id)
 			->where('warehouse_type_id', $warehouse_movement->warehouse_type_id)
 			->get();
@@ -826,7 +841,7 @@ class GuidesRegisterController extends Controller
 		$packaging = WarehouseMovementDetail::join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
 			->join('articles', 'articles.id', '=', 'warehouse_movement_details.article_code')
 			->join('classifications', 'classifications.id', '=', 'articles.subgroup_id')
-			->where('warehouse_movement_id', $warehouse_movement->id)
+			->where('warehouse_movement_details.warehouse_movement_id', $warehouse_movement->id)
 			->where('company_id', $warehouse_movement->company_id)
 			->where('warehouse_movements.warehouse_type_id', $warehouse_movement->warehouse_type_id)
 			->where('articles.subgroup_id', '>=', 55)
@@ -843,7 +858,7 @@ class GuidesRegisterController extends Controller
 		$packaging = WarehouseMovementDetail::join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
 			->join('articles', 'articles.id', '=', 'warehouse_movement_details.article_code')
 			->join('classifications', 'classifications.id', '=', 'articles.subgroup_id')
-			->where('warehouse_movement_id', $warehouse_movement->id)
+			->where('warehouse_movement_details.warehouse_movement_id', $warehouse_movement->id)
 			->where('company_id', $warehouse_movement->company_id)
 			->where('warehouse_movements.warehouse_type_id', $warehouse_movement->warehouse_type_id)
 			->where('articles.subgroup_id', '>=', 55)

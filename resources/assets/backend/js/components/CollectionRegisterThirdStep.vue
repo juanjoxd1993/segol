@@ -92,6 +92,7 @@
 				model: {},
                 collection_register_datatable: undefined,
 				items: [],
+                items_general: [],
 				total_paid: 0,
 				total_paid_class: ' kt-font-success',
 				to_be_assigned: 0,
@@ -113,6 +114,22 @@
 					vm.items.map( element => {
 						element.paid = accounting.toFixed(0, 2);
 					});
+
+                    vm.items_general = vm.items;
+
+                    const newArr = [];
+
+                    vm.items.map(item => {
+                        if (item.warehouse_document_type_id != 7) {
+                            const obj = {
+                                ...item,
+                            };
+
+                            newArr.push(obj);
+                        }
+                    })
+
+                    vm.items = newArr;
 
 					if ( vm.collection_register_datatable == undefined ) {
 						vm.fillTableX();
@@ -363,7 +380,7 @@
                 }
             },
 			saveCollectionRegister: function() {
-                console.log(this.model)
+                // console.log(this.model)
 				if ( this.total_paid == 0 ) {
 					this.$parent.alertMsg({
 						type: 5,
@@ -378,22 +395,82 @@
 				// 		msg: 'El Total Registrado no puede exceder el Total Cobrado.'
 				// 	});
                 // } 
-                else if ( this.model.payment_method_id > 3 && this.to_be_assigned > 0 ) {
-					this.$parent.alertMsg({
-						type: 5,
-						title: 'Error',
-						msg: 'El Total del Detalle es menor al Total por aplicar o canjear.'
-					});
-				} else {
-					EventBus.$emit('loading', true);
+             //   else if ( this.model.payment_method_id > 3 && this.to_be_assigned > 0 ) {
+			//		this.$parent.alertMsg({
+			//			type: 5,
+			//			title: 'Error',
+			//			msg: 'El Total del Detalle es menor al Total por aplicar o canjear.'
+			//		}); 
+            // SE USA PARA EVALUAR SI EL TOTAL EXCEDE LO COBRADO
+				 else {
+					// EventBus.$emit('loading', true);
 					let filteredItems = this.items.filter(element => this.ids.includes(element.id));
 					// console.log(filteredItems);
 
+                    const bols = [];
+
+                    filteredItems.map(item => {
+                        if (item.warehouse_document_type_id == 31) {
+                            const arr = item.referral_serie_number.split('-');
+                            let number_serie = 'B';
+                            let init = 0;
+                            let end = item.referral_voucher_number;
+                            let paid = parseFloat(item.paid)
+
+                            arr.map(i => {
+                                if(isNaN(i)) {
+                                    const newArr = i.split('')
+                                    
+                                    newArr.map(e => {
+                                        if (!isNaN(e)) {
+                                            number_serie = number_serie + e;
+                                        }
+                                    })
+                                } else {
+                                    init = parseInt(i)
+                                }
+                            });
+
+                            this.items_general.map(e => {
+                                if (e.referral_serie_number == number_serie && (init <= e.referral_voucher_number && e.referral_voucher_number <= end)) {
+                                    if (paid > 0) {
+                                        if (paid > parseFloat(e.balance)) {
+                                            const obj = {
+                                                ...e,
+                                                paid: e.balance
+                                            }
+
+                                            paid = paid - parseFloat(e.balance);
+
+                                            bols.push(obj);
+                                        } else if (paid <= parseFloat(e.balance)) {
+                                            const obj = {
+                                                ...e,
+                                                // balance: parseFloat(e.balance) - paid,
+                                                paid
+                                            }
+
+                                            paid = 0;
+
+                                            bols.push(obj);
+                                        }
+                                    }
+                                }
+                            })
+                        }
+                    });
+
+                    const newItems = [
+                        ...filteredItems,
+                        ...bols
+                    ];
+
+                    // console.log(newItems)
 					axios.post(this.url_store, {
 						model: this.model,
 						total_paid: this.total_paid,
 						to_be_assigned: this.to_be_assigned,
-						items: filteredItems
+						items: newItems
 					}).then( response => {
 						// console.log(response.data);
 						EventBus.$emit('clearFirstStep');

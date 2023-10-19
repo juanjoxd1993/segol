@@ -10,7 +10,7 @@
 		:url_get_warehouse_movements = "'{{ route('dashboard.voucher.liquidations_final.get_warehouse_movements') }}'"
 		:url_get_sale_series = "'{{ route('dashboard.voucher.liquidations_final.get_sale_serie') }}'"
 	></liquidation-final-form>
-	
+
 	<liquidation-final-table
 		:url = "'{{ route('dashboard.voucher.liquidations_final.list') }}'"
 		:url_store = "'{{ route('dashboard.voucher.liquidations_final.store') }}'"

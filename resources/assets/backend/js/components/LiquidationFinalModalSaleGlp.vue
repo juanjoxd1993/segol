@@ -264,7 +264,9 @@
                     scop_number: '',
                     sale_serie_id: '',
                     sale_serie_num: '',
-                    sale_date: null
+                    sale_date: null,
+                    serie_num: '',
+                    correlative: ''
                 },
                 filterArticles: [],
                 edit_flag: false,
@@ -310,6 +312,8 @@
                 this.sale.currency_id = 1;
                 this.sale.credit_limit = '';
                 this.sale.credit_limit_days = '';
+                this.sale.serie_num = '';
+                this.sale.correlative = '';
 
 				this.model = {
                     article_id: '',
@@ -352,18 +356,6 @@
             });
         },
         watch: {
-            // 'sale.warehouse_document_type_id': function(val) {
-			// 	if ( val != 4 && val != 5 ) {
-			// 		console.log(val);
-			// 		this.sale.perception = 0;
-			// 		this.sale.perception_percentage = 0;
-			// 		this.sale.total_perception = this.sale.total;
-			// 		this.sale.details.map(element => {
-			// 			element.igv_perception = '0.0000';
-			// 			element.total_perception = element.sale_value;
-			// 		});
-			// 	}
-			// },
 			'sale.warehouse_document_type_id': function(val) {
 
                 const data_filter = this.$store.state.sale_series.filter(item => item.warehouse_document_type_id === val)[0];
@@ -371,15 +363,16 @@
                 this.sale.sale_serie_id = data_filter.id;
                 this.sale.referral_serie_number = data_filter.num_serie;
                 this.sale.referral_voucher_number = data_filter.correlative;
+                this.sale.serie_num = data_filter.num_serie;
+                this.sale.correlative = data_filter.correlative;
 
                 let warehouse_document_type = this.warehouse_document_types.find(element => element.id == val);
 
                 this.sale.warehouse_document_type_name = warehouse_document_type ? warehouse_document_type.name : '';
 			},
-			// 'sale.sale_serie_id': function(val) {
-			// 	let sale_serie = this.sale_series.find(element => element.id == val);
-			// 	this.sale.referral_serie_number = sale_serie ? sale_serie.correlative : '';
-			// }
+            'sale.sale_serie_num': function(val) {
+                console.log(val)
+            }
         },
         computed: {
             setDetails() {
@@ -476,7 +469,7 @@
                     let price_igv = accounting.toFixed(model.price_igv, 4);
                     let quantity = accounting.toFixed(model.quantity, 4);
                     let perception_percentage = ( model.perception === 1 && (this.sale.warehouse_document_type_id == 4 || this.sale.warehouse_document_type_id == 5) ? Number(this.sale.perception_percentage) / 100 : 0 );
-                    let sale_value = accounting.toFixed(quantity * price_igv, 2);
+                    let sale_value = accounting.toFixed(quantity * price_igv, 4);
                     let igv_perception = accounting.toFixed(sale_value * perception_percentage, 4);
 					let total_perception = accounting.toFixed(Number(sale_value) + Number(igv_perception), 4);
 
@@ -579,7 +572,6 @@
                     });
                 } else {
 					EventBus.$emit('loading', true);
-                    
 
                     this.$store.state.sale_series.map(item => {
                         if (item.id === this.sale.sale_serie_id) {
@@ -587,6 +579,13 @@
                             item.correlative = item.correlative + 1;
                         };
                     });
+
+                    this.$store.commit('addGuideNumber', {
+                        serie_number: this.sale.referral_guide_series,
+                        guide_number: this.sale.referral_guide_number,
+                    })
+
+                    this.$store.commit('addScop', this.sale.scop_number);
 
 					axios.post(this.url_verify_document_type, {
 						'model': this.$store.state.model,
@@ -936,23 +935,42 @@
                     $('#referral_guide_number-error').hide();
                     $('#referral_guide_number-error').text('');
 
-                    axios.post('/facturacion/liquidaciones-glp/get-guide-number', {
-                        params: {
-                            serie_number: this.sale.referral_guide_series,
-                            guide_number: this.sale.referral_guide_number,
-                        }
-                    }).then(response => {
-                        console.log('bien');
-                        EventBus.$emit('loading', false);
-                        $('#liquidar').prop('disabled', false);
-                        $('#referral_guide_number-error').text('');
-                        $('#referral_guide_number-error').hide();
-                    }).catch(error => {
-                        EventBus.$emit('loading', false);
-                        $('#liquidar').prop('disabled', true);
-                        $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
-                        $('#referral_guide_number-error').show();
-                    });
+                    let find = false;
+
+                    if (this.$store.state.guide_numbers.length) {
+                        this.$store.state.guide_numbers.map(item => {
+                            if (
+                                item.serie_number == this.sale.referral_guide_series &&
+                                item.guide_number == this.sale.referral_guide_number
+                            ) {
+                                EventBus.$emit('loading', false);
+                                $('#liquidar').prop('disabled', true);
+                                $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                                $('#referral_guide_number-error').show();
+
+                                find = true;
+                            };
+                        });
+                    };
+
+                    if (!find) {
+                        axios.post('/facturacion/liquidaciones-glp/get-guide-number', {
+                            params: {
+                                serie_number: this.sale.referral_guide_series,
+                                guide_number: this.sale.referral_guide_number,
+                            }
+                        }).then(response => {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', false);
+                            $('#referral_guide_number-error').text('');
+                            $('#referral_guide_number-error').hide();
+                        }).catch(error => {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
+                            $('#referral_guide_number-error').show();
+                        });
+                    }
                 }
             },
             manageScopNumber() {
@@ -973,22 +991,46 @@
                     $('#scop_number-error').hide();
                     $('#scop_number-error').text('');
 
-                    axios.post('/facturacion/liquidaciones-glp/get-scop-number', {
-                        params: {
-                            scop_number: this.sale.scop_number,
+                    let find = false;
+
+                    if (this.$store.state.scops.length) {
+                        const exists = this.$store.state.scops.find(item => item == this.sale.scop_number);
+
+                        if (exists) {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', true);
+                            $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                            $('#scop_number-error').show();
+                            find = true;
+                        } else {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', false);
+                        };
+                    };
+
+                    if (!find) {
+                        if (this.sale.scop_number.trim()) {
+                            axios.post('/facturacion/liquidaciones-glp/get-scop-number', {
+                                params: {
+                                    scop_number: this.sale.scop_number,
+                                }
+                            }).then(response => {
+                                console.log('bien');
+                                EventBus.$emit('loading', false);
+                                $('#liquidar').prop('disabled', false);
+                                $('#scop_number-error').text('');
+                                $('#scop_number-error').hide();
+                            }).catch(error => {
+                                EventBus.$emit('loading', false);
+                                $('#liquidar').prop('disabled', true);
+                                $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
+                                $('#scop_number-error').show();
+                            });
+                        } else {
+                            EventBus.$emit('loading', false);
+                            $('#liquidar').prop('disabled', false);
                         }
-                    }).then(response => {
-                        console.log('bien');
-                        EventBus.$emit('loading', false);
-                        $('#liquidar').prop('disabled', false);
-                        $('#scop_number-error').text('');
-                        $('#scop_number-error').hide();
-                    }).catch(error => {
-                        EventBus.$emit('loading', false);
-                        $('#liquidar').prop('disabled', true);
-                        $('#scop_number-error').text('El Nro. de Scop ya fue usado anteriormente');
-                        $('#scop_number-error').show();
-                    });
+                    }
                 }
             },
         }

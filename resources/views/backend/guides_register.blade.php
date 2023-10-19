@@ -13,7 +13,7 @@
 		:currencies = "{{ $currencies }}"
 		:guide_series = "{{ $guide_series }}"
 		:current_date = "'{{ $current_date }}'"
-		{{-- :min_datetime = "'{{ $min_datetime }}'" --}}
+		:min_datetime = "'{{ $min_datetime }}'"
 		:max_datetime = "'{{ $max_datetime }}'"
 		:warehouse_types = "{{ $warehouse_types }}"
 		:warehouse_account_types = "{{ $warehouse_account_types }}"

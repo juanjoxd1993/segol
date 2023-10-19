@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\SaleDetail;
 use App\Sale;
+use App\Employee;
 use App\BusinessUnit;
 use Carbon\CarbonImmutable;
 use Carbon\Carbon;
@@ -64,14 +65,16 @@ class LiquidationChannelReportController extends Controller
 
 		$export = request('export');
 
-	    $initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d H:i:s');
-		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d H:i:s');
+		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d');
+		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d');
 		$business_unit_id = request('model.business_unit_id');
 		$client_id = request('model.client_id');
 		
-					$elements = SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
+		$elements = SaleDetail::leftjoin('sales', 'sale_details.sale_id', '=', 'sales.id')
 					    ->leftjoin('clients', 'sales.client_id', '=', 'clients.id')    
-                        ->leftjoin('business_units', 'clients.business_unit_id', '=', 'business_units.id')                     
+					    ->leftjoin('employees', 'sales.account_id', '=', 'employees.id')    
+                        ->leftjoin('business_units', 'clients.business_unit_id', '=', 'business_units.id')
+						->leftjoin('document_types', 'clients.document_type_id', '=', 'document_types.id')                                          
                         ->leftjoin('companies', 'sales.company_id', '=', 'companies.id')		
 						->leftjoin('articles', 'sale_details.article_id', '=', 'articles.id')
 		                ->leftjoin('client_channels', 'clients.channel_id', '=', 'client_channels.id')
@@ -89,9 +92,45 @@ class LiquidationChannelReportController extends Controller
 			            ->where('sales.sale_date', '>=', $initial_date)
 			            ->where('sales.sale_date', '<=', $final_date)
 						->whereNotIn('sales.warehouse_document_type_id', [2,3,8,9,10,11,14,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30])
-						->whereNotIn('sales.client_id', [1031, 427, 13326, 13775, 14072, 14258])
-			->select('sale_details.id', 'companies.short_name as company_short_name', 'sale_date', 'business_units.name as business_unit_name', 'client_channels.name as client_channel_name', 'client_zones.name as client_zone_name', 'client_sectors.name as client_sector_name', 'client_routes.short_name as client_route_id','warehouse_document_types.short_name as warehouse_document_type_short_name', 'sales.referral_serie_number', 'sales.referral_voucher_number','articles.name as article_name',DB::Raw('(SELECT SUM(sale_details.quantity * (SELECT articles.convertion FROM articles WHERE articles.id = sale_details.article_id ))/1000 ) AS sum_total'),'sale_details.price_igv as price','sale_details.total', 'clients.id as client_id','clients.code as client_code', 'clients.business_name as client_business_name', 'warehouse_movements.movement_number as warehouse_movement_movement_number', 'movent_types.name as movement_type_name', DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'),'sales.license_plate as plate','ubigeos.district as district', 'ubigeos.province as province', 'ubigeos.department as department',
-			'clients.seller_id as seller_id','managers.name as manager','clients.grupo as grupo','clients.estado as estado')
+						->whereNotIn('sales.if_bol', [1])
+						->select('sale_details.id', 
+			'companies.short_name as company_short_name',
+			'sale_date',
+			'business_units.name as business_unit_name', 
+			'client_channels.name as client_channel_name', 
+			'client_zones.name as client_zone_name',
+			'client_sectors.name as client_sector_name', 
+			'client_routes.short_name as client_route_id',
+			'sales.warehouse_document_type_id as warehouse_document_type_id',
+			'warehouse_document_types.short_name as warehouse_document_type_short_name', 
+			'sales.referral_serie_number', 
+			'sales.guide_series', 
+			'sales.referral_voucher_number',
+			'sales.expiry_date as expiry_date',
+			'sales.balance as balance',
+			'articles.name as article_name',
+			'sale_details.quantity',
+			DB::Raw('(SELECT SUM(sale_details.quantity * (SELECT articles.convertion FROM articles WHERE articles.id = sale_details.article_id ))/1000 ) AS sum_total'),
+			'sale_details.referential_convertion',
+			'sale_details.price_igv as price',
+			'sale_details.total', 
+			'sales.scop_number as scop_number',
+			'clients.id as client_id',
+			'employees.first_name as employee',
+			'clients.code as client_code', 
+			'clients.business_name as client_business_name', 
+			'clients.document_number as document_number', 
+			'clients.int_name as int_name',
+			'clients.bol_name as bol_name',
+			'clients.credit_limit_days as credit_limit_days',
+			'document_types.name as client_document_name', 
+			'warehouse_movements.movement_number as warehouse_movement_movement_number', 
+			'movent_types.name as movement_type_name', 
+			DB::Raw('CONCAT(sales.guide_series, "-", sales.guide_number) as guide'),'sales.license_plate as plate','ubigeos.district as district', 'ubigeos.province as province', 'ubigeos.department as department',
+			'clients.seller_id as seller_id',
+			'managers.name as manager',
+			'clients.grupo as grupo',
+			'clients.estado as estado')
 
 			->when($business_unit_id, function($query, $business_unit_id) {
 				return $query->where('clients.business_unit_id', $business_unit_id);
@@ -108,14 +147,11 @@ class LiquidationChannelReportController extends Controller
 			->orderBy('sales.referral_voucher_number')
 			->get();
 			$response=[];
-
 			
-
 
 			foreach ($elements as $saledetail) {
 
-				
-
+				$saledetail->warehouse_document_type_id = $saledetail['warehouse_document_type_id'];
 
 				$saledetail->company_short_name = $saledetail['company_short_name'];
 				$saledetail->sale_date = $saledetail ['sale_date'];
@@ -124,16 +160,62 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->client_zone_name =$saledetail ['client_zone_name'];
 				$saledetail->client_sector_name = $saledetail['client_sector_name'];
 				$saledetail->client_route_id = $saledetail['client_route_id'];
+
+				if ( $saledetail->referral_serie_number == 'B001' ) {
+					$saledetail->referral_serie_number = '001';
+				}
+				else if ( $saledetail->referral_serie_number == 'B002' ) {
+					$saledetail->referral_serie_number = '002';
+				}
+				else if ( $saledetail->referral_serie_number == 'B003' ) {
+					$saledetail->referral_serie_number = '003';
+				}
+				else if ( $saledetail->referral_serie_number == 'B009' ) {
+					$saledetail->referral_serie_number = '009';
+				}
+				else if ( $saledetail->referral_serie_number == 'B012' ) {
+					$saledetail->referral_serie_number = '012';
+				}
+				else if ( $saledetail->referral_serie_number == 'B018' ) {
+					$saledetail->referral_serie_number = '018';
+				}
+				else {
+					$saledetail->referral_serie_number = $saledetail->referral_serie_number;
+				}
+
+				$saledetail->referral_voucher_number=str_pad($saledetail->referral_voucher_number, 8, "0", STR_PAD_LEFT);
+
+
+
+
 				$saledetail->warehouse_document_type_short_name = $saledetail['warehouse_document_type_short_name'];
+				$saledetail->guide_series = $saledetail['guide_series'];
+				// if ($saledetail->warehouse_document_type_short_name == 'FE')
+				// {
+				// $saledetail->referral_serie_number = 'F'.$saledetail['referral_serie_number'];
+				// }
+				// elseif($saledetail->warehouse_document_type_short_name == 'BE'){
+				// $saledetail->referral_serie_number = 'B'.$saledetail['referral_serie_number'];
+				// }
+				// else{
+				// 	$saledetail->referral_serie_number = $saledetail['referral_serie_number'];
+				// }
 				$saledetail->referral_serie_number = $saledetail['referral_serie_number'];
+
 				$saledetail->referral_voucher_number = $saledetail['referral_voucher_number'];
+
 				$saledetail->article_name =$saledetail ['article_name'];
 				$saledetail->sum_total = $saledetail['sum_total'];
 				$saledetail->price = $saledetail['price'];
 				$saledetail->total = $saledetail['total'];
 				$saledetail->client_id = $saledetail['client_id'];
 				$saledetail->client_code = $saledetail['client_code'];
-				$saledetail->client_business_name =$saledetail ['client_business_name'];
+				if($saledetail->warehouse_document_type_id ==7){
+					$saledetail->client_business_name =$saledetail ['bol_name'];
+				}
+				else{
+					$saledetail->client_business_name =$saledetail ['client_business_name'];
+				}
 				$saledetail->warehouse_movement_movement_number = $saledetail['warehouse_movement_movement_number'];
 				$saledetail->movement_type_name = $saledetail['movement_type_name'];
 				$saledetail->guide = $saledetail['guide'];
@@ -142,15 +224,42 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->province = $saledetail['province'];
 				$saledetail->department = $saledetail['department'];
 				$saledetail->seller_id = $saledetail['seller_id'];
+				$saledetail->employee = $saledetail['employee'];
 				$saledetail->manager = $saledetail['manager'];
 				$saledetail->grupo = $saledetail['grupo'];
-                $saledetail->estado = $saledetail['estado'];
+				$saledetail->estado = $saledetail['estado'];
+				$saledetail->scop_number = $saledetail['scop_number'];
+				$saledetail->client_document_name = $saledetail['client_document_name'];
+				$saledetail->document_number = $saledetail['document_number'];
+				$saledetail->int_name = $saledetail['int_name'];
+				$saledetail->credit_limit_days = $saledetail['credit_limit_days'];
+				$saledetail->expiry_date = $saledetail['expiry_date'];
+				$saledetail->sale_value = $saledetail->total/1.18;
+				$saledetail->quantity = $saledetail['quantity'];
+				$saledetail->igv =  $saledetail->total-$saledetail->sale_value;
+				$saledetail->referential_convertion = $saledetail['referential_convertion'];
+				$saledetail->kgs = $saledetail->sum_total*1000;
+				if ($saledetail->business_unit_name == 'Granel' || $saledetail->business_unit_name == 'Grifo')
+				{
+					$saledetail->glns = $saledetail->kgs/2.018;
+				}
+				else{
+					$saledetail->glns = '';
+				}
 
+				$saledetail->balance = $saledetail['balance'];
 
+				if ($saledetail->balance > 0)
+				{
+					$saledetail->condition = 'Credito'.' '. $saledetail->credit_limit_days.' '.'días';
+				}
+				else{
+					$saledetail->condition = 'Contado';
+				}
+				
 				$response[] = $saledetail;
 
 			}
-
 
 		$totals = new stdClass();
 		$totals->company_short_name = 'TOTAL';
@@ -161,6 +270,7 @@ class LiquidationChannelReportController extends Controller
 		$totals->client_sector_name = '';
 		$totals->client_route_id = '';
 		$totals->warehouse_document_type_short_name = '';
+		$totals->guide_series = '';
 		$totals->referral_serie_number = '';
 		$totals->referral_voucher_number = '';
 		$totals->article_name = '';
@@ -178,22 +288,31 @@ class LiquidationChannelReportController extends Controller
 		$totals->province = '';
 		$totals->department = '';
 		$totals->seller_id = '';
+		$totals->employee = '';
 		$totals->manager = '';
 		$totals->grupo = '';
-        $totals->estado = '';
+		$totals->estado = '';
+		$totals->client_document_name = '';
+		$totals->document_number = '';
+		$totals->int_name = '';
+		$totals->expiry_date = '';
+		$totals->scop_number = '';
+		$totals->sale_value = '';
+		$totals->igv = '';
+		$totals->quantity = '';
+		$totals->referential_convertion = '';
+		$totals->kgs = '';
+		$totals->glns = '';
+		$totals->condition = '';
 
 		$response[] = $totals;
-
-
-
-
-
+		
 
 		if ( $export) {
 			$spreadsheet = new Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
-			$sheet->mergeCells('A1:AB1');
-			$sheet->setCellValue('A1', 'REPORTE DE VENTA CANALES DEL '.CarbonImmutable::now()->format('d/m/Y H:m:s'));
+			$sheet->mergeCells('A1:AK1');
+			$sheet->setCellValue('A1', 'REPORTE DE VENTAS '.' '.'DEL'.' '.$initial_date.' AL '.$final_date.'  '.'DESCARGADO EL '.CarbonImmutable::now()->format('d/m/Y H:m:s'));
 			$sheet->getStyle('A1')->applyFromArray([
 				'font' => [
 					'bold' => true,
@@ -204,39 +323,45 @@ class LiquidationChannelReportController extends Controller
 				]
 			]);
 
-
 			$sheet->setCellValue('A3', '#');
 			$sheet->setCellValue('B3', 'Compañía');
-		//	$sheet->setCellValue('C3', 'Año de Despacho');
-		//	$sheet->setCellValue('D3', 'Mes de Despacho');
-			$sheet->setCellValue('C3', 'Fecha de Despacho');
-			$sheet->setCellValue('D3', 'Unidad de Negocio');
-            $sheet->setCellValue('E3', 'Canal'); 
-            $sheet->setCellValue('F3', 'Sector');
-            $sheet->setCellValue('G3', 'Ruta');
-			$sheet->setCellValue('H3', 'Tipo');
-			$sheet->setCellValue('I3', '# Serie');
-			$sheet->setCellValue('J3', '# Documento');
-			$sheet->setCellValue('K3', 'ID');
-			$sheet->setCellValue('L3', 'Razón Social');
-			$sheet->setCellValue('M3', 'Articulo');
-			$sheet->setCellValue('N3', 'TM');
-            $sheet->setCellValue('O3', 'Precio');
-            $sheet->setCellValue('P3', 'Total');
-			$sheet->setCellValue('Q3', '# de Parte');
-			$sheet->setCellValue('R3', 'Tipo Movimiento');
-			$sheet->setCellValue('S3', 'Guía');
-			$sheet->setCellValue('T3', 'Placa');
-			$sheet->setCellValue('U3', 'Zona');
-			$sheet->setCellValue('V3', 'Distrito');
-			$sheet->setCellValue('W3', 'Provincia');
-			$sheet->setCellValue('X3', 'Departamento');
-			$sheet->setCellValue('Y3', 'Chofer Vendedor');
-			$sheet->setCellValue('Z3', 'Supervisor');
-			$sheet->setCellValue('AA3', 'Grupo');
-			$sheet->setCellValue('AB3', 'Estado');
-			
-			$sheet->getStyle('A3:AB3')->applyFromArray([
+			$sheet->setCellValue('C3', 'Chofer Vendedor');
+			$sheet->setCellValue('D3', 'Supervisor');
+			$sheet->setCellValue('E3', 'Ruta');
+			$sheet->setCellValue('F3', 'Unidad de Negocio');
+			$sheet->setCellValue('G3', 'Canal'); 
+			$sheet->setCellValue('H3', 'Sector');
+			$sheet->setCellValue('I3', 'Guía');
+			$sheet->setCellValue('J3', 'Tipo Doc.');
+			$sheet->setCellValue('K3', 'N° Serie');
+			$sheet->setCellValue('L3', 'N° Documento');
+			$sheet->setCellValue('M3', 'Fecha de Despacho');
+			$sheet->setCellValue('N3', 'Fecha de Emisión');
+			$sheet->setCellValue('O3', 'ID Cliente');
+			$sheet->setCellValue('P3', 'Tipo de Doc. Id.');
+			$sheet->setCellValue('Q3', 'N° Doc.');
+			$sheet->setCellValue('R3', 'Razón Social');
+			$sheet->setCellValue('S3', 'Punto de Venta');
+			$sheet->setCellValue('T3', 'Condición de Pago');
+			$sheet->setCellValue('U3', 'Fecha de Vencimiento');
+			$sheet->setCellValue('V3', 'N° SCOP');
+			$sheet->setCellValue('W3', 'Zona');
+			$sheet->setCellValue('X3', 'Distrito');
+			$sheet->setCellValue('Y3', 'Provincia');
+			$sheet->setCellValue('Z3', 'Departamento');
+			$sheet->setCellValue('AA3', 'Placa Tracto');
+			$sheet->setCellValue('AB3', 'Placa Cisterna');
+			$sheet->setCellValue('AC3', 'Articulo');
+			$sheet->setCellValue('AD3', 'TM');
+			$sheet->setCellValue('AE3', 'Cantidad Facturada');
+			$sheet->setCellValue('AF3', 'Cantidad KG.');
+			$sheet->setCellValue('AG3', 'Cantidad GL.');
+			$sheet->setCellValue('AH3', 'Precio');
+			$sheet->setCellValue('AI3', 'SubTotal');
+			$sheet->setCellValue('AJ3', 'IGV');
+			$sheet->setCellValue('AK3', 'Total');
+
+			$sheet->getStyle('A3:AK3')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
@@ -247,7 +372,7 @@ class LiquidationChannelReportController extends Controller
 				$index++;
 				
 				$saleDateYear = null;
-			//	$saleDateMonth = null;
+				$saleDateMonth = null;
 			//	$saleDateDay = null;
 
 				if ($element->sale_date) {
@@ -257,45 +382,59 @@ class LiquidationChannelReportController extends Controller
 			//		$saleDateDay = str_pad($saleDateObject->day, 2, '0', STR_PAD_LEFT);
 				}
 
-          
-
+				if ($element->expiry_date) {
+					$saleDateObject = date('d/m/Y',strtotime($element->expiry_date) );
+					$saleDateMonth = $saleDateObject;
+				}
 
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->company_short_name);
-			//	$sheet->setCellValue('C'.$row_number, $saleDateYear);
-			//	$sheet->setCellValue('D'.$row_number, $saleDateMonth);
-				$sheet->setCellValue('C'.$row_number, $saleDateYear);
-				$sheet->setCellValue('D'.$row_number, $element->business_unit_name);
-                $sheet->setCellValue('E'.$row_number, $element->client_channel_name);
-                $sheet->setCellValue('F'.$row_number, $element->client_sector_name);
-                $sheet->setCellValue('G'.$row_number, $element->client_route_id);
-				$sheet->setCellValue('H'.$row_number, $element->warehouse_document_type_short_name);
-				$sheet->setCellValue('I'.$row_number, $element->referral_serie_number);
-				$sheet->setCellValue('J'.$row_number, $element->referral_voucher_number);
-				$sheet->setCellValue('K'.$row_number, $element->client_id);
-			//	$sheet->setCellValue('L'.$row_number, $element->client_code);
-				$sheet->setCellValue('L'.$row_number, $element->client_business_name);
-                $sheet->setCellValue('M'.$row_number, $element->article_name);
-                $sheet->setCellValue('N'.$row_number, $element->sum_total);
-				$sheet->setCellValue('O'.$row_number, $element->price); 
-				$sheet->setCellValue('P'.$row_number, $element->total);
-				$sheet->setCellValue('Q'.$row_number, $element->warehouse_movement_movement_number);
-				$sheet->setCellValue('R'.$row_number, $element->movement_type_name);
-				$sheet->setCellValue('S'.$row_number, $element->guide);
-				$sheet->setCellValue('T'.$row_number, $element->plate);
-				$sheet->setCellValue('U'.$row_number, $element->client_zone_name);				
-				$sheet->setCellValue('V'.$row_number, $element->district);
-				$sheet->setCellValue('W'.$row_number, $element->province);
-				$sheet->setCellValue('X'.$row_number, $element->department);
-				$sheet->setCellValue('Y'.$row_number, $element->seller_id);
-				$sheet->setCellValue('Z'.$row_number, $element->manager);	
-				$sheet->setCellValue('AA'.$row_number, $element->grupo);
-				$sheet->setCellValue('AB'.$row_number, $element->estado);				
-             //   $sheet->getStyle('N'.$row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('O'.$row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.00');			
+				// $sheet->setCellValue('C'.$row_number, $element->seller_id);
+				$sheet->setCellValue('C'.$row_number, $element->employee);
+				$sheet->setCellValue('D'.$row_number, $element->manager);	
+				$sheet->setCellValue('E'.$row_number, $element->client_route_id);
+				$sheet->setCellValue('F'.$row_number, $element->business_unit_name);
+				$sheet->setCellValue('G'.$row_number, $element->client_channel_name);
+				$sheet->setCellValue('H'.$row_number, $element->client_sector_name);
+				$sheet->setCellValue('I'.$row_number, $element->guide);
 
-		
+				$sheet->setCellValue('J'.$row_number, $element->warehouse_document_type_short_name);
+				// $sheet->setCellValue('K'.$row_number, $element->guide_series);
+				$sheet->setCellValue('K'.$row_number, $element->referral_serie_number);
+				// $sheet->setCellValue('L'.$row_number, $element->referral_serie_number);
+				$sheet->setCellValue('L'.$row_number, $element->referral_voucher_number);
+				$sheet->setCellValue('M'.$row_number, $saleDateYear);
+				$sheet->setCellValue('N'.$row_number, $saleDateYear);
+				$sheet->setCellValue('O'.$row_number, $element->client_id);
+				$sheet->setCellValue('P'.$row_number, $element->client_document_name);
+				$sheet->setCellValue('Q'.$row_number, $element->document_number);
+				$sheet->setCellValue('R'.$row_number, $element->client_business_name);
+				$sheet->setCellValue('S'.$row_number, $element->int_name);	
+				$sheet->setCellValue('T'.$row_number, $element->condition);
+				$sheet->setCellValue('U'.$row_number, $saleDateMonth);
+				$sheet->setCellValue('V'.$row_number, $element->scop_number);
+				$sheet->setCellValue('W'.$row_number, $element->client_zone_name);
+				$sheet->setCellValue('X'.$row_number, $element->district);
+				$sheet->setCellValue('Y'.$row_number, $element->province);
+				$sheet->setCellValue('Z'.$row_number, $element->department);	
+				$sheet->setCellValue('AA'.$row_number, $element->plate);
+
+				$sheet->setCellValue('AC'.$row_number, $element->article_name);
+				$sheet->setCellValue('AD'.$row_number, $element->sum_total);
+				$sheet->setCellValue('AE'.$row_number, $element->quantity);
+				// $sheet->setCellValue('AF'.$row_number, $element->kgs);
+				$sheet->setCellValue('AF'.$row_number, (floatval($element->quantity) * floatval($element->referential_convertion)));
+				$sheet->setCellValue('AG'.$row_number, $element->glns);
+				$sheet->setCellValue('AH'.$row_number, $element->price);
+				$sheet->setCellValue('AI'.$row_number, $element->sale_value); 
+				$sheet->setCellValue('AJ'.$row_number, $element->igv); 
+				$sheet->setCellValue('AK'.$row_number, $element->total);
+
+				$sheet->getStyle('AJ'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('AK'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('AH'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('AI'.$row_number)->getNumberFormat()->setFormatCode('0.00');			
+
 				$row_number++;
 			}
 
@@ -319,22 +458,31 @@ class LiquidationChannelReportController extends Controller
 			$sheet->getColumnDimension('R')->setAutoSize(true);
 			$sheet->getColumnDimension('S')->setAutoSize(true);
 			$sheet->getColumnDimension('T')->setAutoSize(true);
-            $sheet->getColumnDimension('U')->setAutoSize(true); 
+			$sheet->getColumnDimension('U')->setAutoSize(true); 
 			$sheet->getColumnDimension('V')->setAutoSize(true);
 			$sheet->getColumnDimension('W')->setAutoSize(true);
 			$sheet->getColumnDimension('X')->setAutoSize(true);
 			$sheet->getColumnDimension('Y')->setAutoSize(true);
 			$sheet->getColumnDimension('Z')->setAutoSize(true);
 			$sheet->getColumnDimension('AA')->setAutoSize(true);
-            $sheet->getColumnDimension('AB')->setAutoSize(true);
+			$sheet->getColumnDimension('AB')->setAutoSize(true);
+			$sheet->getColumnDimension('AC')->setAutoSize(true);
+			$sheet->getColumnDimension('AD')->setAutoSize(true);
+			$sheet->getColumnDimension('AE')->setAutoSize(true);
+			$sheet->getColumnDimension('AF')->setAutoSize(true);
+			$sheet->getColumnDimension('AG')->setAutoSize(true);
+			$sheet->getColumnDimension('AH')->setAutoSize(true);
+			$sheet->getColumnDimension('AI')->setAutoSize(true);
+			$sheet->getColumnDimension('AJ')->setAutoSize(true);
+			$sheet->getColumnDimension('AK')->setAutoSize(true);
 
 			$writer = new Xls($spreadsheet);
+			// echo json_encode($response);
 			return $writer->save('php://output');
 		} 
-		
-		    else {
+		else {
 			return response()->json($response);
-		    }
+		}
 		
 	}
 }
