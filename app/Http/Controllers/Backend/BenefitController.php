@@ -44,9 +44,16 @@ class BenefitController extends Controller
         $company_id = request('model.company_id');
         $area_id = request('model.area_id');
         $today = date('Y-m-d', strtotime(Carbon::now()->startOfDay()));
+        $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
+        $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
     
-        $elements = Employee::select( 'id','document_number ','first_name ','company_id','area_id')
-            ->where('company_id','=' ,$company_id)
+        $elements = Asist::join('employees', 'asists.employ_id', '=', 'employees.id')
+        ->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')
+        ->leftjoin('areas', 'employees.area_id', '=', 'areas.id')
+        ->select('asists.id', 'asists.employ_id','employees.first_name','employees.document_number')
+        ->where('employees.company_id', $company_id)
+        ->where('asists.año', '=', $price_año)
+        ->where('asists.mes', '=', $price_mes)
             ->when($area_id, function($query, $area_id) {
 				return $query->where('employees.area_id', $area_id);
             })
@@ -108,7 +115,7 @@ class BenefitController extends Controller
 
             if ( $element ) {
             
-                $elements = Employee::where('id', $element->id)
+                $elements = Employee::where('id', $element->employ_id)
               
                 ->get();
                 
@@ -122,7 +129,7 @@ class BenefitController extends Controller
              
 
                 $newElement = new Benefit();
-                $newElement->employ_id = $element->id;
+                $newElement->employ_id = $element->employ_id;
                 $newElement->ciclo_id = $ciclo;
                 $newElement->benefit_id = $benefit_id;
                 $newElement->dias = $amount;
