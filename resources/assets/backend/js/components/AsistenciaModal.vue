@@ -29,7 +29,7 @@
                                         <div id="operation_id-error" class="error invalid-feedback"></div>
                                     </div>
 								</div>
-                                <div v-bind:class="'col-lg-3' + (model.operation_id == 1 ? '' : ' d-none')">
+                                <div v-bind:class="'col-lg-3' + (model.operation_id =! 1 ? '' : ' d-none')">
                                     <div class="form-group">
                                         <label class="form-control-label">Horas:</label>
                                         <input type="tel" class="form-control" name="amount" id="amount" placeholder="1" v-model="model.amount" @focus="$parent.clearErrorMsg($event)">
