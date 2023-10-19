@@ -52,8 +52,8 @@ class BenefitController extends Controller
             ->leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
             ->select('benefits.id', 'benefits.employ_id', 'benefits.benefit_id','benefits.initial_effective_date', 'benefits.final_effective_date', 'benefits.año', 'benefits.mes', 'employees.first_name','employees.document_number','employees.company_id')
             ->where('employees.company_id', $company_id)
-            ->where('asists.año', '=', $price_año)
-            ->where('asists.mes', '=', $price_mes)
+        //    ->where('asists.año', '=', $price_año)
+        //    ->where('asists.mes', '=', $price_mes)
             ->when($area_id, function($query, $area_id) {
 				return $query->where('employees.area_id', $area_id);
             })
