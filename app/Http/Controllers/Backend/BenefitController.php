@@ -48,7 +48,7 @@ class BenefitController extends Controller
         $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
 
 
-        $elements = Employee::select('benefits.id',
+        $elements = Employee::select(
          'employees.id as employ_id', 
          'employees.document_number','employees.company_id')
             ->where('employees.company_id', $company_id)
