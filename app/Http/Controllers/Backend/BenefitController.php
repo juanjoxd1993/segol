@@ -20,7 +20,7 @@ class BenefitController extends Controller
     public function index() {
         $companies = Company::select('id', 'name')->get();
         $areas = Area::select('id', 'name')->get();
-        $benefits_types = BenefitType::select('id', 'name')->get();
+        $benefit_types = BenefitType::select('id', 'name')->get();
         
         return view('backend.benefits')->with(compact('companies', 'areas','benefit_types'));
     }
