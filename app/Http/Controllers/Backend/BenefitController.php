@@ -48,16 +48,16 @@ class BenefitController extends Controller
         $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
 
 
-        $elements = Benefit::join('employees', 'benefits.employ_id', '=', 'employees.id')
-            ->leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
-            ->select('benefits.id', 'benefits.employ_id', 'benefits.benefit_id','benefits.initial_effective_date', 'benefits.final_effective_date', 'benefits.año', 'benefits.mes', 'employees.first_name','employees.document_number','employees.company_id')
+        $elements = Employee::select('benefits.id',
+         'employees.id as employ_id', 
+         'employees.document_number','employees.company_id')
             ->where('employees.company_id', $company_id)
         //    ->where('asists.año', '=', $price_año)
         //    ->where('asists.mes', '=', $price_mes)
             ->when($area_id, function($query, $area_id) {
 				return $query->where('employees.area_id', $area_id);
             })
-            ->orderBy('employees.id', 'asc')
+            ->orderBy('employ_id', 'asc')
             ->get();
 
         
@@ -132,7 +132,7 @@ class BenefitController extends Controller
              
 
                 $newElement = new Benefit();
-                $newElement->employ_id = $element->client_id;
+                $newElement->employ_id = $element->employ_id;
                 $newElement->ciclo_id = $ciclo;
                 $newElement->benefit_id = $benefit_id;
                 $newElement->dias = $amount;
