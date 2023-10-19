@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 
-class AsistenciaController extends Controller
+class BenefitController extends Controller
 {
     public function index() {
         $companies = Company::select('id', 'name')->get();
