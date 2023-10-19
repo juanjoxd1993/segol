@@ -49,8 +49,10 @@ class BenefitController extends Controller
 
 
         $elements = Employee::join('companies', 'employees.company_id', '=', 'companies.id')
-        ->select('id ', 'employees.document_number ',
-        'employees.company_id ')
+        ->select('id ', 
+        'document_number ',
+        'company_id',
+        'area_id')
             ->where('employees.company_id', $company_id)
             ->when($area_id, function($query, $area_id) {
 				return $query->where('employees.area_id', $area_id);
