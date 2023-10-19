@@ -195,38 +195,16 @@
                             textAlign: 'center',
                         },
 						{
-							field: 'business_name',
-							title: 'Cliente',
+							field: 'first_name',
+							title: 'Empleado',
 							width: 200,
 						},
                         {
-                            field: 'article_code',
+                            field: 'document_number',
                             title: 'Código',
                             width: 60,
                         },
-                        {
-                            field: 'article_name',
-                            title: 'Artículo',
-                            width: 200,
-                        },
-                        {
-                            field: 'initial_effective_date',
-                            title: 'Fec. inicial',
-                            width: 80,
-                            textAlign: 'center'
-                        },
-                        {
-                            field: 'final_effective_date',
-                            title: 'Fec. final',
-                            width: 80,
-                            textAlign: 'center'
-                        },
-                        {
-                            field: 'price_igv',
-                            title: 'Precio',
-                            width: 100,
-                            textAlign: 'right'
-                        },
+                       
                     ]
                 });
 

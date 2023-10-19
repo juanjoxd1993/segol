@@ -28,9 +28,9 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Área:</label>
-                            <select class="form-control kt-select2" name="article_id" id="article_id" v-model="model.article_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control kt-select2" name="area_id" id="area_id" v-model="model.area_id" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-                                <option v-for="article in articles" :value="article.id" v-bind:key="article.id">{{ article.text }}</option>
+                                <option v-for="area in areas" :value="area.id" v-bind:key="area.id">{{ area.text }}</option>
                             </select>
                             <div id="article_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -64,19 +64,8 @@
                 type: Array,
                 default: ''
             },
-              client_sectors: {
-                type: Array,
-                default: ''
-            },
-             client_channels: {
-                type: Array,
-                default: ''
-            },
-            client_routes: {
-                type: Array,
-                default: ''
-            },
-            articles: {
+              
+            areas: {
                 type: Array,
                 default: ''
             },
@@ -89,11 +78,8 @@
             return {
                 model: {
                     company_id: '',
-                    article_id: '',
-                    client_sector:'',
-                    client_channel:'',
-                    client_route:'',
-                    warehouse_type_id: 5,
+                    area_id: '',
+       
                 },
             }
         },

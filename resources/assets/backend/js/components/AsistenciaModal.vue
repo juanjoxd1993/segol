@@ -19,57 +19,25 @@
                                         <label class="form-control-label">Operación:</label>
                                         <select class="form-control" name="operation_id" id="operation_id" v-model="model.operation_id" @focus="$parent.clearErrorMsg($event)">
                                             <option disabled value="">Seleccionar</option>
-                                            <option value="1">Cambiar</option>
-                                            <option value="2">Aumentar</option>
-                                            <option value="3">Disminuir</option>
+                                            <option value="1">Falta</option>
+                                            <option value="2">Tardanza</option>
+                                            <option value="3">Horas Extra</option>
+                                            <option value="4">Horas Extra 35%</option>
+                                            <option value="5">Bonificación Nocturna 25%</option>
+                                            <option value="6">Bonificación Nocturna 35%</option>
                                         </select>
                                         <div id="operation_id-error" class="error invalid-feedback"></div>
                                     </div>
 								</div>
-                                <div class="col-lg-3">
+                                <div v-bind:class="'col-lg-3' + (model.operation_id == 1 ? '' : ' d-none')">
                                     <div class="form-group">
-                                        <label class="form-control-label">Monto:</label>
-                                        <input type="tel" class="form-control" name="amount" id="amount" placeholder="0.00" v-model="model.amount" @focus="$parent.clearErrorMsg($event)">
+                                        <label class="form-control-label">Horas:</label>
+                                        <input type="tel" class="form-control" name="amount" id="amount" placeholder="1" v-model="model.amount" @focus="$parent.clearErrorMsg($event)">
                                         <div id="amount-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Fech. Vig. inicial:</label>
-                                         <datetime
-                                            v-model="model.initial_effective_date"
-                                            placeholder="Selecciona una Fecha"
-                                            :format="'dd-LL-yyyy'"
-                                            input-id="initial_effective_date"
-                                            name="initial_effective_date"
-                                            value-zone="America/Lima"
-                                            zone="America/Lima"
-                                            class="form-control"
-                                            :min-datetime="min_effective_date"
-                                            @focus="$parent.clearErrorMsg($event)">
-                                        </datetime>
-                                  <!--      <input type="text" class="form-control" name="initial_effective_date" id="initial_effective_date" v-model="model.initial_effective_date" @focus="$parent.clearErrorMsg($event)" readonly="readonly"> -->
-                                        <div id="initial_effective_date-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Fech. Vig. final:</label>
-                                        <datetime
-                                            v-model="model.final_effective_date"
-                                            placeholder="Selecciona una Fecha"
-                                            :format="'dd-LL-yyyy'"
-                                            input-id="final_effective_date"
-                                            name="final_effective_date"
-                                            value-zone="America/Lima"
-                                            zone="America/Lima"
-                                            class="form-control"
-                                            :min-datetime="min_effective_date"
-                                            @focus="$parent.clearErrorMsg($event)">
-                                        </datetime>
-                                        <div id="final_effective_date-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
+                                
+
                             </div>
                         </div>
                     </div>
@@ -107,8 +75,7 @@
                     price_ids: [],
                     operation_id: '',
                     amount: '',
-                    initial_effective_date: '',
-                    final_effective_date: '',
+                   
                 },
                 min_effective_date: '',
             }
@@ -126,12 +93,11 @@
                 this.model.price_ids = price_ids;
                 this.model.operation_id = '';
                 this.model.amount = '';
-                this.model.initial_effective_date = '';
-                this.model.final_effective_date = '';
+
                 this.min_effective_date = '';
 
                 axios.post(this.url_get_min_effective_date).then(response => {
-                    this.model.initial_effective_date = response.data.initial_effective_date;
+                   
                     this.min_effective_date = response.data.min_effective_date;
 
                     $('#modal').modal('show');
@@ -155,7 +121,7 @@
 
                 Swal.fire({
                     title: '¡Cuidado!',
-                    text: '¿Seguro que desea Actualizar la Lista de Precios?',
+                    text: '¿Seguro que desea Actualizar la Asistencia?',
                     type: "warning",
                     heightAuto: false,
                     showCancelButton: true,
@@ -177,15 +143,13 @@
                             this.model.price_ids = [];
                             this.model.operation_id = '';
                             this.model.amount = '';
-                            this.model.initial_effective_date = '';
-                            this.model.final_effective_date = '';
                             this.min_effective_date = '';
 
                             EventBus.$emit('refresh_table');
 
                             Swal.fire({
                                 title: '¡Ok!',
-                                text: 'Se actualizó la Lista de Precios exitosamente.',
+                                text: 'Se actualizó la Asistencia exitosamente.',
                                 type: "success",
                                 heightAuto: false,
                             });

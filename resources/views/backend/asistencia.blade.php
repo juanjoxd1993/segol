@@ -6,10 +6,7 @@
 @section('content')
 	<asistencia-form
 		:companies = "{{ $companies }}"
-		:articles = "{{ $articles }}"
-		:client_sectors = "{{ $client_sectors }}"
-		:client_channels = "{{ $client_channels }}"
-		:client_routes = "{{ $client_routes }}"
+		:areas = "{{ $areas }}"
 		:url = "'{{ route('dashboard.rrhh.asistencia.validate_form') }}'"
 	></asistencia-form>
 	
