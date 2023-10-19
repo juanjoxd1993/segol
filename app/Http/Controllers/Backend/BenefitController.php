@@ -48,16 +48,14 @@ class BenefitController extends Controller
         $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
 
 
-        $elements = Employee::select(
-         'employees.id as employ_id', 
-         'employees.document_number','employees.company_id')
+        $elements = Employee::join('companies', 'employees.company_id', '=', 'companies.id')
+        ->select('employees.id as employ_id', 'employees.document_number as document_number',
+        'employees.company_id as company_id')
             ->where('employees.company_id', $company_id)
-        //    ->where('asists.año', '=', $price_año)
-        //    ->where('asists.mes', '=', $price_mes)
             ->when($area_id, function($query, $area_id) {
 				return $query->where('employees.area_id', $area_id);
             })
-            ->orderBy('employ_id', 'asc')
+          //->orderBy('employ_id', 'asc')
             ->get();
 
         
