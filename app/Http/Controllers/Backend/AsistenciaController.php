@@ -45,15 +45,15 @@ class AsistenciaController extends Controller
         $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
 
         $elements = Asist::join('employees', 'asists.employ_id', '=', 'employees.id')
-            ->leftjoin('cicles', 'asist.ciclo_id', '=', 'cicles.id')
+            ->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')
             ->leftjoin('areas', 'employees.area_id', '=', 'areas.id')
             ->select('asists.id', 'asists.employ_id', 'asists.dias_mes', 'asists.laborables',
-             'asists.tardanzas', 'asists.horas_tarde', 'asists.minutos_tarde', 
+             'asists.tardanzas', 'asists.ciclo_id','asists.horas_tarde', 'asists.minutos_tarde', 
              'asists.horas_extra_25', 'asists.horas_extra_35','asists.horas_noc_25',
              'asists.horas_noc_35','employees.first_name','employees.document_number')
             ->where('employees.company_id', $company_id)
-            ->where('cicles.año', '=', $price_año)
-            ->where('cicles.mes', '=', $price_mes)
+            ->where('asists.año', '=', $price_año)
+            ->where('asists.mes', '=', $price_mes)
 
             ->when($area_id, function($query, $area_id) {
 				return $query->where('employees.area_id', $area_id);
