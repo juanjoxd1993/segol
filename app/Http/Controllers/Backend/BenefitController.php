@@ -49,8 +49,8 @@ class BenefitController extends Controller
 
 
         $elements = Employee::join('companies', 'employees.company_id', '=', 'companies.id')
-        ->select('employees.id as employ_id', 'employees.document_number as document_number',
-        'employees.company_id as company_id')
+        ->select('employees.id ', 'employees.document_number ',
+        'employees.company_id ')
             ->where('employees.company_id', $company_id)
             ->when($area_id, function($query, $area_id) {
 				return $query->where('employees.area_id', $area_id);
@@ -108,16 +108,16 @@ class BenefitController extends Controller
 
 
         foreach ($ids as $id) {
-            $element = Benefit::where('id', $id)
-            ->where('año', '=', $price_año)
-            ->where('mes', '=', $price_mes)
+            $element = Employee::where('id', $id)
+           // ->where('año', '=', $price_año)
+           // ->where('mes', '=', $price_mes)
             ->first();
 
             if ( $element ) {
             
-                $elements = Benefit::where('employ_id', $element->employ_id)
-                ->where('año', '=', $price_año)
-                ->where('mes', '=', $price_mes)
+                $elements = Employee::where('id', $element->id)
+              //  ->where('año', '=', $price_año)
+              //  ->where('mes', '=', $price_mes)
                 ->get();
                 
                 $ciclo= Cicle::select('id','año','mes')
@@ -130,7 +130,7 @@ class BenefitController extends Controller
              
 
                 $newElement = new Benefit();
-                $newElement->employ_id = $element->employ_id;
+                $newElement->employ_id = $element->id;
                 $newElement->ciclo_id = $ciclo;
                 $newElement->benefit_id = $benefit_id;
                 $newElement->dias = $amount;
