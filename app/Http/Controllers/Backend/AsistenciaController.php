@@ -47,13 +47,16 @@ class AsistenciaController extends Controller
         $elements = Asist::join('employees', 'asists.employ_id', '=', 'employees.id')
             ->leftjoin('cicles', 'asist.ciclo_id', '=', 'cicles.id')
             ->leftjoin('areas', 'employees.area_id', '=', 'areas.id')
-            ->select('asists.id', 'employ_id', 'dias_mes', 'laborables', 'tardanzas', 'horas_tarde', 'minutos_tarde', 'horas_extra_25', 'horas_extra_35','horas_noc_25','horas_noc_35','first_name','document_number')
+            ->select('asists.id', 'asists.employ_id', 'asists.dias_mes', 'asists.laborables',
+             'asists.tardanzas', 'asists.horas_tarde', 'asists.minutos_tarde', 
+             'asists.horas_extra_25', 'asists.horas_extra_35','asists.horas_noc_25',
+             'asists.horas_noc_35','employees.first_name','employees.document_number')
             ->where('company_id', $company_id)
             ->where('cicles.año', '=', $price_año)
             ->where('cicles.mes', '=', $price_mes)
 
             ->when($area_id, function($query, $area_id) {
-				return $query->where('Employees.area_id', $area_id);
+				return $query->where('employees.area_id', $area_id);
             })
             ->orderBy('area_id', 'asc')
             ->get();
