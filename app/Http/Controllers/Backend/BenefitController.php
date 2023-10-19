@@ -129,7 +129,7 @@ class BenefitController extends Controller
              
 
                 $newElement = new Benefit();
-                $newElement->employ_id = $element->employ_id;
+                $newElement->employ_id = $id;
                 $newElement->ciclo_id = $ciclo;
                 $newElement->benefit_id = $benefit_id;
                 $newElement->dias = $amount;
