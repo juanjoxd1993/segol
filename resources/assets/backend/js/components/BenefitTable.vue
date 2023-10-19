@@ -201,7 +201,7 @@
 						},
                         {
                             field: 'document_number',
-                            title: 'Código',
+                            title: 'N° Documento',
                             width: 60,
                         },
                        
