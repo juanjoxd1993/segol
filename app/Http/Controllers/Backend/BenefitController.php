@@ -44,20 +44,12 @@ class BenefitController extends Controller
         $company_id = request('model.company_id');
         $area_id = request('model.area_id');
         $today = date('Y-m-d', strtotime(Carbon::now()->startOfDay()));
-        $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
-        $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
-
-
-        $elements = Employee::select( 
-        'document_number ',
-        'first_name ',
-        'company_id',
-        'area_id')
-            ->where('company_id', $company_id)
+    
+        $elements = Employee::select( 'id','document_number ','first_name ','company_id','area_id')
+            ->where('company_id','=' ,$company_id)
             ->when($area_id, function($query, $area_id) {
 				return $query->where('employees.area_id', $area_id);
             })
-          //->orderBy('employ_id', 'asc')
             ->get();
 
         
@@ -111,15 +103,13 @@ class BenefitController extends Controller
 
         foreach ($ids as $id) {
             $element = Employee::where('id', $id)
-           // ->where('año', '=', $price_año)
-           // ->where('mes', '=', $price_mes)
+          
             ->first();
 
             if ( $element ) {
             
                 $elements = Employee::where('id', $element->id)
-              //  ->where('año', '=', $price_año)
-              //  ->where('mes', '=', $price_mes)
+              
                 ->get();
                 
                 $ciclo= Cicle::select('id','año','mes')
