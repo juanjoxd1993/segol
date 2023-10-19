@@ -110,9 +110,7 @@ class AsistenciaController extends Controller
 
             if ( $element ) {
 
-                $element->updated_at_user = Auth::user()->user;
-                $element->save();
-
+                
                 $elements = Asist::where('employ_id', $element->employ_id)
                     ->where('año', '=', $price_año)
                     ->where('mes', '=', $price_mes)
