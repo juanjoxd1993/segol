@@ -4,21 +4,21 @@
 @section('subtitle', 'Gestión de Beneficios Sociales')
 
 @section('content')
-	<benefits-form
+	<benefit-form
 		:companies = "{{ $companies }}"
 		:areas = "{{ $areas }}"
 		:url = "'{{ route('dashboard.rrhh.benefit.validate_form') }}'"
-	></benefits-form>
+	></benefit-form>
 	
-	<benefits-table
+	<benefit-table
 		:url = "'{{ route('dashboard.rrhh.benefit.list') }}'"
-	></benefits-table>
+	></benefit-table>
 
-	<benefits-modal
+	<benefit-modal
 		:url = "'{{ route('dashboard.rrhh.benefit.store') }}'"
         :benefit_types = "{{ $benefit_types}}"
 		:url_get_min_effective_date = "'{{ route('dashboard.rrhh.benefit.get_min_effective_date') }}'"
-	></benefits-modal>
+	></benefit-modal>
 
 	<loading></loading>
 @endsection

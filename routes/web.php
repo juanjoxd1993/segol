@@ -754,11 +754,11 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/asistencia/guardar', 'AsistenciaController@store')->name('dashboard.rrhh.asistencia.store');
 
 	/** rrhh > Beneficios Sociales */
-	Route::get('/rrhh/benefit', 'BenefitController@index')->name('dashboard.rrhh.benefit');
-	Route::post('/rrhh/benefit/validar-formulario', 'BenefitController@validateForm')->name('dashboard.rrhh.benefit.validate_form');
-	Route::post('/rrhh/benefit/listar', 'BenefitController@list')->name('dashboard.rrhh.benefit.list');
-	Route::post('/rrhh/benefit/obtener-dia', 'BenefitController@getMinEffectiveDate')->name('dashboard.rrhh.benefit.get_min_effective_date');
-	Route::post('/rrhh/benefit/guardar', 'BenefitController@store')->name('dashboard.rrhh.benefit.store');
+	Route::get('/rrhh/beneficios', 'BenefitController@index')->name('dashboard.rrhh.benefit');
+	Route::post('/rrhh/beneficios/validar-formulario', 'BenefitController@validateForm')->name('dashboard.rrhh.benefit.validate_form');
+	Route::post('/rrhh/beneficios/listar', 'BenefitController@list')->name('dashboard.rrhh.benefit.list');
+	Route::post('/rrhh/beneficios/obtener-dia', 'BenefitController@getMinEffectiveDate')->name('dashboard.rrhh.benefit.get_min_effective_date');
+	Route::post('/rrhh/beneficios/guardar', 'BenefitController@store')->name('dashboard.rrhh.benefit.store');
 
 
 
