@@ -51,7 +51,7 @@ class AsistenciaController extends Controller
              'asists.tardanzas', 'asists.horas_tarde', 'asists.minutos_tarde', 
              'asists.horas_extra_25', 'asists.horas_extra_35','asists.horas_noc_25',
              'asists.horas_noc_35','employees.first_name','employees.document_number')
-            ->where('company_id', $company_id)
+            ->where('employees.company_id', $company_id)
             ->where('cicles.año', '=', $price_año)
             ->where('cicles.mes', '=', $price_mes)
 
