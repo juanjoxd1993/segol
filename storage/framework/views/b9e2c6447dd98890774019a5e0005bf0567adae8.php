@@ -6,6 +6,7 @@
 		:companies = "<?php echo e($companies); ?>"
 		:url = "'<?php echo e(route('dashboard.voucher.liquidations_final.validate_form')); ?>'"
 		:url_get_warehouse_movements = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_warehouse_movements')); ?>'"
+		:url_get_sale_series = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_sale_serie')); ?>'"
 	></liquidation-final-form>
 	
 	<liquidation-final-table
@@ -23,6 +24,7 @@
 		:url_get_clients = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_clients')); ?>'"
 		:url_get_article_price = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_article_price')); ?>'"
 		:url_get_sale_series = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_sale_serie')); ?>'"
+		:url_get_articles_clients = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_articles_clients')); ?>'"
 		:url_verify_document_type = "'<?php echo e(route('dashboard.voucher.liquidations_final.verify_document_type')); ?>'"
 	></liquidation-final-modal-sale>
 
@@ -31,6 +33,7 @@
 		:payments = "<?php echo e($payments); ?>"
 		:currencies = "<?php echo e($currencies); ?>"                                
 		:url_get_bank_accounts = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_bank_accounts')); ?>'"
+		:url_get_saldo_favor = "'<?php echo e(route('dashboard.voucher.liquidations_final.get_saldo_favor')); ?>'"
 		:payment_cash = "<?php echo e($payment_cash); ?>"
 		:payment_credit = "<?php echo e($payment_credit); ?>"
 	></liquidation-final-modal-liquidation>

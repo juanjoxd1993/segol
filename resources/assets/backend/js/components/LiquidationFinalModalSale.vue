@@ -308,9 +308,7 @@
 
                         if (articles.length) {
                             vm.articles[id] = articles;
-                        } else {
-                            this.clients = this.clients.filter(e => e.id != id);
-                        };
+                        }
                     }).catch(error => {
                         console.log(error);
                         console.log(error.response);
