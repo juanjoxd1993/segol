@@ -291,7 +291,7 @@
                         if (this.$store.state.sales.length) {
                             this.$store.state.sales.map(item => {
                                 data.map(i => {
-                                    const art = item.details.find(e => e.article_id == i.id);
+                                    const art = item.details.find(e => e.article_id == i.id && id == item.client_id);
     
                                     if (art) {
                                         i.quantity = i.quantity - parseInt(art.quantity);
@@ -308,14 +308,14 @@
 
                         if (articles.length) {
                             vm.articles[id] = articles;
-                        } else {
-                            this.clients = this.clients.filter(e => e.id != id);
-                        };
+                        }
                     }).catch(error => {
                         console.log(error);
                         console.log(error.response);
                     });
                 })
+                // console.log(this.$store.state.sales)
+                // console.log(vm.articles)
 
                 this.button_text = 'Crear';
                 this.sale.client_id = 0;
