@@ -268,7 +268,7 @@
         mounted() {
             // this.newSelect2();
 
-            EventBus.$on('create_modal', function() {
+            EventBus.$on('create_modal', async function() {
                 document.getElementById('client_id').disabled = false;
                 if (!this.clients.length) {
                 };
@@ -278,44 +278,81 @@
                 let vm = this;
                 const clients = [];
 
-                this.clients.map(item => {
+                const promises = await this.clients.map(async item => {
                     const { id } = item;
 
-                    axios.post(this.url_get_articles_clients,{
+                    await axios.post(this.url_get_articles_clients,{
                         client_id: id,
                         warehouse_movement_id
                     }).then(response => {
                         let data = response.data;
-                        let articles = [];
+                        let articles = data;
+                        let filterArticles = [];
 
-                        if (this.$store.state.sales.length) {
-                            this.$store.state.sales.map(item => {
-                                data.map(i => {
-                                    const art = item.details.find(e => e.article_id == i.id && id == item.client_id);
-    
-                                    if (art) {
-                                        i.quantity = i.quantity - parseInt(art.quantity);
-    
-                                        if(i.quantity > 0) articles.push(i);
-                                    } else {
-                                        articles.push(i);
+                        const sales = this.$store.state.sales;
+                        const articlesRepitedFilter = [];
+
+                        if (sales.length) {
+                            sales.map(item => {
+                                item.details.map(i => {
+                                    const obj = {
+                                        client_id: item.client_id,
+                                        article_id: i.article_id,
+                                        quantity: parseInt(i.quantity)
                                     };
-                                });
+
+                                    filterArticles.push(obj);
+                                })
                             });
-                        } else {
-                            articles = data;
                         };
 
+                        if (filterArticles.length) {
+                            filterArticles.map(item => {
+                                const art = articlesRepitedFilter.find(i => i.article_id == item.article_id && i.client_id == item.client_id);
+                                
+                                if (art) {
+                                    const artIndex = articlesRepitedFilter.findIndex(i => i.article_id == item.article_id && i.client_id == item.client_id);
+
+                                    articlesRepitedFilter[artIndex].quantity = articlesRepitedFilter[artIndex].quantity + item.quantity;
+                                } else {
+                                    articlesRepitedFilter.push(item);
+                                };
+                            });
+
+                            filterArticles = articlesRepitedFilter;
+                            console.log(filterArticles);
+
+                            articles = articles.map(item => {
+                                const art = filterArticles.find(i => i.article_id == item.id && i.client_id == id);
+
+                                if (art) {
+                                    item.quantity = item.quantity - art.quantity;
+                                }
+
+                                if (item.quantity > 0) {
+                                    return item
+                                }
+
+                                return undefined
+                            });
+                        };
+
+                        articles = articles.filter(item => item !== undefined);
+
                         if (articles.length) {
-                            vm.articles[id] = articles;
-                        }
+                            clients.push(item);
+                        };
+
+                        vm.articles[id] = articles;
                     }).catch(error => {
                         console.log(error);
                         console.log(error.response);
                     });
-                })
-                // console.log(this.$store.state.sales)
-                // console.log(vm.articles)
+                });
+
+                Promise.all(promises);
+
+                this.clients = clients;
 
                 this.button_text = 'Crear';
                 this.sale.client_id = 0;
