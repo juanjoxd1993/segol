@@ -286,8 +286,20 @@
                         warehouse_movement_id
                     }).then(response => {
                         let data = response.data;
-                        let articles = data;
+                        let articles = [];
                         let filterArticles = [];
+
+                        data.map(item => {
+                            const art = articles.find(i => i.id == item.id);
+
+                            if (art) {
+                                const artindex = articles.findIndex(i => i.id == item.id);
+
+                                articles[artindex].quantity = articles[artindex].quantity + item.quantity;
+                            } else {
+                                articles.push(item);
+                            };
+                        });
 
                         const sales = this.$store.state.sales;
                         const articlesRepitedFilter = [];
@@ -349,6 +361,7 @@
                         console.log(error.response);
                     });
                 });
+                console.log(this.articles)
 
                 Promise.all(promises);
 
