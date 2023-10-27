@@ -152,7 +152,14 @@
                         field: 'benefit_type_' + benefitType.id,
                         title: benefitType.name,
                         template: function(row) {
-                            return '<input type="number" min="1" class="form-control benefit-cell" data-benefit-type="' + benefitType.id + '"/>';
+                            let benefit = row.benefits.find(x => x.benefit_id == benefitType.id);
+                            let value = '';
+
+                            if (benefit) {
+                                value = benefit.dias;
+                            }
+
+                            return '<input type="number" min="1" class="form-control benefit-cell" data-benefit-type="' + benefitType.id + '" value="' + value + '"/>';
                         },
                         width: 75
                     });

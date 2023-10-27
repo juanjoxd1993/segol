@@ -17,4 +17,8 @@ class Employee extends Model
     public function asists() {
         return $this->hasMany(Asist::class, 'employ_id');
     }
+
+    public function benefits() {
+        return $this->hasMany(Benefit::class, 'employ_id');
+    }
 }

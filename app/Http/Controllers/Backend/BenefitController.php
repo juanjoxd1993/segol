@@ -46,6 +46,7 @@ class BenefitController extends Controller
     public function list() {
         $company_id = request('model.company_id');
         $area_id = request('model.area_id');
+        $ciclo_id = request('model.ciclo_id');
         $today = date('Y-m-d', strtotime(Carbon::now()->startOfDay()));
         $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
         $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
@@ -60,8 +61,12 @@ class BenefitController extends Controller
             ->when($area_id, function($query, $area_id) {
 				return $query->where('employees.area_id', $area_id);
             })
-            ->get();
+        ->get()
+        ->toArray();
 
+        foreach ($elements as $key => $element) {
+            $elements[$key]['benefits'] = Benefit::select('benefit_id', 'dias')->where('employ_id', $element['employ_id'])->where('ciclo_id', $ciclo_id)->get()->toArray();
+        }
         
         return $elements;
     }

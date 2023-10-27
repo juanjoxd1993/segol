@@ -6,7 +6,7 @@
                 <!--begin::Form-->
                 <form class="kt-form" @submit.prevent="formController(url, $event)">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Actualizar precio</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Indicar fecha</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         </button>
                     </div>
@@ -73,7 +73,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">
-                            Actualizar
+                            Registrar
                         </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                     </div>
