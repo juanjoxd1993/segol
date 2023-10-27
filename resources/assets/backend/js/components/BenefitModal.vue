@@ -15,7 +15,7 @@
                             <div class="row">
                                 <input type="hidden" name="price_ids" id="price_ids" v-model="model.price_ids">
                                
-                                <div class="col-lg-3">
+                                <div class="col-lg-3 d-none">
 									<div class="form-group">
                                          <label class="form-control-label">Beneficios Sociales</label>
                                             <select class="form-control" name="benefit_id" id="benefit_id" v-model="model.benefit_id" @focus="$parent.clearErrorMsg($event)">
@@ -26,7 +26,7 @@
                                      </div>
 								</div>
 
-                                <div class="col-lg-3">
+                                <div class="col-lg-3 d-none">
                                     <div class="form-group">
                                         <label class="form-control-label">Días:</label>
                                         <input type="tel" class="form-control" name="amount" id="amount" placeholder="0.00" v-model="model.amount" @focus="$parent.clearErrorMsg($event)">
@@ -45,7 +45,6 @@
                                             value-zone="America/Lima"
                                             zone="America/Lima"
                                             class="form-control"
-                                            :min-datetime="min_effective_date"
                                             @focus="$parent.clearErrorMsg($event)">
                                         </datetime>
                                   <!--      <input type="text" class="form-control" name="initial_effective_date" id="initial_effective_date" v-model="model.initial_effective_date" @focus="$parent.clearErrorMsg($event)" readonly="readonly"> -->
@@ -64,7 +63,6 @@
                                             value-zone="America/Lima"
                                             zone="America/Lima"
                                             class="form-control"
-                                            :min-datetime="min_effective_date"
                                             @focus="$parent.clearErrorMsg($event)">
                                         </datetime>
                                         <div id="final_effective_date-error" class="error invalid-feedback"></div>
@@ -109,6 +107,7 @@
             return {
                 model: {
                     price_ids: [],
+                    benefit_values: [],
                     benefit_id: '',
                     amount: '',
                     initial_effective_date: '',
@@ -124,10 +123,10 @@
             
         },
         created() {
-            EventBus.$on('create_modal', function(price_ids) {
+            EventBus.$on('create_modal', function(receivedData) {
                 EventBus.$emit('loading', true);
-
-                this.model.price_ids = price_ids;
+                this.model.benefit_values = receivedData.benefit_values;
+                this.model.price_ids = receivedData.employee_ids;
                 this.model.benefit_id = '';
                 this.model.amount = '';
                 this.model.initial_effective_date = '';
@@ -141,7 +140,6 @@
                     $('#modal').modal('show');
                     EventBus.$emit('loading', false);
                 }).catch(error => {
-                    console.log(error);
                     console.log(error.response);
                 });
             }.bind(this));
@@ -156,6 +154,8 @@
                 var target = $(event.target);
                 var url = url;
                 var fd = new FormData(event.target);
+                fd.append('benefit_values', JSON.stringify(vm.model.benefit_values));
+                fd.append('ciclo_id', $('#ciclo_id').val());
 
                 Swal.fire({
                     title: '¡Cuidado!',
@@ -174,11 +174,11 @@
                             }
                         }).then(response => {
                             EventBus.$emit('loading', false);
-                            console.log(response);
 
                             $('#modal').modal('hide');
 
                             this.model.price_ids = [];
+                            this.model.benefit_values = [];
                             this.model.benefit_id = '';
                             this.model.amount = '';
                             this.model.initial_effective_date = '';

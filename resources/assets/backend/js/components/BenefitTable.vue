@@ -64,6 +64,7 @@
         mounted() {
             EventBus.$on('show_table', function(response) {
                 this.model = response;
+
                 if ( this.datatable == undefined ) {
                     this.fillTableX();
 					this.ids = [];
@@ -87,7 +88,7 @@
         },
         watch: {
             ids: function() {
-                if ( this.ids != '' ) {
+                if ( this.ids.length > 0 ) {
                     this.flag_modify = 1;
                 } else {
                     this.flag_modify = 0;
@@ -98,12 +99,64 @@
 
         },
         methods: {
-            openModal: function(price_ids) {
-                EventBus.$emit('create_modal', price_ids);
+            openModal: function(employee_ids) {
+                let data = {};
+
+                employee_ids.forEach(employeeId => {
+                    let benefit_values = $('.row-employee[data-employee="' + employeeId + '"]').find('.benefit-cell').toArray().filter(x => $(x).val() !== '' && $(x).val() > 0).map(function(x) {
+                        return {
+                            benefit_type: $(x).data('benefit-type'),
+                            benefit_value: $(x).val()
+                        };
+                    });
+
+                    data[employeeId] = benefit_values;
+                });
+
+                let dataSent = {
+                    employee_ids: employee_ids,
+                    benefit_values: data
+                };
+
+                EventBus.$emit('create_modal', dataSent);
             },
             fillTableX: function() {
                 let vm = this;
                 let token = document.head.querySelector('meta[name="csrf-token"]').content;
+
+                let dynamicColumns = [
+                    {
+                        field: 'id',
+                        title: '#',
+                        sortable: false,
+                        width: 30,
+                        selector: {class: 'kt-checkbox--solid'},
+                        textAlign: 'center',
+                    },
+                    {
+                        field: 'first_name',
+                        title: 'Empleado',
+                        width: 200,
+                    },
+                    {
+                        field: 'document_number',
+                        title: 'N° Documento',
+                        width: 60,
+                    },
+                ];
+
+                let benefitTypes = vm.model.benefit_types;
+
+                benefitTypes.forEach(benefitType => {
+                    dynamicColumns.push({
+                        field: 'benefit_type_' + benefitType.id,
+                        title: benefitType.name,
+                        template: function(row) {
+                            return '<input type="number" min="1" class="form-control benefit-cell" data-benefit-type="' + benefitType.id + '"/>';
+                        },
+                        width: 75
+                    });
+                });
 
                 this.datatable = $('.kt-datatable').KTDatatable({
                     // datasource definition
@@ -182,30 +235,13 @@
 
                     rows: {
                         autoHide: true,
+                        callback: function(row, data, index) {
+                            $(row).attr('data-employee', data.id); //
+                            $(row).addClass('row-employee');
+                        }
                     },
-
                     // columns definition
-                    columns: [
-                        {
-                            field: 'id',
-                            title: '#',
-                            sortable: false,
-                            width: 30,
-                            selector: {class: 'kt-checkbox--solid'},
-                            textAlign: 'center',
-                        },
-						{
-							field: 'first_name',
-							title: 'Empleado',
-							width: 200,
-						},
-                        {
-                            field: 'document_number',
-                            title: 'N° Documento',
-                            width: 60,
-                        },
-                       
-                    ]
+                    columns: dynamicColumns
                 });
 
                 $('.kt-datatable').on('kt-datatable--on-check', function(a, e) {
@@ -222,8 +258,6 @@
                         let bNumber = parseInt(b);
                         return ((aNumber < bNumber) ? -1 : ((aNumber > bNumber) ? 1 : 0));
                     });
-
-                    console.log(vm.ids);
                 });
 
                 $('.kt-datatable').on('kt-datatable--on-uncheck', function(a, e) {
@@ -239,8 +273,6 @@
                         let bNumber = parseInt(b);
                         return ((aNumber < bNumber) ? -1 : ((aNumber > bNumber) ? 1 : 0));
                     });
-
-                    console.log(vm.ids);
                 });
             },
         }

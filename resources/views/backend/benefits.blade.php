@@ -8,6 +8,7 @@
 		:companies = "{{ $companies }}"
 		:areas = "{{ $areas }}"
 		:url = "'{{ route('dashboard.rrhh.benefit.validate_form') }}'"
+		:ciclos = "{{ $ciclos }}"
 	></benefit-form>
 	
 	<benefit-table

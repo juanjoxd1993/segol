@@ -21,23 +21,26 @@ class BenefitController extends Controller
         $companies = Company::select('id', 'name')->get();
         $areas = Area::select('id', 'name')->get();
         $benefit_types = BenefitType::select('id', 'name')->get();
+        $ciclos = Cicle::select('id', 'año', 'mes')->get();
         
-        return view('backend.benefits')->with(compact('companies', 'areas','benefit_types'));
+        return view('backend.benefits')->with(compact('companies', 'areas','benefit_types', 'ciclos'));
     }
 
     public function validateForm() {
         $messages = [
 			'company_id.required'   => 'Debe seleccionar una Compañía.',
-			//'article_id.required'	=> 'Debe seleccionar un Artículo.',
+			'ciclo_id.required' => 'Debe seleccionar un Ciclo.',
 		];
 
 		$rules = [
 			'company_id'    => 'required',
-		//	'article_id'    => 'required',
+            'ciclo_id'      => 'required',
 		];
 
 		request()->validate($rules, $messages);
-		return request()->all();
+        $data = request()->all();
+        $data['benefit_types'] = BenefitType::select('id', 'name')->get();
+		return $data;
     }
 
     public function list() {
@@ -83,8 +86,8 @@ class BenefitController extends Controller
 		];
 
 		$rules = [
-			'benefit_id'              => 'required',
-			'amount'                    => 'required',
+			//'benefit_id'              => 'required',
+			//'amount'                    => 'required',
 			'initial_effective_date'    => 'required',
 			'final_effective_date'      => 'required',
 		];
@@ -101,46 +104,35 @@ class BenefitController extends Controller
         $amount = request('amount');
         $initial_effective_date = request('initial_effective_date');
         $final_effective_date = request('final_effective_date');
+        $benefit_values = (array) (json_decode(request('benefit_values')));
+        $ciclo_id = request('ciclo_id');
 
         $ids = explode(',', $price_ids);
         $today = date('Y-m-d', strtotime(CarbonImmutable::now()->startOfDay()));
         $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
         $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
 
-
         foreach ($ids as $id) {
-            $element = Employee::where('id', $id)
-          
-            ->first();
+            $employee = Employee::where('id', $id)->first();
 
-            if ( $element ) {
-            
-                $elements = Employee::where('id', $element->employ_id)
-              
-                ->get();
-                
-                $ciclo= Cicle::select('id','año','mes')
-                ->where('año', '=', $price_año)
-                ->where('mes', '=', $price_mes)
-                ->select('id')
-                ->sum('id');
-           
+            if ($employee) {
+                $ciclo= Cicle::find($ciclo_id);
 
-             
-
-                $newElement = new Benefit();
-                $newElement->employ_id = $id;
-                $newElement->ciclo_id = $ciclo;
-                $newElement->benefit_id = $benefit_id;
-                $newElement->dias = $amount;
-                $newElement->initial_effective_date = date('Y-m-d', strtotime($initial_effective_date));
-                $newElement->final_effective_date = date('Y-m-d', strtotime($final_effective_date));
-                $newElement->state = 1;
-                $newElement->año = $price_año;
-                $newElement->mes = $price_mes;
-                $newElement->created_at_user = Auth::user()->user;
-                $newElement->updated_at_user = Auth::user()->user;
-                $newElement->save();
+                foreach ($benefit_values[$employee->id] as $benefit_input) {
+                    $newElement = new Benefit();
+                    $newElement->employ_id = $id;
+                    $newElement->ciclo_id = $ciclo->id;
+                    $newElement->benefit_id = $benefit_input->benefit_type;
+                    $newElement->dias = $benefit_input->benefit_value;
+                    $newElement->initial_effective_date = date('Y-m-d', strtotime($initial_effective_date));
+                    $newElement->final_effective_date = date('Y-m-d', strtotime($final_effective_date));
+                    $newElement->state = 1;
+                    $newElement->año = $price_año;
+                    $newElement->mes = $price_mes;
+                    $newElement->created_at_user = Auth::user()->user;
+                    $newElement->updated_at_user = Auth::user()->user;
+                    $newElement->save();
+                }
             }
         }
     }
