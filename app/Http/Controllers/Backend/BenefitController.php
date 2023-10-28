@@ -65,7 +65,7 @@ class BenefitController extends Controller
         ->toArray();
 
         foreach ($elements as $key => $element) {
-            $elements[$key]['benefits'] = Benefit::select('benefit_id', 'dias')->where('employ_id', $element['employ_id'])->where('ciclo_id', $ciclo_id)->get()->toArray();
+            $elements[$key]['benefits'] = Benefit::select('benefit_id', 'dias', 'state')->where('employ_id', $element['employ_id'])->where('ciclo_id', $ciclo_id)->get()->toArray();
         }
         
         return $elements;
@@ -140,5 +140,17 @@ class BenefitController extends Controller
                 }
             }
         }
+    }
+
+    public function close() {
+        $company = request('company');
+
+        $result = Benefit::where('ciclo_id', request('cicle'))
+            ->whereHas('employ', function($query) use ($company) {
+                $query->where('company_id', $company);
+            })
+            ->update(['state' => 2]); // cerrado
+
+        return response()->json(true, 200);
     }
 }

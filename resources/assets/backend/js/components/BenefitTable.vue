@@ -8,7 +8,14 @@
                 </h3>
             </div>
             <div class="kt-portlet__head-toolbar">
-                <div class="kt-portlet__head-wrapper">
+                <div class="kt-portlet__head-wrapper ml-2">
+                    <div class="dropdown dropdown-inline">
+                        <a href="#" class="btn btn-success" id="closeBenefits" v-show="showCloseBtn" @click.prevent="confirmClose()">
+                            <i class="la la-save"></i> Cerrar
+                        </a>
+                    </div>
+                </div>
+                <div class="kt-portlet__head-wrapper ml-2">
                     <div class="dropdown dropdown-inline">
                         <a href="#" class="btn btn-success" id="createRecord" v-show="flag_modify == 1" @click.prevent="openModal(ids)">
                             <i class="la la-edit"></i> Actualizar
@@ -49,6 +56,10 @@
                 type: String,
                 default: ''
             },
+            url_close: {
+                type: String,
+                default: ''
+            },
         },
         data() {
             return {
@@ -56,6 +67,7 @@
                 model: '',
                 flag_modify: 0,
                 ids: [],
+                showCloseBtn: false
             }
         },
         created() {
@@ -64,6 +76,7 @@
         mounted() {
             EventBus.$on('show_table', function(response) {
                 this.model = response;
+                this.showCloseBtn = true;
 
                 if ( this.datatable == undefined ) {
                     this.fillTableX();
@@ -120,6 +133,55 @@
 
                 EventBus.$emit('create_modal', dataSent);
             },
+            confirmClose: function() {
+                let vm = this;
+                Swal.fire({
+                    title: '¡Cuidado!',
+                    text: '¿Seguro que desea Cerrar el Beneficio Social?',
+                    type: "warning",
+                    heightAuto: false,
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí',
+                    cancelButtonText: 'No'
+                }).then(result => {
+                    if ( result.value ) {
+                        EventBus.$emit('loading', true);
+
+                        let fd = new FormData();
+                        fd.append('company', $('#company_id').val());
+                        fd.append('cicle', $('#ciclo_id').val());
+
+                        axios.post(vm.url_close, fd, {
+                            headers: {'Content-type': 'application/x-www-form-urlencoded',}
+                        }).then(response => {
+                            EventBus.$emit('loading', false);
+
+                            $('#modal').modal('hide');
+
+                            this.model.price_ids = [];
+                            this.model.benefit_values = [];
+                            this.model.benefit_id = '';
+                            this.model.amount = '';
+                            this.model.initial_effective_date = '';
+                            this.model.final_effective_date = '';
+                            this.min_effective_date = '';
+
+                            EventBus.$emit('refresh_table');
+
+                            Swal.fire({
+                                title: '¡Ok!',
+                                text: 'Se Registro  exitosamente.',
+                                type: "success",
+                                heightAuto: false,
+                            });
+
+                        }).catch(error => {
+                        });
+                    } else if ( result.dismiss == Swal.DismissReason.cancel ) {
+                        EventBus.$emit('loading', false);
+                    }
+                });
+            },
             fillTableX: function() {
                 let vm = this;
                 let token = document.head.querySelector('meta[name="csrf-token"]').content;
@@ -154,12 +216,14 @@
                         template: function(row) {
                             let benefit = row.benefits.find(x => x.benefit_id == benefitType.id);
                             let value = '';
+                            let readonly = false;
 
                             if (benefit) {
                                 value = benefit.dias;
+                                readonly = benefit.state == 2; //2 = cerrado
                             }
 
-                            return '<input type="number" min="1" class="form-control benefit-cell" data-benefit-type="' + benefitType.id + '" value="' + value + '"/>';
+                            return '<input type="number" min="1" class="form-control benefit-cell" data-benefit-type="' + benefitType.id + '" value="' + value + '"' + (readonly ? 'readonly' : '') + '/>';
                         },
                         width: 75
                     });

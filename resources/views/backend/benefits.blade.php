@@ -13,6 +13,7 @@
 	
 	<benefit-table
 		:url = "'{{ route('dashboard.rrhh.benefit.list') }}'"
+		:url_close = "'{{ route('dashboard.rrhh.benefit.close') }}'"
 	></benefit-table>
 
 	<benefit-modal
