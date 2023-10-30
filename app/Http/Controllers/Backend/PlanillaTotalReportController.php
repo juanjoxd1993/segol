@@ -74,8 +74,8 @@ class PlanillaTotalReportController extends Controller
 
 						$elements = asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
 						->leftjoin('tasas', 'employees.afp_id', '=', 'tasas.id')
-						->leftjoin('sctasas', 'employees.salud_id', '=', 'sctasas.id')
-						->leftjoin('saludtasas', 'employees.sctr_id', '=', 'saludtasas.id')
+						->leftjoin('sctasas', 'employees.sctr_id', '=', 'sctasas.id')
+						->leftjoin('saludtasas', 'employees.salud_id', '=', 'saludtasas.id')
 						->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')					
 						->where('asists.año', '=', $price_year)
 			            ->where('asists.mes', '<=', $price_mes)			            
