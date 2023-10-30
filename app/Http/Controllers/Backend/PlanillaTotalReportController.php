@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Planilla;
 use App\Asist;
+use App\Benefit;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -70,12 +71,36 @@ class PlanillaTotalReportController extends Controller
 
 
 						$elements = asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
-							            ->where('asists.año', '=', $price_year)
+						->leftjoin('tasas', 'employees.afp_id', '=', 'tasas.id')
+						->leftjoin('sctasas', 'employees.salud_id', '=', 'sctasas.id')
+						->leftjoin('saludtasas', 'employees.sctr_id', '=', 'saludtasas.id')
+						->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')					
+						->where('asists.año', '=', $price_year)
 			            ->where('asists.mes', '<=', $price_mes)			            
 			            ->select('asists.id as planilla_id',
                         'asists.año as año',
                         'asists.mes as mes',
                         'asists.employ_id as employ_id',
+						'employees.salud_id as salud_id',
+						'employees.sctr_id as sctr_id',
+						'saludtasas.salud_porc as salud_porc',
+						'sctasas.sctr_porc as sctr_porc',
+						'tasas.id as afp_id',
+						'tasas.name as afp_name',
+						'tasas.afp_base as afp_base',
+						'tasas.afp_com as afp_com',
+						'tasas.afp_prima as afp_prima',
+						'cicles.id as ciclo_id',
+						'cicles.dias as dias_mes',
+						'cicles.feriados as feriados',
+						'cicles.domingos as descanso',
+						'employees.first_name as employ_name',
+						'employees.last_name as cargo',
+						'employees.fecha_inicio as fecha_inicio',
+						'employees.fecha_cese as fecha_cese',
+						'asists.laborables as asistencia',
+						'employees.sueldo as sueldo',
+						'employees.asignacion_familiar as familiar',					
                         'employees.document_number as document_number')
 			        
 				
@@ -88,15 +113,10 @@ class PlanillaTotalReportController extends Controller
             
             $totals_sum_sueldo = 0;
 			$totals_sum_familiar = 0;
-		    $totals_sum_otros = 0;
-            $totals_sum_bruto = 0;
-		    $totals_sum_horas_extra = 0;
-		    $totals_sum_noc_25 = 0;
-		    $totals_sum_noc_35 = 0;
-		    $totals_sum_afp_base = 0;
-			$totals_sum_afp_com = 0; 
-		    $totals_sum_afp_prima = 0;
-			$totals_sum_quincena = 0;
+            $totals_sum_ptot_rem_afec= 0;
+		    $totals_sum_fafp_base = 0;
+			$totals_sum_fafp_com = 0; 
+		    $totals_sum_fafp_prima = 0;
 			$totals_sum_total_desc = 0;
 		    $totals_sum_neto = 0;
 		    $totals_sum_salud = 0;
@@ -111,7 +131,6 @@ class PlanillaTotalReportController extends Controller
 			    $facturation->cargo = $facturation['cargo'];
 				$facturation->fecha_inicio = $facturation['fecha_inicio'];
 				$facturation->asistencia = $facturation['asistencia'];
-				$facturation->dias_trabajados = $facturation['dias_trabajados'];
 				$facturation->descanso = $facturation['descanso'];
 				$facturation->feriados = $facturation['feriado'];
 				$facturation->dias_mes = $facturation['dias_mes'];
@@ -126,125 +145,125 @@ class PlanillaTotalReportController extends Controller
                     $facturation->asignacion = 'NO';
                 }
 
-				$feriado_t=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$feriado_t=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',1)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',1)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 
 				$facturation->feriado_t = $feriado_t;
 
-				$natalidad=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$natalidad=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',5)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',5)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 				$facturation->natalidad = $natalidad;
 
-				$desc_vac=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$desc_vac=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',6)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',6)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 				$facturation->desc_vac = $desc_vac;
 
-				$comp_vac=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$comp_vac=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',7)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',7)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 
 				$facturation->comp_vac = $comp_vac;
 
-				$comp_he=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$comp_he=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',8)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',8)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 				$facturation->comp_he = $comp_he;
 
-				$lic_pag=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$lic_pag=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',9)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',9)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 				$facturation->lic_pag = $lic_pag;
 
 
-				$paternidad=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$paternidad=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',10)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',10)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 				$facturation->paternidad = $paternidad;
-				$lic_sin=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$lic_sin=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',11)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',11)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 				$facturation->lic_sin = $lic_sin;
-				$desc_t=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$desc_t=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',2)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',2)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 				$facturation->desc_t = $desc_t;
-				$descanso_med=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$descanso_med=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',3)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',3)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 				$facturation->descanso_med = $descanso_med;
 
-				$incap_temp=benefit::leftjoin('cicles', 'benefits.cicle_id', '=', 'cicles.id')
+				$incap_temp=Benefit::leftjoin('cicles', 'benefits.ciclo_id', '=', 'cicles.id')
 				->leftjoin('employees', 'benefits.employ_id', '=', 'employees.id')
 				->where('benefits.employ_id', $facturation->employ_id)
-				->where('benefits.benefit_id',4)
-				->select('dias')
-				->sum('dias');
+				->where('benefits.Benefit_id',4)
+				->select('benefits.dias')
+				->sum('benefits.dias');
 				$facturation->incap_temp = $incap_temp;
 
 
 				
-				$tardanzas=benefit::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				$tardanzas=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
 				->where('asists.employ_id', $facturation->employ_id)
-				->select('minutos_tarde')
-				->sum('minutos_tarde');
+				->select('asists.minutos_tarde')
+				->sum('asists.minutos_tarde');
 				$facturation->tardanzas = $tardanzas;
 
 
-				$he_25=asists::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				$he_25=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
 				->where('asists.employ_id', $facturation->employ_id)
-				->select('horas_extra_25')
-				->sum('horas_extra_25');
+				->select('asists.horas_extra_25')
+				->sum('asists.horas_extra_25');
 				$facturation->he_25 = $he_25;
 
-				$he_35=asists::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				$he_35=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
 				->where('asists.employ_id', $facturation->employ_id)
-				->select('horas_extra_35')
-				->sum('horas_extra_35');
+				->select('asists.horas_extra_35')
+				->sum('asists.horas_extra_35');
 				$facturation->he_35 = $he_35;
 				
-				$hn_25=asists::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				$hn_25=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
 				->where('asists.employ_id', $facturation->employ_id)
-				->select('horas_noc_25')
-				->sum('horas_noc_25');
+				->select('asists.horas_noc_25')
+				->sum('asists.horas_noc_25');
 				$facturation->hn_25 = $hn_25;
 
-				$hn_35=asists::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				$hn_35=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
 				->where('asists.employ_id', $facturation->employ_id)
-				->select('horas_noc_35')
-				->sum('horas_noc_35');
+				->select('asists.horas_noc_35')
+				->sum('asists.horas_noc_35');
 				$facturation->hn_35 = $hn_35;
 
 
@@ -254,7 +273,7 @@ class PlanillaTotalReportController extends Controller
 				$facturation->dias_calc = $dias_calc;
 				$dias_sub=$facturation->incap_temp + $facturation->natalidad;
 				$facturation->dias_sub = $dias_sub;
-				$sp_faltas=$facturation->dias_mes - $facturation->dias_trabajados;
+				$sp_faltas=$facturation->dias_mes - $facturation->asistencia;
 				$facturation->sp_faltas = $sp_faltas;
 				$sp_total=$facturation->sp_faltas + $facturation->lic_sin;
 				$facturation->sp_total = $sp_total;
@@ -300,9 +319,13 @@ class PlanillaTotalReportController extends Controller
 				$facturation->ppaternidad+$facturation->pincap_temp+$facturation->pdescanso_med+
 				$facturation->phn_35;
 
-				$facturation->ptot_rem_brut= round($ptot_rem_brut, 2);
 
-				$ptot_rem_afec= round($ptot_rem_brut, 2)-$facturation->ptardanza-$facturation->pinasist=round($pinasist, 2);
+				$pinasist=(($facturation->sueldo/30)+($facturation->sueldo/30)/30)*$facturation->sp_total;
+				$facturation->pinasist=round($pinasist, 2);
+
+				$facturation->tot_rem_brut= round($tot_rem_brut, 2);
+
+				$ptot_rem_afec= round($tot_rem_brut, 2)-$facturation->ptardanza-$facturation->pinasist;
 				$facturation->ptot_rem_afec=$ptot_rem_afec;
 
 
@@ -313,20 +336,19 @@ class PlanillaTotalReportController extends Controller
                 $facturation->afp_prima = $facturation['afp_prima'];
 
 				$pafp_base=$facturation->afp_base *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp);
-				$facturation->fafp_base=$pafp_base;
+				$facturation->fafp_base=$pafp_base/10;
 
 				$pafp_com=$facturation->afp_com *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp);
-				$facturation->fafp_com=$pafp_com;
+				$facturation->fafp_com=$pafp_com/10;
 
 				$pafp_prima=$facturation->afp_prima *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp);
-				$facturation->fafp_prima=$pafp_prima;
+				$facturation->fafp_prima=$pafp_prima/10;
 
 
 				$ptardanza=($facturation->sueldo/240)*($facturation->tardanzas/60);
 				$facturation->ptardanza=round($ptardanza, 2);
 
-				$pinasist=(($facturation->sueldo/30)+($facturation->sueldo/30)/30)*$facturation->sp_total;
-				$facturation->pinasist=round($pinasist, 2);
+				
 
 				$total_desc=$facturation->fafp_base+$facturation->fafp_com+$facturation->fafp_prima+$facturation->ptardanza
 				+$facturation->pinasist;
@@ -334,122 +356,120 @@ class PlanillaTotalReportController extends Controller
 				$facturation->total_desc=$total_desc;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-				
-
-
-
-
-
-
-				
-
-
-
-
-			    
-                $facturation->total_desc = $facturation['total_desc'];
-                $facturation->salud = $facturation['salud'];
-                $facturation->sctr = $facturation['sctr'];
-                $facturation->noc_25 = $facturation['noc_25'];
-                $facturation->noc_35 = $facturation['noc_35'];
-                $facturation->total_apor = $facturation['total_apor'];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+				$neto=$facturation->tot_rem_brut -$facturation->total_desc;
+				$facturation->salud_id = $facturation['salud_id'];
+                $facturation->sctr_id = $facturation['sctr_id'];
+				$facturation->salud_porc = $facturation['salud_porc'];
+                $facturation->sctr_porc = $facturation['sctr_porc'];
+                $facturation->salud = round(($facturation->ptot_rem_afec*$facturation->salud_porc)/10, 2);
+                $facturation->sctr = round(($facturation->ptot_rem_afec*$facturation->sctr_porc)/10, 2);
+                $facturation->total_apor =$facturation->salud+$facturation->sctr;
 
 
 			$totals_sum_sueldo += $facturation['sueldo'];
 			$totals_sum_familiar += $facturation['familiar'];
-		    $totals_sum_otros += $facturation['otros'];
-            $totals_sum_bruto += $facturation['bruto'];
-		    $totals_sum_horas_extra += $facturation['horas_extra'];
-		    $totals_sum_noc_25 += $facturation['noc_25'];
-		    $totals_sum_noc_35 += $facturation ['noc_35'];
-		    $totals_sum_afp_base += $facturation['afp_base'];
-			$totals_sum_afp_com += $facturation ['afp_com'];
-		    $totals_sum_afp_prima += $facturation['afp_prima'];
+            $totals_sum_ptot_rem_afec += $facturation['ptot_rem_afec'];
+		    $totals_sum_fafp_base += $facturation['fafp_base'];
+			$totals_sum_fafp_com += $facturation ['fafp_com'];
+		    $totals_sum_fafp_prima += $facturation['fafp_prima'];
 			$totals_sum_total_desc += $facturation['total_desc'];
 			$totals_sum_neto += $facturation['neto'];
 		    $totals_sum_salud += $facturation['salud'];
-		    $totals_sum_quincena += $facturation ['quincena'];
 		    $totals_sum_sctr += $facturation['sctr'];
 			$totals_sum_total_apor += $facturation ['total_apor'];
 			
-              
-			
-
-
-
-
-
-
-			
-
 				$response[] = $facturation;
 
 			}
 
 
-		$totals = new stdClass();
-		
-		$totals->document_number = 'TOTAL';
-        $totals->employ_name= '';
-        $totals->cargo = '';
-        $totals->asignacion = '';
-        $totals->sueldo =$totals_sum_sueldo ;
-        $totals->familiar =$totals_sum_familiar ;
-        $totals->otros =$totals_sum_otros ;
-        $totals->horas_extra = $totals_sum_horas_extra ;
-        $totals->noc_25 = $totals_sum_noc_25 ;
-        $totals->noc_35 =$totals_sum_noc_35 ;
-        $totals->bruto =$totals_sum_bruto ;
-        $totals->afp_name ='' ;
-        $totals->afp_base =$totals_sum_afp_base ;
-        $totals->afp_com =$totals_sum_afp_com ;
-        $totals->afp_prima =$totals_sum_afp_prima ;
-        $totals->quincena =$totals_sum_quincena ;
-        $totals->total_desc =$totals_sum_total_desc ;
-        $totals->neto =$totals_sum_neto ;
-        $totals->salud =$totals_sum_salud ;
-        $totals->sctr =$totals_sum_sctr ;
-        $totals->total_apor =$totals_sum_total_apor ;
+				$totals = new stdClass();
+				$totals->document_number = 'TOTAL';
+				$totals->employ_name = '';
+                $totals->cargo = '';
+				$totals->fecha_inicio = '';
+				$totals->fecha_cese = '';
+				$totals->asistencia = '';
+				$totals->descanso = '';
+				$totals->feriados = '';
+				$totals->feriado_t = '';
+				$totals->desc_t = '';
+				$totals->comp_vac = '';
+				$totals->dias_laborados = ''; 
+				$totals->dias_calc = '';
+				$totals->incap_temp = '';
+				$totals->natalidad = '';
+				$totals->dias_sub = '';
+				$totals->sp_faltas = '';
+				$totals->lic_sin = '';
+				$totals->sp_total = '';	
+				$totals->descanso_med = '';
+				$totals->desc_vac = '';
+				$totals->lic_pag = '';
+				$totals->paternidad = '';
+				$totals->si_total = '';
+				$totals->dias_no_lab = '';
+				$totals->dias_mes = '';
+				$totals->horas_lab = '';
+				$totals->he_25 = '';
+				$totals->he_35 = '';
+				$totals->tardanzas = '';
+				$totals->hn_35 = '';
+				$totals->sueldo = $totals_sum_sueldo;
+				$totals->familiar = $totals_sum_familiar;
+				$totals->phe_25 = '';
+				$totals->phe_35 = '';
+				$totals->p_desc_fer = '';
+				//por asignar modulo
+				/*
+				$totals->al = '';
+				$totals->al = '';
+				$totals->al = '';*/
+
+				$totals->pcomp_vac = '';
+				$totals->pdesc_vac = '';
+				$totals->familiar = '';
+				// por aisgnar modulo
+				/*
+				$totals->al = '';
+				$totals->al = '';
+				$totals->al = '';
+				$totals->al = '';
+				$totals->al = '';
+				$totals->al = '';
+				$totals->al = '';
+				$totals->al = '';
+				$totals->al = '';
+				$totals->al = '';
+				$totals->al = '';*/
+
+
+				$totals->plic_pag = '';
+				$totals->pnatalidad = '';
+				$totals->pincap_temp = '';
+				$totals->pdescanso_med = '';
+				$totals->ppaternidad = '';
+				$totals->phn_35 = '';
+				$totals->tot_rem_brut =  $totals_sum_ptot_rem_afec;
+				$totals->ptot_rem_afec = '';
+				$totals->afp_name = '';
+				$totals->fafp_base =$totals_sum_fafp_base;
+       			$totals->fafp_com =$totals_sum_fafp_com;
+       			$totals->fafp_prima =$totals_sum_fafp_prima;
+				//retenciones de quinta
+				/*
+				$totals->quincena = '';
+				$totals->quincena = '';
+				$totals->quincena = '';*/
+
+				$totals->ptardanza = '';
+				$totals->pinasist = '';
+				$totals->total_desc =$totals_sum_total_desc;
+				$totals->neto =$totals_sum_neto;
+				$totals->salud =$totals_sum_salud;
+				$totals->sctr =$totals_sum_sctr ;
+				$totals->total_apor =$totals_sum_total_apor;
+				
 
 		
 
@@ -540,70 +560,69 @@ class PlanillaTotalReportController extends Controller
 			$sheet->setCellValue('L3', 'COMPENSACIÓN VACACIONAL');
 			$sheet->setCellValue('M3', 'TOTAL DIAS LABORADOS');
 			$sheet->setCellValue('N3', 'TOTAL DIAS CÁLCULO');
-			$sheet->setCellValue('O3', 'S.P. INCAP TEMPORAL');
-			$sheet->setCellValue('P3', 'S.I. INCAP TEMPORAL');
-			$sheet->setCellValue('Q3', 'PRE Y POST NATAL');
-			$sheet->setCellValue('R3', 'TOTAL DIAS SUBSIDIADOS');
-			$sheet->setCellValue('S3', 'S.P. FALTAS');
-			$sheet->setCellValue('T3', 'S.P LICENCIA SIN GOCE DE HABER');
-			$sheet->setCellValue('U3', 'S.P TOTAL');
-			$sheet->setCellValue('V3', 'S.I DESCANSOS MEDICOS');
-			$sheet->setCellValue('W3', 'DESCANSO VACACIONAL');
-			$sheet->setCellValue('X3', 'LICENCIA CON GOCE DE HABER');
-			$sheet->setCellValue('Y3', 'LICENCIA POR PATERNIDAD');
-			$sheet->setCellValue('Z3', 'S.I TOTAL');
-			$sheet->setCellValue('AA3', 'TOTAL DIAS NO LAB Y NO SUB');
-			$sheet->setCellValue('AB3', 'TOTAL DIAS DEL MES');
-			$sheet->setCellValue('AC3', 'TOTAL HRS LAB');
-			$sheet->setCellValue('AD3', 'HR. EXTRA 25 %');
-			$sheet->setCellValue('AE3', 'HR. EXTRA 35 %');
-			$sheet->setCellValue('AF3', 'TARDANZAS');
-			$sheet->setCellValue('AG3', 'BONO NOCT 25%');
-		 	$sheet->setCellValue('AH3', 'BONO NOCT 35%');
-			$sheet->setCellValue('AI3', 'SUELDO BASE');
-			$sheet->setCellValue('AJ3', 'ASIG. FAMILIAR');
-			$sheet->setCellValue('AK3', 'TOTAL HORAS EXTRAS AL 25 %');
-			$sheet->setCellValue('AL3', 'TOTAL HORAS EXTRAS AL 35 %');
-			$sheet->setCellValue('AM3', 'TRABAJO EN FERIADO O DESCANSO');
-			$sheet->setCellValue('AN3', 'ALIMENTACION'); //otros
-			$sheet->setCellValue('AO3', 'COMISIONES');//otros
-			$sheet->setCellValue('AP3', 'MOVILIDAD');//otros
-			$sheet->setCellValue('AQ3', 'COMPENSACIÓN VACACIONAL');
-			$sheet->setCellValue('AR3', 'REMUNERACIÓN VACACIONAL');
-			$sheet->setCellValue('AS3', 'ASIG. FAMILIAR');  //ASIGNACIONES
-			$sheet->setCellValue('AT3', 'ASIG. POR CUMPLEAÑOS');
-			$sheet->setCellValue('AU3', 'ASIG. POR NAC. DE HIJOS');
-			$sheet->setCellValue('AV3', 'ASIG. POR FALLEC. DE FAMILIAR');
-			$sheet->setCellValue('AX3', 'BONIF. POR PRODUCCIÓN, ALTURA'); //BONIFICAIONES
-			$sheet->setCellValue('AY3', 'BON. EXTRAORDINARIA LEY 29351 Y 30334');
-			$sheet->setCellValue('AZ3', 'BONIFICACIONES REGULARES');
-			$sheet->setCellValue('BA3', 'GRAT. FIESTAS PATRIAS Y NAVIDAD LEY 29351 Y 30334'); // GRATIFICACIONES
-			$sheet->setCellValue('BB3', 'GRAT. PROPORCIONAL');
-			$sheet->setCellValue('BC3', 'INDEM. POR DESPIDO');// INDEMNIZACION
-			$sheet->setCellValue('BD3', 'INDEM. POR RETENCIÓN DE CTS');		
-            $sheet->setCellValue('BE3', 'BONO DE PRODUCTIVIDAD');//CONCEPTOS VARIOS
-			$sheet->setCellValue('BF3', 'LIC. CON GOCE DE HABER');
-			$sheet->setCellValue('BG3', 'SUBSIDIOS POR MATERNIDAD');
-			$sheet->setCellValue('BH3', 'LIC. POR PATERNIDAD');
-			$sheet->setCellValue('BI3', 'SUSP. IMPERFECTA OTROS');
-			$sheet->setCellValue('BJ3', 'BONIFIC. NOCTURNA 35%');
-			$sheet->setCellValue('BK3', 'TOTAL REMUNERACIÓN BRUTA');
-		 	$sheet->setCellValue('BL3', 'ONP/AFP');  //APORTACIONES
-            $sheet->setCellValue('BM3', 'ONP 13 %');
-            $sheet->setCellValue('BN3', 'SPP-APORTE OBLIGATORIO');
-			$sheet->setCellValue('BO3', 'SPP-COMISIÓN %');
-			$sheet->setCellValue('BP3', 'SPP-PRIMA DE SEGURO');
-			$sheet->setCellValue('BQ3', 'RENTA 5TA RETENCIONES');//por calcular
-			$sheet->setCellValue('BR3', 'ADELANTOS'); // DESCUENTOS
-			$sheet->setCellValue('BS3', 'DESCUENTO AUTORIZADO');
-			$sheet->setCellValue('BT3', 'TARDANZA');
-			$sheet->setCellValue('BU3', 'INASISTENCIAS');
-			$sheet->setCellValue('BV3', 'TOTAL APORT. Y DSCTO');
-			$sheet->setCellValue('BW3', 'NETO A PAGAR');
-			$sheet->setCellValue('BX3', 'ESSALUD 9%');//EMPLEADOR
-			$sheet->setCellValue('BY3', 'EPS');
-			$sheet->setCellValue('BZ3', 'SCTR');
-			$sheet->setCellValue('CA3', 'TOTAL APORTACIONES');
+			$sheet->setCellValue('O3', 'S.I. INCAP TEMPORAL');
+			$sheet->setCellValue('P3', 'PRE Y POST NATAL');
+			$sheet->setCellValue('Q3', 'TOTAL DIAS SUBSIDIADOS');
+			$sheet->setCellValue('R3', 'S.P. FALTAS');
+			$sheet->setCellValue('S3', 'S.P LICENCIA SIN GOCE DE HABER');
+			$sheet->setCellValue('T3', 'S.P TOTAL');
+			$sheet->setCellValue('U3', 'S.I DESCANSOS MEDICOS');
+			$sheet->setCellValue('V3', 'DESCANSO VACACIONAL');
+			$sheet->setCellValue('W3', 'LICENCIA CON GOCE DE HABER');
+			$sheet->setCellValue('X3', 'LICENCIA POR PATERNIDAD');
+			$sheet->setCellValue('Y3', 'S.I TOTAL');
+			$sheet->setCellValue('Z3', 'TOTAL DIAS NO LAB Y NO SUB');
+			$sheet->setCellValue('AA3', 'TOTAL DIAS DEL MES');
+			$sheet->setCellValue('AB3', 'TOTAL HRS LAB');
+			$sheet->setCellValue('AC3', 'HR. EXTRA 25 %');
+			$sheet->setCellValue('AD3', 'HR. EXTRA 35 %');
+			$sheet->setCellValue('AE3', 'TARDANZAS');
+		 	$sheet->setCellValue('AF3', 'BONO NOCT 35%');
+			$sheet->setCellValue('AG3', 'SUELDO BASE');
+			$sheet->setCellValue('AH3', 'ASIG. FAMILIAR');
+			$sheet->setCellValue('AI3', 'TOTAL HORAS EXTRAS AL 25 %');
+			$sheet->setCellValue('AJ3', 'TOTAL HORAS EXTRAS AL 35 %');
+			$sheet->setCellValue('AK3', 'TRABAJO EN FERIADO O DESCANSO');
+			$sheet->setCellValue('AL3', 'ALIMENTACION'); //otros
+			$sheet->setCellValue('AM3', 'COMISIONES');//otros
+			$sheet->setCellValue('AN3', 'MOVILIDAD');//otros
+			$sheet->setCellValue('AO3', 'COMPENSACIÓN VACACIONAL');
+			$sheet->setCellValue('AP3', 'REMUNERACIÓN VACACIONAL');
+			$sheet->setCellValue('AQ3', 'ASIG. FAMILIAR');  //ASIGNACIONES
+			$sheet->setCellValue('AR3', 'ASIG. POR CUMPLEAÑOS');
+			$sheet->setCellValue('AS3', 'ASIG. POR NAC. DE HIJOS');
+			$sheet->setCellValue('AT3', 'ASIG. POR FALLEC. DE FAMILIAR');
+			$sheet->setCellValue('AU3', 'BONIF. POR PRODUCCIÓN, ALTURA'); //BONIFICAIONES
+			$sheet->setCellValue('AV3', 'BON. EXTRAORDINARIA LEY 29351 Y 30334');
+			$sheet->setCellValue('AW3', 'BONIFICACIONES REGULARES');
+			$sheet->setCellValue('AX3', 'GRAT. FIESTAS PATRIAS Y NAVIDAD LEY 29351 Y 30334'); // GRATIFICACIONES
+			$sheet->setCellValue('AY3', 'GRAT. PROPORCIONAL');
+			$sheet->setCellValue('AZ3', 'INDEM. POR DESPIDO');// INDEMNIZACION
+			$sheet->setCellValue('BA3', 'INDEM. POR RETENCIÓN DE CTS');		
+            $sheet->setCellValue('BB3', 'BONO DE PRODUCTIVIDAD');//CONCEPTOS VARIOS
+			$sheet->setCellValue('BC3', 'LIC. CON GOCE DE HABER');
+			$sheet->setCellValue('BD3', 'SUBSIDIOS POR MATERNIDAD');
+			$sheet->setCellValue('BE3', 'SUBSIDIOS DE INCAP. POT ENFERMEDAD');
+			$sheet->setCellValue('BF3', 'DESCANSO MEDICO');
+			$sheet->setCellValue('BG3', 'LIC. POR PATERNIDAD');
+			$sheet->setCellValue('BH3', 'BONIFIC. NOCTURNA 35%');
+			$sheet->setCellValue('BI3', 'TOTAL REMUNERACIÓN BRUTA');
+			$sheet->setCellValue('BJ3', 'INGRESOS AFECTOS');
+		 	$sheet->setCellValue('BK3', 'ONP/AFP');  //APORTACION
+            $sheet->setCellValue('BL3', 'ONP 13 / SPP-APORTE OBLIGATORIO');
+			$sheet->setCellValue('BM3', 'SPP-COMISIÓN %');
+			$sheet->setCellValue('BN3', 'SPP-PRIMA DE SEGURO');
+			$sheet->setCellValue('BO3', 'RENTA 5TA RETENCIONES');//por calcular
+			$sheet->setCellValue('BP3', 'ADELANTOS'); // DESCUENTOS
+			$sheet->setCellValue('BQ3', 'DESCUENTO AUTORIZADO');
+			$sheet->setCellValue('BR3', 'TARDANZA');
+			$sheet->setCellValue('BS3', 'INASISTENCIAS');
+			$sheet->setCellValue('BT3', 'TOTAL APORT. Y DSCTO');
+			$sheet->setCellValue('BU3', 'NETO A PAGAR');
+			$sheet->setCellValue('BV3', 'ESSALUD 9%');//EMPLEADOR
+			$sheet->setCellValue('BW3', 'EPS');
+			$sheet->setCellValue('BX3', 'SCTR');
+			$sheet->setCellValue('BY3', 'TOTAL APORTACIONES');
 			$sheet->getStyle('A3:CA3')->applyFromArray([
 				'font' => [
 					'bold' => true,
@@ -618,40 +637,99 @@ class PlanillaTotalReportController extends Controller
 				$sheet->setCellValue('C'.$row_number, $element->employ_name);
                 $sheet->setCellValue('D'.$row_number, $element->cargo);
 				$sheet->setCellValue('E'.$row_number, $element->fecha_inicio);
-				$sheet->setCellValue('E'.$row_number, $element->fecha_cese);
-				$sheet->setCellValue('E'.$row_number, $element->asistencia);
-				$sheet->setCellValue('F'.$row_number, $element->descanso);
-				$sheet->setCellValue('G'.$row_number, $element->feriados);
-				$sheet->setCellValue('G'.$row_number, $element->feriado_t);
-				$sheet->setCellValue('G'.$row_number, $element->desc_t);
-				$sheet->setCellValue('G'.$row_number, $element->comp_vac);
-				$sheet->setCellValue('G'.$row_number, $element->dias_laborados);
+				$sheet->setCellValue('F'.$row_number, $element->fecha_cese);
+				$sheet->setCellValue('G'.$row_number, $element->asistencia);
+				$sheet->setCellValue('H'.$row_number, $element->descanso);
+				$sheet->setCellValue('I'.$row_number, $element->feriados);
+				$sheet->setCellValue('J'.$row_number, $element->feriado_t);
+				$sheet->setCellValue('K'.$row_number, $element->desc_t);
+				$sheet->setCellValue('L'.$row_number, $element->comp_vac);
+				$sheet->setCellValue('M'.$row_number, $element->dias_laborados); 
+				$sheet->setCellValue('N'.$row_number, $element->dias_calc);
+				$sheet->setCellValue('O'.$row_number, $element->incap_temp);
+				$sheet->setCellValue('P'.$row_number, $element->natalidad);
+				$sheet->setCellValue('Q'.$row_number, $element->dias_sub);
+				$sheet->setCellValue('R'.$row_number, $element->sp_faltas);
+				$sheet->setCellValue('S'.$row_number, $element->lic_sin);
+				$sheet->setCellValue('T'.$row_number, $element->sp_total);	
+				$sheet->setCellValue('U'.$row_number, $element->descanso_med);
+				$sheet->setCellValue('V'.$row_number, $element->desc_vac);
+				$sheet->setCellValue('W'.$row_number, $element->lic_pag);
+				$sheet->setCellValue('X'.$row_number, $element->paternidad);
+				$sheet->setCellValue('Y'.$row_number, $element->si_total);
+				$sheet->setCellValue('Z'.$row_number, $element->dias_no_lab);
+				$sheet->setCellValue('AA'.$row_number, $element->dias_mes);
+				$sheet->setCellValue('AB'.$row_number, $element->horas_lab);
+				$sheet->setCellValue('AC'.$row_number, $element->he_25);
+				$sheet->setCellValue('AD'.$row_number, $element->he_35);
+				$sheet->setCellValue('AE'.$row_number, $element->tardanzas);
+				$sheet->setCellValue('AF'.$row_number, $element->hn_35);
+				$sheet->setCellValue('AG'.$row_number, $element->sueldo);
+				$sheet->setCellValue('AH'.$row_number, $element->familiar);
+				$sheet->setCellValue('AI'.$row_number, $element->phe_25);
+				$sheet->setCellValue('AJ'.$row_number, $element->phe_35);
+				$sheet->setCellValue('AK'.$row_number, $element->p_desc_fer);
+				//por asignar modulo
+				/*
+				$sheet->setCellValue('AL'.$row_number, $element->al);
+				$sheet->setCellValue('AM'.$row_number, $element->al);
+				$sheet->setCellValue('AN'.$row_number, $element->al);*/
 
+				$sheet->setCellValue('AO'.$row_number, $element->pcomp_vac);
+				$sheet->setCellValue('AP'.$row_number, $element->pdesc_vac);
+				$sheet->setCellValue('AQ'.$row_number, $element->familiar);
+				// por aisgnar modulo
+				/*
+				$sheet->setCellValue('AR'.$row_number, $element->al);
+				$sheet->setCellValue('AS'.$row_number, $element->al);
+				$sheet->setCellValue('AT'.$row_number, $element->al);
+				$sheet->setCellValue('AU'.$row_number, $element->al);
+				$sheet->setCellValue('AV'.$row_number, $element->al);
+				$sheet->setCellValue('AW'.$row_number, $element->al);
+				$sheet->setCellValue('AX'.$row_number, $element->al);
+				$sheet->setCellValue('AY'.$row_number, $element->al);
+				$sheet->setCellValue('AZ'.$row_number, $element->al);
+				$sheet->setCellValue('BA'.$row_number, $element->al);
+				$sheet->setCellValue('BB'.$row_number, $element->al);*/
 
-				$sheet->setCellValue('G'.$row_number, $element->comp_he);
-				$sheet->setCellValue('G'.$row_number, $element->comp_he);
-	
+              /*  if($element->plic_pag == 0){
+					$sheet = $spreadsheet->getActiveSheet()->getColumnDimension('BC')->setVisible(false);
+				}
+				else{*/
+					$sheet->setCellValue('BC'.$row_number, $element->plic_pag);
+		//			}
+				$sheet->setCellValue('BD'.$row_number, $element->pnatalidad);
+				$sheet->setCellValue('BE'.$row_number, $element->pincap_temp);
+				$sheet->setCellValue('BF'.$row_number, $element->pdescanso_med);
 
+				$sheet->setCellValue('BG'.$row_number, $element->ppaternidad);
+				$sheet->setCellValue('BH'.$row_number, $element->phn_35);
 
+			/*	if($element->tot_rem_brut == 0){
+					$sheet = $spreadsheet->getActiveSheet()->getColumnDimension('BI')->setVisible(false);
+				}
+				else{*/
+				$sheet->setCellValue('BI'.$row_number, $element->tot_rem_brut);
+		//		}
 
-				$sheet->setCellValue('E'.$row_number, $element->asignacion);
-				$sheet->setCellValue('F'.$row_number, $element->sueldo);
-                $sheet->setCellValue('G'.$row_number, $element->familiar);
-                $sheet->setCellValue('H'.$row_number, $element->horas_extra);
-                $sheet->setCellValue('I'.$row_number, $element->noc_25);
-                $sheet->setCellValue('J'.$row_number, $element->noc_35);
-                $sheet->setCellValue('K'.$row_number, $element->otros);
-				$sheet->setCellValue('L'.$row_number, $element->bruto);
-				$sheet->setCellValue('N'.$row_number, $element->afp_name);
-				$sheet->setCellValue('O'.$row_number, $element->afp_base);
-				$sheet->setCellValue('P'.$row_number, $element->afp_com);
-				$sheet->setCellValue('Q'.$row_number, $element->afp_prima);
-				$sheet->setCellValue('R'.$row_number, $element->quincena);
-				$sheet->setCellValue('S'.$row_number, $element->total_desc); 
-				$sheet->setCellValue('T'.$row_number, $element->neto);
-				$sheet->setCellValue('U'.$row_number, $element->salud);
-				$sheet->setCellValue('V'.$row_number, $element->sctr);
-				$sheet->setCellValue('W'.$row_number, $element->total_apor);
+				$sheet->setCellValue('BJ'.$row_number, $element->ptot_rem_afec);
+				$sheet->setCellValue('BK'.$row_number, $element->afp_name);
+				$sheet->setCellValue('BL'.$row_number, $element->fafp_base);
+				$sheet->setCellValue('BM'.$row_number, $element->fafp_com);
+				$sheet->setCellValue('BN'.$row_number, $element->fafp_prima);
+				//retenciones de quinta
+				/*
+				$sheet->setCellValue('BO'.$row_number, $element->quincena);
+				$sheet->setCellValue('BP'.$row_number, $element->quincena);
+				$sheet->setCellValue('BQ'.$row_number, $element->quincena);*/
+
+				$sheet->setCellValue('BR'.$row_number, $element->ptardanza);
+				$sheet->setCellValue('BS'.$row_number, $element->pinasist);
+				$sheet->setCellValue('BT'.$row_number, $element->total_desc); 
+				$sheet->setCellValue('BU'.$row_number, $element->neto);
+				$sheet->setCellValue('BV'.$row_number, $element->salud);
+				$sheet->setCellValue('BX'.$row_number, $element->sctr);
+				$sheet->setCellValue('BY'.$row_number, $element->total_apor);
 				
 							
                 $sheet->getStyle('E'.$row_number)->getNumberFormat()->setFormatCode('0.00');
