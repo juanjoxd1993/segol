@@ -35,9 +35,16 @@
                             <div id="article_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-
-
-                    
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Ciclo:</label>
+                            <select class="form-control" name="ciclo_id" id="ciclo_id" v-model="model.ciclo_id" @focus="$parent.clearErrorMsg($event)">
+                                <option value="">Seleccionar</option>
+                                <option v-for="ciclo in ciclos" :value="ciclo.id" v-bind:key="ciclo.id">{{ ciclo.año + ' - ' + ciclo.mes }}</option>
+                            </select>
+                            <div id="ciclo_id-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="kt-portlet__foot">
@@ -69,6 +76,10 @@
                 type: Array,
                 default: ''
             },
+            ciclos: {
+                type: Array,
+                default: ''
+            },
             url: {
                 type: String,
                 default: ''
@@ -79,7 +90,7 @@
                 model: {
                     company_id: '',
                     area_id: '',
-       
+                    ciclo_id: ''
                 },
             }
         },
@@ -137,17 +148,14 @@
                         'Content-type': 'application/x-www-form-urlencoded',
                     }
                 }).then(response => {
-                    console.log(response);
                     EventBus.$emit('show_table', response.data);
                 }).catch(error => {
                     EventBus.$emit('loading', false);
-                    console.log(error.response);
                     var obj = error.response.data.errors;
                     $('html, body').animate({
                         scrollTop: 0
                     }, 500, 'swing');
                     $.each(obj, function(i, item) {
-                        // console.log(target);
                         let c_target = target.find("#" + i + "-error");
                         let p = c_target.parents('.form-group').find('#' + i);
                         p.addClass('is-invalid');
