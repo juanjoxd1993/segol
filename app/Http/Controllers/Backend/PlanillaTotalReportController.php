@@ -295,7 +295,7 @@ class PlanillaTotalReportController extends Controller
 				}
 				else
 				{
-					$dias_cal=$facturation->dias_lab;
+					$dias_cal=$facturation->dias_lab-$facturation->dias_nolab;
 				}
 
 				$facturation->dias_calc = $dias_cal;
