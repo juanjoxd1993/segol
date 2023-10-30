@@ -349,13 +349,13 @@ class PlanillaTotalReportController extends Controller
                 $facturation->afp_prima = $facturation['afp_prima'];
 
 				$pafp_base=$facturation->afp_base *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp);
-				$facturation->fafp_base=$pafp_base/10;
+				$facturation->fafp_base=round(($pafp_base/10),2);
 
 				$pafp_com=$facturation->afp_com *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp);
-				$facturation->fafp_com=$pafp_com/10;
+				$facturation->fafp_com=round(($pafp_com/10),2);
 
 				$pafp_prima=$facturation->afp_prima *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp);
-				$facturation->fafp_prima=$pafp_prima/10;
+				$facturation->fafp_prima=round(($pafp_prima/10),2);
 
 
 				$ptardanza=($facturation->sueldo/240)*($facturation->tardanzas/60);
@@ -370,12 +370,13 @@ class PlanillaTotalReportController extends Controller
 
 
 				$neto=$facturation->tot_rem_brut -$facturation->total_desc;
+				$facturation->neto=round($neto, 2);
 				$facturation->salud_id = $facturation['salud_id'];
                 $facturation->sctr_id = $facturation['sctr_id'];
 				$facturation->salud_porc = $facturation['salud_porc'];
                 $facturation->sctr_porc = $facturation['sctr_porc'];
-                $facturation->salud = round(($facturation->ptot_rem_afec*$facturation->salud_porc)/10, 2);
-                $facturation->sctr = round(($facturation->ptot_rem_afec*$facturation->sctr_porc)/10, 2);
+                $facturation->salud = round((($facturation->ptot_rem_afec*$facturation->salud_porc)/10), 2);
+                $facturation->sctr = round((($facturation->ptot_rem_afec*$facturation->sctr_porc)/10), 2);
                 $facturation->total_apor =$facturation->salud+$facturation->sctr;
 
 
@@ -492,7 +493,7 @@ class PlanillaTotalReportController extends Controller
 		if ( $export) {
 			$spreadsheet = new Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
-			$sheet->mergeCells('A1:AA1');
+			$sheet->mergeCells('A1:BY1');
 			$sheet->setCellValue('A1', 'PLANILLA DEL '.CarbonImmutable::now()->format('d/m/Y H:m:s'));
 			$sheet->getStyle('A1')->applyFromArray([
 				'font' => [
@@ -636,7 +637,7 @@ class PlanillaTotalReportController extends Controller
 			$sheet->setCellValue('BW3', 'EPS');
 			$sheet->setCellValue('BX3', 'SCTR');
 			$sheet->setCellValue('BY3', 'TOTAL APORTACIONES');
-			$sheet->getStyle('A3:CA3')->applyFromArray([
+			$sheet->getStyle('A3:BY3')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
@@ -745,9 +746,9 @@ class PlanillaTotalReportController extends Controller
 				$sheet->setCellValue('BY'.$row_number, $element->total_apor);
 				
 							
-                $sheet->getStyle('E'.$row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('F'.$row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('G'.$row_number)->getNumberFormat()->setFormatCode('0.00');			
+                $sheet->getStyle('BV'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('BX'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->getStyle('BY'.$row_number)->getNumberFormat()->setFormatCode('0.00');			
 
 		
 				$row_number++;
