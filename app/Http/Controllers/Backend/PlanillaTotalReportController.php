@@ -330,7 +330,7 @@ class PlanillaTotalReportController extends Controller
 				$pdescanso_med=($facturation->descanso_med*($facturation->sueldo/30));
 				$facturation->pdescanso_med= round($pdescanso_med, 2);
 
-				$tot_rem_brut=$facturation->sueldo+$facturation->phe_25+$facturation->phe_35+
+				$tot_rem_brut=(($facturation->sueldo/30)*$facturation->dias_calc)+$facturation->phe_25+$facturation->phe_35+
 				$facturation->tot_descfer+$facturation->pcomp_vac+$facturation->pdesc_vac+
 				$facturation->familiar+$facturation->plic_pag+$facturation->pnatalidad+
 				$facturation->ppaternidad+$facturation->pincap_temp+$facturation->pdescanso_med+
