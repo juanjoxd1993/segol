@@ -759,6 +759,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/beneficios/listar', 'BenefitController@list')->name('dashboard.rrhh.benefit.list');
 	Route::post('/rrhh/beneficios/obtener-dia', 'BenefitController@getMinEffectiveDate')->name('dashboard.rrhh.benefit.get_min_effective_date');
 	Route::post('/rrhh/beneficios/guardar', 'BenefitController@store')->name('dashboard.rrhh.benefit.store');
+	Route::post('/rrhh/beneficios/cerrar', 'BenefitController@close')->name('dashboard.rrhh.benefit.close');
 
 
 
