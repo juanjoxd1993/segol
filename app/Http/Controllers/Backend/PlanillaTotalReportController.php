@@ -1,5 +1,7 @@
 <?php
 
+
+
 namespace App\Http\Controllers\Backend;
 
 use App\Employee;
@@ -92,6 +94,7 @@ class PlanillaTotalReportController extends Controller
 						'tasas.afp_prima as afp_prima',
 						'cicles.id as ciclo_id',
 						'cicles.dias as dias_mes',
+						'cicles.laborables as dias_lab',
 						'cicles.feriados as feriados',
 						'cicles.domingos as descanso',
 						'employees.first_name as employ_name',
@@ -134,6 +137,7 @@ class PlanillaTotalReportController extends Controller
 				$facturation->descanso = $facturation['descanso'];
 				$facturation->feriados = $facturation['feriado'];
 				$facturation->dias_mes = $facturation['dias_mes'];
+				$facturation->dias_lab = $facturation['dias_lab'];
 				$facturation->sueldo = $facturation['sueldo'];
 			    $facturation->familiar = $facturation['familiar'];
 			
@@ -273,7 +277,7 @@ class PlanillaTotalReportController extends Controller
 
 				$dias_sub=$facturation->incap_temp + $facturation->natalidad;
 				$facturation->dias_sub = $dias_sub;
-				$sp_faltas=$facturation->dias_mes - $facturation->asistencia;
+				$sp_faltas=$facturation->dias_lab - $facturation->asistencia;
 				$facturation->sp_faltas = $sp_faltas;
 				$sp_total=$facturation->sp_faltas + $facturation->lic_sin;
 				$facturation->sp_total = $sp_total;
@@ -348,14 +352,14 @@ class PlanillaTotalReportController extends Controller
                 $facturation->afp_com = $facturation['afp_com'];
                 $facturation->afp_prima = $facturation['afp_prima'];
 
-				$pafp_base=$facturation->afp_base *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp);
-				$facturation->fafp_base=round(($pafp_base/10),2);
+				$pafp_base=($facturation->afp_base *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp))/10;
+				$facturation->fafp_base=round($pafp_base,2);
 
-				$pafp_com=$facturation->afp_com *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp);
-				$facturation->fafp_com=round(($pafp_com/10),2);
+				$pafp_com=($facturation->afp_com *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp))/10;
+				$facturation->fafp_com=round($pafp_com,2);
 
-				$pafp_prima=$facturation->afp_prima *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp);
-				$facturation->fafp_prima=round(($pafp_prima/10),2);
+				$pafp_prima=($facturation->afp_prima *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp))/10;
+				$facturation->fafp_prima=round($pafp_prima,2);
 
 
 				$ptardanza=($facturation->sueldo/240)*($facturation->tardanzas/60);
@@ -409,7 +413,7 @@ class PlanillaTotalReportController extends Controller
 				$totals->feriado_t = '';
 				$totals->desc_t = '';
 				$totals->comp_vac = '';
-				$totals->dias_laborados = ''; 
+				$totals->dias_lab = ''; 
 				$totals->dias_calc = '';
 				$totals->incap_temp = '';
 				$totals->natalidad = '';
@@ -781,6 +785,38 @@ class PlanillaTotalReportController extends Controller
 			$sheet->getColumnDimension('Y')->setAutoSize(true);
 			$sheet->getColumnDimension('Z')->setAutoSize(true);
 			$sheet->getColumnDimension('AA')->setAutoSize(true);
+			$sheet->getColumnDimension('AB')->setAutoSize(true);
+			$sheet->getColumnDimension('AC')->setAutoSize(true);
+			$sheet->getColumnDimension('AD')->setAutoSize(true);
+			$sheet->getColumnDimension('AE')->setAutoSize(true);
+			$sheet->getColumnDimension('AF')->setAutoSize(true);
+			$sheet->getColumnDimension('AG')->setAutoSize(true);
+			$sheet->getColumnDimension('AH')->setAutoSize(true);
+			$sheet->getColumnDimension('AI')->setAutoSize(true);
+			$sheet->getColumnDimension('AJ')->setAutoSize(true);
+			$sheet->getColumnDimension('AK')->setAutoSize(true);
+			$sheet->getColumnDimension('AL')->setAutoSize(true);
+			$sheet->getColumnDimension('AM')->setAutoSize(true);
+			$sheet->getColumnDimension('AN')->setAutoSize(true);
+			$sheet->getColumnDimension('AO')->setAutoSize(true);
+			$sheet->getColumnDimension('AP')->setAutoSize(true);
+			$sheet->getColumnDimension('AQ')->setAutoSize(true);
+			$sheet->getColumnDimension('AR')->setAutoSize(true);
+			$sheet->getColumnDimension('AS')->setAutoSize(true);
+			$sheet->getColumnDimension('AT')->setAutoSize(true);
+			$sheet->getColumnDimension('AU')->setAutoSize(true);
+			$sheet->getColumnDimension('AV')->setAutoSize(true);
+			$sheet->getColumnDimension('AW')->setAutoSize(true);
+			$sheet->getColumnDimension('AX')->setAutoSize(true);
+			$sheet->getColumnDimension('AY')->setAutoSize(true);
+			$sheet->getColumnDimension('AZ')->setAutoSize(true);
+			$sheet->getColumnDimension('BA')->setAutoSize(true);
+			$sheet->getColumnDimension('BB')->setAutoSize(true);
+			$sheet->getColumnDimension('BC')->setAutoSize(true);
+			 
+
+
+			
 
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');
