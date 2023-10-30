@@ -352,13 +352,13 @@ class PlanillaTotalReportController extends Controller
                 $facturation->afp_com = $facturation['afp_com'];
                 $facturation->afp_prima = $facturation['afp_prima'];
 
-				$pafp_base=($facturation->afp_base *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp))/10;
+				$pafp_base=($facturation->afp_base *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp))/100;
 				$facturation->fafp_base=round($pafp_base,2);
 
-				$pafp_com=($facturation->afp_com *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp))/10;
+				$pafp_com=($facturation->afp_com *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp))/100;
 				$facturation->fafp_com=round($pafp_com,2);
 
-				$pafp_prima=($facturation->afp_prima *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp))/10;
+				$pafp_prima=($facturation->afp_prima *($facturation->ptot_rem_afec+$facturation->ppaternidad+$facturation->pincap_temp))/100;
 				$facturation->fafp_prima=round($pafp_prima,2);
 
 
@@ -379,8 +379,8 @@ class PlanillaTotalReportController extends Controller
                 $facturation->sctr_id = $facturation['sctr_id'];
 				$facturation->salud_porc = $facturation['salud_porc'];
                 $facturation->sctr_porc = $facturation['sctr_porc'];
-                $facturation->salud = round((($facturation->ptot_rem_afec*$facturation->salud_porc)/10), 2);
-                $facturation->sctr = round((($facturation->ptot_rem_afec*$facturation->sctr_porc)/10), 2);
+                $facturation->salud = round((($facturation->ptot_rem_afec*$facturation->salud_porc)/100), 2);
+                $facturation->sctr = round((($facturation->ptot_rem_afec*$facturation->sctr_porc)/100), 2);
                 $facturation->total_apor =$facturation->salud+$facturation->sctr;
 
 
