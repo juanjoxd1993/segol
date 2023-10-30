@@ -269,8 +269,8 @@ class PlanillaTotalReportController extends Controller
 
 				$dias_lab=$facturation->asistencia + $facturation->comp_vac;
 				$facturation->dias_lab = $dias_lab;
-				$dias_calc=$facturation->dias_lab;
-				$facturation->dias_calc = $dias_calc;
+
+
 				$dias_sub=$facturation->incap_temp + $facturation->natalidad;
 				$facturation->dias_sub = $dias_sub;
 				$sp_faltas=$facturation->dias_mes - $facturation->asistencia;
@@ -278,10 +278,23 @@ class PlanillaTotalReportController extends Controller
 				$sp_total=$facturation->sp_faltas + $facturation->lic_sin;
 				$facturation->sp_total = $sp_total;
 
-				$si_total=$facturation->descanso_med + $facturation->desc_vac + $facturation->lic_pag + + $facturation->paternidad;
+				$si_total=$facturation->descanso_med + $facturation->desc_vac + $facturation->lic_pag + $facturation->paternidad;
 				$facturation->si_total=$si_total;
 				$dias_nolab=$facturation->sp_total+ $facturation->si_total;
-				$facturation->dias_nolab = $dias_nolab;
+				$facturation->dias_nolab = $dias_nolab;           
+
+				$dias_calc=$facturation->dias_lab+$facturation->dias_sub+$facturation->dias_nolab;
+                
+				if($dias_calc == 31)
+				{
+					$dias_cal=30-$facturation->si_total-$facturation->dias_sub;
+				}
+				else
+				{
+					$dias_cal=$facturation->dias_lab;
+				}
+
+				$facturation->dias_calc = $dias_cal;
 
 				$dias_mes_t=$facturation->dias_lab + $facturation->dias_sub+$facturation->dias_nolab;
 				$facturation->dias_mes_t = $dias_mes_t;
@@ -644,7 +657,7 @@ class PlanillaTotalReportController extends Controller
 				$sheet->setCellValue('J'.$row_number, $element->feriado_t);
 				$sheet->setCellValue('K'.$row_number, $element->desc_t);
 				$sheet->setCellValue('L'.$row_number, $element->comp_vac);
-				$sheet->setCellValue('M'.$row_number, $element->dias_laborados); 
+				$sheet->setCellValue('M'.$row_number, $element->dias_lab); 
 				$sheet->setCellValue('N'.$row_number, $element->dias_calc);
 				$sheet->setCellValue('O'.$row_number, $element->incap_temp);
 				$sheet->setCellValue('P'.$row_number, $element->natalidad);
