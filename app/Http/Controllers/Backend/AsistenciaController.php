@@ -96,6 +96,7 @@ class AsistenciaController extends Controller
         $price_ids = request('price_ids');
         $operation_id = request('operation_id');
         $amount = request('amount');
+        $amount2 = request('amount2');
         $today = date('Y-m-d', strtotime(Carbon::now()->startOfDay()));
         $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
         $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
@@ -127,9 +128,11 @@ class AsistenciaController extends Controller
                 } elseif ( $operation_id == 2 ) {
                     $tardanza = $element->tardanzas + 1;
                     $horas_tarde = $element->horas_tarde + $amount;
+                    $minutos_tarde = $element->minutos_tarde + $amount2;
 
                     $element->tardanzas = $tardanza;
                     $element->horas_tarde = $horas_tarde;
+                    $element->minutos_tarde = $minutos_tarde;
                     $element->save();
 
                 //HORAS EXTRA

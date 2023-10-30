@@ -6,7 +6,7 @@
                 <!--begin::Form-->
                 <form class="kt-form" @submit.prevent="formController(url, $event)">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Actualizar precio</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Registrar Asistencia</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         </button>
                     </div>
@@ -23,8 +23,7 @@
                                             <option value="2">Tardanza</option>
                                             <option value="3">Horas Extra</option>
                                             <option value="4">Horas Extra 35%</option>
-                                            <option value="5">Bonificación Nocturna 25%</option>
-                                            <option value="6">Bonificación Nocturna 35%</option>
+                                            <option value="6">Bonificación Nocturna </option>
                                         </select>
                                         <div id="operation_id-error" class="error invalid-feedback"></div>
                                     </div>
@@ -33,6 +32,14 @@
                                     <div class="form-group">
                                         <label class="form-control-label">Horas:</label>
                                         <input type="tel" class="form-control" name="amount" id="amount" placeholder="1" v-model="model.amount" @focus="$parent.clearErrorMsg($event)">
+                                        <div id="amount-error" class="error invalid-feedback"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Minutos:</label>
+                                        <input type="tel" class="form-control" name="amount2" id="amount2" placeholder="1" v-model="model.amount2" @focus="$parent.clearErrorMsg($event)">
                                         <div id="amount-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -75,6 +82,7 @@
                     price_ids: [],
                     operation_id: '',
                     amount: '',
+                    amount2: '',
                    
                 },
                 min_effective_date: '',
@@ -93,6 +101,7 @@
                 this.model.price_ids = price_ids;
                 this.model.operation_id = '';
                 this.model.amount = '';
+                this.model.amount2 = '';
 
                 this.min_effective_date = '';
 
@@ -143,6 +152,7 @@
                             this.model.price_ids = [];
                             this.model.operation_id = '';
                             this.model.amount = '';
+                            this.model.amount2 = '';
                             this.min_effective_date = '';
 
                             EventBus.$emit('refresh_table');
