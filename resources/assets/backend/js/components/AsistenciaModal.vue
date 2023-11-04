@@ -112,8 +112,6 @@
                     $('#modal').modal('show');
                     EventBus.$emit('loading', false);
                 }).catch(error => {
-                    console.log(error);
-                    console.log(error.response);
                 });
             }.bind(this));
         },
@@ -145,7 +143,6 @@
                             }
                         }).then(response => {
                             EventBus.$emit('loading', false);
-                            console.log(response);
 
                             $('#modal').modal('hide');
 
@@ -166,7 +163,7 @@
 
                         }).catch(error => {
                             EventBus.$emit('loading', false);
-                            console.log(error.response);
+
                             var obj = error.response.data.errors;
                             $('.modal').animate({
                                 scrollTop: 0

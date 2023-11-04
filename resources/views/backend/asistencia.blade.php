@@ -12,6 +12,8 @@
 	
 	<asistencia-table
 		:url = "'{{ route('dashboard.rrhh.asistencia.list') }}'"
+		:asist_types = "{{ $asistTypes }}"
+		:url_save = "'{{ route('dashboard.rrhh.asistencia.store') }}'"
 	></asistencia-table>
 
 	<asistencia-modal
