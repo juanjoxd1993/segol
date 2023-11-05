@@ -102,13 +102,13 @@
             this.newSelect2();
         },
         watch: {
-            'model.business_unit_id': function(val, old) {
+          /* 'model.business_unit_id': function(val, old) {
 				if ( val != old ) {
 					this.model.client_id = '';
 					$('#client_id').val(null).trigger('change');
 				}
-			}
-        },
+			} */
+                },
         computed: {
 
         },
@@ -192,7 +192,7 @@
                         const tempUrl = window.URL.createObjectURL(new Blob([response2.data]));
                         const link = document.createElement('a');
                         link.href = tempUrl;
-                        link.download =  'reporte-de-ventas'+Date.now()+'.xls';
+                        link.download =  'reporte-de-ventas'.Date.now()+'.xls';
                         document.body.appendChild(link);
                         link.click();
 
@@ -210,8 +210,8 @@
                     }, 500, 'swing');
                     $.each(obj, function(i, item) {
                         // console.log(target);
-                        let c_target = target.find("#" + i + "-error");
-                        let p = c_target.parents('.form-group').find('#' + i);
+                       let c_target = target.find("#" + i + "-error");
+                     let p = c_target.parents('.form-group').find('#' + i);
                         p.addClass('is-invalid');
                         c_target.css('display', 'block');
                         c_target.html(item);

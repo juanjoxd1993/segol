@@ -21,7 +21,7 @@ class CertificadoReportController extends Controller
 {
     public function index() {
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
-		return view('backend.liquidations_channel_report')->with(compact('current_date'));
+		return view('backend.certificado_report')->with(compact('current_date'));
 	}
 
 	public function validateForm() {
