@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Backend;
 use App\Employee;
 use App\Client;
 use App\Company;
-use App\Article;
+use App\Asist;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Planilla;
+use App\Cicle;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -22,8 +23,10 @@ use stdClass;
 class CtsReportController extends Controller
 {
     public function index() {
-	//	$companies = Company::select('id', 'name')->get();
+		$companies = Company::select('id', 'name')->get();
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
+		$ciclos = Cicle::select('id', 'año', 'mes')->get();
+
 		return view('backend.cts_report')->with(compact('companies', 'current_date'));
 	}
 
@@ -68,44 +71,13 @@ class CtsReportController extends Controller
 	                           
 
 
-					/*	$elements = Asist::leftjoin('employees', 'cts_planillas.employ_id', '=', 'employees.id')
-							            ->where('cts_planillas.año', '=', $price_year)
-			            ->where('cts_planillas.mes', '<=', $price_mes)			            
-			            ->select('cts_planillas.id as planilla_id',
-                        'cts_planillas.año as año',
-                        'cts_planillas.mes as mes',
-                        'cts_planillas.employ_id as employ_id',
-                        'cts_planillas.employ_name as employ_name',
-                        'cts_planillas.cargo as cargo',
-                        'cts_planillas.regimen as regimen',
-                        'cts_planillas.sueldo as sueldo',
-                        'cts_planillas.familiar as familiar',
-                        'cts_planillas.otros as otros',
-                        'cts_planillas.bruto as bruto',
-                        'cts_planillas.horas_extra as horas_extra',
-                        'cts_planillas.noc_25 as noc_25',
-                        'cts_planillas.noc_35 as noc_35',
-                        'cts_planillas.afp_id as afp_id',
-                        'cts_planillas.afp_name as afp_name',
-                        'cts_planillas.afp_base as afp_base',
-                        'cts_planillas.afp_com as afp_com',
-                        'cts_planillas.afp_prima as afp_prima',
-                        'cts_planillas.quincena as quincena',
-                        'cts_planillas.total_desc as total_desc',
-                        'cts_planillas.neto as neto',
-                        'cts_planillas.salud as salud',
-                        'cts_planillas.sctr as sctr',
-                        'cts_planillas.total_apor as total_apor',
-                        'employees.document_number as document_number')*/
-
-
                  $elements = Asist::join('employees', 'asists.employ_id', '=', 'employees.id')
                     ->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')
                     ->leftjoin('areas', 'employees.area_id', '=', 'areas.id')
                     ->select('asists.id', 'asists.employ_id', 'asists.ciclo_id','asists.horas_tarde', 'asists.minutos_tarde', 
                       'employees.first_name','employees.document_number')
-                    ->where('employees.company_id', $company_id)
-                    ->where('asists.año', '=', $price_año)
+              //      ->where('employees.company_id', $company_id)
+                    ->where('asists.año', '=', $price_year)
                     ->where('asists.mes', '=', $price_mes)
 
 
@@ -139,50 +111,257 @@ class CtsReportController extends Controller
 				$facturation->employ_name = $facturation['employ_name'];
 			    $facturation->cargo = $facturation['cargo'];
                 $facturation->familiar = $facturation['familiar'];
+				$facturation->fecha_inicio = $facturation['fecha_inicio'];
                 
+				//OBTENIENDO FECHA DE CALCULO
+				$facturation->mes_calc = $facturation['inicio_cts']; //mayo- nov
+				$facturation->año_calc = $facturation['final_cts'];//octubre- abr
+				$facturation->fecha_ini = $facturation['fecha_ini'];//primer día del ciclo seleccionado
+
+
+
+                if($facturation->fecha_inicio>$facturation->mes_calc)
+				{
+					$diasDiferencia = $facturation->año_calc->diffInDays($facturation->fecha_inicio);
+				}
+
+				else{
+					$diasDiferencia = 180;
+				}
+
+				$mes_date=$facturation->fecha_ini;
+
+				$meses=$diasDiferencia/30;
+				$meses=round($meses,1);
+				$facturation->meses = $meses;
+
+				$meses_calc=$facturation->meses*30;
+				$facturation->meses_calc = $meses_calc;
+
+				$dias_calc=$diasDiferencia-$facturation->meses_calc;
+				$facturation->dias_calc = $dias_calc;
+
+
+				$price_mes = date('Y-m-01', strtotime('-1 month', strtotime($mes_date)));
+            //  $inicioMesPasado = date("Y-m-d", $price_mes);
+                $tiempoMesPasado = strtotime( "last day of previous month",strtotime($mes_date));
+                $fechaMesPasado = date("Y-m-d", $tiempoMesPasado);
+				$mes_pasado=date("m", $tiempoMesPasado);
+				$año_pasado=date("Y", $tiempoMesPasado);
+
+                $price_mes2 = date('Y-m-01', strtotime('-2 month', strtotime($mes_date)));
+                $price_mes3 = date('Y-m-01', strtotime('-3 month', strtotime($mes_date)));
+                $price_mes4 = date('Y-m-01', strtotime('-4 month', strtotime($mes_date)));
+                $price_mes5 = date('Y-m-01', strtotime('-5 month', strtotime($mes_date)));
+                $price_mes6 = date('Y-m-01', strtotime('-6 month', strtotime($mes_date)));
+
+                $tiempoMesPasado2 = strtotime( "last day of previous month",strtotime($price_mes));
+                $fechaMesPasado2 = date("Y-m-d", $tiempoMesPasado2);
+				$mes_pasado2=date("m", $tiempoMesPasado2);
+				$año_pasado2=date("Y", $tiempoMesPasado2);
+                $tiempoMesPasado3 = strtotime( "last day of previous month",strtotime($price_mes2));
+                $fechaMesPasado3 = date("Y-m-d", $tiempoMesPasado3);
+				$mes_pasado3=date("m", $tiempoMesPasado3);
+				$año_pasado3=date("Y", $tiempoMesPasado3);
+                $tiempoMesPasado4 = strtotime( "last day of previous month",strtotime($price_mes3));
+                $fechaMesPasado4 = date("Y-m-d", $tiempoMesPasado4);
+				$mes_pasado4=date("m", $tiempoMesPasado4);
+				$año_pasado4=date("Y", $tiempoMesPasado4);
+                $tiempoMesPasado5 = strtotime( "last day of previous month",strtotime($price_mes4));
+                $fechaMesPasado5 = date("Y-m-d", $tiempoMesPasado5);
+				$mes_pasado5=date("m", $tiempoMesPasado5);
+				$año_pasado5=date("Y", $tiempoMesPasado5);
+                $tiempoMesPasado6 = strtotime( "last day of previous month",strtotime($price_mes5));
+                $fechaMesPasado6 = date("Y-m-d", $tiempoMesPasado6);
+				$mes_pasado6=date("m", $tiempoMesPasado6);
+				$año_pasado6=date("Y", $tiempoMesPasado6);
+				
+				//horas extras
+				$he_25=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado)
+				->where('asists.año', $año_pasado)
+				->select('asists.horas_extra_25')
+				->sum('asists.horas_extra_25');
+
+				$facturation->he_25 = $he_25;
+
+				$he_35=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado)
+				->where('asists.año', $año_pasado)
+				->select('asists.horas_extra_35')
+				->sum('asists.horas_extra_35');
+				$facturation->he_35 = $he_35;
+
+				$phe_25=($facturation->sueldo/240)*($facturation->he_25*1.25);
+				$facturation->phe_25 = round($phe_25, 2);
+				$phe_35=($facturation->sueldo/240)*($facturation->he_35*1.35);
+				$facturation->phe_35 = round($phe_35, 2);
+
+				$he_252=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado2)
+				->where('asists.año', $año_pasado2)
+				->select('asists.horas_extra_25')
+				->sum('asists.horas_extra_25');
+
+				$facturation->he_252 = $he_252;
+
+				$he_352=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado2)
+				->where('asists.año', $año_pasado2)
+				->select('asists.horas_extra_35')
+				->sum('asists.horas_extra_35');
+				$facturation->he_352 = $he_352;
+
+				$phe_252=($facturation->sueldo/240)*($facturation->he_252*1.25);
+				$facturation->phe_252 = round($phe_252, 2);
+				$phe_352=($facturation->sueldo/240)*($facturation->he_352*1.35);
+				$facturation->phe_352 = round($phe_352, 2);
+
+				$he_253=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado3)
+				->where('asists.año', $año_pasado3)
+				->select('asists.horas_extra_25')
+				->sum('asists.horas_extra_25');
+
+				$facturation->he_253 = $he_253;
+
+				$he_353=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado3)
+				->where('asists.año', $año_pasado3)
+				->select('asists.horas_extra_35')
+				->sum('asists.horas_extra_35');
+				$facturation->he_353 = $he_353;
+
+				$phe_253=($facturation->sueldo/240)*($facturation->he_253*1.25);
+				$facturation->phe_253 = round($phe_253, 2);
+				$phe_353=($facturation->sueldo/240)*($facturation->he_353*1.35);
+				$facturation->phe_353 = round($phe_353, 2);
+
+
+				$he_254=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado4)
+				->where('asists.año', $año_pasado4)
+				->select('asists.horas_extra_25')
+				->sum('asists.horas_extra_25');
+
+				$facturation->he_254 = $he_254;
+
+				$he_354=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado4)
+				->where('asists.año', $año_pasado4)
+				->select('asists.horas_extra_35')
+				->sum('asists.horas_extra_35');
+				$facturation->he_354 = $he_354;
+
+				$phe_254=($facturation->sueldo/240)*($facturation->he_254*1.25);
+				$facturation->phe_254 = round($phe_254, 2);
+				$phe_354=($facturation->sueldo/240)*($facturation->he_354*1.35);
+				$facturation->phe_354 = round($phe_354, 2);
+
+
+				$he_255=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado5)
+				->where('asists.año', $año_pasado5)
+				->select('asists.horas_extra_25')
+				->sum('asists.horas_extra_25');
+
+				$facturation->he_255 = $he_255;
+
+				$he_355=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado5)
+				->where('asists.año', $año_pasado5)
+				->select('asists.horas_extra_35')
+				->sum('asists.horas_extra_35');
+				$facturation->he_355 = $he_355;
+
+				$phe_255=($facturation->sueldo/240)*($facturation->he_255*1.25);
+				$facturation->phe_255 = round($phe_255, 2);
+				$phe_355=($facturation->sueldo/240)*($facturation->he_355*1.35);
+				$facturation->phe_355 = round($phe_355, 2);
+
+				$he_256=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado6)
+				->where('asists.año', $año_pasado6)
+				->select('asists.horas_extra_25')
+				->sum('asists.horas_extra_25');
+
+				$facturation->he_256 = $he_256;
+
+				$he_356=Asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
+				->where('asists.employ_id', $facturation->employ_id)
+				->where('asists.mes', $mes_pasado6)
+				->where('asists.año', $año_pasado6)
+				->select('asists.horas_extra_35')
+				->sum('asists.horas_extra_35');
+				$facturation->he_356 = $he_356;
+
+				$phe_256=($facturation->sueldo/240)*($facturation->he_256*1.25);
+				$facturation->phe_256 = round($phe_256, 2);
+				$phe_356=($facturation->sueldo/240)*($facturation->he_356*1.35);
+				$facturation->phe_356 = round($phe_356, 2);
+
+
+		    $facturation->he_1=$facturation->phe_25+$facturation->phe_35;
+			$facturation->he_2=$facturation->phe_252+$facturation->phe_352;
+			$facturation->he_3=$facturation->phe_253+$facturation->phe_353;
+			$facturation->he_4=$facturation->phe_254+$facturation->phe_354;
+			$facturation->he_5=$facturation->phe_255+$facturation->phe_355;
+			$facturation->he_6=$facturation->phe_256+$facturation->phe_356;
+
+
+
+
+
+
+
+
+
+
+				$com_1=0;
+				$bon_1=0;
+
+
+                
+            
+
+                $monthName  = date("F", strtotime ($fechaMesPasado));
+                $monthName2 = date("F", strtotime ($fechaMesPasado2));
+                $monthName3 = date("F", strtotime ($fechaMesPasado3));
+                $monthName4 = date("F", strtotime ($fechaMesPasado4));
+                $monthName5 = date("F", strtotime ($fechaMesPasado5));
+                $monthName6 = date("F", strtotime ($fechaMesPasado6)); 
+
+				                
                 if( $facturation->familiar > 0){
                     $facturation->asignacion = 'SI';   
                 }
                 else {
                     $facturation->asignacion = 'NO';
                 }
+	
+
 			    $facturation->sueldo = $facturation['sueldo'];
 			    $facturation->familiar = $facturation['familiar'];
-                $facturation->otros = $facturation['otros'];
-                $facturation->bruto = $facturation['bruto'];
-                $facturation->afp_name= $facturation['afp_name'];
-                $facturation->afp_base = $facturation['afp_base'];
-                $facturation->afp_com = $facturation['afp_com'];
-                $facturation->afp_prima = $facturation['afp_prima'];
-                $facturation->total_desc = $facturation['total_desc'];
-                $facturation->neto = $facturation['neto'];
-                $facturation->salud = $facturation['salud'];
-                $facturation->sctr = $facturation['sctr'];
-                $facturation->noc_25 = $facturation['noc_25'];
-                $facturation->noc_35 = $facturation['noc_35'];
-                $facturation->horas_extra = $facturation['horas_extra'];
-                $facturation->quincena = $facturation['quincena'];
-                $facturation->total_apor = $facturation['total_apor'];
+               
 
 
 
 
 			$totals_sum_sueldo += $facturation['sueldo'];
 			$totals_sum_familiar += $facturation['familiar'];
-		    $totals_sum_otros += $facturation['otros'];
-            $totals_sum_bruto += $facturation['bruto'];
-		    $totals_sum_horas_extra += $facturation['horas_extra'];
-		    $totals_sum_noc_25 += $facturation['noc_25'];
-		    $totals_sum_noc_35 += $facturation ['noc_35'];
-		    $totals_sum_afp_base += $facturation['afp_base'];
-			$totals_sum_afp_com += $facturation ['afp_com'];
-		    $totals_sum_afp_prima += $facturation['afp_prima'];
-			$totals_sum_total_desc += $facturation['total_desc'];
-			$totals_sum_neto += $facturation['neto'];
-		    $totals_sum_salud += $facturation['salud'];
-		    $totals_sum_quincena += $facturation ['quincena'];
-		    $totals_sum_sctr += $facturation['sctr'];
-			$totals_sum_total_apor += $facturation ['total_apor'];
+		
+
 			
                
 			
@@ -297,46 +476,45 @@ class CtsReportController extends Controller
 			$sheet->setCellValue('F5', 'FECHA DE INGRESO');		
             $sheet->setCellValue('G5', 'MESES');
 		 	$sheet->setCellValue('H5', 'DIAS');
-		 	$sheet->setCellValue('I5', 'DIAS S.P MAY-OCT');
-            $sheet->setCellValue('J5', $CAB1);
-            $sheet->setCellValue('K5', $CAB2);
-            $sheet->setCellValue('L5', $CAB3);
-            $sheet->setCellValue('M5', $CAB4);
-            $sheet->setCellValue('N5', $CAB5);
-            $sheet->setCellValue('O5', $CAB6);
-            $sheet->setCellValue('P5', $CAB7);
-            $sheet->setCellValue('Q5', $CAB8);
-            $sheet->setCellValue('R5', $CAB9);
-            $sheet->setCellValue('S5', $CAB10);
-            $sheet->setCellValue('T5', $CAB11);
-            $sheet->setCellValue('U5', $CAB12);
-            $sheet->setCellValue('V5', $CAB13);
-            $sheet->setCellValue('W5', $CAB14);
-            $sheet->setCellValue('X5', $CAB15);
-            $sheet->setCellValue('Y5', $CAB16);
-            $sheet->setCellValue('Z5', $CAB17);
-            $sheet->setCellValue('AA5', $CAB18);
-			$sheet->setCellValue('AB5', 'OTROS');
+		 	$sheet->setCellValue('I5', 'DIAS S.P');
+            $sheet->setCellValue('J5', 'COM'. $monthName);//COM 1
+            $sheet->setCellValue('K5', 'COM'. $monthName2);
+            $sheet->setCellValue('L5', 'COM'. $monthName3);
+            $sheet->setCellValue('M5', 'COM'. $monthName4);
+            $sheet->setCellValue('N5', 'COM'. $monthName5);
+            $sheet->setCellValue('O5', 'COM'. $monthName6);//COM
+            $sheet->setCellValue('P5', 'HE');//HE1
+            $sheet->setCellValue('Q5', 'HE');
+            $sheet->setCellValue('R5', 'HE');
+            $sheet->setCellValue('S5', 'HE');
+            $sheet->setCellValue('T5', 'HE');
+            $sheet->setCellValue('U5', 'HE');//HE
+            $sheet->setCellValue('V5', 'BON');//BON1
+            $sheet->setCellValue('W5', 'BON');
+            $sheet->setCellValue('X5', 'BON');
+            $sheet->setCellValue('Y5', 'BON');
+            $sheet->setCellValue('Z5', 'BON');
+            $sheet->setCellValue('AA5', 'BON');//BON 
 			$sheet->setCellValue('AB5', 'FIESTAS PATRIAS');
 		 	$sheet->setCellValue('AC5', 'REM BASICA');
             $sheet->setCellValue('AD5', 'GRAT. FIESTAS PATRIAS');
 			$sheet->setCellValue('AE5', 'Prom. HE');
-			$sheet->setCellValue('AF5', 'Pom. Comisiones');
+			$sheet->setCellValue('AF5', 'Prom. Comisiones');
 			$sheet->setCellValue('AG5', 'Prom. Bon Reg');
-			$sheet->setCellValue('AH5', 'OTROS');
-			$sheet->setCellValue('AI5', 'TOTAL COMPUTABLE');
-			$sheet->setCellValue('AJ5', 'IMPORTE X MES');
-			$sheet->setCellValue('AK5', 'IMPORTE X DIA');
-			$sheet->setCellValue('AL5', 'BANCO ');
-            $sheet->setCellValue('AM5', 'CTA ');
-			$sheet->setCellValue('AN5', 'CCI');
+			$sheet->setCellValue('AH5', 'TOTAL COMPUTABLE');
+			$sheet->setCellValue('AI5', 'IMPORTE X MES');
+			$sheet->setCellValue('AJ5', 'IMPORTE X DIA');
+			$sheet->setCellValue('AK5', 'BANCO ');
+            $sheet->setCellValue('AL5', 'CTA ');
+			$sheet->setCellValue('AM5', 'CCI');
 
 
-			$sheet->getStyle('A5:AN5')->applyFromArray([
+			$sheet->getStyle('A5:AM5')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
 			]);
+			
 
 			$row_number = 4;
 			foreach ($response as $index => $element) {
@@ -345,24 +523,44 @@ class CtsReportController extends Controller
 				$sheet->setCellValue('B'.$row_number, $element->document_number);
 				$sheet->setCellValue('C'.$row_number, $element->employ_name);
                 $sheet->setCellValue('D'.$row_number, $element->cargo);
-				$sheet->setCellValue('E'.$row_number, $element->asignacion);
-				$sheet->setCellValue('F'.$row_number, $element->sueldo);
-                $sheet->setCellValue('G'.$row_number, $element->familiar);
-                $sheet->setCellValue('H'.$row_number, $element->horas_extra);
-                $sheet->setCellValue('I'.$row_number, $element->noc_25);
-                $sheet->setCellValue('J'.$row_number, $element->noc_35);
-                $sheet->setCellValue('K'.$row_number, $element->otros);
-				$sheet->setCellValue('L'.$row_number, $element->bruto);
-				$sheet->setCellValue('N'.$row_number, $element->afp_name);
-				$sheet->setCellValue('O'.$row_number, $element->afp_base);
-				$sheet->setCellValue('P'.$row_number, $element->afp_com);
-				$sheet->setCellValue('Q'.$row_number, $element->afp_prima);
-				$sheet->setCellValue('R'.$row_number, $element->quincena);
-				$sheet->setCellValue('S'.$row_number, $element->total_desc); 
-				$sheet->setCellValue('T'.$row_number, $element->neto);
-				$sheet->setCellValue('U'.$row_number, $element->salud);
-				$sheet->setCellValue('V'.$row_number, $element->sctr);
-				$sheet->setCellValue('W'.$row_number, $element->total_apor);
+                $sheet->setCellValue('E'.$row_number, $element->fecha_ingreso);
+                $sheet->setCellValue('F'.$row_number, $element->meses);
+                $sheet->setCellValue('G'.$row_number, $element->dias);
+                $sheet->setCellValue('H'.$row_number, $element->total_sp);
+                $sheet->setCellValue('I'.$row_number, $element->com_1);
+				$sheet->setCellValue('J'.$row_number, $element->com_2);
+				$sheet->setCellValue('K'.$row_number, $element->com_3);
+				$sheet->setCellValue('M'.$row_number, $element->com_4);
+				$sheet->setCellValue('N'.$row_number, $element->com_5);
+				$sheet->setCellValue('O'.$row_number, $element->com_6);
+				$sheet->setCellValue('P'.$row_number, $element->he_1);
+				$sheet->setCellValue('Q'.$row_number, $element->he_2);
+				$sheet->setCellValue('R'.$row_number, $element->he_3);
+				$sheet->setCellValue('S'.$row_number, $element->he_4);
+				$sheet->setCellValue('T'.$row_number, $element->he_5);
+				$sheet->setCellValue('U'.$row_number, $element->he_6);
+				$sheet->setCellValue('V'.$row_number, $element->bon_1);
+				$sheet->setCellValue('W'.$row_number, $element->bon_2);
+				$sheet->setCellValue('X'.$row_number, $element->bon_3);
+				$sheet->setCellValue('Y'.$row_number, $element->bon_4);
+				$sheet->setCellValue('Z'.$row_number, $element->bon_5);
+				$sheet->setCellValue('AA'.$row_number, $element->bon_6);
+				$sheet->setCellValue('AB'.$row_number, $element->grati);
+				$sheet->setCellValue('AC'.$row_number, $element->sueldo); 
+				$sheet->setCellValue('AD'.$row_number, $element->familiar);
+				$sheet->setCellValue('AE'.$row_number, $element->gratdiv);
+				$sheet->setCellValue('AF'.$row_number, $element->prom_he);
+				$sheet->setCellValue('AG'.$row_number, $element->prom_com);
+				$sheet->setCellValue('AH'.$row_number, $element->prom_bon);
+				$sheet->setCellValue('AI'.$row_number, $element->total_comp);
+				$sheet->setCellValue('AF'.$row_number, $element->import_mes);
+				$sheet->setCellValue('AG'.$row_number, $element->import_dia);
+				$sheet->setCellValue('AH'.$row_number, $element->total_cts);
+
+
+
+
+
 				
 							
                 $sheet->getStyle('E'.$row_number)->getNumberFormat()->setFormatCode('0.00');

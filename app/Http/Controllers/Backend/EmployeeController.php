@@ -18,6 +18,7 @@ use App\DocumentType;
 use App\Payment;
 use App\PriceList;
 use App\Rate;
+use App\Employee;
 use App\Ubigeo;
 use Auth;
 use Carbon\Carbon;
@@ -71,10 +72,10 @@ class EmployeeController extends Controller
 		$search = $q['generalSearch'] ?? '';
 		request()->replace(['page' => $page]);
 
-		$elements = Client::select('id', 'company_id', 'code', 'business_name', 'document_type_id', 'document_number', 'channel_id', 'email', 'phone_number_1', 'phone_number_2', 'seller_id', 'credit_limit','manager_id', 'perception_percentage_id', 'zone_id', 'route_id', 'sector_id','grupo')
+		$elements = Employee::select('id', 'company_id', 'first_name', 'last_name','document_type_id', 'document_number', 'asignacion_id', 'sueldo', 'afp_id', 'area_id', 'sctr_id', 'fecha_inicio','email', 'phone_number_1','contact_name_1')
 		
 			->when($search, function($query, $search) {
-			return $query->where('document_number', 'like', '%'.$search.'%') ->orWhere('business_name', 'like', '%'.$search.'%');
+			return $query->where('document_number', 'like', '%'.$search.'%') ->orWhere('first_name', 'like', '%'.$search.'%');
 			})
 			->where('company_id', $company_id)
 			->orderBy('id', 'asc')
@@ -82,8 +83,6 @@ class EmployeeController extends Controller
 
 		$elements->map(function($item, $key) {
 			$item->document_type_name = $item->document_type->name;
-			$item->credit_limit = number_format($item->credit_limit, 2, '.', ',');
-			$item->perception_percentage_value = number_format($item->perception_percentage->value, 1, '.', '');
 		});
 
 		$meta = new \stdClass();
@@ -106,9 +105,9 @@ class EmployeeController extends Controller
 	public function detail() {
 		$id = request('id');
 
-		$element = Client::select('id', 'company_id', 'code', 'business_name', 'document_type_id', 'document_number', 'contact_name_1', 'contact_name_2', 'email', 'phone_number_1', 'phone_number_2', 'phone_number_3', 'seller_id', 'business_type','dgh','police','manager','manager_id','manager_mail', 'payment_id', 'credit_limit', 'credit_limit_days', 'perception_percentage_id', 'business_unit_id', 'zone_id', 'channel_id', 'route_id', 'sector_id','grupo')->findOrFail($id);
+		$element = Employee::select('id', 'company_id', 'first_name', 'last_name','document_type_id', 'document_number', 'asignacion_id', 'sueldo', 'afp_id', 'area_id', 'sctr_id', 'fecha_inicio','email', 'phone_number_1','contact_name_1')->findOrFail($id);
 
-		$childElement = ClientAddress::where('client_id', $id)
+		$childElement = EmployeeAddress::where('employee_id', $id)
 			->where('address_type_id', 1)
 			->where('item_number', 1)
 			->first();
@@ -126,44 +125,35 @@ class EmployeeController extends Controller
 			'document_type_id.required'			=> 'El Tipo de Documento es obligatorio.',
 			'document_number.required'			=> 'El Número de Documento es obligatorio.',
 		//	'client_code.required'				=> 'El Código de Cliente es obligatorio.',
-			'business_name.required'			=> 'El Nombre o Razón Social es obligatorio.',
+			'first_name.required'			=> 'El Nombre o Razón Social es obligatorio.',
 			'address.required'					=> 'La Dirección es obligatoria.',
 			'ubigeo_id.required'				=> 'El Ubigeo es obligatorio.',
 			'contact_name_1.required'			=> 'El Nombre de Contacto 1 es obligatorio.',
 			// 'email.required_if'					=> 'El Email es obligatorio.',
 			// 'phone_number_1.required'			=> 'El Teléfono 1 es obligatorio.',
-			'business_unit_id.required'			=> 'La Unidad de Negocio es obligatoria.',
-			'zone_id.required'					=> 'La Zona es obligatoria.',
-			'channel_id.required'				=> 'El Canal es obligatorio.',
-			'route_id.required'					=> 'La Ruta es obligatoria.',
-			'sector_id.required'				=> 'El Sector es obligatorio.',
-			'payment_id.required'				=> 'La Condición de Pago es obligatoria.',
-			'credit_limit.required_if'			=> 'Debe digitar un Límite de Crédito.',
-			'credit_limit_days.required_if'		=> 'Debe digitar los Días de Crédito.',
-			'perception_percentage_id.required'	=> 'El Agente de Percepción es obligatorio.',
-			'int_name.required'	=> 'La referencia interna es obligatoria.',
+			'asignacion_id.required'			=> 'La Asignación es obligatoria.',
+			'sueldo.required'					=> 'El Salario es obligatorio.',
+			'afp_id.required'				=> 'El Tipo de AFP es obligatorio.',
+			'salud_id.required'					=> 'El tipo de Seguro es obligatorio.',
+			'sctr_id.required'				=> 'El tipo de SCTR es obligatorio.',
+			'fecha_inicio.required'				=> 'La fecha de Alta es obligatoria.',
 		];
 
 		$rules = [
 			'document_type_id'			=> 'required',
 			'document_number'			=> 'required',
 		//	'client_code'				=> 'required',
-			'business_name'				=> 'required',
+			'first_name'				=> 'required',
 			'address'					=> 'required',
 			'ubigeo_id'					=> 'required',
 			'contact_name_1'			=> 'required',
 			// 'email'						=> 'required_if:document_type_id,1',
 			// 'phone_number_1'			=> 'required',
-			'business_unit_id'			=> 'required',
-			'zone_id'					=> 'required',
-			'channel_id'				=> 'required',
-			'route_id'					=> 'required',
-			'sector_id'					=> 'required',
-			'payment_id'				=> 'required',
-			'credit_limit'				=> 'required_if:payment_id,2',
-			'credit_limit_days'			=> 'required_if:payment_id,2',
-			'perception_percentage_id'	=> 'required',
-			'int_name'                  => 'required',
+			'asignación_id'			=> 'required',
+			'afp_id'					=> 'required',
+			'salud_id'				=> 'required',
+			'sctr_id'					=> 'required',
+			'fecha_inicio_id'					=> 'required',			
 		];
 
 		request()->validate($rules, $messages);
@@ -194,16 +184,15 @@ class EmployeeController extends Controller
 		$company_id = request('company_id');
 		$q = request('q');
 
-		$clients = Client::select('id', 'code')
+		$clients = Employee::select('id', 'first_name')
 		    ->where('company_id', $company_id)
-			->where('code', 'like', '%'.$q.'%')
-			->where('business_name', 'like', '%'.$q.'%')
+			->where('first_name', 'like', '%'.$q.'%')
 			->orderBy('code', 'asc')
 			->get();
 
 		$clients->map(function($item, $index){
-			$item->text = $item->code;
-			unset($item->code);
+			$item->text = $item->first_name;
+			unset($item->first_name);
 			return $item;
 		});
 
@@ -241,46 +230,28 @@ class EmployeeController extends Controller
 
 		$id = request('id');
 		$company_id = request('company_id');
-		$business_name = request('business_name');
+		$first_name = request('business_name');
 		$document_type_id = request('document_type_id');
 		$document_number = request('document_number');
-		$client_code = request('client_code');
 		$address = request('address');
 		$address_reference = request('address_reference');
-		$ubigeo_id = request('ubigeo_id');
+		$sueldo = request('sueldo');
 		$contact_name_1 = request('contact_name_1');
-		$contact_name_2 = request('contact_name_2');
 		$email = request('email');
 		$phone_number_1 = request('phone_number_1');
 		$phone_number_2 = request('phone_number_2');
-		$phone_number_3 = request('phone_number_3');
-		$business_unit_id = request('business_unit_id');
-		$zone_id = request('zone_id');
-		$channel_id = request('channel_id');
-		$route_id = request('route_id');
-		$sector_id = request('sector_id');
-		$seller_id = request('seller_id');
-		$business_type = request('business_type');
-		$dgh = request('dgh');
-		$police = request('police');
-		$manager = request('manager');
-		$manager_id = request('manager_id');
-		$manager_mail = request('manager_mail');
-		$payment_id = request('payment_id');
-		$credit_limit = request('credit_limit');
-		$credit_limit_days = request('credit_limit_days');
-		$grupo = request('grupo');
-		$perception_percentage_id = request('perception_percentage_id');
-		$bol_name = 'CLIENTES VARIOS';
-		$bol_number = '12345678';
-		$int_name = $business_name . ' - ' . request('int_name');
+		$asignacion_id = request('asignacion_id');
+		$afp_id = request('afp_id');
+		$salud_id = request('salud_id');
+		$sctr_id = request('sctr_id');
+		
 
 		if ( isset($id) ) {
-			$element = Client::find($id);
+			$element = Employee::find($id);
 			$msg = 'Registro actualizado exitosamente';
 			$element->updated_at_user = Auth::user()->user;
 
-			$childElement = ClientAddress::where('client_id', $id)
+			$childElement = EmployeeAddress::where('client_id', $id)
 				->where('address_type_id', 1)
 				->where('item_number', 1)
 				->first();
@@ -288,7 +259,7 @@ class EmployeeController extends Controller
 			if ($childElement) {
 				$childElement->updated_at_user = Auth::user()->user;
 			} else {
-				$childElement = new ClientAddress();
+				$childElement = new EmployeeAddress();
 				$childElement->created_at_user = Auth::user()->user;
 				$childElement->updated_at_user = Auth::user()->user;
 			}
@@ -298,18 +269,17 @@ class EmployeeController extends Controller
 			$msg = 'Registro creado exitosamente';
 			$element->created_at_user = Auth::user()->user;
 			$element->updated_at_user = Auth::user()->user;
-            $element->bol_name = $bol_name;
-            $element->bol_number = $bol_number;
+      
 
-			$childElement = new ClientAddress();
+			$childElement = new EmployeeAddress();
 			$childElement->created_at_user = Auth::user()->user;
 			$childElement->updated_at_user = Auth::user()->user;
 		}
 		$element->company_id = $company_id;
-		$element->business_name = $business_name;
+		$element->first_name = $first_name;
 		$element->document_type_id = $document_type_id;
 		$element->document_number = $document_number;
-		$element->code = $client_code;
+		$element->sueldo = $sueldo;
 		$element->contact_name_1 = $contact_name_1;
 		$element->contact_name_2 = $contact_name_2;
 		$element->email = $email;
@@ -317,26 +287,15 @@ class EmployeeController extends Controller
 		$element->phone_number_2 = $phone_number_2;
 		$element->phone_number_3 = $phone_number_3;
 		$element->business_unit_id = $business_unit_id;
-		$element->zone_id = $zone_id;
-		$element->channel_id = $channel_id;
-		$element->route_id = $route_id;
-		$element->sector_id = $sector_id;
+		$element->asignacion_id = $zone_id;
+		$element->afp_id = $channel_id;
+		$element->salud_id = $route_id;
+		$element->sctr_id = $sector_id;
 		$element->seller_id = $seller_id;
-		$element->business_type = $business_type;
-		$element->dgh = $dgh;
-		$element->police = $police;
-		$element->manager = $manager;
-		$element->manager_id = $manager_id;
-		$element->manager_mail= $manager_mail;
-		$element->payment_id = $payment_id;
-		$element->grupo = $grupo;
-		$element->credit_limit = $payment_id == 2 ? $credit_limit : 0;
-		$element->credit_limit_days = $payment_id == 2 ? $credit_limit_days : 0;
-		$element->perception_percentage_id = $perception_percentage_id;
-		$element->int_name = $int_name;
+		$element->fecha_inicio = $fecha_inicio;
 		$element->save();
 
-		$childElement->client_id = $element->id;
+		$childElement->employee_id = $element->id;
 		$childElement->address_type_id = 1;
 		$childElement->item_number = 1;
 		$childElement->address = $address;
@@ -406,19 +365,19 @@ class EmployeeController extends Controller
 
 	public function delete() {
 		$id = request('id');
-		$element = Client::findOrFail($id);
+		$element = Employee::findOrFail($id);
 		$element->delete();
 	}
 
 	public function addressList() {
-		$client_id = request('client_id');
+		$employee_id = request('employee_id');
 		$p = request('pagination');
 		$page = (int)$p['page'];
 		$perpage = (int)( $p['perpage'] ? $p['perpage'] : 10 );
 		request()->replace(['page' => $page]);		
 
-		$elements = ClientAddress::select('id', 'client_id', 'address_type_id', 'item_number', 'address', 'ubigeo_id')
-			->where('client_id', $client_id)
+		$elements = EmployeeAddress::select('id', 'employee_id', 'address_type_id', 'item_number', 'address', 'ubigeo_id')
+			->where('employee_id', $employee_id)
 			->paginate($perpage);
 
 		$elements->map(function($item, $index) {
@@ -462,7 +421,7 @@ class EmployeeController extends Controller
 	public function addressDetail() {
 		$id = request('id');
 
-		$element = ClientAddress::select('id', 'client_id', 'address_type_id', 'item_number', 'address', 'address_reference', 'ubigeo_id')
+		$element = EmployeeAddress::select('id', 'employee_id', 'address_type_id', 'item_number', 'address', 'address_reference', 'ubigeo_id')
 			->findOrFail($id);
 		
 		$option = new stdClass();
@@ -479,7 +438,7 @@ class EmployeeController extends Controller
 		$this->validateAddressModalForm();
 
 		$id = request('id');
-		$client_id = request('client_id');
+		$employee_id = request('employee_id');
 		$address_type_id = request('address_type_id');
 		$item_number = request('item_number');
 		$address = request('address');
@@ -487,23 +446,23 @@ class EmployeeController extends Controller
 		$ubigeo_id = request('address_ubigeo_id');
 
 		if ( isset($id) ) {
-			$element = ClientAddress::find($id);
+			$element = EmployeeAddress::find($id);
 			$msg = 'Registro actualizado exitosamente';
 			$element->updated_at_user = Auth::user()->user;
 		} else {
-			$element = new ClientAddress();
+			$element = new EmployeeAddress();
 			$msg = 'Registro creado exitosamente';
 			$element->created_at_user = Auth::user()->user;
 			$element->updated_at_user = Auth::user()->user;
 
-			$item_number = ClientAddress::select('client_id', 'address_type_id', 'item_number')
-				->where('client_id', $client_id)
+			$item_number = EmployeeAddress::select('employee_id', 'address_type_id', 'item_number')
+				->where('employee_id', $employee_id)
 				->where('address_type_id', $address_type_id)
 				->max('item_number');
 			$element->item_number = ++$item_number;
 		}
 
-		$element->client_id = $client_id;
+		$element->employee_id = $employee_id;
 		$element->address_type_id = $address_type_id;
 		$element->address = $address;
 		$element->address_reference = $address_reference;
@@ -522,12 +481,12 @@ class EmployeeController extends Controller
 
 	public function addressDelete() {
 		$id = request('id');
-		$element = ClientAddress::findOrFail($id);
+		$element = EmployeeAddress::findOrFail($id);
 		$element->item_number = '';
 		$element->delete();
 
-		$elements = ClientAddress::select('id', 'item_number')
-			->where('client_id', $element->client->id)
+		$elements = EmployeeAddress::select('id', 'item_number')
+			->where('employee_id', $element->client->id)
 			->where('address_type_id', $element->address_type->id)
 			->orderBy('item_number', 'asc')
 			->get();
@@ -539,6 +498,7 @@ class EmployeeController extends Controller
 		}
 	}
 
+	
 	public function priceList() {
 		$client_id = request('client_id');
 		$today = Carbon::now()->startOfDay();
@@ -678,82 +638,80 @@ class EmployeeController extends Controller
 
 	public function update_address($id) {
 		$company = Company::where('id', $id)->first();
-		$clients = DB::connection($company->database_name)
-			->table('MaestroCliente')
+		$employees = DB::connection($company->database_name)
+			->table('Maestroemployeee')
 			->get();
 		
-		$clients->each(function($item, $key) use ($company) {
-			$client = Client::where('company_id', $company->id)
-				->where('code', $item->CodCliente)
+		$employees->each(function($item, $key) use ($company) {
+			$employee = employee::where('company_id', $company->id)
+				->where('code', $item->Codemployeee)
 				->first();
 
-			$clientAddress = ClientAddress::where('client_id', $client->id)->first();
-			if ( !$clientAddress ) {
-				$clientAddress = new ClientAddress();
+			$employeeAddress = EmployeeAddress::where('employee_id', $employee->id)->first();
+			if ( !$employeeAddress ) {
+				$employeeAddress = new EmployeeAddress();
 			}
-			$clientAddress->client_id = $client->id;
-			$clientAddress->address_type_id = 1;
-			$clientAddress->address = trim($item->Direccion);
-			$clientAddress->ubigeo_id = 347;
-			$clientAddress->save();
+			$employeeAddress->employee_id = $employee->id;
+			$employeeAddress->address_type_id = 1;
+			$employeeAddress->address = trim($item->Direccion);
+			$employeeAddress->ubigeo_id = 347;
+			$employeeAddress->save();
 		});
 	}
 
 	public function store_tmp($id) {
 		$company = Company::where('id', $id)->first();
-		$clients = DB::connection($company->database_name)
+		$employees = DB::connection($company->database_name)
 			->table('MaestroCliente')
 			->get();
 		
-		$clients->each(function($item, $key) use ($company) {
-			$client = Client::where('company_id', $company->id)
-				->where('code', $item->CodCliente)
+		$employees->each(function($item, $key) use ($company) {
+			$employee = Employee::where('company_id', $company->id)
+				->where('code', $item->CodEmployeee)
 				->first();
-			if ( !$client ) {
-				if ( trim($item->RucCliente) ) {
+			if ( !$employee ) {
+				if ( trim($item->RucEmployee) ) {
 					$documentType = 1;
-					$documentNumber = trim($item->RucCliente);
+					$documentNumber = trim($item->RucEmployee);
 				} elseif ( trim($item->DNI) ) {
 					$documentType = 2;
 					$documentNumber = trim($item->DNI);
 				} else {
 					$documentType = 3;
-					$documentNumber = trim($item->CodCliente);
+					$documentNumber = trim($item->CodEmployee);
 				}
 
-				$newClient = new Client();
-				$newClient->company_id = $company->id;
-				$newClient->code = trim($item->CodCliente);
-				$newClient->business_name = trim($item->RazonSocial);
-				$newClient->document_type_id = $documentType;
-				$newClient->document_number = $documentNumber;
-				$newClient->email = trim($item->EMail);
-				$newClient->channel_id = trim($item->Canal);
-				$newClient->phone_number_1 = trim($item->TelfMovil);
-				$newClient->phone_number_2 = '';
-				$newClient->client_group_id = trim($item->CodGrupo);
-				$newClient->zip_code = trim($item->CodZip);
-				$newClient->seller_id = trim($item->CodVendedor);
-				$newClient->credit_limit = trim($item->LimiteCredito);
-				$newClient->created_at_user = trim($item->UsuarioCreador);
-				$newClient->updated_at_user = trim($item->UsuarioCreador);
-				$newClient->save();
+				$newEmployee = new Employee();
+				$newEmployee->company_id = $company->id;
+				$newEmployee->code = trim($item->CodEmployeee);
+				$newEmployee->business_name = trim($item->RazonSocial);
+				$newEmployee->document_type_id = $documentType;
+				$newEmployee->document_number = $documentNumber;
+				$newEmployee->email = trim($item->EMail);
+				$newEmployee->channel_id = trim($item->Canal);
+				$newEmployee->phone_number_1 = trim($item->TelfMovil);
+				$newEmployee->phone_number_2 = '';
+				$newEmployee->zip_code = trim($item->CodZip);
+				$newEmployee->created_at_user = trim($item->UsuarioCreador);
+				$newEmployee->updated_at_user = trim($item->UsuarioCreador);
+				$newEmployee->save();
 
-				$clientAddress = new ClientAddress();
-				$clientAddress->client_id = $newClient->id;
-				$clientAddress->address_type_id = 1;
-				$clientAddress->address = trim($item->Direccion);
-				$clientAddress->ubigeo_id = 347;
-				$clientAddress->created_at_user = trim($item->UsuarioCreador);
-				$clientAddress->updated_at_user = trim($item->UsuarioCreador);
-				$clientAddress->save();
+				$employeeAddress = new EmployeeAddress();
+				$employeeAddress->employee_id = $newEmployee->id;
+				$employeeAddress->address_type_id = 1;
+				$employeeAddress->address = trim($item->Direccion);
+				$employeeAddress->ubigeo_id = 347;
+				$employeeAddress->created_at_user = trim($item->UsuarioCreador);
+				$employeeAddress->updated_at_user = trim($item->UsuarioCreador);
+				$employeeAddress->save();
 			}
 		});
 	}
 
 	public function searchClientByRuc(ClientDataService $clientDataService)
 	{
-		$response = $clientDataService->getClientInfoByRuc(request('ruc'));
+		$response = $clientDataService
+		->getClientInfoByRuc(request('ruc'));
 
 		if ($response === null) {
 			abort(404);

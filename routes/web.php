@@ -762,6 +762,17 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/beneficios/cerrar', 'BenefitController@close')->name('dashboard.rrhh.benefit.close');
 
 
+	/** RRHH > Planilla General */
+	Route::get('/rrhh/calculo-cts', 'CtsReportController@index')->name('dashboard.report.cts');
+	Route::post('/rrhh/calculo-cts/validar-formulario', 'CtsReportController@validateForm')->name('dashboard.report.cts.validate_form');
+	Route::post('/rrhh/calculo-cts/obtener-clientes', 'CtsReportController@getClients')->name('dashboard.report.cts.get_clients');
+	Route::post('/rrhh/calculo-cts/listar', 'CtsReportController@list')->name('dashboard.report.cts.list');
+
+	/** RRHH > Cerificado de Trabajo*/
+	Route::get('/rrhh/certificado', 'CertificadoReportController@index')->name('dashboard.report.certificado');
+	Route::post('/rrhh/certificado/validar-formulario', 'CertificadoReportController@validateForm')->name('dashboard.report.certificado.validate_form');
+	Route::post('/rrhh/certificado/obtener-clientes', 'CertificadoReportController@getClients')->name('dashboard.report.certificado.get_clients');
+	Route::post('/rrhh/certificado/listar', 'CertificadoReportController@list')->name('dashboard.report.certificado.list');
 
 
 

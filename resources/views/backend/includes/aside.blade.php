@@ -1042,8 +1042,8 @@
 								</a>
 							</li>
 
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.planilla_total' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.report.planilla_total') }}" class="kt-menu__link ">
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.cts' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.cts') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
@@ -1073,6 +1073,15 @@
 										<span></span>
 									</i>
 									<span class="kt-menu__link-text">Boleta de Liquidación</span>
+								</a>
+							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.certificado' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.certificado') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Certificado de Trabajo</span>
 								</a>
 							</li>
 
