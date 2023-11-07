@@ -10,8 +10,8 @@
             <div class="kt-portlet__head-toolbar">
                 <div class="kt-portlet__head-wrapper">
                     <div class="dropdown dropdown-inline">
-                        <a href="#" class="btn btn-success" id="createRecord" v-show="flag_modify == 1" @click.prevent="openModal(ids)">
-                            <i class="la la-edit"></i> Actualizar
+                        <a href="#" class="btn btn-success" id="createRecord" v-show="flag_modify == 1" @click.prevent="openModal(ids, url_save)">
+                            <i class="la la-edit"></i> Guardar
                         </a>
                     </div>
                 </div>
@@ -49,6 +49,14 @@
                 type: String,
                 default: ''
             },
+            asist_types: {
+                type: Array,
+                default: ''
+            },
+            url_save: {
+                type: String,
+                default: ''
+            }
         },
         data() {
             return {
@@ -87,7 +95,7 @@
         },
         watch: {
             ids: function() {
-                if ( this.ids != '' ) {
+                if ( this.ids.length > 0 ) {
                     this.flag_modify = 1;
                 } else {
                     this.flag_modify = 0;
@@ -98,12 +106,138 @@
 
         },
         methods: {
-            openModal: function(price_ids) {
-                EventBus.$emit('create_modal', price_ids);
+            openModal: function(employee_ids, url_save) {
+                var vm = this;
+                var url = url_save;
+                var fd = new FormData();
+                let data = {};
+
+                employee_ids.forEach(employeeId => {
+                    let asist_values = $('.row-employee[data-employee="' + employeeId + '"]').find('.asist-cell').toArray().filter(x => $(x).val() !== '' && $(x).val() > 0).map(function(x) {
+                        return {
+                            asist_type: $(x).data('asist-type'),
+                            asist_value: $(x).val()
+                        };
+                    });
+
+                    data[employeeId] = asist_values;
+                });
+
+                fd.append('asist_values', JSON.stringify(data));
+
+                Swal.fire({
+                    title: '¡Cuidado!',
+                    text: '¿Seguro que desea guardar las Asistencias?',
+                    type: "warning",
+                    heightAuto: false,
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí',
+                    cancelButtonText: 'No'
+                }).then(result => {
+                    if ( result.value ) {
+                        EventBus.$emit('loading', true);
+
+                        axios.post(url, fd, { headers: {
+                                'Content-type': 'application/x-www-form-urlencoded',
+                            }
+                        }).then(response => {
+                            EventBus.$emit('loading', false);
+
+                            $('#modal').modal('hide');
+
+                            this.model.price_ids = [];
+                            this.model.operation_id = '';
+                            this.model.amount = '';
+                            this.model.amount2 = '';
+                            this.min_effective_date = '';
+
+                            EventBus.$emit('refresh_table');
+
+                            Swal.fire({
+                                title: '¡Ok!',
+                                text: 'Se actualizó la Asistencia exitosamente.',
+                                type: "success",
+                                heightAuto: false,
+                            });
+
+                        }).catch(error => {
+                            EventBus.$emit('loading', false);
+
+                            var obj = error.response.data.errors;
+                            $('.modal').animate({
+                                scrollTop: 0
+                            }, 500, 'swing');
+                            $.each(obj, function(i, item) {
+                                let c_target = target.find("#" + i + "-error");
+                                let p = c_target.parents('.form-group').find('#' + i);
+                                p.addClass('is-invalid');
+                                c_target.css('display', 'block');
+                                c_target.html(item);
+                            });
+                        });
+                    } else if ( result.dismiss == Swal.DismissReason.cancel ) {
+                        EventBus.$emit('loading', false);
+                    }
+                });
             },
             fillTableX: function() {
                 let vm = this;
                 let token = document.head.querySelector('meta[name="csrf-token"]').content;
+
+                let dynamicColumns = [
+                    {
+                        field: 'id',
+                        title: '#',
+                        sortable: false,
+                        width: 30,
+                        selector: {class: 'kt-checkbox--solid'},
+                        textAlign: 'center',
+                    },
+                    {
+                        field: 'first_name',
+                        title: 'Empleado',
+                        width: 60,
+                    },
+                    {
+                        field: 'document_number',
+                        title: 'Código',
+                        width: 60,
+                    },
+                ];
+
+                let asistTypes = vm.asist_types;
+
+                asistTypes.forEach(asistType => {
+                    dynamicColumns.push({
+                        field: 'asist_type_' + asistType.id,
+                        title: asistType.name,
+                        template: function(row) {
+                            let value = '';
+
+                            switch (asistType.id) {
+                                case 1: //Falta
+                                    value = row.laborables;
+                                    break;
+                                case 2: //Tardanza
+                                    value = row.minutos_tarde;
+                                    break;
+                                case 3: //Horas Extra
+                                    value = row.horas_extra_25;
+                                    break;
+                                case 4: //Horas Extra 35
+                                    value = row.horas_extra_35;
+                                    break;
+                                case 6: //Bonificación Nocturna
+                                    value = row.horas_noc_35;
+                                    break;
+                            }
+
+                            return '<input type="number" min="1" class="form-control asist-cell" data-asist-type="' + asistType.id + '" value="' + value + '"/>';
+                        },
+                        width: 75
+                    });
+                });
+
 
                 this.datatable = $('.kt-datatable').KTDatatable({
                     // datasource definition
@@ -182,30 +316,14 @@
 
                     rows: {
                         autoHide: true,
+                        callback: function(row, data, index) {
+                            $(row).attr('data-employee', data.id);
+                            $(row).addClass('row-employee');
+                        }
                     },
 
                     // columns definition
-                    columns: [
-                        {
-                            field: 'id',
-                            title: '#',
-                            sortable: false,
-                            width: 30,
-                            selector: {class: 'kt-checkbox--solid'},
-                            textAlign: 'center',
-                        },
-						{
-							field: 'first_name',
-							title: 'Empleado',
-							width: 200,
-						},
-                        {
-                            field: 'document_number',
-                            title: 'Código',
-                            width: 60,
-                        },
-                       
-                    ]
+                    columns: dynamicColumns
                 });
 
                 $('.kt-datatable').on('kt-datatable--on-check', function(a, e) {
@@ -222,8 +340,6 @@
                         let bNumber = parseInt(b);
                         return ((aNumber < bNumber) ? -1 : ((aNumber > bNumber) ? 1 : 0));
                     });
-
-                    console.log(vm.ids);
                 });
 
                 $('.kt-datatable').on('kt-datatable--on-uncheck', function(a, e) {
@@ -239,8 +355,6 @@
                         let bNumber = parseInt(b);
                         return ((aNumber < bNumber) ? -1 : ((aNumber > bNumber) ? 1 : 0));
                     });
-
-                    console.log(vm.ids);
                 });
             },
         }
