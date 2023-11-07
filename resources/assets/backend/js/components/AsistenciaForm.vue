@@ -137,17 +137,14 @@
                         'Content-type': 'application/x-www-form-urlencoded',
                     }
                 }).then(response => {
-                    console.log(response);
                     EventBus.$emit('show_table', response.data);
                 }).catch(error => {
                     EventBus.$emit('loading', false);
-                    console.log(error.response);
                     var obj = error.response.data.errors;
                     $('html, body').animate({
                         scrollTop: 0
                     }, 500, 'swing');
                     $.each(obj, function(i, item) {
-                        // console.log(target);
                         let c_target = target.find("#" + i + "-error");
                         let p = c_target.parents('.form-group').find('#' + i);
                         p.addClass('is-invalid');

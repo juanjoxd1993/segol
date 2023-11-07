@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\PriceList;
 use App\Area;
 use App\Asist;
+use App\AsistType;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
@@ -18,8 +19,9 @@ class AsistenciaController extends Controller
     public function index() {
         $companies = Company::select('id', 'name')->get();
         $areas = Area::select('id', 'name')->get();
+        $asistTypes = AsistType::select('id','name')->get();
         
-        return view('backend.asistencia')->with(compact('companies', 'areas'));
+        return view('backend.asistencia')->with(compact('companies', 'areas', 'asistTypes'));
     }
 
     public function validateForm() {
@@ -42,7 +44,7 @@ class AsistenciaController extends Controller
         $area_id = request('model.area_id');
         $today = date('Y-m-d', strtotime(Carbon::now()->startOfDay()));
         $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
-        $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
+        $price_ano = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
 
         $elements = Asist::join('employees', 'asists.employ_id', '=', 'employees.id')
             ->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')
@@ -52,7 +54,7 @@ class AsistenciaController extends Controller
              'asists.horas_extra_25', 'asists.horas_extra_35','asists.horas_noc_25',
              'asists.horas_noc_35','employees.first_name','employees.document_number')
             ->where('employees.company_id', $company_id)
-            ->where('asists.año', '=', $price_año)
+            ->where('asists.año', '=', $price_ano)
             ->where('asists.mes', '=', $price_mes)
 
             ->when($area_id, function($query, $area_id) {
@@ -77,12 +79,12 @@ class AsistenciaController extends Controller
 
     public function validateModalForm() {
         $messages = [
-			'operation_id.required'             => 'Debe seleccionar una Operación.',
+			//'operation_id.required'             => 'Debe seleccionar una Operación.',
 		//	'amount.required'                   => 'El Monto es obligatorio.',
 		];
 
 		$rules = [
-			'operation_id'              => 'required',
+			//'operation_id'              => 'required',
 		//	'amount'                    => 'required',
 		];
 
@@ -93,83 +95,54 @@ class AsistenciaController extends Controller
     public function store() {
         $this->validateModalForm();
 
-        $price_ids = request('price_ids');
-        $operation_id = request('operation_id');
-        $amount = request('amount');
-        $amount2 = request('amount2');
         $today = date('Y-m-d', strtotime(Carbon::now()->startOfDay()));
         $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
-        $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
+        $price_ano = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
 
-        $ids = explode(',', $price_ids);
+        $data = (array)json_decode(request('asist_values'));
 
-        foreach ($ids as $id) {
-            $element = Asist::where('id', $id)
-            ->where('año', '=', $price_año)
-            ->where('mes', '=', $price_mes)
-            ->first();
+        foreach ($data as $employ_id => $asist_data) {
+            $element = Asist::where('employ_id', $employ_id)
+                ->where('año', $price_ano)
+                ->where('mes', $price_mes)
+                ->first();
 
-            if ( $element ) {
-
-                
-                $elements = Asist::where('employ_id', $element->employ_id)
-                    ->where('año', '=', $price_año)
-                    ->where('mes', '=', $price_mes)
-                    ->get();
-                
-                //FALTAS
-                if ( $operation_id == 1 ) {
-                    $laborable = $element->laborables - 1;
-                    $element->laborables = $laborable;
-                    $element->save();
-
-                //TARDANZA
-
-                } elseif ( $operation_id == 2 ) {
-                    $tardanza = $element->tardanzas + 1;
-                    $horas_tarde = $element->horas_tarde + $amount;
-                    $minutos_tarde = $element->minutos_tarde + $amount2;
-
-                    $element->tardanzas = $tardanza;
-                    $element->horas_tarde = $horas_tarde;
-                    $element->minutos_tarde = $minutos_tarde;
-                    $element->save();
-
-                //HORAS EXTRA
-
-                } elseif ( $operation_id == 3 ) {
-                   
-                    $horas_extra = $element->horas_extra_25 + $amount;
-
-                    $element->horas_extra_25 = $horas_extra;
-                    $element->save();
-                }
-
-                elseif ( $operation_id == 4 ) {
-                   
-                $horas_extra_35 = $element->horas_extra_35 + $amount;
-
-                $element->horas_extra_35 = $horas_extra_35;
-                $element->save();
-                }
-                
-                elseif ( $operation_id == 5 ) {
-                   
-                 $horas_noc = $element->horas_noc_25 + $amount;
-
-                $element->horas_noc_25 = $horas_noc;
-                $element->save();
-                }
-
-                elseif ( $operation_id == 6 ) {
-                   
-                $horas_noc_35 = $element->horas_noc_35 + $amount;
-
-                $element->horas_noc_35 = $horas_noc_35;
-                $element->save();
-                }
-
+            if (!$element) {
+                $element = new Asist();
+                $element->employ_id = $employ_id;
+                $element->año = $price_ano;
+                $element->mes = $price_mes;
+                $element->ciclo_id = 2;
+                $element->tardanzas = 0;
             }
+
+            foreach ($asist_data as $asist) {
+                $operation_id = $asist->asist_type;
+                $amount = $asist->asist_value;
+
+                if ( $operation_id == 1 ) { //FALTAS
+                    $laborable = $amount;
+                    $element->laborables = $laborable;
+                } elseif ( $operation_id == 2 ) { //TARDANZA    
+                    $element->horas_tarde = $amount / 60;
+                    $element->tardanzas = $element->horas_tarde / 24;
+                    $element->minutos_tarde = $amount;
+                } elseif ( $operation_id == 3 ) { //HORAS EXTRA
+                    $horas_extra = $amount;
+                    $element->horas_extra_25 = $horas_extra;
+                } elseif ( $operation_id == 4 ) {                   
+                    $horas_extra_35 = $amount;
+                    $element->horas_extra_35 = $horas_extra_35;
+                } elseif ( $operation_id == 5 ) {
+                    $horas_noc = $amount;
+                    $element->horas_noc_25 = $horas_noc;
+                } elseif ( $operation_id == 6 ) {
+                    $horas_noc_35 = $amount;
+                    $element->horas_noc_35 = $horas_noc_35;
+                }
+            }
+
+            $element->save();
         }
     }
 }
