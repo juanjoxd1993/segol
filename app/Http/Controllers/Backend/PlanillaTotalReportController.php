@@ -641,7 +641,7 @@ class PlanillaTotalReportController extends Controller
 			$sheet->setCellValue('BW3', 'EPS');
 			$sheet->setCellValue('BX3', 'SCTR');
 			$sheet->setCellValue('BY3', 'TOTAL APORTACIONES');
-			$sheet->getStyle('A3:BY3')->applyFromArray([
+			$sheet->getStyle('A3:BY3', $sheet->getHighestRow())->getAlignment()->setWrapText(true)->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],

@@ -978,12 +978,12 @@
 								</a>
 							</li>
 
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.rrhh.asistencia' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.rrhh.asistencia') }}" class="kt-menu__link ">
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.rrhh.recursive' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.rrhh.recursive') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Tareo del mes</span>
+									<span class="kt-menu__link-text">Gestión de Recursos del Trabajador</span>
 								</a>
 							</li>
 

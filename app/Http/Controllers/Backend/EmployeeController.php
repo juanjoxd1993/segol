@@ -8,7 +8,7 @@ use App\BusinessUnit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Client;
-use App\ClientAddress;
+use App\EmployeeAddress;
 use App\ClientChannel;
 use App\ClientRoute;
 use App\ClientSector;
@@ -332,7 +332,7 @@ class EmployeeController extends Controller
 				$documentNumber = trim($item->CodCliente);
 			}
 
-			$client = Client::where('company_id', $company->id)
+			$client = Employee::where('company_id', $company->id)
 				->where('code', $item->CodCliente)
 				->first();
 			if ( $client ) {
@@ -691,7 +691,6 @@ class EmployeeController extends Controller
 				$newEmployee->channel_id = trim($item->Canal);
 				$newEmployee->phone_number_1 = trim($item->TelfMovil);
 				$newEmployee->phone_number_2 = '';
-				$newEmployee->zip_code = trim($item->CodZip);
 				$newEmployee->created_at_user = trim($item->UsuarioCreador);
 				$newEmployee->updated_at_user = trim($item->UsuarioCreador);
 				$newEmployee->save();

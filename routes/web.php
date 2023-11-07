@@ -762,17 +762,33 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/beneficios/cerrar', 'BenefitController@close')->name('dashboard.rrhh.benefit.close');
 
 
-	/** RRHH > Planilla General */
+	/** RRHH > Calculo CTS */
 	Route::get('/rrhh/calculo-cts', 'CtsReportController@index')->name('dashboard.report.cts');
 	Route::post('/rrhh/calculo-cts/validar-formulario', 'CtsReportController@validateForm')->name('dashboard.report.cts.validate_form');
 	Route::post('/rrhh/calculo-cts/obtener-clientes', 'CtsReportController@getClients')->name('dashboard.report.cts.get_clients');
 	Route::post('/rrhh/calculo-cts/listar', 'CtsReportController@list')->name('dashboard.report.cts.list');
+
+
+	/** RRHH > Calculo Grati*/
+	Route::get('/rrhh/calculo-grati', 'GratiReportController@index')->name('dashboard.report.grati');
+	Route::post('/rrhh/calculo-grati/validar-formulario', 'GratiReportController@validateForm')->name('dashboard.report.grati.validate_form');
+	Route::post('/rrhh/calculo-grati/obtener-clientes', 'GratiReportController@getClients')->name('dashboard.report.grati.get_clients');
+	Route::post('/rrhh/calculo-grati/listar', 'GratiReportController@list')->name('dashboard.report.cts.list');
+
 
 	/** RRHH > Cerificado de Trabajo*/
 	Route::get('/rrhh/certificado', 'CertificadoReportController@index')->name('dashboard.report.certificado');
 	Route::post('/rrhh/certificado/validar-formulario', 'CertificadoReportController@validateForm')->name('dashboard.report.certificado.validate_form');
 	Route::post('/rrhh/certificado/obtener-clientes', 'CertificadoReportController@getClients')->name('dashboard.report.certificado.get_clients');
 	Route::post('/rrhh/certificado/listar', 'CertificadoReportController@list')->name('dashboard.report.certificado.list');
+
+
+	/** rrhh > Recursos del trabajador */
+	Route::get('/rrhh/recursive', 'RecursiveRegisterController@index')->name('dashboard.rrhh.recursive');
+	Route::post('/rrhh/recursive/validar-formulario', 'RecursiveRegisterController@validateForm')->name('dashboard.rrhh.recursive.validate_form');
+	Route::post('/rrhh/recursive/listar', 'RecursiveRegisterController@list')->name('dashboard.rrhh.recursive.list');
+	Route::post('/rrhh/recursive/obtener-dia', 'RecursiveRegisterController@getMinEffectiveDate')->name('dashboard.rrhh.recursive.get_min_effective_date');
+	Route::post('/rrhh/recursive/guardar', 'RecursiveRegisterController@store')->name('dashboard.rrhh.recursive.store');
 
 
 

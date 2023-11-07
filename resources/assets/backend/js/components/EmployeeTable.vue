@@ -189,7 +189,7 @@
                             width: 60,
                         },
                         {
-                            field: 'business_name',
+                            field: 'first_name',
                             title: 'Nombre o Razón Social',
                             width: 180,
                         },
@@ -208,7 +208,7 @@
                             title: 'Teléfono 2',
                             width: 100,
                         },
-                        {
+                    /*    {
                             field: 'seller_id',
                             title: 'Vendedor',
                             width: 80,
@@ -228,7 +228,7 @@
                             template: function(row) {
                                 return row.perception_percentage_value + '%';
                             }
-                        },
+                        },*/
                    //     {
                     //        field: 'id',
                     //        title: 'ID',
@@ -251,9 +251,9 @@
                             textAlign: 'right',
                             template: function(row) {
                                 let actions = '<div class="actions">';
-                                    actions += '<a href="#" class="price-list btn btn-sm btn-clean btn-icon btn-icon-md" title="Lista de Precios">';
+                                  /*  actions += '<a href="#" class="price-list btn btn-sm btn-clean btn-icon btn-icon-md" title="Lista de Precios">';
 										actions += '<i class="la la-shopping-cart"></i>';
-									actions += '</a>';
+									actions += '</a>';*/
 									actions += '<a href="#" class="edit-address btn btn-sm btn-clean btn-icon btn-icon-md" title="Direcciones">';
 										actions += '<i class="la la-map-signs"></i>';
 									actions += '</a>';

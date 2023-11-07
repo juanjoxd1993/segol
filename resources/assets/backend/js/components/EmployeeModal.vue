@@ -18,7 +18,7 @@
                                 <div class="col-lg-4">
 									<div class="form-group">
 										<label class="form-control-label">Tipo de Documento:</label>
-										<select class="form-control" name="document_type_id" id="document_type_id" v-on:change="searchRuc" v-model="model.document_type_id" @focus="$parent.clearErrorMsg($event)">
+										<select class="form-control" name="document_type_id" id="document_type_id"  v-model="model.document_type_id" @focus="$parent.clearErrorMsg($event)">
 											<option value="">Seleccionar</option>
 											<option v-for="document_type in document_types" :value="document_type.id" v-bind:key="document_type.id">{{ document_type.name }}</option>
 										</select>
@@ -49,8 +49,8 @@
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label">Nombre o Razón Social:</label>
-                                        <input type="text" class="form-control" name="business_name" id="business_name" placeholder="Empresa S.A.C." v-model="model.business_name" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="business_name-error" class="error invalid-feedback"></div>
+                                        <input type="text" class="form-control" name="first_name" id="first_name" placeholder=" Nombres y Apellidos" v-model="model.business_name" @focus="$parent.clearErrorMsg($event)">
+                                        <div id="first_name-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
@@ -84,13 +84,7 @@
                                         <div id="contact_name_1-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-								<div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Nombre de Cobranza:</label>
-                                        <input type="text" class="form-control" name="contact_name_2" id="contact_name_2" placeholder="Nombre Apellido" v-model="model.contact_name_2" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="contact_name_2-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
+							
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label">Email:</label>
@@ -105,20 +99,8 @@
                                         <div id="phone_number_1-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Teléfono de Cobranza:</label>
-                                        <input type="text" class="form-control" name="phone_number_2" id="phone_number_2" placeholder="014754512" v-model="model.phone_number_2" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="phone_number_2-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
-								<div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Teléfono Fijo:</label>
-                                        <input type="text" class="form-control" name="phone_number_3" id="phone_number_3" placeholder="014754512" v-model="model.phone_number_3" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="phone_number_3-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
+                              
+								
 								<div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label">Unidad de Costo:</label>
@@ -145,7 +127,7 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <label class="form-control-label">Asignación Familiar}:</label>
+                                        <label class="form-control-label">Asignación Familiar:</label>
                                         <select class="form-control" name="zone_id" id="zone_id" v-model="model.zone_id" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
                                             <option v-for="zone in client_zones" :value="zone.id" v-bind:key="zone.id">{{ zone.name }}</option>
@@ -173,13 +155,7 @@
                                         <div id="route_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Licencias:</label>
-                                        <input type="text"  class="form-control" name="sector_id" id="sector_id" v-model="model.sector_id" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="sector_id-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
+                               
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label">Fecha de Alta:</label>
@@ -198,72 +174,8 @@
 
                               
 								
-                                    <div class="col-lg-4">
-                                   <div class="form-group">
-                                   <label class="form-control-label">Supervisor:</label>
-                                   <select class="form-control" name="manager_id" id="manager_id" v-model="model.manager_id" @focus="$parent.clearErrorMsg($event)">
-                                    <option disabled value="">Seleccionar</option>
-                                            <option value="1">Andrea Olivera</option>
-                                            <option value="2">Daniel Alvarez</option>
-                                            <option value="3">José Silva</option>
-                                            <option value="4">Juan La Rosa</option>
-                                            <option value="5">Petroamerica</option>
-                                            <option value="6">Sra. Belen</option>
-                                     </select>
-                                       <div id="manager_id-error" class="error invalid-feedback"></div>
-                                      </div>
-                                     </div>
-                                    
-                                    <div class="col-lg-4">
-                                   <div class="form-group">
-                                   <label class="form-control-label">Mail:</label>
-                                   <input class="form-control" type="text" name="manager_mail" id="manager_mail" v-model="model.manager_mail" @focus="$parent.clearErrorMsg($event)">
-                                       <div id="manager_mail-error" class="error invalid-feedback"></div>
-                                      </div>
-                                     </div>
-                                     
-                                     <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Condición de Pago:</label>
-										<select class="form-control" name="payment_id" id="payment_id" v-model="model.payment_id" @focus="$parent.clearErrorMsg($event)">
-											<option value="">Seleccionar</option>
-											<option v-for="payment in payments" :value="payment.id" v-bind:key="payment.id">{{ payment.name }}</option>
-										</select>
-                                        <div id="payment_id-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-lg-4" v-if="model.payment_id == 2">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Límite de Crédito:</label>
-                                        <input type="number" class="form-control" name="credit_limit" id="credit_limit" placeholder="1000" step="any" min="0" v-model="model.credit_limit" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="credit_limit-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
-								<div class="col-lg-4" v-if="model.payment_id == 2">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Días de Crédito:</label>
-                                        <input type="number" class="form-control" name="credit_limit_days" id="credit_limit_days" step="1" min="0" placeholder="10" v-model="model.credit_limit_days" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="credit_limit_days-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-									<div class="form-group">
-										<label class="form-control-label">Percepción:</label>
-										<select class="form-control" name="perception_percentage_id" id="perception_percentage_id" v-model="model.perception_percentage_id" @focus="$parent.clearErrorMsg($event)">
-											<option value="">Seleccionar</option>
-											<option v-for="perception in perceptions" :value="perception.id" v-bind:key="perception.id">{{ perception.value }}%</option>
-										</select>
-										<div id="perception_percentage_id-error" class="error invalid-feedback"></div>
-									</div>
-								</div>
-                                <div class="col-lg-4">
-                                   <div class="form-group">
-                                        <label class="form-control-label">Referencia Interna:</label>
-                                        <input class="form-control" type="text" name="int_name" id="int_name" v-model="model.int_name" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="int_name-error" class="error invalid-feedback"></div>
-                                    </div>     
-                                </div>
+                                  
+                               
                             </div>
                         </div>
                     </div>
