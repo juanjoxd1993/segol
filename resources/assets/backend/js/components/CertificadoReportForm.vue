@@ -49,7 +49,7 @@
                     <div class="row">
                         <div class="col-lg-6">
                             <button type="submit" class="btn btn-outline-brand btn-bold btn-sm">
-                                <i class="fa fa-file-excel"></i> Exportar Excel
+                                <i class="fa fa-file-pdf"></i> Exportar PDF
                             </button>
                         </div>
                     </div>
@@ -192,7 +192,7 @@
                         const tempUrl = window.URL.createObjectURL(new Blob([response2.data]));
                         const link = document.createElement('a');
                         link.href = tempUrl;
-                        link.download =  'reporte-de-ventas'.Date.now()+'.xls';
+                        link.download =  'certificado' + (new Date()).getTime() + '.pdf';
                         document.body.appendChild(link);
                         link.click();
 
