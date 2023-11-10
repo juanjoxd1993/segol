@@ -22,14 +22,14 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use stdClass;
 
 
-class CtsReportController extends Controller
+class GratiReportController extends Controller
 {
     public function index() {
 		$companies = Company::select('id', 'name')->get();
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
 		$ciclos = Cicle::select('id', 'año', 'mes')->get();
 
-		return view('backend.cts_report')->with(compact('companies', 'current_date'));
+		return view('backend.grati_report')->with(compact('companies', 'current_date'));
 	}
 
 	public function validateForm() {
@@ -76,22 +76,9 @@ class CtsReportController extends Controller
                  $elements = Asist::join('employees', 'asists.employ_id', '=', 'employees.id')
                     ->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')
                     ->leftjoin('areas', 'employees.area_id', '=', 'areas.id')
-					->leftjoin('banks', 'employees.bank_id', '=', 'banks.id')
-                    ->select('asists.id', 'asists.employ_id', 
-					  'asists.ciclo_id',
-					  'asists.horas_tarde', 
-					  'asists.minutos_tarde', 
-                      'employees.first_name',
-					  'employees.document_number',
-					  'employees.fecha_inicio',
-					  'employees.sueldo',
-					  'employees.cci',
-					  'employees.cuenta',
-					  'employees.bank_id',
-					  'banks.name as bank_name',
-					  'cicles.fecha_calc as inicio_cts',
-					  'cicles.fecha_final as final_cts',
-					  'cicles.fecha_inicio as fecha_ini')
+                    ->select('asists.id', 'asists.employ_id', 'asists.ciclo_id','asists.horas_tarde', 'asists.minutos_tarde', 
+                      'employees.first_name','employees.document_number','employees.fecha_inicio','employees.sueldo','employees.salud_id',
+					  'cicles.fecha_calc as inicio_cts','cicles.fecha_final as final_cts','cicles.fecha_inicio as fecha_ini')
               //      ->where('employees.company_id', $company_id)
                     ->where('asists.año', '=', $price_year)
                     ->where('asists.mes', '=', $price_mes)
@@ -126,9 +113,7 @@ class CtsReportController extends Controller
 				$facturation->document_number = $facturation['document_number'];
 				$facturation->employ_name = $facturation['first_name'];
 			    $facturation->cargo = $facturation['cargo'];
-				$facturation->bank_name = $facturation['bank_name'];
-			    $facturation->cuenta = $facturation['cuenta'];
-			    $facturation->cci = $facturation['cci'];
+                $facturation->salud_id = $facturation['salud_id'];
                 $facturation->familiar = 102.5;
 				$fecha_inicio = $facturation['fecha_inicio'];
 				$ffecha_inicio=Carbon::parse($fecha_inicio);
@@ -166,24 +151,24 @@ class CtsReportController extends Controller
 				$facturation->dias_calc = $dias_calc;
 
 
-				$price_mes = date('Y-m-01', strtotime('-1 month', strtotime($mes_date)));
+				$price_mes = date('Y-m-01', strtotime('-1 month', strtotime($mes_date))); //01/10/2023
             //  $inicioMesPasado = date("Y-m-d", $price_mes);
-                $tiempoMesPasado = strtotime( "last day of previous month",strtotime($mes_date));
+                $tiempoMesPasado = strtotime( "last day of previous month",strtotime($mes_date));//31/10/2023
                 $fechaMesPasado = date("Y-m-d", $tiempoMesPasado);
 				$mes_pasado=date("m", $tiempoMesPasado);
 				$año_pasado=date("Y", $tiempoMesPasado);
 
-                $price_mes2 = date('Y-m-01', strtotime('-2 month', strtotime($mes_date)));
-                $price_mes3 = date('Y-m-01', strtotime('-3 month', strtotime($mes_date)));
-                $price_mes4 = date('Y-m-01', strtotime('-4 month', strtotime($mes_date)));
-                $price_mes5 = date('Y-m-01', strtotime('-5 month', strtotime($mes_date)));
-                $price_mes6 = date('Y-m-01', strtotime('-6 month', strtotime($mes_date)));
+                $price_mes2 = date('Y-m-01', strtotime('-2 month', strtotime($mes_date)));//01/09/2023
+                $price_mes3 = date('Y-m-01', strtotime('-3 month', strtotime($mes_date)));//01/08/2023
+                $price_mes4 = date('Y-m-01', strtotime('-4 month', strtotime($mes_date)));//01/07/2023
+                $price_mes5 = date('Y-m-01', strtotime('-5 month', strtotime($mes_date)));//01/0 /2023
+                $price_mes6 = date('Y-m-01', strtotime('-6 month', strtotime($mes_date)));//01/0/2023
 
-                $tiempoMesPasado2 = strtotime( "last day of previous month",strtotime($price_mes));
+                $tiempoMesPasado2 = strtotime( "last day of previous month",strtotime($price_mes));//30/09/2023
                 $fechaMesPasado2 = date("Y-m-d", $tiempoMesPasado2);
-				$mes_pasado2=date("m", $tiempoMesPasado2);
-				$año_pasado2=date("Y", $tiempoMesPasado2);
-                $tiempoMesPasado3 = strtotime( "last day of previous month",strtotime($price_mes2));
+				$mes_pasado2=date("m", $tiempoMesPasado2);//09
+				$año_pasado2=date("Y", $tiempoMesPasado2);//2023
+                $tiempoMesPasado3 = strtotime( "last day of previous month",strtotime($price_mes2));//31/08/2023
                 $fechaMesPasado3 = date("Y-m-d", $tiempoMesPasado3);
 				$mes_pasado3=date("m", $tiempoMesPasado3);
 				$año_pasado3=date("Y", $tiempoMesPasado3);
@@ -931,7 +916,7 @@ class CtsReportController extends Controller
 				$total_comp= $facturation->sueldo+$facturation->familiar+$facturation->gratdiv+$facturation->prom_he+$facturation->prom_bom+$facturation->prom_com;
 				$facturation->total_comp=round($total_comp,2);
 
-				$import_mes=($facturation->total_comp/12)*$facturation->meses;
+				$import_mes=($facturation->total_comp/180)*(($facturation->meses*30));
 				$facturation->import_mes=round($import_mes,2);
 
 				$import_dia=($facturation->total_comp/360)*$facturation->dias_calc;
@@ -984,10 +969,10 @@ class CtsReportController extends Controller
 				$totals->bon_4='';
 				$totals->bon_5='';
 				$totals->bon_6='';
-				$totals->grati='';
+			//	$totals->grati='';
 				$totals->sueldo=''; 
 				$totals->familiar='';
-				$totals->gratdiv='';
+			//	$totals->gratdiv='';
 				$totals->prom_he='';
 				$totals->prom_com='';
 				$totals->prom_bon='';
@@ -995,11 +980,6 @@ class CtsReportController extends Controller
 				$totals->import_mes='';
 				$totals->import_dia='';
 				$totals->total_cts='';
-				$totals->bank_name='';
-				$totals->cuenta='';
-				$totals->cci='';
-
-				
 
 		
 
@@ -1015,7 +995,6 @@ class CtsReportController extends Controller
 				'font' => [
 					'bold' => true,
 					'size' => 16,
-					
 				],
 				'alignment' => [
 					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
@@ -1029,7 +1008,7 @@ class CtsReportController extends Controller
 			'font' => [
 				'color' => array('rgb' => 'FFFFFF'),
 				'bold' => true,
-				'size' => 10,
+				'size' => 12,
 			],
 			'alignment' => [
 				'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
@@ -1046,7 +1025,7 @@ class CtsReportController extends Controller
 			'font' => [
 				'color' => array('rgb' => 'FFFFFF'),
 				'bold' => true,
-				'size' => 10,
+				'size' => 12,
 			],
 			'alignment' => [
 				'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
@@ -1079,32 +1058,33 @@ class CtsReportController extends Controller
 			$sheet->setCellValue('B3', 'N° Documento');
 			$sheet->setCellValue('C3', 'APELLIDOS Y NOMBRES');
 			$sheet->setCellValue('D3', 'CARGO U OCUPACIÓN');
+		//	$sheet->setCellValue('E3', 'REGIMEN LABORAL');
 			$sheet->setCellValue('E3', 'FECHA DE INGRESO');		
             $sheet->setCellValue('F3', 'MESES');
 		 	$sheet->setCellValue('G3', 'DIAS');
 		 	$sheet->setCellValue('H3', 'DIAS S.P');
-            $sheet->setCellValue('I3', 'COM'.' '.$monthName);//COM 1
-            $sheet->setCellValue('J3', 'COM'.' '.$monthName2);
-            $sheet->setCellValue('K3', 'COM'.' '.$monthName3);
-            $sheet->setCellValue('L3', 'COM'.' '.$monthName4);
-            $sheet->setCellValue('M3', 'COM'.' '.$monthName5);
-            $sheet->setCellValue('N3', 'COM'.' '.$monthName6);//COM
-            $sheet->setCellValue('O3', 'HE'.' '.$monthName);//HE1
-            $sheet->setCellValue('P3', 'HE'.' '.$monthName2);
-            $sheet->setCellValue('Q3', 'HE'.' '.$monthName3);
-            $sheet->setCellValue('R3', 'HE'.' '.$monthName4);
-            $sheet->setCellValue('S3', 'HE'.' '.$monthName5);
-            $sheet->setCellValue('T3', 'HE'.' '.$monthName6);//HE
-            $sheet->setCellValue('U3', 'BON'.' '.$monthName);//BON1
-            $sheet->setCellValue('V3', 'BON'.' '.$monthName2);
-            $sheet->setCellValue('W3', 'BON'.' '.$monthName3);
-            $sheet->setCellValue('X3', 'BON'.' '.$monthName4);
-            $sheet->setCellValue('Y3', 'BON'.' '.$monthName5);
-            $sheet->setCellValue('Z3', 'BON'.' '.$monthName6);//BON 
-			$sheet->setCellValue('AA3', 'FIESTAS PATRIAS');
+            $sheet->setCellValue('I3', 'COM'. $monthName);//COM 1
+            $sheet->setCellValue('J3', 'COM'. $monthName2);
+            $sheet->setCellValue('K3', 'COM'. $monthName3);
+            $sheet->setCellValue('L3', 'COM'. $monthName4);
+            $sheet->setCellValue('M3', 'COM'. $monthName3);
+            $sheet->setCellValue('N3', 'COM'. $monthName6);//COM
+            $sheet->setCellValue('O3', 'HE');//HE1
+            $sheet->setCellValue('P3', 'HE');
+            $sheet->setCellValue('Q3', 'HE');
+            $sheet->setCellValue('R3', 'HE');
+            $sheet->setCellValue('S3', 'HE');
+            $sheet->setCellValue('T3', 'HE');//HE
+            $sheet->setCellValue('U3', 'BON');//BON1
+            $sheet->setCellValue('V3', 'BON');
+            $sheet->setCellValue('W3', 'BON');
+            $sheet->setCellValue('X3', 'BON');
+            $sheet->setCellValue('Y3', 'BON');
+            $sheet->setCellValue('Z3', 'BON');//BON 
+		//	$sheet->setCellValue('AA3', 'FIESTAS PATRIAS');
 		 	$sheet->setCellValue('AB3', 'REM BASICA');
 			$sheet->setCellValue('AC3', 'ASIG. FAM');
-            $sheet->setCellValue('AD3', 'GRAT. FIESTAS PATRIAS');
+        //  $sheet->setCellValue('AD3', 'GRAT. FIESTAS PATRIAS');
 			$sheet->setCellValue('AE3', 'Prom. HE');
 			$sheet->setCellValue('AF3', 'Prom. Comisiones');
 			$sheet->setCellValue('AG3', 'Prom. Bon Reg');
@@ -1112,18 +1092,13 @@ class CtsReportController extends Controller
 			$sheet->setCellValue('AI3', 'IMPORTE X MES');
 			$sheet->setCellValue('AJ3', 'IMPORTE X DIA');
 			$sheet->setCellValue('AK3', 'TOTAL CTS ');
-			$sheet->setCellValue('AL3', 'BANCO');
-			$sheet->setCellValue('AM3', 'CUENTA ');
-			$sheet->setCellValue('AN3', 'CCI');
-
-
          
 
 
-			$sheet->getStyle('A3:AN3'.$sheet->getHighestRow())->getAlignment()->setWrapText(true)->applyFromArray([
+			$sheet->getStyle('A3:AK3', $sheet->getHighestRow())->getAlignment()->setWrapText(true)->applyFromArray([
 				'font' => [
 					'bold' => true,
-					'size' => 8,
+                    'size' => 10,
 				],
 				'alignment' => [
 					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
@@ -1143,112 +1118,28 @@ class CtsReportController extends Controller
                 $sheet->setCellValue('E'.$row_number, $element->fecha_inicio);
                 $sheet->setCellValue('F'.$row_number, $element->meses);
                 $sheet->setCellValue('G'.$row_number, $element->dias_calc);
-				if($element->total_sp == 0){
-					$sheet->setCellValue('H'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('H'.$row_number, $element->total_sp);
-				}
-				if($element->total_sp == 0){
-					$sheet->setCellValue('I'.$row_number, '-');
-				}else{
+                $sheet->setCellValue('H'.$row_number, $element->total_sp);
                 $sheet->setCellValue('I'.$row_number, $element->com_1);
-				}
-				if($element->com_2 == 0){
-					$sheet->setCellValue('J'.$row_number, '-');
-				}else{
 				$sheet->setCellValue('J'.$row_number, $element->com_2);
-				}
-				if($element->com_3 == 0){
-					$sheet->setCellValue('K'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('K'.$row_number, $element->com_3);
-					}
-				if($element->com_4 == 0){
-					$sheet->setCellValue('L'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('L'.$row_number, $element->com_4);
-					}
-				if($element->com_5 == 0){
-					$sheet->setCellValue('M'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('M'.$row_number, $element->com_5);
-					}
-				if($element->com_6 == 0){
-					$sheet->setCellValue('N'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('N'.$row_number, $element->com_6);
-					}
-				if($element->he_1 == 0){
-					$sheet->setCellValue('O'.$row_number, '-');
-				}else{				
+				$sheet->setCellValue('K'.$row_number, $element->com_3);
+				$sheet->setCellValue('L'.$row_number, $element->com_4);
+				$sheet->setCellValue('M'.$row_number, $element->com_5);
+				$sheet->setCellValue('N'.$row_number, $element->com_6);
 				$sheet->setCellValue('O'.$row_number, $element->he_1);
-				}
-				if($element->he_2 == 0){
-					$sheet->setCellValue('P'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('P'.$row_number, $element->he_2);
-					}
-				if($element->he_3 == 0){
-					$sheet->setCellValue('Q'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('Q'.$row_number, $element->he_3);
-					}
-				if($element->he_4 == 0){
-					$sheet->setCellValue('R'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('R'.$row_number, $element->he_4);
-					}
-				if($element->he_5 == 0){
-					$sheet->setCellValue('S'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('S'.$row_number, $element->he_5);
-					}
-				if($element->he_6 == 0){
-					$sheet->setCellValue('T'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('T'.$row_number, $element->he_6);
-					}
-				if($element->bon_1 == 0){
-					$sheet->setCellValue('U'.$row_number, '-');
-				}else{	
+				$sheet->setCellValue('P'.$row_number, $element->he_2);
+				$sheet->setCellValue('Q'.$row_number, $element->he_3);
+				$sheet->setCellValue('R'.$row_number, $element->he_4);
+				$sheet->setCellValue('S'.$row_number, $element->he_5);
+				$sheet->setCellValue('T'.$row_number, $element->he_6);
 				$sheet->setCellValue('U'.$row_number, $element->bon_1);
-				}
-				if($element->bon_2 == 0){
-					$sheet->setCellValue('V'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('V'.$row_number, $element->bon_2);
-					}
-				if($element->bon_3 == 0){
-					$sheet->setCellValue('W'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('W'.$row_number, $element->bon_3);
-					}
-				if($element->bon_4 == 0){
-					$sheet->setCellValue('X'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('X'.$row_number, $element->bon_4);
-					}
-				if($element->bon_5 == 0){
-					$sheet->setCellValue('Y'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('Y'.$row_number, $element->bon_5);
-					}
-				if($element->bon_6 == 0){
-					$sheet->setCellValue('Z'.$row_number, '-');
-				}else{
-					$sheet->setCellValue('Z'.$row_number, $element->bon_6);
-				}
-				if($element->grati == 0){
-					$sheet->setCellValue('AA'.$row_number, '-');
-				}else{
+				$sheet->setCellValue('V'.$row_number, $element->bon_2);
+				$sheet->setCellValue('W'.$row_number, $element->bon_3);
+				$sheet->setCellValue('X'.$row_number, $element->bon_4);
+				$sheet->setCellValue('Y'.$row_number, $element->bon_5);
+				$sheet->setCellValue('Z'.$row_number, $element->bon_6);
 				$sheet->setCellValue('AA'.$row_number, $element->grati);
-				}
 				$sheet->setCellValue('AB'.$row_number, $element->sueldo); 
-				if ($element->familiar == 0){
-					$sheet->setCellValue('AC'.$row_number, '-');
-                }else{				
-					$sheet->setCellValue('AC'.$row_number, $element->familiar);
-				}
+				$sheet->setCellValue('AC'.$row_number, $element->familiar);
 				$sheet->setCellValue('AD'.$row_number, $element->gratdiv);
 				$sheet->setCellValue('AE'.$row_number, $element->prom_he);
 				$sheet->setCellValue('AF'.$row_number, $element->prom_com);
@@ -1257,10 +1148,6 @@ class CtsReportController extends Controller
 				$sheet->setCellValue('AI'.$row_number, $element->import_mes);
 				$sheet->setCellValue('AJ'.$row_number, $element->import_dia);
 				$sheet->setCellValue('AK'.$row_number, $element->total_cts);
-				$sheet->setCellValue('AL'.$row_number, $element->bank_name);
-				$sheet->setCellValue('AM'.$row_number, $element->cuenta);
-				$sheet->setCellValue('AN'.$row_number, $element->cci);
-
 
 
 
@@ -1275,7 +1162,7 @@ class CtsReportController extends Controller
 		
 				$row_number++;
 			}
-          
+
 			$sheet->getColumnDimension('A')->setAutoSize(true);
 			$sheet->getColumnDimension('B')->setAutoSize(true);
 			$sheet->getColumnDimension('C')->setAutoSize(true);
@@ -1284,7 +1171,7 @@ class CtsReportController extends Controller
 			$sheet->getColumnDimension('F')->setAutoSize(true);
 			$sheet->getColumnDimension('G')->setAutoSize(true);
 			$sheet->getColumnDimension('H')->setAutoSize(true);
-		 /*	$sheet->getColumnDimension('I')->setAutoSize(true);
+			$sheet->getColumnDimension('I')->setAutoSize(true);
 			$sheet->getColumnDimension('J')->setAutoSize(true);
 			$sheet->getColumnDimension('K')->setAutoSize(true);
 			$sheet->getColumnDimension('L')->setAutoSize(true);
@@ -1305,7 +1192,7 @@ class CtsReportController extends Controller
 			$sheet->getColumnDimension('AA')->setAutoSize(true);
 			$sheet->getColumnDimension('AB')->setAutoSize(true);
 			$sheet->getColumnDimension('AC')->setAutoSize(true);
-			$sheet->getColumnDimension('AD')->setAutoSize(true);*/
+			$sheet->getColumnDimension('AD')->setAutoSize(true);
 			$sheet->getColumnDimension('AE')->setAutoSize(true);
 			$sheet->getColumnDimension('AF')->setAutoSize(true);
 			$sheet->getColumnDimension('AG')->setAutoSize(true);
@@ -1313,9 +1200,6 @@ class CtsReportController extends Controller
 			$sheet->getColumnDimension('AI')->setAutoSize(true);
 			$sheet->getColumnDimension('AJ')->setAutoSize(true);
 			$sheet->getColumnDimension('AK')->setAutoSize(true);
-			$sheet->getColumnDimension('AL')->setAutoSize(true);
-			$sheet->getColumnDimension('AM')->setAutoSize(true);
-			$sheet->getColumnDimension('AN')->setAutoSize(true);
 
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');

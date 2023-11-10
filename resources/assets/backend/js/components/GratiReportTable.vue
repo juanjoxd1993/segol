@@ -42,7 +42,7 @@
         },
         data() {
             return {
-                cts_report_datatable: undefined,
+                grati_report_datatable: undefined,
                 show_table: false,
 				model: {},
 				export: '',
@@ -58,23 +58,23 @@
 				this.model = response;
 
 				Vue.nextTick(function() {
-					if ( vm.cts_report_datatable == undefined ) {
+					if ( vm.grati_report_datatable == undefined ) {
 						vm.fillTableX();
 					} else {
-						vm.cts_report_datatable.setDataSourceParam('model', vm.model);
-						vm.cts_report_datatable.load();
+						vm.grati_report_datatable.setDataSourceParam('model', vm.model);
+						vm.grati_report_datatable.load();
 					}
 				
-					vm.cts_report_datatable.on('kt-datatable--on-ajax-done', function() {
+					vm.grati_report_datatable.on('kt-datatable--on-ajax-done', function() {
 						EventBus.$emit('loading', false);
 					});
 				});
             }.bind(this));
 
             EventBus.$on('refresh_table', function() {
-                if ( this.cts_report_datatable != undefined ) {
-                  this.cts_report_datatable.setDataSourceParam('model', this.model);
-                   this.cts_report_datatable.load();
+                if ( this.grati_report_datatable != undefined ) {
+                  this.grati_report_datatable.setDataSourceParam('model', this.model);
+                   this.grati_report_datatable.load();
                }
             }.bind(this));
         },
@@ -89,7 +89,7 @@
                 let vm = this;
                 let token = document.head.querySelector('meta[name="csrf-token"]').content;
 
-                this.cts_report_datatable = $('.kt-datatable').KTDatatable({
+                this.grati_report_datatable = $('.kt-datatable').KTDatatable({
                     // datasource definition
                     data: {
                         type: 'remote',
@@ -200,7 +200,7 @@
                     ]
                 });
 
-                this.cts_report_datatable.columns('id').visible(false);
+                this.grati_report_datatable.columns('id').visible(false);
             },
 			exportExcel: function() {
                 EventBus.$emit('loading', true);
@@ -218,7 +218,7 @@
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'calculo-cts-'+Date.now()+'.xls');
+                    link.setAttribute('download', 'calculo-grat-'+Date.now()+'.xls');
                     document.body.appendChild(link);
                     link.click();
 

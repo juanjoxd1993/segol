@@ -773,7 +773,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::get('/rrhh/calculo-grati', 'GratiReportController@index')->name('dashboard.report.grati');
 	Route::post('/rrhh/calculo-grati/validar-formulario', 'GratiReportController@validateForm')->name('dashboard.report.grati.validate_form');
 	Route::post('/rrhh/calculo-grati/obtener-clientes', 'GratiReportController@getClients')->name('dashboard.report.grati.get_clients');
-	Route::post('/rrhh/calculo-grati/listar', 'GratiReportController@list')->name('dashboard.report.cts.list');
+	Route::post('/rrhh/calculo-grati/listar', 'GratiReportController@list')->name('dashboard.report.grati.list');
 
 
 	/** RRHH > Cerificado de Trabajo*/

@@ -150,7 +150,11 @@ class StockSalesRegisterReportController extends Controller
                 $detail->total = $item->total;
                 $detail->tc = $item->tc;
                 $detail->quantity = $detail->converted_amount;
-                $detail->precio_tm = $detail->total/$detail->quantity*1000;
+				if ($detail->quantity==0){
+                    $detail->precio_tm = 0.00;
+                }else{
+					$detail->precio_tm = $detail->total/$detail->quantity*1000;
+				}
                 $detail->taxed_operation = $item->taxed_operation;
                 $detail->igv = $item->igv;
                 $detail->order_sale = $item->referral_guide_number;
