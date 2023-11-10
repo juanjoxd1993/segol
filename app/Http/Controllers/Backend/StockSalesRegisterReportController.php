@@ -160,11 +160,19 @@ class StockSalesRegisterReportController extends Controller
                 $detail->order_sale = $item->referral_guide_number;
                 $detail->scop_number = $item->scop_number;
                 $detail->conv_soles= $detail->total*$detail->tc;
+				if ($detail->quantity==0){
+                    $detail->kg_soles = 0.00;
+                }else{
                 $detail->kg_soles= $detail->conv_soles/$detail->quantity;
+				}
                 $detail->tm=$detail->quantity/1000;
                 $detail->sub_soles=$detail->conv_soles/1.18;
                 $detail->igv_soles=$detail->conv_soles-$detail->sub_soles;
+				if ($detail->quantity==0){
+                    $detail->kg_dol = 0.00;
+                }else{
                 $detail->kg_dol=$detail->total/$detail->quantity;
+				}
                 $detail->despacho += $despacho;
                 $detail->stock=$detail->quantity-$detail->despacho;
 				$detail->concat=$detail->warehouse_name."_". $detail->warehouse_short_name. $detail->article_name;
