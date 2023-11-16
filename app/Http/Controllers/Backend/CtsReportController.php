@@ -1022,7 +1022,7 @@ class CtsReportController extends Controller
 				]
 			]);
 
-
+/*
 	    $sheet->mergeCells('E2:M2');
 		$sheet->setCellValue('E2', 'INGRESOS DEL TRABJADOR');
 		$sheet->getStyle('E2')->applyFromArray([
@@ -1073,7 +1073,7 @@ class CtsReportController extends Controller
 				'startColor' => array('rgb' => '7FFF00')
 			]
 		]);
-
+*/
 		
 			$sheet->setCellValue('A3', '#');
 			$sheet->setCellValue('B3', 'N° Documento');
