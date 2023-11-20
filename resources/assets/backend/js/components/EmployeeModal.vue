@@ -104,7 +104,7 @@
 								<div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label">Área:</label>
-                                        <select class="form-control" name="cost_unit_id" id="cost_unit_id" v-model="model.area_id" @focus="$parent.clearErrorMsg($event)">
+                                        <select class="form-control" name="area_id" id="area_id" v-model="model.area_id" @focus="$parent.clearErrorMsg($event)">
 											<option value="">Seleccionar</option>
 											<option v-for="area in areas" :value="area.id" v-bind:key="area.id">{{ area.name }}</option>
 										</select>
@@ -258,7 +258,7 @@
 					payment_id: '',
                     credit_limit: '',
                     credit_limit_days: '',
-                    cost_unit_id: '',
+                    area_id: '',
                     int_name: '',
                 },
                 button_text: '',
@@ -295,7 +295,7 @@
                 this.model.channel_id = '';
                 this.model.route_id = '';
                 this.model.asignacion_id = '';
-                this.model.cost_unit_id = '';
+                this.model.area_id = '';
                 this.model.business_type = '';
                 this.model.dgh = '';
                 this.model.grupo = '';
@@ -429,7 +429,7 @@
                 	this.model.contact_name_2 = '';
                     this.model.email = '';
                     this.model.phone_number_1 = '';
-					this.model.cost_unit_id = '';
+					this.model.area_id = '';
                     this.model.zone_id = '';
                     this.model.channel_id = '';
                     this.model.route_id = '';
