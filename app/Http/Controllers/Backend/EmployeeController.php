@@ -226,6 +226,7 @@ class EmployeeController extends Controller
 		$document_number = request('document_number');
 		$address = request('address');
 		$address_reference = request('address_reference');
+		$ubigeo_id = request('ubigeo_id');
 		$sueldo = request('police');
 		$contact_name_1 = request('contact_name_1');
 		$email = request('email');
