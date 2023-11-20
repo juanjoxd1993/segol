@@ -276,7 +276,6 @@ class EmployeeController extends Controller
 		$element->sueldo = $sueldo;
 		$element->license = $license;
 		$element->contact_name_1 = $contact_name_1;
-		$element->contact_name_2 = $contact_name_2;
 		$element->email = $email;
 		$element->phone_number_1 = $phone_number_1;
 		$element->phone_number_2 = $phone_number_2;
