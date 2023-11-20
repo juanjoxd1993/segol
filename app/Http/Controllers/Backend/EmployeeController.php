@@ -235,15 +235,18 @@ class EmployeeController extends Controller
 		$document_number = request('document_number');
 		$address = request('address');
 		$address_reference = request('address_reference');
-		$sueldo = request('sueldo');
+		$sueldo = request('police');
 		$contact_name_1 = request('contact_name_1');
 		$email = request('email');
+		$since_date = request('model.since_date');
 		$phone_number_1 = request('phone_number_1');
 		$phone_number_2 = request('phone_number_2');
 		$asignacion_id = request('asignacion_id');
+		$area_id = request('area_id');
 		$afp_id = request('afp_id');
 		$salud_id = request('salud_id');
 		$sctr_id = request('sctr_id');
+		$license = request('dgh');
 		
 
 		if ( isset($id) ) {
@@ -280,19 +283,18 @@ class EmployeeController extends Controller
 		$element->document_type_id = $document_type_id;
 		$element->document_number = $document_number;
 		$element->sueldo = $sueldo;
+		$element->license = $license;
 		$element->contact_name_1 = $contact_name_1;
 		$element->contact_name_2 = $contact_name_2;
 		$element->email = $email;
 		$element->phone_number_1 = $phone_number_1;
 		$element->phone_number_2 = $phone_number_2;
-		$element->phone_number_3 = $phone_number_3;
-		$element->business_unit_id = $business_unit_id;
-		$element->asignacion_id = $zone_id;
-		$element->afp_id = $channel_id;
-		$element->salud_id = $route_id;
-		$element->sctr_id = $sector_id;
-		$element->seller_id = $seller_id;
-		$element->fecha_inicio = $fecha_inicio;
+		$element->asignacion_id = $asignacion_id;
+		$element->afp_id = $afp_id;
+		$element->salud_id = $salud_id;
+		$element->sctr_id = $sctr_id;
+		$element->area_id = $area_id;
+		$element->fecha_inicio =  date('Y-m-d', strtotime($since_date));;
 		$element->save();
 
 		$childElement->employee_id = $element->id;

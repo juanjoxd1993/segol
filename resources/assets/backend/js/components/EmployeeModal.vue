@@ -48,7 +48,7 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <label class="form-control-label">Nombre o Razón Social:</label>
+                                        <label class="form-control-label">Nombres de Trabajador:</label>
                                         <input type="text" class="form-control" name="first_name" id="first_name" placeholder=" Nombres y Apellidos" v-model="model.business_name" @focus="$parent.clearErrorMsg($event)">
                                         <div id="first_name-error" class="error invalid-feedback"></div>
                                     </div>
@@ -103,12 +103,12 @@
 								
 								<div class="col-lg-4">
                                     <div class="form-group">
-                                        <label class="form-control-label">Unidad de Costo:</label>
-                                        <select class="form-control" name="business_unit_id" id="business_unit_id" v-model="model.business_unit_id" @focus="$parent.clearErrorMsg($event)">
+                                        <label class="form-control-label">Área:</label>
+                                        <select class="form-control" name="cost_unit_id" id="cost_unit_id" v-model="model.area_id" @focus="$parent.clearErrorMsg($event)">
 											<option value="">Seleccionar</option>
-											<option v-for="business_unit in business_units" :value="business_unit.id" v-bind:key="business_unit.id">{{ business_unit.name }}</option>
+											<option v-for="area in areas" :value="area.id" v-bind:key="area.id">{{ area.name }}</option>
 										</select>
-                                        <div id="business_unit_id-error" class="error invalid-feedback"></div>
+                                        <div id="area_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                  <div class="col-lg-4">
@@ -128,40 +128,42 @@
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label">Asignación Familiar:</label>
-                                        <select class="form-control" name="zone_id" id="zone_id" v-model="model.zone_id" @focus="$parent.clearErrorMsg($event)">
-                                            <option value="">Seleccionar</option>
-                                            <option v-for="zone in client_zones" :value="zone.id" v-bind:key="zone.id">{{ zone.name }}</option>
-                                        </select>
-                                        <div id="zone_id-error" class="error invalid-feedback"></div>
+                                        <select class="form-control" name="asignacion_id" id="asignacion_id" v-model="model.asignacion_id" @focus="$parent.clearErrorMsg($event)">
+                                            <option disabled value="">Seleccionar</option>
+                                            <option value="1">Si</option>
+                                            <option value="2">No</option>                                        </select>
+                                        <div id="asignacion_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label">AFP-ONP:</label>
-                                        <select class="form-control" name="channel_id" id="channel_id" v-model="model.channel_id" @focus="$parent.clearErrorMsg($event)">
+                                        <select class="form-control" name="tasa_id" id="tasa_id" v-model="model.tasa_id" @focus="$parent.clearErrorMsg($event)">
                                             <option value="">Seleccionar</option>
-                                            <option v-for="channel in client_channels" :value="channel.id" v-bind:key="channel.id">{{ channel.name }}</option>
+                                            <option v-for="tasa in tasas" :value="tasa.id" v-bind:key="tasa.id">{{ tasa.name }}</option>
                                         </select>
-                                        <div id="channel_id-error" class="error invalid-feedback"></div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Vacaciones:</label>
-                                        <select class="form-control" name="route_id" id="route_id" v-model="model.route_id" @focus="$parent.clearErrorMsg($event)">
-                                            <option value="">Seleccionar</option>
-                                            <option v-for="route in client_routes" :value="route.id" v-bind:key="route.id">{{ route.name }}</option>
-                                        </select>
-                                        <div id="route_id-error" class="error invalid-feedback"></div>
+                                        <div id="tasa_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-control-label">Fecha de Alta:</label>
-                                        <input type="text" class="form-control" name="business_type" id="business_type" placeholder="" v-model="model.business_type" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="business_type-error" class="error invalid-feedback"></div>
-                                    </div>
+
+                                <div class="col-lg-3">
+                                <div class="form-group">
+                                <label class="form-control-label">Fecha de Alta:</label>
+                                <datetime
+                                v-model="model.since_date"
+                                placeholder="Selecciona una Fecha"
+                                :format="'dd-LL-yyyy'"
+                                input-id="since_date"
+                                name="since_date"
+                                value-zone="America/Lima"
+								zone="America/Lima"
+                                class="form-control"
+                                :max-datetime="this.current_date"                        
+                                @focus="$parent.clearErrorMsg($event)">
+                                </datetime>
+                                <div id="since_date-error" class="error invalid-feedback"></div>
+                                </div>
                                 </div>
 
                                 <div class="col-lg-4">
@@ -206,7 +208,7 @@
                 type: String,
                 default: ''
             },
-            url_get_clients: {
+            url_get_employees: {
                 type: String,
                 default: ''
             },
@@ -214,35 +216,16 @@
                 type: String,
                 default: ''
             },
-            url_search_client: {
-                type: String,
-                default: ''
-            },
             document_types: {
                 type: Array,
                 default: ''
             },
-			payments: {
-                type: Array,
+            current_date: {
+                type: String,
                 default: ''
             },
-            perceptions: {
-                type: Array,
-                default: ''
-            },
-			business_units: {
-                type: Array,
-                default: ''
-            },
-            client_zones: {
-                type: Array,
-                default: ''
-            },
-            client_channels: {
-                type: Array,
-                default: ''
-            },
-            client_routes: {
+			
+            tasas: {
                 type: Array,
                 default: ''
             },
@@ -259,31 +242,23 @@
                     document_type_id: '',
                     document_number: '',
                     client_code: '',
-                    business_name: '',
+                    first_name: '',
                     address: '',
                     address_reference: '',
                     ubigeo_id: '',
                     contact_name_1: '',
-                    contact_name_2: '',
                     email: '',
                     phone_number_1: '',
-                    phone_number_2: '',
-                    phone_number_3: '',
-                    business_unit_id: '',
-                    zone_id: '',
-                    channel_id: '',
-                    route_id: '',
-                    sector_id: '',
-                    seller_id: '',
                     business_type: '',
                     grupo:'',
+                    since_date: this.current_date,
                     dgh: '',
-                    manager_id:'',
+                    asignacion_id:'',
                     police: '',
 					payment_id: '',
                     credit_limit: '',
                     credit_limit_days: '',
-                    perception_percentage_id: '',
+                    cost_unit_id: '',
                     int_name: '',
                 },
                 button_text: '',
@@ -304,13 +279,14 @@
                 this.model.document_type_id = '';
                 this.model.document_number = '';
                 this.model.client_code = '';
-                this.model.business_name = '';
+                this.model.first_name = '';
                 this.model.address = '';
                 this.model.address_reference = '';
                 this.model.ubigeo_id = '';
                 this.model.contact_name_1 = '';
                 this.model.contact_name_2 = '';
                 this.model.email = '';
+                this.model.since_date = this.current_date;
                 this.model.phone_number_1 = '';
                 this.model.phone_number_2 = '';
                 this.model.phone_number_3 = '';
@@ -318,8 +294,8 @@
                 this.model.zone_id = '';
                 this.model.channel_id = '';
                 this.model.route_id = '';
-                this.model.sector_id = '';
-                this.model.seller_id = '';
+                this.model.asignacion_id = '';
+                this.model.cost_unit_id = '';
                 this.model.business_type = '';
                 this.model.dgh = '';
                 this.model.grupo = '';
@@ -445,7 +421,7 @@
                     this.model.document_type_id = '';
                     this.model.document_number = '';
                     this.model.client_code = '';
-                    this.model.business_name = '';
+                    this.model.first_name = '';
                     this.model.address = '';
                     this.model.address_reference = '';
                     this.model.ubigeo_id = '';
@@ -453,13 +429,12 @@
                 	this.model.contact_name_2 = '';
                     this.model.email = '';
                     this.model.phone_number_1 = '';
-                    this.model.phone_number_2 = '';
-                    this.model.phone_number_3 = '';
-					this.model.business_unit_id = '';
+					this.model.cost_unit_id = '';
                     this.model.zone_id = '';
                     this.model.channel_id = '';
                     this.model.route_id = '';
-                    this.model.sector_id = '';
+                    this.model.asignacion_id = '';
+                    this.model.since_date = this.current_date;
                     this.model.seller_id = '';
                     this.model.business_type = '';
                     this.model.dgh = '';
