@@ -21,13 +21,10 @@
 		:url_get_clients = "'{{ route('dashboard.rrhh.employees.get_clients') }}'"
 		:url_get_select2 = "'{{ route('dashboard.rrhh.employees.get_select2') }}'"
 		:document_types = "{{ $document_types }}"
-		:payments = "{{ $payments }}"
-		:perceptions = "{{ $perceptions }}"
-		:business_units = "{{ $business_units }}"
-		:client_zones = "{{ $client_zones }}"
-		:client_channels = "{{ $client_channels }}"
-		:client_routes = "{{ $client_routes }}"
-		:client_sectors = "{{ $client_sectors }}"
+		:areas = "{{ $areas }}"
+		:tasas = "{{ $tasas }}"
+		:sctasas = "{{ $sctasas }}"
+		:saludtasas = "{{ $saludtasas }}"
 	></employee-modal>
 
 	<employee-address-modal

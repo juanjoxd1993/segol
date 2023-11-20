@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Client;
 use App\EmployeeAddress;
-use App\ClientChannel;
-use App\ClientRoute;
-use App\ClientSector;
-use App\ClientZone;
+use App\Area;
+use App\Tasa;
+use App\Saludtasa;
+use App\Sctasa;
 use App\Company;
 use App\DocumentType;
 use App\Payment;
@@ -32,22 +32,13 @@ class EmployeeController extends Controller
 	public function index() {
 		$companies = Company::select('id','name')->get();
 		$document_types = DocumentType::select('id', 'name')->get();
-		$payments = Payment::select('id', 'name')->get();
-		$perceptions = Rate::select('id', 'description', 'value')
-			->where('description', 'Percepción')
-			->orderBy('id', 'desc')
-			->get();
-		$perceptions->map(function($item, $index) {
-			$item->value = number_format($item->value, 1, '.', '');
-		});
 		$address_types = AddressType::select('id', 'name')->get();
-		$business_units = BusinessUnit::select('id', 'name')->get();
-		$client_zones = ClientZone::select('id', 'name')->get();
-		$client_channels = ClientChannel::select('id', 'name')->get();
-		$client_routes = ClientRoute::select('id', 'name')->get();
-		$client_sectors = ClientSector::select('id', 'name')->get();
+		$areas = Area::select('id', 'name')->get();
+		$tasas = Tasa::select('id', 'name')->get();
+		$saludtasas = Saludtasa::select('id', 'name')->get();
+		$sctasas = Sctasa::select('id', 'name')->get();
 
-		return view('backend.employees')->with(compact('companies', 'document_types', 'payments', 'perceptions', 'address_types', 'business_units', 'client_zones', 'client_channels', 'client_routes', 'client_sectors'));
+		return view('backend.employees')->with(compact('companies', 'document_types', 'address_types', 'areas', 'tasas', 'saludtasas', 'sctasas'));
 	}
 
 	public function validateForm() {
