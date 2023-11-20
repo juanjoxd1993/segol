@@ -138,13 +138,13 @@ class EmployeeController extends Controller
 			'address'					=> 'required',
 			'ubigeo_id'					=> 'required',
 			'contact_name_1'			=> 'required',
-			// 'email'						=> 'required_if:document_type_id,1',
-			// 'phone_number_1'			=> 'required',
-			'asignación_id'			=> 'required',
+		//  'email'						=> 'required_if:document_type_id,1',
+		//  'phone_number_1'			=> 'required',
+			'asignacion_id'				=> 'required',
 			'tasa_id'					=> 'required',
-		//	'salud_id'				=> 'required',
+		//	'salud_id'					=> 'required',
 		//	'sctr_id'					=> 'required',
-			'since_date'					=> 'required',			
+			'since_date'				=> 'required',			
 		];
 
 		request()->validate($rules, $messages);
