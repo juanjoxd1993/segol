@@ -121,8 +121,8 @@
                                  <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="form-control-label">Sueldo:</label>
-                                        <input type="text" class="form-control" name="police" id="police" placeholder="" v-model="model.police" @focus="$parent.clearErrorMsg($event)">
-                                        <div id="police-error" class="error invalid-feedback"></div>
+                                        <input type="text" class="form-control" name="sueldo" id="sueldo" placeholder="" v-model="model.sueldo" @focus="$parent.clearErrorMsg($event)">
+                                        <div id="sueldo-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
@@ -229,10 +229,19 @@
                 type: Array,
                 default: ''
             },
-            client_sectors: {
+            sctasas: {
                 type: Array,
                 default: ''
             },
+            saludtasas: {
+                type: Array,
+                default: ''
+            },
+            areas: {
+                type: Array,
+                default: ''
+            },
+            
         },
         data() {
             return {
@@ -254,12 +263,12 @@
                     since_date: this.current_date,
                     dgh: '',
                     asignacion_id:'',
-                    police: '',
-					payment_id: '',
-                    credit_limit: '',
-                    credit_limit_days: '',
+                    sueldo: '',
+					tasa_id: '',
+                    saludtasa_id: '',
+                    sctasa_id: '',
                     area_id: '',
-                    int_name: '',
+                   
                 },
                 button_text: '',
             }
@@ -289,23 +298,18 @@
                 this.model.since_date = this.current_date;
                 this.model.phone_number_1 = '';
                 this.model.phone_number_2 = '';
-                this.model.phone_number_3 = '';
                 this.model.business_unit_id = '';
-                this.model.zone_id = '';
-                this.model.channel_id = '';
-                this.model.route_id = '';
+                this.model.tasa_id = '';
                 this.model.asignacion_id = '';
+                this.model.sctasa_id = '';
+                this.model.saludtasa_id = '';
                 this.model.area_id = '';
                 this.model.business_type = '';
                 this.model.dgh = '';
                 this.model.grupo = '';
                 this.model.manager_id= '';
-                this.model.police = '';
-                this.model.payment_id = '';
-                this.model.credit_limit = '';
-                this.model.credit_limit_days = '';
-                this.model.perception_percentage_id = '';
-                this.model.int_name = '';
+                this.model.sueldo = '';
+              
 
                 $('#ubigeo_id').val(null).trigger('change');
                 $('#modal-client').modal('show');
@@ -434,18 +438,19 @@
                     this.model.channel_id = '';
                     this.model.route_id = '';
                     this.model.asignacion_id = '';
-                    this.model.since_date = this.current_date;
-                    this.model.seller_id = '';
+                    this.model.phone_number_1 = '';
+                    this.model.phone_number_2 = '';
+                    this.model.business_unit_id = '';
+                    this.model.tasa_id = '';
+                    this.model.asignacion_id = '';
+                    this.model.sctasa_id = '';
+                    this.model.saludtasa_id = '';
+                    this.model.area_id = '';
                     this.model.business_type = '';
                     this.model.dgh = '';
                     this.model.grupo = '';
                     this.model.manager_id= '';
-                    this.model.police = '';
-                    this.model.payment_id = '';
-                    this.model.credit_limit = '';
-                    this.model.credit_limit_days = '';
-                    this.model.perception_percentage_id = '';
-                    this.model.int_name = '';
+                    this.model.sueldo = '';
 
                     EventBus.$emit('refresh_table');
 

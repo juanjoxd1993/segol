@@ -124,10 +124,10 @@ class EmployeeController extends Controller
 			// 'phone_number_1.required'			=> 'El Teléfono 1 es obligatorio.',
 			'asignacion_id.required'			=> 'La Asignación es obligatoria.',
 			'sueldo.required'					=> 'El Salario es obligatorio.',
-			'afp_id.required'				=> 'El Tipo de AFP es obligatorio.',
-			'salud_id.required'					=> 'El tipo de Seguro es obligatorio.',
-			'sctr_id.required'				=> 'El tipo de SCTR es obligatorio.',
-			'fecha_inicio.required'				=> 'La fecha de Alta es obligatoria.',
+			'tasa_id.required'				=> 'El Tipo de AFP es obligatorio.',
+		//	'salud_id.required'					=> 'El tipo de Seguro es obligatorio.',
+		//	'sctr_id.required'				=> 'El tipo de SCTR es obligatorio.',
+			'since_date.required'				=> 'La fecha de Alta es obligatoria.',
 		];
 
 		$rules = [
@@ -141,10 +141,10 @@ class EmployeeController extends Controller
 			// 'email'						=> 'required_if:document_type_id,1',
 			// 'phone_number_1'			=> 'required',
 			'asignación_id'			=> 'required',
-			'afp_id'					=> 'required',
-			'salud_id'				=> 'required',
-			'sctr_id'					=> 'required',
-			'fecha_inicio_id'					=> 'required',			
+			'tasa_id'					=> 'required',
+		//	'salud_id'				=> 'required',
+		//	'sctr_id'					=> 'required',
+			'since_date'					=> 'required',			
 		];
 
 		request()->validate($rules, $messages);
