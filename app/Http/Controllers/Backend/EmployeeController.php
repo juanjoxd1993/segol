@@ -254,7 +254,7 @@ class EmployeeController extends Controller
 			$msg = 'Registro actualizado exitosamente';
 			$element->updated_at_user = Auth::user()->user;
 
-			$childElement = EmployeeAddress::where('client_id', $id)
+			$childElement = EmployeeAddress::where('employee_id', $id)
 				->where('address_type_id', 1)
 				->where('item_number', 1)
 				->first();
@@ -268,7 +268,7 @@ class EmployeeController extends Controller
 			}
 			
 		} else {
-			$element = new Client();
+			$element = new Employee();
 			$msg = 'Registro creado exitosamente';
 			$element->created_at_user = Auth::user()->user;
 			$element->updated_at_user = Auth::user()->user;
@@ -488,7 +488,7 @@ class EmployeeController extends Controller
 		$element->delete();
 
 		$elements = EmployeeAddress::select('id', 'item_number')
-			->where('employee_id', $element->client->id)
+			->where('employee_id', $element->employee->id)
 			->where('address_type_id', $element->address_type->id)
 			->orderBy('item_number', 'asc')
 			->get();
