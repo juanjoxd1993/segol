@@ -254,20 +254,20 @@ class EmployeeController extends Controller
 				$childElement->updated_at_user = Auth::user()->user;
 			} else {
 				$childElement = new EmployeeAddress();
-				$childElement->created_at_user = Auth::user()->user;
-				$childElement->updated_at_user = Auth::user()->user;
+			//	$childElement->created_at_user = Auth::user()->user;
+			//	$childElement->updated_at_user = Auth::user()->user;
 			}
 			
 		} else {
 			$element = new Employee();
 			$msg = 'Registro creado exitosamente';
-			$element->created_at_user = Auth::user()->user;
-			$element->updated_at_user = Auth::user()->user;
+		//	$element->created_at_user = Auth::user()->user;
+		//	$element->updated_at_user = Auth::user()->user;
       
 
 			$childElement = new EmployeeAddress();
-			$childElement->created_at_user = Auth::user()->user;
-			$childElement->updated_at_user = Auth::user()->user;
+		//	$childElement->created_at_user = Auth::user()->user;
+		//	$childElement->updated_at_user = Auth::user()->user;
 		}
 		$element->company_id = $company_id;
 		$element->first_name = $first_name;
@@ -444,8 +444,8 @@ class EmployeeController extends Controller
 		} else {
 			$element = new EmployeeAddress();
 			$msg = 'Registro creado exitosamente';
-			$element->created_at_user = Auth::user()->user;
-			$element->updated_at_user = Auth::user()->user;
+		//	$element->created_at_user = Auth::user()->user;
+		//	$element->updated_at_user = Auth::user()->user;
 
 			$item_number = EmployeeAddress::select('employee_id', 'address_type_id', 'item_number')
 				->where('employee_id', $employee_id)
@@ -613,8 +613,8 @@ class EmployeeController extends Controller
 		$element->initial_effective_date = date('Y-m-d', strtotime($initial_effective_date));
 		$element->final_effective_date = date('Y-m-d', strtotime($final_effective_date));
 		$element->state = 1;
-		$element->created_at_user = Auth::user()->user;
-        $element->updated_at_user = Auth::user()->user;
+	//	$element->created_at_user = Auth::user()->user;
+     // $element->updated_at_user = Auth::user()->user;
 		$element->save();
 
 		$type = 1;
@@ -683,8 +683,8 @@ class EmployeeController extends Controller
 				$newEmployee->channel_id = trim($item->Canal);
 				$newEmployee->phone_number_1 = trim($item->TelfMovil);
 				$newEmployee->phone_number_2 = '';
-				$newEmployee->created_at_user = trim($item->UsuarioCreador);
-				$newEmployee->updated_at_user = trim($item->UsuarioCreador);
+			//	$newEmployee->created_at_user = trim($item->UsuarioCreador);
+			//	$newEmployee->updated_at_user = trim($item->UsuarioCreador);
 				$newEmployee->save();
 
 				$employeeAddress = new EmployeeAddress();
@@ -692,8 +692,8 @@ class EmployeeController extends Controller
 				$employeeAddress->address_type_id = 1;
 				$employeeAddress->address = trim($item->Direccion);
 				$employeeAddress->ubigeo_id = 347;
-				$employeeAddress->created_at_user = trim($item->UsuarioCreador);
-				$employeeAddress->updated_at_user = trim($item->UsuarioCreador);
+			//	$employeeAddress->created_at_user = trim($item->UsuarioCreador);
+			//	$employeeAddress->updated_at_user = trim($item->UsuarioCreador);
 				$employeeAddress->save();
 			}
 		});
