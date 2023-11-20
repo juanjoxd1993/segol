@@ -221,13 +221,13 @@ class EmployeeController extends Controller
 
 		$id = request('id');
 		$company_id = request('company_id');
-		$first_name = request('business_name');
+		$first_name = request('first_name');
 		$document_type_id = request('document_type_id');
 		$document_number = request('document_number');
 		$address = request('address');
 		$address_reference = request('address_reference');
 		$ubigeo_id = request('ubigeo_id');
-		$sueldo = request('police');
+		$sueldo = request('sueldo');
 		$contact_name_1 = request('contact_name_1');
 		$email = request('email');
 		$since_date = request('model.since_date');
@@ -235,7 +235,7 @@ class EmployeeController extends Controller
 		$phone_number_2 = request('phone_number_2');
 		$asignacion_id = request('asignacion_id');
 		$area_id = request('area_id');
-		$afp_id = request('afp_id');
+		$afp_id = request('tasa_id');
 		$salud_id = request('salud_id');
 		$sctr_id = request('sctr_id');
 		$license = request('dgh');
