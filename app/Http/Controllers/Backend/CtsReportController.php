@@ -88,6 +88,7 @@ class CtsReportController extends Controller
 					  'employees.cci',
 					  'employees.cuenta',
 					  'employees.bank_id',
+					  'employees.asignacion_id',
 					  'banks.name as bank_name',
 					  'cicles.fecha_calc as inicio_cts',
 					  'cicles.fecha_final as final_cts',
@@ -129,8 +130,19 @@ class CtsReportController extends Controller
 				$facturation->bank_name = $facturation['bank_name'];
 			    $facturation->cuenta = $facturation['cuenta'];
 			    $facturation->cci = $facturation['cci'];
-                $facturation->familiar = 102.5;
+
+				$facturation->asignacion_id = $facturation['asignacion_id'];
+
+				             
+                if( $facturation->asignacion_id > 0){
+					$facturation->familiar = 102.5; 
+                }
+                else {
+					$facturation->familiar = 0;
+                }
+
 				$fecha_inicio = $facturation['fecha_inicio'];
+				$facturation->grati = $facturation['grati'];
 				$ffecha_inicio=Carbon::parse($fecha_inicio);
 
                 
@@ -898,20 +910,12 @@ class CtsReportController extends Controller
 			   }
  
                 
-			                
-                if( $facturation->familiar > 0){
-                    $facturation->asignacion = 'SI';   
-                }
-                else {
-                    $facturation->asignacion = 'NO';
-                }
+			   
 	
 
 			    $facturation->sueldo = $facturation['sueldo'];
 			    $facturation->familiar = $facturation['familiar'];
 
-				$grati= 1000;
-				$facturation->grati=$grati;
 
 				$gratdiv=$facturation->grati/6;
 				$facturation->gratdiv=$gratdiv;
@@ -921,10 +925,10 @@ class CtsReportController extends Controller
 				$facturation->prom_he=round($prom_he,2);
 
 
-				$prom_bon=0;
-				$facturation->prom_bom=round($prom_bon,2);
+				$prom_bon=($facturation->bon_1+$facturation->bon_2+$facturation->bon_3+$facturation->bon_4+$facturation->bon_5+$facturation->bon_6)/6;
+				$facturation->prom_bon=round($prom_bon,2);
 
-				$prom_com=0;
+				$prom_com=($facturation->com_1+$facturation->com_2+$facturation->com_3+$facturation->com_4+$facturation->com_5+$facturation->com_6)/6;
 				$facturation->prom_com=round($prom_com,2);
 
 
@@ -943,7 +947,7 @@ class CtsReportController extends Controller
 
 
 
-/*
+        /*
 			$totals_sum_sueldo += $facturation['sueldo'];
 			$totals_sum_familiar += $facturation['total_comp'];
 		*/
@@ -1260,13 +1264,6 @@ class CtsReportController extends Controller
 				$sheet->setCellValue('AL'.$row_number, $element->bank_name);
 				$sheet->setCellValue('AM'.$row_number, $element->cuenta);
 				$sheet->setCellValue('AN'.$row_number, $element->cci);
-
-
-
-
-
-
-				
 							
                 $sheet->getStyle('AI'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('AJ'.$row_number)->getNumberFormat()->setFormatCode('0.00');
