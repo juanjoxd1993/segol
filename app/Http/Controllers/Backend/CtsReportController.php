@@ -86,6 +86,7 @@ class CtsReportController extends Controller
 					  'employees.fecha_inicio',
 					  'employees.sueldo',
 					  'employees.cci',
+					  'employees.grati',
 					  'employees.cuenta',
 					  'employees.bank_id',
 					  'employees.asignacion_id',
