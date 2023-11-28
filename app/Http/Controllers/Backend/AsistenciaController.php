@@ -13,6 +13,7 @@ use App\AsistType;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
+use App\Cicle;
 
 class AsistenciaController extends Controller
 {
@@ -106,13 +107,16 @@ class AsistenciaController extends Controller
                 ->where('año', $price_ano)
                 ->where('mes', $price_mes)
                 ->first();
+            $ciclo = Cicle::where('año', $price_ano)
+                ->where('mes', $price_mes)
+                ->first();
 
             if (!$element) {
                 $element = new Asist();
                 $element->employ_id = $employ_id;
                 $element->año = $price_ano;
                 $element->mes = $price_mes;
-                $element->ciclo_id = 2;
+                $element->ciclo_id = $ciclo ? $ciclo->id : null;
                 $element->tardanzas = 0;
             }
 
