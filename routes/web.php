@@ -760,7 +760,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/beneficios/cerrar', 'BenefitController@close')->name('dashboard.rrhh.benefit.close');
 
 
-	/** RRHH > Calculo CTS */
+	/** RRHH > Calculo cts */
 	Route::get('/rrhh/calculo-cts', 'CtsReportController@index')->name('dashboard.report.cts');
 	Route::post('/rrhh/calculo-cts/validar-formulario', 'CtsReportController@validateForm')->name('dashboard.report.cts.validate_form');
 	Route::post('/rrhh/calculo-cts/obtener-clientes', 'CtsReportController@getClients')->name('dashboard.report.cts.get_clients');
@@ -773,6 +773,13 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/hoja-cts/obtener-clientes', 'CtsTotalReportController@getClients')->name('dashboard.report.cts_total.get_clients');
 	Route::post('/rrhh/hoja-cts/listar', 'CtsTotalReportController@list')->name('dashboard.report.cts_total.list');
 	
+	/** RRHH > Hoja de Trabajo Grati */
+	Route::get('/rrhh/hoja-grati', 'GratiTotalReportController@index')->name('dashboard.report.grati_total');
+	Route::post('/rrhh/hoja-grati/validar-formulario', 'GratiTotalReportController@validateForm')->name('dashboard.report.grati_total.validate_form');
+	Route::post('/rrhh/hoja-grati/obtener-clientes', 'GratiTotalReportController@getClients')->name('dashboard.report.grati_total.get_clients');
+	Route::post('/rrhh/hoja-grati/listar', 'GratiTotalReportController@list')->name('dashboard.report.grati_total.list');
+	
+
 	/** RRHH > Calculo Grati*/
 	Route::get('/rrhh/calculo-grati', 'GratiReportController@index')->name('dashboard.report.grati');
 	Route::post('/rrhh/calculo-grati/validar-formulario', 'GratiReportController@validateForm')->name('dashboard.report.grati.validate_form');
