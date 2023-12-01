@@ -21,8 +21,9 @@ class AsistenciaController extends Controller
         $companies = Company::select('id', 'name')->get();
         $areas = Area::select('id', 'name')->get();
         $asistTypes = AsistType::select('id','name')->get();
+        $ciclos = Cicle::select('id', 'año', 'mes')->get();
         
-        return view('backend.asistencia')->with(compact('companies', 'areas', 'asistTypes'));
+        return view('backend.asistencia')->with(compact('companies', 'areas', 'asistTypes', 'ciclos'));
     }
 
     public function validateForm() {
@@ -43,6 +44,7 @@ class AsistenciaController extends Controller
     public function list() {
         $company_id = request('model.company_id');
         $area_id = request('model.area_id');
+        $ciclo_id = request('model.ciclo_id');
         $today = date('Y-m-d', strtotime(Carbon::now()->startOfDay()));
         $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
         $price_ano = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
@@ -57,6 +59,7 @@ class AsistenciaController extends Controller
             ->where('employees.company_id', $company_id)
             ->where('asists.año', '=', $price_ano)
             ->where('asists.mes', '=', $price_mes)
+            ->where('asists.ciclo_id', $ciclo_id)
 
             ->when($area_id, function($query, $area_id) {
 				return $query->where('employees.area_id', $area_id);
@@ -99,6 +102,7 @@ class AsistenciaController extends Controller
         $today = date('Y-m-d', strtotime(Carbon::now()->startOfDay()));
         $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
         $price_ano = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
+        $ciclo_id = request('ciclo_id');
 
         $data = (array)json_decode(request('asist_values'));
 
@@ -106,9 +110,7 @@ class AsistenciaController extends Controller
             $element = Asist::where('employ_id', $employ_id)
                 ->where('año', $price_ano)
                 ->where('mes', $price_mes)
-                ->first();
-            $ciclo = Cicle::where('año', $price_ano)
-                ->where('mes', $price_mes)
+                ->where('ciclo_id', $ciclo_id)
                 ->first();
 
             if (!$element) {
@@ -116,7 +118,7 @@ class AsistenciaController extends Controller
                 $element->employ_id = $employ_id;
                 $element->año = $price_ano;
                 $element->mes = $price_mes;
-                $element->ciclo_id = $ciclo ? $ciclo->id : null;
+                $element->ciclo_id = $ciclo_id;
                 $element->tardanzas = 0;
             }
 

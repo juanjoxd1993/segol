@@ -36,7 +36,16 @@
                         </div>
                     </div>
 
-
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Ciclo:</label>
+                            <select class="form-control" name="ciclo_id" id="ciclo_id" v-model="model.ciclo_id" @focus="$parent.clearErrorMsg($event)">
+                                <option value="">Seleccionar</option>
+                                <option v-for="ciclo in ciclos" :value="ciclo.id" v-bind:key="ciclo.id">{{ ciclo.año + ' - ' + ciclo.mes }}</option>
+                            </select>
+                            <div id="ciclo_id-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
                     
                 </div>
             </div>
@@ -69,6 +78,10 @@
                 type: Array,
                 default: ''
             },
+            ciclos: {
+                type: Array,
+                default: ''
+            },
             url: {
                 type: String,
                 default: ''
@@ -79,7 +92,7 @@
                 model: {
                     company_id: '',
                     area_id: '',
-       
+                    ciclo_id: ''
                 },
             }
         },

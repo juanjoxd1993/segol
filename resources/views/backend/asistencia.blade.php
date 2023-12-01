@@ -8,6 +8,7 @@
 		:companies = "{{ $companies }}"
 		:areas = "{{ $areas }}"
 		:url = "'{{ route('dashboard.rrhh.asistencia.validate_form') }}'"
+		:ciclos = "{{ $ciclos }}"
 	></asistencia-form>
 	
 	<asistencia-table
