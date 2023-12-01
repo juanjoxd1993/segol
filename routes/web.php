@@ -724,8 +724,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/calculo-planilla/obtener-clientes', 'PlanillaTotalReportController@getClients')->name('dashboard.report.planilla_total.get_clients');
 	Route::post('/rrhh/calculo-planilla/listar', 'PlanillaTotalReportController@list')->name('dashboard.report.planilla_total.list');
 
-
-
 	/** rrhh > Empleados */
 	Route::get('/rrhh/empleados', 'EmployeeController@index')->name('dashboard.rrhh.employees');
 	Route::post('/rrhh/empleados/guardar', 'EmployeeController@store')->name('dashboard.rrhh.employees.store');
@@ -769,6 +767,12 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/calculo-cts/listar', 'CtsReportController@list')->name('dashboard.report.cts.list');
 
 
+	/** RRHH > Hoja de Trabajo CTS */
+	Route::get('/rrhh/hoja-cts', 'CtsTotalReportController@index')->name('dashboard.report.cts_total');
+	Route::post('/rrhh/hoja-cts/validar-formulario', 'CtsTotalReportController@validateForm')->name('dashboard.report.cts_total.validate_form');
+	Route::post('/rrhh/hoja-cts/obtener-clientes', 'CtsTotalReportController@getClients')->name('dashboard.report.cts_total.get_clients');
+	Route::post('/rrhh/hoja-cts/listar', 'CtsTotalReportController@list')->name('dashboard.report.cts_total.list');
+	
 	/** RRHH > Calculo Grati*/
 	Route::get('/rrhh/calculo-grati', 'GratiReportController@index')->name('dashboard.report.grati');
 	Route::post('/rrhh/calculo-grati/validar-formulario', 'GratiReportController@validateForm')->name('dashboard.report.grati.validate_form');
