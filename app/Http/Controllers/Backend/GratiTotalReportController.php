@@ -1304,7 +1304,7 @@ class GratiTotalReportController extends Controller
 				$totals->prom_noc='';
 				$totals->total_comp='';
 				$totals->import_mes='';
-				$totals->import_dia='';
+				$totals->salud='';
 				$totals->total_cts='';
 				$totals->bank_name='';
 				$totals->cuenta='';
@@ -1321,7 +1321,7 @@ class GratiTotalReportController extends Controller
 			$spreadsheet = new Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
 			$sheet->mergeCells('A1:AA1');
-			$sheet->setCellValue('A1', 'HOJA DE TRABAJO CTS DEL '.CarbonImmutable::now()->format('d/m/Y H:m:s'));
+			$sheet->setCellValue('A1', 'HOJA DE TRABAJO GRATIFICACIÓN DEL '.CarbonImmutable::now()->format('d/m/Y H:m:s'));
 			$sheet->getStyle('A1')->applyFromArray([
 				'font' => [
 					'bold' => true,
