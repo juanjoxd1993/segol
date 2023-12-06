@@ -124,6 +124,7 @@
                 });
 
                 fd.append('asist_values', JSON.stringify(data));
+                fd.append('ciclo_id', this.model.ciclo_id);
 
                 Swal.fire({
                     title: '¡Cuidado!',
@@ -186,7 +187,7 @@
 
                 let dynamicColumns = [
                     {
-                        field: 'id',
+                        field: 'employ_id',
                         title: '#',
                         sortable: false,
                         width: 30,
@@ -317,7 +318,7 @@
                     rows: {
                         autoHide: true,
                         callback: function(row, data, index) {
-                            $(row).attr('data-employee', data.id);
+                            $(row).attr('data-employee', data.employ_id);
                             $(row).addClass('row-employee');
                         }
                     },
