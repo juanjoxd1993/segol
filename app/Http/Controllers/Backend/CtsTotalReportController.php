@@ -1403,6 +1403,7 @@ class CtsTotalReportController extends Controller
 			$sheet->setCellValue('Y3', 'BANCO');
 			$sheet->setCellValue('Z3', 'CUENTA ');
 			$sheet->setCellValue('AA3', 'CCI');
+			$sheet->setCellValue('AB3', 'CCI');
 
 
          

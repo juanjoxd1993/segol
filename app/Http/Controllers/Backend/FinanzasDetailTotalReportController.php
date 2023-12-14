@@ -75,7 +75,7 @@ class FinanzasDetailTotalReportController extends Controller
 														//	->whereNotIn('sales.if_bol', [1])
 															->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 															->whereIn('sales.cede', $warehouse_types)
-															->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',  $initial_date)
+															->where('sales.sale_date', '=',  $initial_date)
 															->select('sales.total_perception')
 															->sum('sales.total_perception');
 
@@ -84,7 +84,7 @@ class FinanzasDetailTotalReportController extends Controller
 									//	->whereNotIn('sales.if_bol', [1])
 										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 										->whereIn('sales.cede', $warehouse_types)
-										->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',  $initial_date)
+										->where('sales.sale_date', '=',  $initial_date)
 										->whereIn('liquidations.payment_method_id', [1])
 										->where('liquidations.collection',0)
 										->select('liquidations.amount')
@@ -97,7 +97,7 @@ class FinanzasDetailTotalReportController extends Controller
 									//	->whereNotIn('sales.if_bol', [1])
 										->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 										->whereIn('sales.cede', $warehouse_types)
-										->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=',  $initial_date)
+										->where('sales.sale_date', '=',  $initial_date)
 										->whereIn('liquidations.payment_method_id', [9])									
 								//	->where('liquidations.collection',0)
 										->select('liquidations.amount')
@@ -109,7 +109,7 @@ class FinanzasDetailTotalReportController extends Controller
 								//	->whereNotIn('sales.if_bol', [1])
 									->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 									->whereIn('sales.cede', $warehouse_types)
-									->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
+									->where('sales.sale_date', '=',  $initial_date)
 									->whereIn('liquidations.payment_method_id', [2,3])
 									->whereIn('liquidations.collection',[0,1])
 									->select('liquidations.amount')
@@ -118,14 +118,14 @@ class FinanzasDetailTotalReportController extends Controller
 		$credit = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 
 								->whereIn('sales.cede', $warehouse_types)
-								->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
+								->where('sales.sale_date', '=',  $initial_date)
 								->whereIn('sales.warehouse_document_type_id', [13,7,5])
 								->select('sales.balance')
 								->sum('sales.balance');
 
 		$saldo_favor = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 								->whereIn('sales.cede', $warehouse_types)
-								->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
+								->where('sales.sale_date', '=',  $initial_date)
 								->whereIn('sales.warehouse_document_type_id', [30])
 								->select('sales.inaccurate_value')
 								->sum('sales.inaccurate_value');
@@ -134,7 +134,7 @@ class FinanzasDetailTotalReportController extends Controller
 								->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
 								->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 								->whereIn('sales.cede', $warehouse_types)
-								->where(DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") '), '=', $initial_date)
+								->where('sales.sale_date', '=',  $initial_date)
 								->whereIn('liquidations.payment_method_id', [11])
 								->whereIn('liquidations.collection',[0,1])
 								->select('liquidations.amount')
