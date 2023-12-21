@@ -46,8 +46,7 @@ class AsistenciaController extends Controller
         $area_id = request('model.area_id');
         $ciclo_id = request('model.ciclo_id');
         $today = date('Y-m-d', strtotime(Carbon::now()->startOfDay()));
-        $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
-        $price_ano = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
+       
 
         $elements = Asist::join('employees', 'asists.employ_id', '=', 'employees.id')
             ->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')
@@ -56,9 +55,9 @@ class AsistenciaController extends Controller
              'asists.tardanzas', 'asists.ciclo_id','asists.horas_tarde', 'asists.minutos_tarde', 
              'asists.horas_extra_25', 'asists.horas_extra_35','asists.horas_noc_25',
              'asists.horas_noc_35','employees.first_name','employees.document_number')
-            ->where('employees.company_id', $company_id)
-            ->where('asists.año', '=', $price_ano)
-            ->where('asists.mes', '=', $price_mes)
+           // ->where('employees.company_id', $company_id)
+         //   ->where('cicles.año', '=', $price_ano)
+          //  ->where('cicles.mes', '=', $price_mes)
             ->where('asists.ciclo_id', $ciclo_id)
 
             ->when($area_id, function($query, $area_id) {

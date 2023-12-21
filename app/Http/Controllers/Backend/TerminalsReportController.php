@@ -30,7 +30,7 @@ class TerminalsReportController extends Controller
 		$companies = Company::select('id','name')->get();
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
 
-		return view('backend.terminals_report')->with(compact('movement_classes',
+		return view('backend.terminals_report')->with(compact(
 															'movement_types',
 															'warehouse_types',
 															'companies',
