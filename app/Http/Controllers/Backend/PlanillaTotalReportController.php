@@ -28,7 +28,7 @@ class PlanillaTotalReportController extends Controller
     public function index() {
 	//	$companies = Company::select('id', 'name')->get();
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
-		return view('backend.planilla_total_report')->with(compact('companies', 'current_date'));
+		return view('backend.planilla_total_report')->with(compact('current_date'));
 	}
 
 	public function validateForm() {
