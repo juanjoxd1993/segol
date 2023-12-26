@@ -73,20 +73,18 @@ class MasaReportController extends Controller
 					    ->leftjoin('warehouse_movement_details', 'warehouse_movements.id', '=', 'warehouse_movement_details.warehouse_movement_id')    
                         ->leftjoin('clients', 'containers.client_id', '=', 'clients.id')                     
                         ->leftjoin('container_details', 'containers.id', '=', 'container_details.container_id')
-						->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')	            
-			            ->select('clients.id as client_id','clients.business_name as business_name','articles.convertion as convertion','warehouse_movements.if_comodato as comodato')
-			        
-				
-			
-			->groupBy('business_name')
+						            ->leftjoin('articles', 'container_details.article_id', '=', 'articles.id')	            
+			                  ->select('clients.id as client_id','clients.business_name as business_name','articles.convertion as convertion','warehouse_movements.if_comodato as comodato')
+			    
+			      ->groupBy('business_name')
             ->get();
 
 			$response=[];
 
             
             $totals_sum_5kt = 0;
-			$totals_sum_10kt = 0;
-		    $totals_sum_15kt = 0;
+			      $totals_sum_10kt = 0;
+		        $totals_sum_15kt = 0;
             $totals_sum_45kt = 0;
 		    $totals_sum_m15t = 0;
 		    $totals_sum_5kc = 0;

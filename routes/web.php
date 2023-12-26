@@ -353,6 +353,12 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/logistica/registro-produccion/obtener-articulo', 'ProductionController@getArticle')->name('dashboard.logistics.production_register.get_article');
 	Route::post('/logistica/registro-produccion/guardar', 'ProductionController@store')->name('dashboard.logistics.production_register.store');
 
+	/** Operaciones > Reporte de Stock ATE */
+	Route::get('operaciones/reporte/reporte-masa', 'StockAteReportController@index')->name('dashboard.report.stock_ate');
+	Route::post('operaciones/reporte/reporte-masa/validar-formulario', 'StockAteReportController@validateForm')->name('dashboard.report.stock_ate.validate_form');
+	Route::post('operaciones/reporte/reporte-masa/obtener-clientes', 'StockAteReportController@getClients')->name('dashboard.report.stock_ate.get_clients');
+	Route::post('operaciones/reporte/reporte-masa/listar', 'StockAteReportController@list')->name('dashboard.report.stock_ate.list');
+	
 	/** Reportes > Prueba Guias */
 	Route::get('/operaciones/guias-registro', 'StockSeekRegisterReportController@index')->name('dashboard.operations.stock_seek_register');
 	Route::post('/operaciones/guias-registro/validar-formulario', 'StockSeekRegisterReportController@validateForm')->name('dashboard.operations.stock_seek_register.validate_form');

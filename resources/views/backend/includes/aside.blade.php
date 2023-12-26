@@ -446,6 +446,16 @@
 									<span class="kt-menu__link-text">Impresion Guías</span>
 								</a>
 							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.stock_ate' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.report.stock_ate') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Reporte de Stock Ate</span>
+								</a>
+							</li>
+
 			            </ul>
 					</div>
 				</li>
