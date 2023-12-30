@@ -38,8 +38,8 @@
                             <label class="form-control-label">Tipos:</label>
                             <select class="form-control" name="movement_type_id" id="movement_type_id" v-model="model.warehouse_type_index" @focus="$parent.clearErrorMsg($event)">
                                 <option selected="true" value="0">Todos</option>
-                                <option value="1">Planta Callao</option>
-                                <option value="2">Planta Ate</option>
+                                <option value="1">Planta Ate</option>
+                                <option value="2">Planta Callao</option>
                                 <option value="3">Granel</option>
                                 <!-- <option v-for="planta in plantas" v-bind:value="planta.id">{{ planta.name }}</option> -->
                             </select>
