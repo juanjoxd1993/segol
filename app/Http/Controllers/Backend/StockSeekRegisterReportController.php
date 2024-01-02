@@ -28,7 +28,7 @@ class StockSeekRegisterReportController extends Controller
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
 		
 
-		return view('backend.stock_seek_register_report')->with(compact('movement_classes', 'movement_types', 'warehouse_types', 'companies', 'current_date', 'warehouse_account_types', 'warehouse_document_types'));
+		return view('backend.stock_seek_register_report')->with(compact('companies', 'current_date'));
 	}
 
 	public function validateForm() {
