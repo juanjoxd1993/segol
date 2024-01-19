@@ -19,6 +19,10 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Style\Color;
 use stdClass;
 
 
@@ -1369,20 +1373,54 @@ class GratiTotalReportController extends Controller
 		]);*/
 
 	//	$sheet->mergeCells('A3:AA3');
-		$sheet->getStyle('A3:AA3')->applyFromArray([
-			'font' => [
-				'color' => array('rgb' => 'FFFFFF'),
-				'bold' => true,
-				'size' => 8,
-			],
-			'alignment' => [
-				'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
-			],
-			'fill' => [
-				'fillType' => Fill::FILL_SOLID,
-				'startColor' => array('rgb' => '722CFF')
-			]
-		]);
+
+	$imagePath = public_path('backend/img/logo-dashboard.png');
+
+
+	$height = 60; // La altura deseada para la imagen en píxeles
+	
+	// Establece la altura de la fila
+	$sheet->getRowDimension(1)->setRowHeight($height);
+
+	// Crea un objeto de dibujo
+	$drawing = new Drawing();
+	$drawing->setPath($imagePath);
+	$drawing->setCoordinates('A1');
+	$drawing->setResizeProportional(false); // Desactiva el redimensionamiento proporcional
+	$drawing->setWidth(180); // Establece el ancho calculado
+	$drawing->setHeight($height); // Establece la altura deseada
+	$drawing->setOffsetY(10);
+	$drawing->setWorksheet($sheet);
+
+	$styleArray = [
+		'font' => [
+			'bold' => true,
+			'color' => ['argb' => 'FFFFFFFF'],
+			'size' => 11,
+		],
+		'alignment' => [
+			'horizontal' => Alignment::HORIZONTAL_CENTER,
+			'vertical' => Alignment::VERTICAL_CENTER,
+			'wrapText' => true,
+		],
+		'fill' => [
+			'fillType' => Fill::FILL_SOLID,
+			'startColor' => ['argb' => 'FF722CFF'], // Usar 'argb' en lugar de 'rgb'
+		]
+	];
+
+	$styleArray2 = [
+		'alignment' => [
+			'horizontal' => Alignment::HORIZONTAL_CENTER,
+			'vertical' => Alignment::VERTICAL_CENTER,
+			'wrapText' => true, // Si deseas que el texto se ajuste automáticamente
+		]
+	];
+	// Aplicar el estilo a la fila 3
+	$sheet->getStyle('A3:AA3')->applyFromArray($styleArray);
+
+	// Si deseas aplicar este estilo a todas las celdas desde la fila 3 hasta la última fila con datos, usa esto:
+	$sheet->getStyle('A3:AA' . 3000)->applyFromArray($styleArray2);
 
 		
 			$sheet->setCellValue('A3', '#');
@@ -1411,19 +1449,9 @@ class GratiTotalReportController extends Controller
 			$sheet->setCellValue('X3', 'Total a Pagar Gratificación');
 
 
+			$sheet->getRowDimension('3')->setRowHeight(50);
 
-         
-
-
-			$sheet->getStyle('A3:AA3'.$sheet->getHighestRow())->getAlignment()->setWrapText(true)->applyFromArray([
-				'font' => [
-					'bold' => true,
-					'size' => 8,
-				],
-				'alignment' => [
-					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
-				],
-			]);
+        
 
 
 			$row_number = 4;

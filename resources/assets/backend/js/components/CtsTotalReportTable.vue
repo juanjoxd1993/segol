@@ -175,7 +175,12 @@
                             width: 120,
                             textAlign: 'left',
                         },
-
+                        {
+                            field: 'total_cts',
+                            title: 'Total a Pagar',
+                            width: 120,
+                            textAlign: 'center',
+                        },
                 
                        
                        

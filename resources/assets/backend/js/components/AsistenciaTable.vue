@@ -123,8 +123,10 @@
                     data[employeeId] = asist_values;
                 });
 
+           
                 fd.append('asist_values', JSON.stringify(data));
                 fd.append('ciclo_id', this.model.ciclo_id);
+
 
                 Swal.fire({
                     title: '¡Cuidado!',
@@ -228,7 +230,10 @@
                                 case 4: //Horas Extra 35
                                     value = row.horas_extra_35;
                                     break;
-                                case 6: //Bonificación Nocturna
+                                case 5: //Bonificación Nocturna
+                                    value = row.horas_noc_25;
+                                    break;
+                                case 6: //Dias No sub
                                     value = row.horas_noc_35;
                                     break;
                             }
@@ -328,7 +333,7 @@
                 });
 
                 $('.kt-datatable').on('kt-datatable--on-check', function(a, e) {
-
+                    console.log(e);
                     $.each(e, function(key, value) {
                         let index = vm.ids.findIndex((element) => element == value);
                         if ( index < 0 ) {

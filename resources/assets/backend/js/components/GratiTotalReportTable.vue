@@ -177,7 +177,12 @@
                         },
 
                 
-                       
+                       {
+                            field: 'grati',
+                            title: 'Total a Pagar',
+                            width: 120,
+                            textAlign: 'center',
+                        },
                        
                   
                         

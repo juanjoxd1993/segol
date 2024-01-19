@@ -126,6 +126,7 @@
                 var url = url;
                 var fd = new FormData(event.target);
 
+
                 Swal.fire({
                     title: '¡Cuidado!',
                     text: '¿Seguro que desea Actualizar la Asistencia?',
