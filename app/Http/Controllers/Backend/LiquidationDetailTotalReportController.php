@@ -245,7 +245,7 @@ class LiquidationDetailTotalReportController extends Controller
 			$sheet->mergeCells('A1:L1');
 			$sheet->setCellValue('A1', 'REPORTE DE LIQUIDACIONES DEL '.CarbonImmutable::now()->format('d/m/Y H:m:s'));
 			$sheet->getStyle('A1')->applyFromArray([
-				'font' => [ss
+				'font' => [
 					'bold' => true,
 					'size' => 16,
 				],
@@ -259,7 +259,7 @@ class LiquidationDetailTotalReportController extends Controller
             $sheet->setCellValue('B3', 'Unidad de Negocio');
 			$sheet->setCellValue('C3', 'Compañía');			
             $sheet->setCellValue('D3', 'Fecha de Liquidación');
-			$sheet->setCellValue('E3', 'Fecha de Venta');
+			$sheet->setCellValue('E3', 'Fecha de Emisión');
             $sheet->setCellValue('F3', 'Canal de Venta'); 
             $sheet->setCellValue('G3', 'TM');
 			$sheet->setCellValue('H3', 'Total');
