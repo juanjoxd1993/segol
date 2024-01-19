@@ -80,8 +80,8 @@ class LiquidationDetailTotalReportController extends Controller
 			            ->leftjoin('warehouse_document_types', 'sales.warehouse_document_type_id', '=', 'warehouse_document_types.id')
 			            ->leftjoin('warehouse_movements', 'sales.warehouse_movement_id', '=', 'warehouse_movements.id')
 			            ->leftjoin('movent_types', 'warehouse_movements.movement_type_id', '=', 'movent_types.id')
-			            ->where('sales.created_at', '>=', $initial_date)
-			            ->where('sales.created_at', '<=', $final_date)
+			            ->where('sales.sale_date', '>=', $initial_date)
+			            ->where('sales.sale_date', '<=', $final_date)
 						->whereNotIn('sales.warehouse_document_type_id', [2,3,8,9,10,11,14,16,17,18,19,20,21,22,23,24,25,26,27,28,29])
 						->whereNotIn('sales.client_id', [1031, 427, 13326, 13775,14258,14072])
 			->select('companies.short_name as company_short_name' ,'sales.sale_date',DB::Raw('DATE_FORMAT(sales.created_at, "%Y-%m-%d") as liquidation_date'),'clients.business_unit_id as business_unit_id','clients.channel_id as channel_id',
@@ -98,11 +98,11 @@ class LiquidationDetailTotalReportController extends Controller
 
 		//	->groupBy('business_unit_id')
             ->groupBy('channel_id')
-            ->groupBy('liquidation_date')
+      
 			->groupBy('sales.sale_date')
 
 
-            ->orderBy('liquidation_date')
+            ->orderBy('sale_date')
             
             
 			
@@ -245,7 +245,7 @@ class LiquidationDetailTotalReportController extends Controller
 			$sheet->mergeCells('A1:L1');
 			$sheet->setCellValue('A1', 'REPORTE DE LIQUIDACIONES DEL '.CarbonImmutable::now()->format('d/m/Y H:m:s'));
 			$sheet->getStyle('A1')->applyFromArray([
-				'font' => [
+				'font' => [ss
 					'bold' => true,
 					'size' => 16,
 				],
@@ -259,7 +259,7 @@ class LiquidationDetailTotalReportController extends Controller
             $sheet->setCellValue('B3', 'Unidad de Negocio');
 			$sheet->setCellValue('C3', 'Compañía');			
             $sheet->setCellValue('D3', 'Fecha de Liquidación');
-			$sheet->setCellValue('E3', 'Fecha de Emisión');
+			$sheet->setCellValue('E3', 'Fecha de Venta');
             $sheet->setCellValue('F3', 'Canal de Venta'); 
             $sheet->setCellValue('G3', 'TM');
 			$sheet->setCellValue('H3', 'Total');
