@@ -807,10 +807,6 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/recursive/obtener-dia', 'RecursiveRegisterController@getMinEffectiveDate')->name('dashboard.rrhh.recursive.get_min_effective_date');
 	Route::post('/rrhh/recursive/guardar', 'RecursiveRegisterController@store')->name('dashboard.rrhh.recursive.store');
 
-
-
-
-
 });
 
 

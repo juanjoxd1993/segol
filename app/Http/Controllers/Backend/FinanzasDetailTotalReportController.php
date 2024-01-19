@@ -123,12 +123,13 @@ class FinanzasDetailTotalReportController extends Controller
 								->select('sales.balance')
 								->sum('sales.balance');
 
-		$saldo_favor = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
+	/*	$saldo_favor = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 								->whereIn('sales.cede', $warehouse_types)
 								->where('sales.sale_date', '=',  $initial_date)
 								->whereIn('sales.warehouse_document_type_id', [30])
 								->select('sales.inaccurate_value')
-								->sum('sales.inaccurate_value');
+								->sum('sales.inaccurate_value');*/
+								
 
 		$yape = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 								->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
@@ -145,7 +146,9 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$diference = number_format($total_venta_del_dia - $total_liquidado , 2, '.', '');
 
-		$favor=number_format($saldo_favor , 2, '.', '');
+		$saldo_favor=number_format($diference , 2, '.', '');
+
+		$favor=number_format($diference , 2, '.', '');
 
 		$diference_final=  number_format($diference - $favor , 2, '.', '');
 
