@@ -129,9 +129,7 @@ class FinanzasDetailTotalReportController extends Controller
 								->whereIn('sales.warehouse_document_type_id', [30])
 								->select('sales.inaccurate_value')
 								->sum('sales.inaccurate_value');*/
-
-
-		$saldo_favor=$diference;
+								
 
 		$yape = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 								->leftjoin('liquidations', 'sales.id', '=', 'liquidations.sale_id')
@@ -147,6 +145,8 @@ class FinanzasDetailTotalReportController extends Controller
 
 
 		$diference = number_format($total_venta_del_dia - $total_liquidado , 2, '.', '');
+
+		$saldo_favor=number_format($diference , 2, '.', '');
 
 		$favor=number_format($diference , 2, '.', '');
 
