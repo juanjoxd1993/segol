@@ -24,6 +24,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Style\Color;
+use App\Cicle;
 
 use stdClass;
 
@@ -34,25 +35,25 @@ class PlanillaTotalReportController extends Controller
 	{
 		//	$companies = Company::select('id', 'name')->get();
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
-		return view('backend.planilla_total_report')->with(compact('current_date'));
+		$ciclos = Cicle::select('id', 'año', 'mes')->get();
+		return view('backend.planilla_total_report')->with(compact('current_date', 'ciclos'));
 	}
 
 	public function validateForm()
-	{
-		$messages = [
-			'initial_date.required'	=> 'Debe seleccionar una Fecha inicial.',
+    {
+        $messages = [
+            'ciclo_id.required'     => 'Debe seleccionar un Ciclo.',  // Mensaje de error para ciclo_id
+            //'article_id.required' => 'Debe seleccionar un Artículo.',
+        ];
 
-		];
+        $rules = [
+            'ciclo_id'   => 'required',  // Regla de validación para ciclo_id
+            //'article_id' => 'required',
+        ];
 
-		$rules = [
-			'initial_date'	=> 'required',
-
-		];
-
-		request()->validate($rules, $messages);
-		return request()->all();
-	}
-
+        request()->validate($rules, $messages);
+        return request()->all();
+    }
 	public function getClients()
 	{
 		$company_id = request('company_id');
@@ -73,10 +74,14 @@ class PlanillaTotalReportController extends Controller
 	{
 
 		$export = request('export');
+		$ciclo_id = request('model.ciclo_id');
+        // Encuentra el ciclo seleccionado
+        $ciclo = Cicle::find($ciclo_id);
 
-		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d H:i:s');
-		$price_mes = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('m');
-		$price_year = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y');
+        // Verifica si se encontró el ciclo
+        $price_mes = $ciclo->mes;
+        $price_year = $ciclo->año;
+
 
 
 

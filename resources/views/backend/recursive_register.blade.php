@@ -8,6 +8,7 @@
 		:companies = "{{ $companies }}"
 		:areas = "{{ $areas }}"
 		:url = "'{{ route('dashboard.rrhh.recursive.validate_form') }}'"
+		:ciclos = "{{ $ciclos }}"
 	></recursive-form>
 	
 	<recursive-table

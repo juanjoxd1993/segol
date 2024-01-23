@@ -244,8 +244,8 @@ export default {
         .then((response) => {
           EventBus.$emit("loading", false);
 
-          const monthName = this.getMonthName(this.model.initial_date);
-          const fileName = `planilla-${monthName}-${Date.now()}.xls`;
+          // const monthName = this.getMonthName(this.model.initial_date);
+          const fileName = `planilla-${Date.now()}.xls`;
 
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");

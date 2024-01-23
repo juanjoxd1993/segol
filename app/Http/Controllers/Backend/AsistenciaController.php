@@ -31,12 +31,14 @@ class AsistenciaController extends Controller
     {
         $messages = [
             'company_id.required'   => 'Debe seleccionar una Compañía.',
-            //'article_id.required'	=> 'Debe seleccionar un Artículo.',
+            'ciclo_id.required'     => 'Debe seleccionar un Ciclo.',  // Mensaje de error para ciclo_id
+            //'article_id.required' => 'Debe seleccionar un Artículo.',
         ];
 
         $rules = [
-            'company_id'    => 'required',
-            //	'article_id'    => 'required',
+            'company_id' => 'required',
+            'ciclo_id'   => 'required',  // Regla de validación para ciclo_id
+            //'article_id' => 'required',
         ];
 
         request()->validate($rules, $messages);
@@ -213,13 +215,13 @@ class AsistenciaController extends Controller
         }
 
         $price_mes = $ciclo->mes;
-        $price_ano = $ciclo->año;
+        $price_año = $ciclo->año;
 
         $data = (array)json_decode(request('asist_values'));
 
         foreach ($data as $employ_id => $asist_data) {
             $element = Asist::where('employ_id', $employ_id)
-                ->where('año', $price_ano)
+                ->where('año', $price_año)
                 ->where('mes', $price_mes)
                 ->where('ciclo_id', $ciclo_id)
                 ->first();

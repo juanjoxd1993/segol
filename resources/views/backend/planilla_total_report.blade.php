@@ -9,6 +9,7 @@
 		:current_date = "'{{ $current_date }}'"
 		:url = "'{{ route('dashboard.report.planilla_total.validate_form') }}'"
 		:url_get_clients = "'{{ route('dashboard.report.planilla_total.get_clients') }}'"
+		:ciclos = "{{ $ciclos }}"
 	></planilla-total-report-form>
 	
 	<planilla-total-report-table

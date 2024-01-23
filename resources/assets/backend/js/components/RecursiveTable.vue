@@ -197,12 +197,13 @@
 						{
 							field: 'first_name',
 							title: 'Empleado',
-							width: 200,
+							width: 250,
 						},
                         {
                             field: 'document_number',
                             title: 'Código',
-                            width: 60,
+                            width: 100,
+                            textAlign: 'center',
                         },
                        
                     ]
