@@ -39,14 +39,16 @@ use stdClass;
 
 class LiquidationFinalController extends Controller
 {
-	public function index() {
+	public function index()
+	{
 		$companies = Company::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')
-						->where('name', 'Factura Electrónica')
-						->orWhere('name', 'Boleta de Venta Electrónica')
-						->orWhere('name', 'Nota de Pedido')
-						->orWhere('name', 'Cesión de Uso')
-						->get();
+			->where('name', 'Factura Electrónica')
+			->orWhere('name', 'Boleta de Venta Electrónica')
+			->orWhere('name', 'Nota de Pedido')
+			->orWhere('name', 'Cesión de Uso')
+			->orWhere('name', 'Nota Interna Bonif.')
+			->get();
 		$payment_methods = PaymentMethod::select('id', 'name', 'payment_id')->get();
 		$currencies = Currency::select('id', 'name')->get();
 		$payments = Payment::all();
@@ -66,7 +68,8 @@ class LiquidationFinalController extends Controller
 		);
 	}
 
-	public function validateForm() {
+	public function validateForm()
+	{
 		$messages = [
 			'company_id.required'               => 'Debe seleccionar una Compañía.',
 			'warehouse_movement_id.required'    => 'El Nº de Parte es obligatorio.',
@@ -81,80 +84,88 @@ class LiquidationFinalController extends Controller
 		return request()->all();
 	}
 
-	public function getWarehouseMovements() {
+	public function getWarehouseMovements()
+	{
 		$user_id = Auth::user()->id;
 
 		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-                                              ->where('user_id', $user_id)
-                                              ->first();
+			->where('user_id', $user_id)
+			->first();
 
 		//	$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 
 		$warehouse_type_id = request('warehouse_type_id');
 		$company_id = request('company_id');
 
-			$guide_state = GuidesState::select('id')
-																->where('name', 'Por Liquidar')
-																->first();
+		$guide_state = GuidesState::select('id')
+			->where('name', 'Por Liquidar')
+			->first();
 
-			$elements = WarehouseMovement::select('id', 'movement_number', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'traslate_date', 'movement_type_id')
-					->where('company_id', $company_id)
-					->where('warehouse_type_id', $warehouse_type_id)
-					->where('sale_id', null)
-					->where(function ($query) {
-							$query->where('action_type_id', 3)
-									->orWhere('action_type_id', 4)
-									->orWhere('action_type_id', 6)
-									->orWhere('action_type_id', 7)
-									->orWhere('action_type_id', 8);
-					})
-					->where('state', $guide_state->id)
-					->orderBy('movement_number', 'asc')
-					->get();
+		$elements = WarehouseMovement::select('id', 'movement_number', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'traslate_date', 'movement_type_id')
+			->where('company_id', $company_id)
+			->where('warehouse_type_id', $warehouse_type_id)
+			->where('sale_id', null)
+			->where(function ($query) {
+				$query->where('action_type_id', 3)
+					->orWhere('action_type_id', 4)
+					->orWhere('action_type_id', 6)
+					->orWhere('action_type_id', 7)
+					->orWhere('action_type_id', 8);
+			})
+			->where('state', $guide_state->id)
+			->orderBy('movement_number', 'asc')
+			->get();
 
-			$elements->map(function ($item, $index) {
-					$item->creation_date = date('d-m-Y', strtotime($item->traslate_date));
-			});
+		$elements->map(function ($item, $index) {
+			$item->creation_date = date('d-m-Y', strtotime($item->traslate_date));
+		});
 
-			return $elements;
+		return $elements;
 	}
 
-	public function list() {
+	public function list()
+	{
 		$company_id = request('model.company_id');
 		$warehouse_type_id = request('model.warehouse_type_id');
 		$warehouse_movement_id = request('model.warehouse_movement_id');
 
-		$saleWarehouseMovement = WarehouseMovement::select('id',
-																											'referral_serie_number',
-																											'referral_voucher_number',
-																											'movement_type_id',
-																											'company_id',
-																											'account_id')
-																							->where('id', $warehouse_movement_id)
-																							->where('company_id', $company_id)
-																							->first();
+		$saleWarehouseMovement = WarehouseMovement::select(
+			'id',
+			'referral_serie_number',
+			'referral_voucher_number',
+			'movement_type_id',
+			'company_id',
+			'account_id'
+		)
+			->where('id', $warehouse_movement_id)
+			->where('company_id', $company_id)
+			->first();
 
 		$movement_type_id = $saleWarehouseMovement->movement_type_id;
 
-		$movementDetails = WarehouseMovementDetail::select('id',
-																											'warehouse_movement_id',
-																											'item_number',
-																											'article_code',
-																											'digit_amount',
-																											'converted_amount',
-																											'new_stock_return',
-																											'new_stock_cesion')
-																							->where('warehouse_movement_id', $warehouse_movement_id)
-																							->orderBy('item_number', 'asc')
-																							->get();
+		$movementDetails = WarehouseMovementDetail::select(
+			'id',
+			'warehouse_movement_id',
+			'item_number',
+			'article_code',
+			'digit_amount',
+			'converted_amount',
+			'new_stock_return',
+			'new_stock_cesion'
+		)
+			->where('warehouse_movement_id', $warehouse_movement_id)
+			->orderBy('item_number', 'asc')
+			->get();
 
-		$clientLiquidations = ClientLiquidations::select('client_id',
-																										'article_id',
-																										'quantity')
-																						->where('warehouse_movement_id', $warehouse_movement_id)
-																						->get();
+		$clientLiquidations = ClientLiquidations::select(
+			'client_id',
+			'article_id',
+			'quantity'
+		)
+			->where('warehouse_movement_id', $warehouse_movement_id)
+			->get();
 
-		$movementDetails->map(function ($item, $index)  {
+		$movementDetails->map(function ($item, $index) {
 			$item->sale_warehouse_movement_id = $item->warehouse_movement_id;
 			$item->article_id = $item->article->id;
 			$item->article_code = $item->article->code;
@@ -174,26 +185,28 @@ class LiquidationFinalController extends Controller
 		$elements = array();
 
 		foreach ($movementDetails as $val) {
-				array_push($elements, $val);
+			array_push($elements, $val);
 		};
 
-		$elements = array_filter($elements, function($val) {
-				return $val->group_id != 7;
+		$elements = array_filter($elements, function ($val) {
+			return $val->group_id != 7;
 		});
 
 		$clients = array();
 
 		foreach ($clientLiquidations as $liquidation) {
-				$client = Client::select('id',
-																'code',
-																'business_name',
-																'payment_id',
-																'perception_percentage_id',
-																'credit_limit',
-																'document_number',
-																'document_type_id')
-												->where('id', $liquidation->client_id)
-												->first();
+			$client = Client::select(
+				'id',
+				'code',
+				'business_name',
+				'payment_id',
+				'perception_percentage_id',
+				'credit_limit',
+				'document_number',
+				'document_type_id'
+			)
+				->where('id', $liquidation->client_id)
+				->first();
 
 			array_push($clients, $client);
 		};
@@ -203,16 +216,18 @@ class LiquidationFinalController extends Controller
 		}, ARRAY_FILTER_USE_BOTH));
 
 		if ($movement_type_id == 12) {
-			$client = Client::select('id',
-															'code',
-															'business_name',
-															'payment_id',
-															'perception_percentage_id',
-															'credit_limit',
-															'document_number',
-															'document_type_id')
-											->where('id', $saleWarehouseMovement->account_id)
-											->first();
+			$client = Client::select(
+				'id',
+				'code',
+				'business_name',
+				'payment_id',
+				'perception_percentage_id',
+				'credit_limit',
+				'document_number',
+				'document_type_id'
+			)
+				->where('id', $saleWarehouseMovement->account_id)
+				->first();
 
 			$clients_parse = array();
 
@@ -220,65 +235,66 @@ class LiquidationFinalController extends Controller
 		}
 
 		return response()
-					->json([
-						'movement_details' => $elements,
-						'clients' => $clients_parse,
-					]);
-
+			->json([
+				'movement_details' => $elements,
+				'clients' => $clients_parse,
+			]);
 	}
 
-	public function getClients() {
-			$company_id = request('company_id');
-			$client_id = request('client_id');
-			$q = request('q');
+	public function getClients()
+	{
+		$company_id = request('company_id');
+		$client_id = request('client_id');
+		$q = request('q');
 
-			if ( isset($client_id) ) {
-					$elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit')
-							->where('id', $client_id)
-			->with(['perception_percentage' => function ($query) {
-									$query->select('id', 'value');
-							}])
-							->first();
+		if (isset($client_id)) {
+			$elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit')
+				->where('id', $client_id)
+				->with(['perception_percentage' => function ($query) {
+					$query->select('id', 'value');
+				}])
+				->first();
 
-					$elements->text = $elements->business_name;
-					unset($elements->business_name);
-			} else {
-					$elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id', 'credit_limit')
-							->where('company_id', $company_id)
-							->where('business_name', 'like', '%'.$q.'%') ->orWhere('id', 'like', '%'.$q.'%')
-							->orderBy('business_name', 'asc')
-							->with(['perception_percentage' => function ($query) {
-									$query->select('id', 'value');
-							}])
-							->get();
+			$elements->text = $elements->business_name;
+			unset($elements->business_name);
+		} else {
+			$elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id', 'credit_limit')
+				->where('company_id', $company_id)
+				->where('business_name', 'like', '%' . $q . '%')->orWhere('id', 'like', '%' . $q . '%')
+				->orderBy('business_name', 'asc')
+				->with(['perception_percentage' => function ($query) {
+					$query->select('id', 'value');
+				}])
+				->get();
 
-					$elements->map(function($item, $index) {
-							$item->text = $item->id . ' - ' .$item->business_name;
-							unset($item->business_name);
-							unset($item->code);
+			$elements->map(function ($item, $index) {
+				$item->text = $item->id . ' - ' . $item->business_name;
+				unset($item->business_name);
+				unset($item->code);
 
-							return $item;
-					});
-			}
+				return $item;
+			});
+		}
 
-			return $elements;
+		return $elements;
 	}
 
-	public function getArticles() {
+	public function getArticles()
+	{
 		$client_id = request('client_id');
 		$warehouse_movement_id = request('warehouse_movement_id');
 
 		$saleWarehouseMovement = WarehouseMovement::select('id', 'movement_type_id', 'company_id')
-            ->where('id', $warehouse_movement_id)
-            ->first();
+			->where('id', $warehouse_movement_id)
+			->first();
 
 		$movement_type_id = $saleWarehouseMovement->movement_type_id;
 
 		$clientLiquidations = ClientLiquidations::select(
-				'client_id',
-				'article_id',
-				'quantity'
-			)
+			'client_id',
+			'article_id',
+			'quantity'
+		)
 			->where('warehouse_movement_id', $warehouse_movement_id)
 			->where('client_id', $client_id)
 			->get();
@@ -287,10 +303,10 @@ class LiquidationFinalController extends Controller
 
 		foreach ($clientLiquidations as $liquidation) {
 			$article = Article::select(
-					'id',
-					'code',
-					'name'
-				)
+				'id',
+				'code',
+				'name'
+			)
 				->where('id', $liquidation->article_id)
 				->first();
 
@@ -311,21 +327,21 @@ class LiquidationFinalController extends Controller
 				'new_stock_return',
 				'new_stock_cesion'
 			)
-            ->where('warehouse_movement_id', $warehouse_movement_id)
-            ->orderBy('item_number', 'asc')
-            ->get();
+				->where('warehouse_movement_id', $warehouse_movement_id)
+				->orderBy('item_number', 'asc')
+				->get();
 
 			foreach ($movementsDetails as $movementDetail) {
 				$article = Article::select(
-						'id',
-						'code',
-						'name',
-						'group_id',
-						'convertion'
-					)
+					'id',
+					'code',
+					'name',
+					'group_id',
+					'convertion'
+				)
 					->where('id', $movementDetail->article_code)
 					->first();
-	
+
 				$article->quantity = $movementDetail->digit_amount - $movementDetail->new_stock_return;
 
 				if ($article->group_id != 7) {
@@ -347,15 +363,16 @@ class LiquidationFinalController extends Controller
 		return $articles;
 	}
 
-	public function getSaleSeries() {
+	public function getSaleSeries()
+	{
 
 		$sale_series = SaleSeries::select(
-					'id',
-					'num_serie',
-					'correlative',
-					'warehouse_document_type_id'
-					)
-					->get();
+			'id',
+			'num_serie',
+			'correlative',
+			'warehouse_document_type_id'
+		)
+			->get();
 
 		$series = array();
 
@@ -371,50 +388,53 @@ class LiquidationFinalController extends Controller
 		return $series;
 	}
 
-	public function getArticlePrice() {
-			$article_id = request('article_id');
-			$client_id = request('client_id');
-			$warehouse_movement_id = request('warehouse_movement_id');
-			$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'traslate_date']);
-			$today = Carbon::now()->startOfDay();
-			$current_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
+	public function getArticlePrice()
+	{
+		$article_id = request('article_id');
+		$client_id = request('client_id');
+		$warehouse_movement_id = request('warehouse_movement_id');
+		$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'traslate_date']);
+		$today = Carbon::now()->startOfDay();
+		$current_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
 
-			$element = PriceList::select('id', 'article_id', 'price_igv')
-					->where('client_id', $client_id)
-					->where('warehouse_type_id', 5)
-					->where('article_id', $article_id)
-					->where('initial_effective_date', '<=', $current_date)
-					->where('final_effective_date', '>=', $current_date)
-					->where('state', 1)
-					->with(['article' => function ($query) {
-							$query->select('id', 'igv', 'perception');
-					}])
-					->first();
+		$element = PriceList::select('id', 'article_id', 'price_igv')
+			->where('client_id', $client_id)
+			->where('warehouse_type_id', 5)
+			->where('article_id', $article_id)
+			->where('initial_effective_date', '<=', $current_date)
+			->where('final_effective_date', '>=', $current_date)
+			->where('state', 1)
+			->with(['article' => function ($query) {
+				$query->select('id', 'igv', 'perception');
+			}])
+			->first();
 
-			return $element;
+		return $element;
 	}
 
-	public function getBankAccounts() {
-			$company_id = request('company_id');
-			$currency_id = request('currency_id');
+	public function getBankAccounts()
+	{
+		$company_id = request('company_id');
+		$currency_id = request('currency_id');
 
-			$elements = BankAccount::select('id', 'company_id', 'bank_id', 'bank_account_type_id', 'currency_id', 'account_number')
-					->where('company_id', $company_id)
-					->where('currency_id', $currency_id)
-					->orderBy('bank_id', 'asc')
-					->get();
+		$elements = BankAccount::select('id', 'company_id', 'bank_id', 'bank_account_type_id', 'currency_id', 'account_number')
+			->where('company_id', $company_id)
+			->where('currency_id', $currency_id)
+			->orderBy('bank_id', 'asc')
+			->get();
 
-			$elements->map(function ($item, $index) {
-					$item->name = $item->bank->name . ' ' . $item->bank_account_type->name . ' - ' . $item->account_number;
+		$elements->map(function ($item, $index) {
+			$item->name = $item->bank->name . ' ' . $item->bank_account_type->name . ' - ' . $item->account_number;
 
-					unset($item->bank);
-					unset($item->bank_account_type);
-			});
+			unset($item->bank);
+			unset($item->bank_account_type);
+		});
 
-			return $elements;
+		return $elements;
 	}
 
-	public function verifyDocumentType() {
+	public function verifyDocumentType()
+	{
 		$company_id = request('model.company_id');
 		$warehouse_movement_id = request('model.warehouse_movement_id');
 		$warehouse_document_type_id = request('warehouse_document_type_id');
@@ -424,8 +444,8 @@ class LiquidationFinalController extends Controller
 		$warehouse_document_type = WarehouseDocumentType::find($warehouse_document_type_id, ['id', 'voucher_type_id', 'previous_date_flag', 'same_voucher_number_flag']);
 
 		$voucher_type = VoucherType::find($warehouse_document_type->voucher_type_id, ['id', 'serie_type']);
-		if ( $voucher_type ) {
-			if ( $voucher_type->id == 3 || $voucher_type->id == 4 || $voucher_type->id == 7 ) {
+		if ($voucher_type) {
+			if ($voucher_type->id == 3 || $voucher_type->id == 4 || $voucher_type->id == 7) {
 				$serie_number =  $referral_serie_number;
 			} else {
 				$serie_number = $voucher_type->serie_type . sprintf('%03d', $referral_serie_number);
@@ -434,7 +454,7 @@ class LiquidationFinalController extends Controller
 		$warehouse_movement = WarehouseMovement::find($warehouse_movement_id, ['id', 'traslate_date']);
 		$warehouse_movement_traslate_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
 
-		if ( $warehouse_document_type->previous_date_flag ) {
+		if ($warehouse_document_type->previous_date_flag) {
 			$voucher = Voucher::where('company_id', $company_id)
 				->where('voucher_type_id', $voucher_type->id)
 				->where('serie_number', $serie_number)
@@ -442,8 +462,8 @@ class LiquidationFinalController extends Controller
 				->select('id', 'issue_date')
 				->first();
 
-			if ( $voucher ) {
-				if ( $voucher->issue_date <= $warehouse_movement_traslate_date ) {
+			if ($voucher) {
+				if ($voucher->issue_date <= $warehouse_movement_traslate_date) {
 					return response()->json([
 						'verify' => true
 					]);
@@ -456,14 +476,14 @@ class LiquidationFinalController extends Controller
 			}
 		}
 
-		if ( $warehouse_document_type->same_voucher_number_flag ) {
+		if ($warehouse_document_type->same_voucher_number_flag) {
 			$voucher = Voucher::where('company_id', $company_id)
 				->where('voucher_type_id', $voucher_type->id)
 				->where('serie_number', $serie_number)
 				->where('voucher_number', $referral_voucher_number)
 				->first();
 
-			if ( $voucher ) {
+			if ($voucher) {
 				return response()->json([
 					'verify' => false,
 					'msg' => 'Este comprobante ya fue registrado anteriormente.',
@@ -476,12 +496,13 @@ class LiquidationFinalController extends Controller
 		}
 	}
 
-	public function store() {
+	public function store()
+	{
 		$user_id = Auth::user()->id;
 
 		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-																							->where('user_id', $user_id)
-																							->first();
+			->where('user_id', $user_id)
+			->first();
 
 		// Este valor debe ser dependiendo del almacen que tenga asignado el usuario
 		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
@@ -495,24 +516,24 @@ class LiquidationFinalController extends Controller
 			->select('id', 'value')
 			->first();
 
-		$igv_percentage = ( $rate->value / 100 ) + 1;
+		$igv_percentage = ($rate->value / 100) + 1;
 
 		foreach ($sales as $sale) {
 			$total_sale_amount = $sale['total'];
 			$first_sale = null;
 			$warehouse_document_type_id = $sale['warehouse_document_type_id'];
-			$client = Client::find($sale['client_id'], ['id', 'code', 'business_name','bol_name','bol_number', 'link_client_id', 'payment_id', 'credit_limit_days','credit_limit', 'credit_balance','route_id', 'perception_percentage_id','document_type_id']);
-			$rates = Rate::find($client->perception_percentage_id,['id','value']);
+			$client = Client::find($sale['client_id'], ['id', 'code', 'business_name', 'bol_name', 'bol_number', 'link_client_id', 'payment_id', 'credit_limit_days', 'credit_limit', 'credit_balance', 'route_id', 'perception_percentage_id', 'document_type_id']);
+			$rates = Rate::find($client->perception_percentage_id, ['id', 'value']);
 			$client_address = ClientAddress::where('client_id', $client->id)
-																		->where('address_type_id', 1)
-																		->select('id', 'address')
-																		->first();
+				->where('address_type_id', 1)
+				->select('id', 'address')
+				->first();
 
 			$client->credit_limit_days = $client->credit_limit_days ? $client->credit_limit_days : 0;
 			$sale_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
 			$expiry_date = $sale_date;
 
-			if ( $client->payment_id == 2 ) {
+			if ($client->payment_id == 2) {
 				$expiry_date = CarbonImmutable::createFromFormat('Y-m-d', $sale_date)->addDays($client->credit_limit_days);
 			}
 
@@ -695,7 +716,7 @@ class LiquidationFinalController extends Controller
 			// 			$sale_detail->updated_at_user = Auth::user()->user;
 			// 			$sale_detail->save();
 			// 		}
-	
+
 			// 		SaleSeries::where('id', $sale['sale_serie_id'])
 			// 							->update(
 			// 								['correlative' => $sale['referral_serie_number']]
@@ -870,7 +891,7 @@ class LiquidationFinalController extends Controller
 			// 							);
 			// 	};
 			// };
-     	//termina el boleteo
+			//termina el boleteo
 
 			$sale_model = new Sale();
 			$sale_model->company_id = $model['company_id'];
@@ -893,9 +914,9 @@ class LiquidationFinalController extends Controller
 			} else {
 				$sale_model->if_bol = 0;
 			};
-			
 
-			if ( $sale['warehouse_document_type_id'] >= 5 && $sale['warehouse_document_type_id'] <= 8 ) {
+
+			if ($sale['warehouse_document_type_id'] >= 5 && $sale['warehouse_document_type_id'] <= 8) {
 				switch ($sale['warehouse_document_type_id']) {
 					case 5:
 						$voucher_type_id = 1;
@@ -906,7 +927,7 @@ class LiquidationFinalController extends Controller
 					case 7:
 						$voucher_type_id = 2;
 						break;
-					
+
 					case 8:
 						$voucher_type_id = 3;
 						break;
@@ -921,19 +942,19 @@ class LiquidationFinalController extends Controller
 				$sale_model->scop_number = $scop;
 
 				$voucher_type = VoucherType::find($voucher_type_id, ['id', 'serie_type']);
-			  //$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
-			    if ( $voucher_type->id == 3 || $voucher_type->id == 4 || $voucher_type->id == 7 ) {
-				$serie_number = $sale[ 'referral_serie_number'];
-			    } else {
-				$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
-			    }
+				//$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
+				if ($voucher_type->id == 3 || $voucher_type->id == 4 || $voucher_type->id == 7) {
+					$serie_number = $sale['referral_serie_number'];
+				} else {
+					$serie_number = $voucher_type->serie_type . sprintf('%03d', $sale['referral_serie_number']);
+				}
 
 				$last_voucher_number = Voucher::where('company_id', $model['company_id'])
-																			->where('voucher_type_id', $voucher_type->id)
-																			->where('serie_number', $serie_number)
-																			->max('voucher_number');
+					->where('voucher_type_id', $voucher_type->id)
+					->where('serie_number', $serie_number)
+					->max('voucher_number');
 
-										
+
 				$voucher = new Voucher();
 				$voucher->company_id = $model['company_id'];
 				$voucher->client_id = $client->id;
@@ -944,8 +965,8 @@ class LiquidationFinalController extends Controller
 				$voucher->serie_number = $sale['serie_num'];
 				// $voucher->voucher_number = ++$last_voucher_number;
 				$voucher->voucher_number = $sale['correlative'];
-				$voucher->referral_guide_series = ( $sale['referral_guide_series'] ? $sale['referral_guide_series'] : $warehouse_movement->referral_guide_series );
-				$voucher->referral_guide_number = ( $sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number );
+				$voucher->referral_guide_series = ($sale['referral_guide_series'] ? $sale['referral_guide_series'] : $warehouse_movement->referral_guide_series);
+				$voucher->referral_guide_number = ($sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number);
 				$voucher->issue_date = date('Y-m-d', strtotime($warehouse_movement->traslate_date));
 				$voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->traslate_date));
 				$voucher->expiry_date = $expiry_date;
@@ -959,7 +980,7 @@ class LiquidationFinalController extends Controller
 				$voucher->igv_percentage = $rate->value;
 				// $voucher->igv_perception_percentage = $sale['perception_percentage'] / 100;
 				$voucher->igv_perception_percentage = $rate->value / 100;
-				if ( $voucher_type->id >= 1 && $voucher_type->id <= 4 ) {
+				if ($voucher_type->id >= 1 && $voucher_type->id <= 4) {
 					$voucher->ose = 0;
 				} else {
 					$voucher->ose = 1;
@@ -970,7 +991,7 @@ class LiquidationFinalController extends Controller
 				$taxed_operation = 0;
 				$igv = 0;
 				foreach ($sale['details'] as $detail) {
-					$article = Article::find($detail['article_id'], ['id','name', 'sale_unit_id']);
+					$article = Article::find($detail['article_id'], ['id', 'name', 'sale_unit_id']);
 
 					$voucher_detail = new VoucherDetail();
 					$voucher_detail->voucher_id = $voucher->id;
@@ -988,7 +1009,7 @@ class LiquidationFinalController extends Controller
 					$voucher_detail->article_id = $article->id;
 					$voucher_detail->save();
 
-					if ( $detail['igv'] == 1 ) {
+					if ($detail['igv'] == 1) {
 						$taxed_operation += round($detail['sale_value'] / $igv_percentage, 4);
 						$igv += round($detail['sale_value'], 4) - round($detail['sale_value'] / $igv_percentage, 4);
 					} else {
@@ -1008,17 +1029,17 @@ class LiquidationFinalController extends Controller
 			} else {
 				$referral_serie_number = CarbonImmutable::now()->format('Ym');
 				$last_voucher_number = Sale::where('company_id', $model['company_id'])
-																	->where('warehouse_document_type_id', $sale['warehouse_document_type_id'])
-																	->where('referral_serie_number', $referral_serie_number)
-																	->max('referral_voucher_number');
+					->where('warehouse_document_type_id', $sale['warehouse_document_type_id'])
+					->where('referral_serie_number', $referral_serie_number)
+					->max('referral_voucher_number');
 
-				if ( $sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 6 || $sale['warehouse_document_type_id'] == 8 ) {
+				if ($sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 6 || $sale['warehouse_document_type_id'] == 8) {
 					$sale_model->referral_serie_number = $sale['serie_num'];
 					$sale_model->referral_voucher_number = $sale['correlative'];
 				} else {
 					$int_last_voucher_number = (int)$last_voucher_number;
 					$sale_model->referral_serie_number = $sale['serie_num'];
-					$sale_model->referral_voucher_number = $sale['correlative'] ;
+					$sale_model->referral_voucher_number = $sale['correlative'];
 				}
 			}
 
@@ -1029,7 +1050,7 @@ class LiquidationFinalController extends Controller
 			$igv = 0;
 
 			foreach ($sale['details'] as $detail) {
-				if ( $detail['igv'] == 1 ) {
+				if ($detail['igv'] == 1) {
 					$sale_value += round($detail['sale_value'] / $igv_percentage, 4);
 					$igv += round($detail['sale_value'], 4) - round($detail['sale_value'] / $igv_percentage, 4);
 				} else {
@@ -1040,7 +1061,7 @@ class LiquidationFinalController extends Controller
 			$total = $sale['total'];
 			$total_perception = $sale['total_perception'];
 
-			if ( $sale['warehouse_document_type_id'] == 8 || $sale['warehouse_document_type_id'] == 9 || $sale['warehouse_document_type_id'] == 20 || $sale['warehouse_document_type_id'] == 22 ) {
+			if ($sale['warehouse_document_type_id'] == 8 || $sale['warehouse_document_type_id'] == 9 || $sale['warehouse_document_type_id'] == 20 || $sale['warehouse_document_type_id'] == 22) {
 				$sale_value = abs($sale_value);
 				$igv = abs($igv);
 				$total = abs($sale['total']);
@@ -1051,7 +1072,7 @@ class LiquidationFinalController extends Controller
 			$pre_balance = 0;
 			$paid = $total_perception;
 
-			if ( $client->payment_id == 2 ) {
+			if ($client->payment_id == 2) {
 				$balance = $total_perception;
 				$pre_balance = $total_perception;
 				$paid = 0;
@@ -1100,12 +1121,12 @@ class LiquidationFinalController extends Controller
 			}
 
 			SaleSeries::where('id', $sale['sale_serie_id'])
-								->update(
-									['correlative' => $sale['correlative']]
-								);
+				->update(
+					['correlative' => $sale['correlative']]
+				);
 
-			if ( array_key_exists('liquidations', $sale) ) {
-				if ( count($sale['liquidations']) > 0 ) {
+			if (array_key_exists('liquidations', $sale)) {
+				if (count($sale['liquidations']) > 0) {
 					foreach ($sale['liquidations'] as $liquidation) {
 						$payment_method_id = $liquidation['payment_method']['id'];
 						$total_sale_amount -= $liquidation['amount'];
@@ -1142,19 +1163,19 @@ class LiquidationFinalController extends Controller
 							$sale_model->balance = $sale_model->balance + round($liquidation['amount'], 4);
 						}
 
-						if ( $liquidation['payment_id'] == 1 ) {
-								if ($payment_method_id == 1) {
-										$sale_model->payment_method_efective = 1;
-										$sale_model->efective += round($liquidation['amount'], 4);
-								} elseif ($payment_method_id == 2) {
-										$sale_model->payment_method_deposit = 4;
-										$sale_model->deposit += round($liquidation['amount'], 4);
-								}
+						if ($liquidation['payment_id'] == 1) {
+							if ($payment_method_id == 1) {
+								$sale_model->payment_method_efective = 1;
+								$sale_model->efective += round($liquidation['amount'], 4);
+							} elseif ($payment_method_id == 2) {
+								$sale_model->payment_method_deposit = 4;
+								$sale_model->deposit += round($liquidation['amount'], 4);
+							}
 
-								$sale_model->save();
+							$sale_model->save();
 						}
 
-						if ( $client->payment_id ==2 ) {
+						if ($client->payment_id == 2) {
 							$sale_model->balance -= $liquidation['amount'];
 							$sale_model->pre_balance -= $liquidation['amount'];
 							$sale_model->paid += $liquidation['amount'];
@@ -1163,17 +1184,17 @@ class LiquidationFinalController extends Controller
 
 							DB::table('credits')
 								->insert([
-										'sale_id' => $sale_model->id,
-										'company_id' => $model['company_id'],
-										'client_id' => $sale['client_id'],
-										'currency_id' =>  $liquidation['currency']['id'],
-										'amount' => round($sale_model['pre_balance'], 4),
-										'created_at_user' => auth()->user()->name,
-										'created_at' => Carbon::now(),
+									'sale_id' => $sale_model->id,
+									'company_id' => $model['company_id'],
+									'client_id' => $sale['client_id'],
+									'currency_id' =>  $liquidation['currency']['id'],
+									'amount' => round($sale_model['pre_balance'], 4),
+									'created_at_user' => auth()->user()->name,
+									'created_at' => Carbon::now(),
 								]);
 						}
 
-						if ( $payment_method_id == 10 ) {
+						if ($payment_method_id == 10) {
 							$saldo_favor_search = Sale::find($liquidation['saldo_favor_id']);
 
 							if ($total_sale_amount > 0) {
@@ -1231,8 +1252,8 @@ class LiquidationFinalController extends Controller
 		}
 
 		$guide_state = GuidesState::select('id')
-            ->where('name', 'Liquidada')
-            ->first();
+			->where('name', 'Liquidada')
+			->first();
 
 		$warehouse_movement->state = $guide_state->id;
 		$warehouse_movement->save();
@@ -1240,11 +1261,12 @@ class LiquidationFinalController extends Controller
 		return request()->all();
 	}
 
-	public function getOperationNumber() {
+	public function getOperationNumber()
+	{
 		if (request('payment_method') == '2') {
 			$count = Liquidation::where('bank_account_id', request('bank_account'))
-								->where('operation_number', request('operation_number'))
-								->count();
+				->where('operation_number', request('operation_number'))
+				->count();
 
 			if ($count > 0) {
 				return response()->json([], 422);
@@ -1254,26 +1276,50 @@ class LiquidationFinalController extends Controller
 		return response()->json([], 200);
 	}
 
-	public function getSaldoFavor() {
+	public function getSaldoFavor()
+	{
 		$client_id = request('client_id');
 
 		$saldos_favor = Sale::where('warehouse_document_type_id', 30)
-												->where('client_id', $client_id)
-												->where('total_perception', '>', 0)
-												->select('id',
-																'sale_date',
-																'referral_serie_number',
-																'referral_voucher_number',
-																'currency_id',
-																'total_perception')
-												->get();
+			->where('client_id', $client_id)
+			->where('total_perception', '>', 0)
+			->select(
+				'id',
+				'sale_date',
+				'referral_serie_number',
+				'referral_voucher_number',
+				'currency_id',
+				'total_perception'
+			)
+			->get();
 
-		$saldos_favor->map(function($item, $index) {
+		$saldos_favor->map(function ($item, $index) {
 			$item->name = $item->sale_date . ' | ' . $item->referral_serie_number . '-' . $item->referral_voucher_number . ' | ' . $item->total_perception;
 
 			return $item;
 		});
 
 		return response()->json($saldos_favor, 200);
+	}
+
+	public function calcularPercepcion($clientId)
+	{
+		// Obtener el cliente
+		$client = Client::find($clientId);
+		if (!$client) {
+			return response()->json(['error' => 'Cliente no encontrado'], 404);
+		}
+
+		// Obtener la tasa de percepción desde la tabla rates
+		$perceptionRate = Rate::find($client->perception_percentage_id);
+		if (!$perceptionRate) {
+			return response()->json(['error' => 'Tasa de percepción no encontrada'], 404);
+		}
+
+		$perception_percentage = $perceptionRate->value / 100;
+
+		return response()->json([
+			'perception_percentage' => $perception_percentage
+		]);
 	}
 }

@@ -53,6 +53,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 
 	/** Facturación > Liquidaciones Final */
 	Route::get('/facturacion/liquidaciones-final', 'LiquidationFinalController@index')->name('dashboard.voucher.liquidations_final');
+	Route::get('/facturacion/liquidaciones-final/{clientId}/calcular-percepcion', 'LiquidationFinalController@calcularPercepcion');
 	Route::post('/facturacion/liquidaciones-final/validar-formulario', 'LiquidationFinalController@validateForm')->name('dashboard.voucher.liquidations_final.validate_form');
 	Route::post('/facturacion/liquidaciones-final/obtener-movimientos-almacen', 'LiquidationFinalController@getWarehouseMovements')->name('dashboard.voucher.liquidations_final.get_warehouse_movements');
 	Route::post('/facturacion/liquidaciones-final/listar', 'LiquidationFinalController@list')->name('dashboard.voucher.liquidations_final.list');

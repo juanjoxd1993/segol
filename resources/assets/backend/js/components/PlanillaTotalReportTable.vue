@@ -206,7 +206,7 @@ export default {
             field: "sueldo",
             title: "Total a Pagar",
             width: 120,
-            textAlign: "left",
+            textAlign: "center",
           },
 
           {

@@ -46,6 +46,8 @@
         created() {},
         mounted() {
             EventBus.$on('show_table', (response) => {
+                console.log("response1: ");
+                console.log(response);
                 this.show_table = true;
                 this.flag_add = true;
 
@@ -61,10 +63,10 @@
 
             EventBus.$on('refresh_table_sale', () => {
                 if ( this.sale_datatable != undefined ) {
-                    let total = 0;
+                    let total = 0.0;
 
                     this.$store.state.sales.map(item => {
-                        total += parseInt(item.total);
+                         total += parseFloat(item.total);
                     });
 
                     this.total = total;

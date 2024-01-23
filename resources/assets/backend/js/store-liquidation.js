@@ -32,8 +32,12 @@ export default {
 		warehouse_type_id: 0,
 		articles_filter: [],
 		warehouse_type_id_receiver: 0,
+		warehouse_document_type_id:0,
 	},
 	mutations: {
+		SET_WAREHOUSE_DOCUMENT_TYPE_ID(state, payload) {
+			state.warehouse_document_type_id = payload;
+		},
 		addModel(state, model) {
 			state.model = model;
 		},

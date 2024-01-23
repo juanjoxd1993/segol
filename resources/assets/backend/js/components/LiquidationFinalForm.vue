@@ -186,7 +186,8 @@
                         'Content-type': 'application/x-www-form-urlencoded',
                     }
                 }).then(response => {
-                    // console.log(response);
+                    console.log("response2: ");
+                    console.log(response);
 					target.find('input').prop('disabled', true);
                     target.find('select').prop('disabled', true);
                     target.find('button').prop('disabled', true);
