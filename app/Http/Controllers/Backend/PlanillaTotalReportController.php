@@ -620,7 +620,7 @@ class PlanillaTotalReportController extends Controller
 
 			$sheet->getStyle('A3:BY3')->applyFromArray($styleArray);
 
-			$sheet->getStyle('A3:BY3000')->applyFromArray($styleArray2);
+			
 
 
 
@@ -878,8 +878,8 @@ class PlanillaTotalReportController extends Controller
 			$sheet->getColumnDimension('BB')->setAutoSize(true);
 			$sheet->getColumnDimension('BC')->setAutoSize(true);
 
-
-
+			$highestRow = $sheet->getHighestRow();
+			$sheet->getStyle('A3:BY'. $highestRow)->applyFromArray($styleArray2);
 
 
 			$writer = new Xls($spreadsheet);

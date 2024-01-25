@@ -15,20 +15,12 @@
                 <div class="row">
 					<div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Fecha inicial:</label>
-                            <datetime
-                                v-model="model.initial_date"
-                                placeholder="Selecciona una Fecha inicial"
-                                :format="'dd-LL-yyyy'"
-                                input-id="initial_date"
-                                name="initial_date"
-                                value-zone="America/Lima"
-								zone="America/Lima"
-                                class="form-control"
-                                :max-datetime="current_date"
-                                @focus="$parent.clearErrorMsg($event)">
-                            </datetime>
-                            <div id="initial_date-error" class="error invalid-feedback"></div>
+                            <label class="form-control-label">Ciclo:</label>
+                            <select class="form-control" name="ciclo_id" id="ciclo_id" v-model="model.ciclo_id" @focus="$parent.clearErrorMsg($event)">
+                                <option value="">Seleccionar</option>
+                                <option v-for="ciclo in ciclos" :value="ciclo.id" v-bind:key="ciclo.id">{{ ciclo.año + ' - ' + ciclo.mes }}</option>
+                            </select>
+                            <div id="ciclo_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
 					
@@ -88,6 +80,10 @@
                 type: String,
                 default: ''
             },
+            ciclos: {
+                type: Array,
+                default: ''
+            },
 			url_get_clients: {
 				type: String,
 				default: ''
@@ -96,10 +92,10 @@
         data() {
             return {
                 model: {
-                    initial_date: '',
                  //   final_date: '',
                 //    company_id: '',
                     client_id: '',
+                    ciclo_id: ''
                 },
             }
         },

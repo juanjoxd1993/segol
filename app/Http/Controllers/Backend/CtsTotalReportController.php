@@ -31,19 +31,18 @@ class CtsTotalReportController extends Controller
     public function index() {
 		$companies = Company::select('id', 'name')->get();
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
-		$ciclos = Cicle::select('id', 'año', 'mes')->get();
+		$ciclos = Cicle::select('id', 'año', 'mes')->whereIn('mes', [5, 11])->get();
 
-		return view('backend.cts_total_report')->with(compact('companies', 'current_date'));
+		return view('backend.cts_total_report')->with(compact('companies', 'current_date', 'ciclos'));
 	}
 
 	public function validateForm() {
 		$messages = [
-			'initial_date.required'	=> 'Debe seleccionar una Fecha inicial.',
-			
+			'ciclo_id.required'     => 'Debe seleccionar un Ciclo.',
 		];
 
 		$rules = [
-			'initial_date'	=> 'required',
+			'ciclo_id'   => 'required', 
 			
 		];
 
@@ -70,9 +69,15 @@ class CtsTotalReportController extends Controller
 
 		$export = request('export');
 
-	    $initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d H:i:s');
-		$price_mes = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('m');
-		$price_year = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y');
+	    $ciclo_id = request('model.ciclo_id');
+    
+        // Obtenemos el año y el mes del ciclo si ciclo_id está presente
+        $ciclo = null;
+        if ($ciclo_id) {
+            $ciclo = Cicle::find($ciclo_id);
+        }
+		$price_mes = $ciclo->mes;
+		$price_year = $ciclo->año;
 
 	                           
 
@@ -1418,7 +1423,7 @@ class CtsTotalReportController extends Controller
 	$sheet->getStyle('A3:AA3')->applyFromArray($styleArray);
 
 	// Si deseas aplicar este estilo a todas las celdas desde la fila 3 hasta la última fila con datos, usa esto:
-	$sheet->getStyle('A3:AA' . 3000)->applyFromArray($styleArray2);
+	
 
 	
 
@@ -1548,6 +1553,10 @@ class CtsTotalReportController extends Controller
 			$sheet->getColumnDimension('AL')->setAutoSize(true);
 			$sheet->getColumnDimension('AM')->setAutoSize(true);
 			$sheet->getColumnDimension('AN')->setAutoSize(true);
+
+			$highestRow = $sheet->getHighestRow();
+			$sheet->getStyle('A3:AA' . $highestRow)->applyFromArray($styleArray2);
+
 
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');

@@ -8,6 +8,7 @@
 		:current_date = "'{{ $current_date }}'"
 		:url = "'{{ route('dashboard.report.grati_total.validate_form') }}'"
 		:url_get_clients = "'{{ route('dashboard.report.grati_total.get_clients') }}'"
+		:ciclos = "{{ $ciclos }}"
 	></grati-total-report-form>
 	
 	<grati-total-report-table

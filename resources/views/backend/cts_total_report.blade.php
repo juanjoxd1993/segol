@@ -8,6 +8,7 @@
 		:current_date = "'{{ $current_date }}'"
 		:url = "'{{ route('dashboard.report.cts_total.validate_form') }}'"
 		:url_get_clients = "'{{ route('dashboard.report.cts_total.get_clients') }}'"
+		:ciclos = "{{ $ciclos }}"
 	></cts-total-report-form>
 	
 	<cts-total-report-table
