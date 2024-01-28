@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Services\ExcelStyleService;
 use App\Employee;
 use App\Client;
 use App\Company;
@@ -1203,50 +1204,7 @@ class GratiTotalReportController extends Controller
 
 			//	$sheet->mergeCells('A3:AA3');
 
-			$imagePath = public_path('backend/img/logo-dashboard.png');
-
-
-			$height = 60; // La altura deseada para la imagen en píxeles
-
-			// Establece la altura de la fila
-			$sheet->getRowDimension(1)->setRowHeight($height);
-
-			// Crea un objeto de dibujo
-			$drawing = new Drawing();
-			$drawing->setPath($imagePath);
-			$drawing->setCoordinates('A1');
-			$drawing->setResizeProportional(false); // Desactiva el redimensionamiento proporcional
-			$drawing->setWidth(180); // Establece el ancho calculado
-			$drawing->setHeight($height); // Establece la altura deseada
-			$drawing->setOffsetY(10);
-			$drawing->setWorksheet($sheet);
-
-			$styleArray = [
-				'font' => [
-					'bold' => true,
-					'color' => ['argb' => 'FFFFFFFF'],
-					'size' => 11,
-				],
-				'alignment' => [
-					'horizontal' => Alignment::HORIZONTAL_CENTER,
-					'vertical' => Alignment::VERTICAL_CENTER,
-					'wrapText' => true,
-				],
-				'fill' => [
-					'fillType' => Fill::FILL_SOLID,
-					'startColor' => ['argb' => 'FF722CFF'], // Usar 'argb' en lugar de 'rgb'
-				]
-			];
-
-			$styleArray2 = [
-				'alignment' => [
-					'horizontal' => Alignment::HORIZONTAL_CENTER,
-					'vertical' => Alignment::VERTICAL_CENTER,
-					'wrapText' => true, // Si deseas que el texto se ajuste automáticamente
-				]
-			];
-			// Aplicar el estilo a la fila 3
-			$sheet->getStyle('A3:AA3')->applyFromArray($styleArray);
+		
 		
 			
 		
@@ -1277,8 +1235,7 @@ class GratiTotalReportController extends Controller
 			$sheet->setCellValue('X3', 'Total a Pagar Gratificación');
 
 
-			$sheet->getRowDimension('3')->setRowHeight(50);
-
+	
 
 
 
@@ -1325,9 +1282,9 @@ class GratiTotalReportController extends Controller
 
 
 
-				$sheet->getStyle('AI' . $row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('AJ' . $row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('AK' . $row_number)->getNumberFormat()->setFormatCode('0.00');
+				// $sheet->getStyle('AI' . $row_number)->getNumberFormat()->setFormatCode('0.00');
+				// $sheet->getStyle('AJ' . $row_number)->getNumberFormat()->setFormatCode('0.00');
+				// $sheet->getStyle('AK' . $row_number)->getNumberFormat()->setFormatCode('0.00');
 
 
 				$row_number++;
@@ -1357,25 +1314,26 @@ class GratiTotalReportController extends Controller
             $sheet->getColumnDimension('V')->setAutoSize(true);
 			$sheet->getColumnDimension('W')->setAutoSize(true);
 			$sheet->getColumnDimension('X')->setAutoSize(true);*/
-			$sheet->getColumnDimension('Y')->setAutoSize(true);
-			$sheet->getColumnDimension('Z')->setAutoSize(true);
-			$sheet->getColumnDimension('AA')->setAutoSize(true);
-			$sheet->getColumnDimension('AB')->setAutoSize(true);
-			$sheet->getColumnDimension('AC')->setAutoSize(true);
-			$sheet->getColumnDimension('AD')->setAutoSize(true);
-			$sheet->getColumnDimension('AE')->setAutoSize(true);
-			$sheet->getColumnDimension('AF')->setAutoSize(true);
-			$sheet->getColumnDimension('AG')->setAutoSize(true);
-			$sheet->getColumnDimension('AH')->setAutoSize(true);
-			$sheet->getColumnDimension('AI')->setAutoSize(true);
-			$sheet->getColumnDimension('AJ')->setAutoSize(true);
-			$sheet->getColumnDimension('AK')->setAutoSize(true);
-			$sheet->getColumnDimension('AL')->setAutoSize(true);
-			$sheet->getColumnDimension('AM')->setAutoSize(true);
-			$sheet->getColumnDimension('AN')->setAutoSize(true);
+			// $sheet->getColumnDimension('Y')->setAutoSize(true);
+			// $sheet->getColumnDimension('Z')->setAutoSize(true);
+			// $sheet->getColumnDimension('AA')->setAutoSize(true);
+			// $sheet->getColumnDimension('AB')->setAutoSize(true);
+			// $sheet->getColumnDimension('AC')->setAutoSize(true);
+			// $sheet->getColumnDimension('AD')->setAutoSize(true);
+			// $sheet->getColumnDimension('AE')->setAutoSize(true);
+			// $sheet->getColumnDimension('AF')->setAutoSize(true);
+			// $sheet->getColumnDimension('AG')->setAutoSize(true);
+			// $sheet->getColumnDimension('AH')->setAutoSize(true);
+			// $sheet->getColumnDimension('AI')->setAutoSize(true);
+			// $sheet->getColumnDimension('AJ')->setAutoSize(true);
+			// $sheet->getColumnDimension('AK')->setAutoSize(true);
+			// $sheet->getColumnDimension('AL')->setAutoSize(true);
+			// $sheet->getColumnDimension('AM')->setAutoSize(true);
+			// $sheet->getColumnDimension('AN')->setAutoSize(true);
 
-			$highestRow = $sheet->getHighestRow();
-			$sheet->getStyle('A3:AA' . $highestRow)->applyFromArray($styleArray2);
+			$excelStyleService = new ExcelStyleService();
+			$excelStyleService::cabezeraEstilos($sheet, 'FF808000');
+		
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');
 		} else {

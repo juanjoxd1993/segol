@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Services\ExcelStyleService;
 use App\Employee;
 use App\Client;
 use App\Company;
@@ -522,24 +523,6 @@ class PlanillaTotalReportController extends Controller
 				]
 			]);
 
-			$imagePath = public_path('backend/img/logo-dashboard.png');
-
-
-			$height = 60; // La altura deseada para la imagen en píxeles
-			
-			// Establece la altura de la fila
-			$sheet->getRowDimension(1)->setRowHeight($height);
-
-			// Crea un objeto de dibujo
-			$drawing = new Drawing();
-			$drawing->setPath($imagePath);
-			$drawing->setCoordinates('A1');
-			$drawing->setResizeProportional(false); // Desactiva el redimensionamiento proporcional
-			$drawing->setWidth(180); // Establece el ancho calculado
-			$drawing->setHeight($height); // Establece la altura deseada
-			$drawing->setOffsetY(10);
-			$drawing->setWorksheet($sheet);
-
 			$sheet->mergeCells('E2:M2');
 			$sheet->setCellValue('E2', 'INGRESOS DEL TRABJADOR');
 			$sheet->getStyle('E2')->applyFromArray([
@@ -590,37 +573,6 @@ class PlanillaTotalReportController extends Controller
 					'startColor' => array('rgb' => '7FFF00')
 				]
 			]);
-
-			// Definir el estilo de relleno con el color deseado
-			$styleArray = [
-				'fill' => [
-					'fillType' => Fill::FILL_SOLID,
-					'startColor' => [
-						'argb' => 'FF6C3483', // Asegúrate de incluir el prefijo 'FF' para el canal alfa
-					],
-				],
-				'font' => [
-					'bold' => true,
-					'color' => ['argb' => 'FFFFFFFF'], // Color de la fuente en blanco
-				],
-				'alignment' => [
-					'horizontal' => Alignment::HORIZONTAL_CENTER,
-					'vertical' => Alignment::VERTICAL_CENTER,
-					'wrapText' => true, // Si deseas que el texto se ajuste automáticamente
-				]
-			];
-
-			$styleArray2 = [
-				'alignment' => [
-					'horizontal' => Alignment::HORIZONTAL_CENTER,
-					'vertical' => Alignment::VERTICAL_CENTER,
-					'wrapText' => true, // Si deseas que el texto se ajuste automáticamente
-				]
-			];
-
-			$sheet->getStyle('A3:BY3')->applyFromArray($styleArray);
-
-			
 
 
 
@@ -707,7 +659,6 @@ class PlanillaTotalReportController extends Controller
 				],
 			]);
 
-			$sheet->getRowDimension('3')->setRowHeight(40); // Establece la altura de la fila 3 a 20
 
 
 
@@ -878,10 +829,10 @@ class PlanillaTotalReportController extends Controller
 			$sheet->getColumnDimension('BB')->setAutoSize(true);
 			$sheet->getColumnDimension('BC')->setAutoSize(true);
 
-			$highestRow = $sheet->getHighestRow();
-			$sheet->getStyle('A3:BY'. $highestRow)->applyFromArray($styleArray2);
-
-
+		
+			$excelStyleService = new ExcelStyleService();
+			$excelStyleService::cabezeraEstilos($sheet);
+			
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');
 		} else {
