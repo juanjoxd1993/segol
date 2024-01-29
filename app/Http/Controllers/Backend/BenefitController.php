@@ -47,22 +47,27 @@ class BenefitController extends Controller
         $company_id = request('model.company_id');
         $area_id = request('model.area_id');
         $ciclo_id = request('model.ciclo_id');
-        $today = date('Y-m-d', strtotime(Carbon::now()->startOfDay()));
-        $price_mes = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('m');
-        $price_año = CarbonImmutable::createFromDate(request($today))->startOfDay()->format('Y');
-    
-        $elements = Asist::join('employees', 'asists.employ_id', '=', 'employees.id')
+        $ciclo = Cicle::find($ciclo_id);
+
+        // Verifica si se encontró el ciclo
+        $price_mes = $ciclo->mes;
+        $price_year = $ciclo->año;
+
+
+        $elements = Employee::join('asists', 'employees.id', '=', 'asists.employ_id')
         ->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')
         ->leftjoin('areas', 'employees.area_id', '=', 'areas.id')
-        ->select('asists.id', 'asists.employ_id','employees.first_name','employees.document_number')
+        ->select('asists.id','asists.employ_id', 'employees.*')
         ->where('employees.company_id', $company_id)
-        ->where('asists.año', '=', $price_año)
+        ->where('asists.año', '=', $price_year)
         ->where('asists.mes', '=', $price_mes)
-            ->when($area_id, function($query, $area_id) {
-				return $query->where('employees.area_id', $area_id);
-            })
+        ->when($area_id, function ($query, $area_id) {
+            return $query->where('employees.area_id', $area_id);
+        })
+        ->orderBy('employees.first_name')
         ->get()
         ->toArray();
+    
 
         foreach ($elements as $key => $element) {
             $elements[$key]['benefits'] = Benefit::select('benefit_id', 'dias', 'state')->where('employ_id', $element['employ_id'])->where('ciclo_id', $ciclo_id)->get()->toArray();

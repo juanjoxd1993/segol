@@ -87,47 +87,46 @@ class PlanillaTotalReportController extends Controller
 
 
 
-		$elements = asist::leftjoin('employees', 'asists.employ_id', '=', 'employees.id')
-			->leftjoin('tasas', 'employees.afp_id', '=', 'tasas.id')
-			->leftjoin('sctasas', 'employees.sctr_id', '=', 'sctasas.id')
-			->leftjoin('saludtasas', 'employees.salud_id', '=', 'saludtasas.id')
-			->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')
-			->where('asists.año', '=', $price_year)
-			->where('asists.mes', '<=', $price_mes)
-			->select(
-				'asists.id as planilla_id',
-				'asists.año as año',
-				'asists.mes as mes',
-				'asists.employ_id as employ_id',
-				'employees.salud_id as salud_id',
-				'employees.sctr_id as sctr_id',
-				'saludtasas.salud_porc as salud_porc',
-				'sctasas.sctr_porc as sctr_porc',
-				'tasas.id as afp_id',
-				'tasas.name as afp_name',
-				'tasas.afp_base as afp_base',
-				'tasas.afp_com as afp_com',
-				'tasas.afp_prima as afp_prima',
-				'cicles.id as ciclo_id',
-				'cicles.dias as dias_mes',
-				'cicles.laborables as dias_lab',
-				'cicles.feriados as feriados',
-				'cicles.domingos as descanso',
-				'employees.first_name as employ_name',
-				'employees.last_name as cargo',
-				'employees.fecha_inicio as fecha_inicio',
-				'employees.fecha_cese as fecha_cese',
-				'asists.laborables as asistencia',
-				'employees.sueldo as sueldo',
-				'employees.asignacion_familiar as familiar',
-				'employees.total',
-				'employees.document_number as document_number'
-			)
+		$elements = Employee::leftjoin('asists', 'employees.id', '=', 'asists.employ_id')
+            ->leftjoin('tasas', 'employees.afp_id', '=', 'tasas.id')
+            ->leftjoin('sctasas', 'employees.sctr_id', '=', 'sctasas.id')
+            ->leftjoin('saludtasas', 'employees.salud_id', '=', 'saludtasas.id')
+            ->leftjoin('cicles', 'asists.ciclo_id', '=', 'cicles.id')
+            ->where('asists.año', '=', $price_year)
+            ->where('asists.mes', '<=', $price_mes)
+            ->select(
+                'asists.id as planilla_id',
+                'asists.año as año',
+                'asists.mes as mes',
+                'asists.employ_id as employ_id',
+                'employees.salud_id as salud_id',
+                'employees.sctr_id as sctr_id',
+                'saludtasas.salud_porc as salud_porc',
+                'sctasas.sctr_porc as sctr_porc',
+                'tasas.id as afp_id',
+                'tasas.name as afp_name',
+                'tasas.afp_base as afp_base',
+                'tasas.afp_com as afp_com',
+                'tasas.afp_prima as afp_prima',
+                'cicles.id as ciclo_id',
+                'cicles.dias as dias_mes',
+                'cicles.laborables as dias_lab',
+                'cicles.feriados as feriados',
+                'cicles.domingos as descanso',
+                'employees.first_name as employ_name',
+                'employees.last_name as cargo',
+                'employees.fecha_inicio as fecha_inicio',
+                'employees.fecha_cese as fecha_cese',
+                'asists.laborables as asistencia',
+                'employees.sueldo as sueldo',
+                'employees.asignacion_familiar as familiar',
+                'employees.total',
+                'employees.document_number as document_number'
+            )
+			->groupBy('employees.id') 
+            ->orderBy('employees.first_name')
+            ->get();
 
-
-
-			//	->groupBy('sales.sale_date','business_unit_id')
-			->get();
 
 		$response = [];
 

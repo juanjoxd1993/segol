@@ -63,14 +63,15 @@ class EmployeeController extends Controller
 		$search = $q['generalSearch'] ?? '';
 		request()->replace(['page' => $page]);
 
-		$elements = Employee::select('id', 'company_id', 'first_name', 'last_name','document_type_id', 'document_number', 'asignacion_id', 'sueldo', 'afp_id', 'area_id', 'sctr_id', 'fecha_inicio','email', 'phone_number_1','contact_name_1')
-		
-			->when($search, function($query, $search) {
-			return $query->where('document_number', 'like', '%'.$search.'%') ->orWhere('first_name', 'like', '%'.$search.'%');
-			})
-			->where('company_id', $company_id)
-			->orderBy('id', 'asc')
-			->paginate($perpage);
+		$elements = Employee::select('id', 'company_id', 'first_name', 'last_name', 'document_type_id', 'document_number', 'asignacion_id', 'sueldo', 'afp_id', 'area_id', 'sctr_id', 'fecha_inicio', 'email', 'phone_number_1', 'contact_name_1')
+            ->when($search, function ($query, $search) {
+                return $query->where('document_number', 'like', '%'.$search.'%')
+                             ->orWhere('first_name', 'like', '%'.$search.'%');
+            })
+            ->where('company_id', $company_id)
+            ->orderBy('first_name', 'asc') 
+            ->paginate($perpage);
+
 
 		$elements->map(function($item, $key) {
 			$item->document_type_name = $item->document_type->name;

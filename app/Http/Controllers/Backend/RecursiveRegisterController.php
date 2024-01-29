@@ -83,7 +83,8 @@ class RecursiveRegisterController extends Controller
             ->when($area_id, function ($query, $area_id) {
                 return $query->where('employees.area_id', $area_id);
             })
-            ->orderBy('employees.id', 'asc')
+            ->groupBy('employees.id') 
+            ->orderBy('employees.first_name', 'asc')
             ->get();
 
         return $elements;
