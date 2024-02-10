@@ -18,6 +18,8 @@
 		:warehouse_types = "{{ $warehouse_types }}"
 		:warehouse_account_types = "{{ $warehouse_account_types }}"
 		:warehouse_document_types = "{{ $warehouse_document_types }}"	
+		:drivers="{{ $drivers }}"
+		:clients="{{ $clients }}"
 		:url = "'{{ route('dashboard.operations.guides_register.list') }}'"
 		:url_get_accounts = "'{{ route('dashboard.operations.guides_register.get_accounts') }}'"
 		:url_get_articles = "'{{ route('dashboard.operations.guides_register.get_articles') }}'"

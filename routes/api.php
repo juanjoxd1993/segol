@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-
+use App\Http\Controllers\Backend\GuidesRegisterController; 
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::post('/operaciones/registro-movimiento-existencias/guardar', [GuidesRegisterController::class, 'apistore']);
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

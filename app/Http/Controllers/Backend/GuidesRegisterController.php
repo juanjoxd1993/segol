@@ -13,10 +13,12 @@ use App\Article;
 use App\Currency;
 use App\WarehouseAccountType;
 use App\Client;
+use App\ClientAddress;
 use App\Employee;
 use App\MovementStockType;
 use App\Provider;
 use App\Rate;
+use App\Chofer;
 use App\Unit;
 use App\WarehouseMovement;
 use App\WarehouseMovementDetail;
@@ -53,6 +55,13 @@ class GuidesRegisterController extends Controller
 		$guide_series = GuidesSerie::select('id', 'num_serie', 'correlative')->get();
 
 
+		$drivers = Chofer::select('id', 'name')->get();
+		
+		$clients = Client::select('id', 'business_name', 'document_number')
+   		 ->get();
+
+
+
 		$igv = Rate::select('description', 'value')
 			->where('description', 'IGV')
 			->where('state', 1)
@@ -71,7 +80,9 @@ class GuidesRegisterController extends Controller
 			'warehouse_account_types',
 			'warehouse_document_types',
 			'igv',
-			'guide_series'));
+			'guide_series',
+			'drivers',
+			'clients'));
 	}
 
 	public function getNextcorrelative()
@@ -531,6 +542,77 @@ class GuidesRegisterController extends Controller
 		// $route_id = request('model.route_id');
 		$articles = request('article_list');
 
+
+		////////////////////////////////////////////////////////////////////////////////////
+		$driverId = request('model.driver_id');
+		$client = request('model.client_id');
+
+		$traslado_motivo = '';
+		if ($movement_type_id == 12) {
+			$traslado_motivo = 'Venta';
+		} elseif ($movement_type_id == 11) {
+			$traslado_motivo = 'Emisión Itinerante';
+		}
+
+
+		$companyData = DB::table('companies')
+        ->join('company_addresses', 'companies.id', '=', 'company_addresses.company_id')
+        ->select('companies.document_number as ruc', 'companies.name', 'company_addresses.address')
+        ->where('companies.id', $company_id)
+        ->first();
+		
+		if($warehouse_account_type_id == 1)
+			$client_id = $warehouse_account_id;
+		else if ($warehouse_account_type_id == 3)
+			$client_id = $client;
+		
+
+		$clientData = DB::table('clients')
+					->select('id','business_name', 'document_number')
+					->where('id', $client_id)
+					->first();
+
+		$firstClientAddress = DB::table('client_addresses')
+							->where('client_id', $client_id)
+							->first(['address']);
+
+		if($firstClientAddress)					
+			$firstClientAddress = $firstClientAddress->address;
+		else $firstClientAddress = '';
+		
+		$processed_articles = collect($articles)->map(function ($item) {
+			return [
+				'article_code' => $item['code'],
+				'article_name' => $item['name'],
+				'quantity'     => round($item['digit_amount']),
+				'conversion'        => number_format($item['convertion'], 3, '.', ''),
+       			'converted_amount'  => number_format($item['converted_amount'], 3, '.', '')
+			];
+		});
+
+		$chofer = Chofer::find($driverId);
+		$isTrabajador = false;
+		if($warehouse_account_type_id == 3 && $movement_type_id == 11)
+		{
+			$chofer =  Employee::find($warehouse_account_id);
+			$isTrabajador = true;
+		}
+
+		if ($chofer && !$isTrabajador) {
+			$nombreChofer = $chofer->name;
+			$breveteChofer = $chofer->brevete;
+			$DocChofer = $chofer->documento;
+		} else {
+			$nombreChofer = $chofer->first_name;
+			$breveteChofer = $chofer->license;
+			$DocChofer = $chofer->document_number;
+			$isTrabajador = false;
+		}
+		//////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 		$tmpGuideSerie = GuidesSerie::where('company_id', $company_id)
 																->where('num_serie', $referral_guide_series)
 																->orderBy('correlative', 'desc')
@@ -817,10 +899,10 @@ class GuidesRegisterController extends Controller
 							'state' => $guide_state->id,
 						]);
 
-		return $this->generatePdf($movement);
+		return $this->generatePdf($movement, $companyData, $since_date, $traslado_motivo, $license_plate, $processed_articles, $clientData, $firstClientAddress, $nombreChofer, $breveteChofer, $DocChofer);
 	}
 
-	public function generatePdf($warehouseMovement)
+	public function generatePdf($warehouseMovement, $companyData, $since_date, $traslado_motivo, $license_plate, $processed_articles, $clientData, $firstClientAddress, $nombreChofer, $breveteChofer, $DocChofer)
 	{
 		$warehouse_movement = WarehouseMovement::leftjoin('company_addresses', function ($join) {
 			$join->on('warehouse_movements.company_id', '=', 'company_addresses.company_id')
@@ -872,11 +954,460 @@ class GuidesRegisterController extends Controller
 		});
 
 		try{
-			$pdf = PDF::loadView('backend.pdf.referral_guide2', compact('warehouse_movement', 'elements', 'packaging'));
+			$pdf = PDF::loadView('backend.pdf.referral_guide2', compact('warehouse_movement', 'elements', 'packaging', 'companyData', 'since_date', 'traslado_motivo', 'license_plate', 'processed_articles', 'clientData', 'firstClientAddress', 'nombreChofer', 'breveteChofer', 'DocChofer'));
 			
 			return $pdf->download('guia-remision-' . $warehouse_movement->movement_class_name . '-' . $warehouse_movement->movement_type_name . '-N' . $warehouse_movement->movement_number . '.pdf');
 		}catch(Exception $e){
 			return '';
 		}
 	}
+
+
+
+	public function apistore()
+	{
+
+	
+		$user_id = 7;
+		
+
+		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+			->where('user_id', $user_id)
+			->first();
+
+		$movement_class_id = 2;
+		$movement_type_id = request('model.movement_type_id');
+
+		// Este valor debe ser dependiendo del almacen que tenga asignado el usuario
+		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
+		$company_id = request('model.company_id');
+		$since_date = request('model.since_date');
+		$traslate_date = request('model.traslate_date');
+		$fac_date = request('model.traslate_date');
+		$warehouse_account_type_id = request('model.warehouse_account_type_id');
+		$warehouse_account_id = request('model.warehouse_account_id');
+		$referral_guide_series = request('model.referral_guide_series');
+		$referral_guide_number = request('model.referral_guide_number');
+		$scop_number = request('model.scop_number');
+		$license_plate = request('model.license_plate');
+		$account_document_number = request('model.account_document_number');
+		// $route_id = request('model.route_id');
+		$articles = request('article_list');
+		
+
+		////////////////////////////////////////////////////////////////////////////////////
+		$driverId = request('model.driver_id');
+		$client = request('model.client_id');
+
+		$traslado_motivo = '';
+		if ($movement_type_id == 12) {
+			$traslado_motivo = 'Venta';
+		} elseif ($movement_type_id == 11) {
+			$traslado_motivo = 'Emisión Itinerante';
+		}
+
+
+		$companyData = DB::table('companies')
+        ->join('company_addresses', 'companies.id', '=', 'company_addresses.company_id')
+        ->select('companies.document_number as ruc', 'companies.name', 'company_addresses.address')
+        ->where('companies.id', $company_id)
+        ->first();
+		
+		if($warehouse_account_type_id == 1)
+			$client_id = $warehouse_account_id;
+		else if ($warehouse_account_type_id == 3)
+			$client_id = $client;
+		
+
+		$clientData = DB::table('clients')
+					->select('id','business_name', 'document_number')
+					->where('id', $client_id)
+					->first();
+
+		$firstClientAddress = DB::table('client_addresses')
+							->where('client_id', $client_id)
+							->first(['address']);
+
+		$firstClientAddress = $firstClientAddress->address;
+
+		
+		$processed_articles = collect($articles)->map(function ($item) {
+			return [
+				'article_code' => $item['code'],
+				'article_name' => $item['name'],
+				'quantity'     => round($item['digit_amount']),
+				'conversion'        => number_format($item['convertion'], 3, '.', ''),
+       			'converted_amount'  => number_format($item['converted_amount'], 3, '.', '')
+			];
+		});
+
+		$chofer = Chofer::find($driverId);
+
+		if($warehouse_account_type_id == 3 && $movement_type_id == 11)
+		{
+			$chofer =  Employee::find($warehouse_account_id);
+			$isTrabajador = true;
+		}
+
+		if ($chofer && !$isTrabajador) {
+			$nombreChofer = $chofer->name;
+			$breveteChofer = $chofer->brevete;
+			$DocChofer = $chofer->documento;
+		} else {
+			$nombreChofer = $chofer->first_name;
+			$breveteChofer = $chofer->license;
+			$DocChofer = $chofer->document_number;
+			$isTrabajador = false;
+		}
+		//////////////////////////////////////////////////////////////////////////////////
+
+	
+
+
+
+
+		$tmpGuideSerie = GuidesSerie::where('company_id', $company_id)
+																->where('num_serie', $referral_guide_series)
+																->orderBy('correlative', 'desc')
+																->first();
+
+		if ($tmpGuideSerie) {
+			$tmpGuideSerie->correlative = $tmpGuideSerie->correlative ? ($tmpGuideSerie->correlative + 1) : 1;
+			$tmpGuideSerie->save();
+		}
+
+		$movement_number = WarehouseMovement::select('movement_number')
+																				->where('movement_class_id', $movement_class_id)
+																				->where('warehouse_type_id', $warehouse_type_id)
+																				->where('company_id', $company_id)
+																				->max('movement_number');
+
+		$movement_number = ($movement_number ? $movement_number + 1 : 1);
+
+		$account = null;
+
+		if ($warehouse_account_type_id == 1) {
+			$account = Client::select('business_name', 'document_number')
+						->where('id', $warehouse_account_id)
+						->first();
+		} elseif ($warehouse_account_type_id == 2) {
+			$account = Provider::select('business_name', 'document_number')
+						->where('id', $warehouse_account_id)
+						->first();
+		} elseif ($warehouse_account_type_id == 3) {
+			$account = Employee::select('first_name', 'last_name')
+						->where('id', $warehouse_account_id)
+						->first();
+
+			$account->business_name = $account ? ($account->first_name . ' ' . $account->last_name) : '';
+		}
+
+		$movement_type = MoventType::find($movement_type_id);
+
+		$movement = new WarehouseMovement();
+		$movement->company_id = $company_id;
+		$movement->warehouse_type_id = $warehouse_type_id;
+		$movement->movement_class_id = $movement_class_id;
+		$movement->movement_type_id = $movement_type_id;
+		$movement->movement_number = $movement_number;
+		$movement->warehouse_account_type_id = $warehouse_account_type_id;
+		$movement->account_id = $warehouse_account_id;
+		$movement->account_document_number = $account_document_number ;
+		$movement->account_name = $account ? $account->business_name : '';
+		$movement->referral_guide_series = $referral_guide_series;
+		$movement->referral_guide_number = $referral_guide_number;
+		$movement->scop_number = $scop_number;
+		$movement->license_plate = $license_plate;
+		$movement->taxed_operation = array_sum(array_column($articles, 'sale_value'));
+		$movement->unaffected_operation = array_sum(array_column($articles, 'inaccurate_value'));
+		$movement->exonerated_operation = 0;
+		$movement->igv = array_sum(array_column($articles, 'igv'));
+		$movement->total = array_sum(array_column($articles, 'total'));
+		$movement->total_perception = array_sum(array_column($articles, 'perception'));
+		$movement->action_type_id = ($movement_type ? $movement_type->action_type_id : null);
+		$movement->created_at = date('Y-m-d', strtotime($since_date));
+		$movement->traslate_date = date('Y-m-d', strtotime($traslate_date));
+		$movement->fac_date = date('Y-m-d', strtotime($traslate_date));
+		$movement->state = 1;
+		//	$movement->route_id = $route_id;
+
+		$movement->save();
+
+		$movement2 = new WarehouseMovement();
+		$movement2->company_id = $company_id;
+		$movement2->warehouse_type_id = $warehouse_type_id;
+		$movement2->movement_class_id = $movement_class_id;
+		// El movimiento de tipo 21 es un cambio de estado
+		// $movement2->movement_type_id = 21;
+		$movement2->movement_type_id = $movement_type_id;
+		$movement2->movement_number = $movement_number;
+		$movement2->warehouse_account_type_id = $warehouse_account_type_id;
+		$movement2->account_id = $warehouse_account_id;
+		$movement2->account_document_number = $account_document_number ;
+		$movement2->account_name = $account ? $account->business_name : '';
+		$movement2->referral_guide_series = $referral_guide_series;
+		$movement2->referral_guide_number = $referral_guide_number;
+		$movement2->scop_number = $scop_number;
+		$movement2->license_plate = $license_plate;
+		$movement2->taxed_operation = array_sum(array_column($articles, 'sale_value'));
+		$movement2->unaffected_operation = array_sum(array_column($articles, 'inaccurate_value'));
+		$movement2->exonerated_operation = 0;
+		$movement2->igv = array_sum(array_column($articles, 'igv'));
+		$movement2->total = array_sum(array_column($articles, 'total'));
+		$movement2->total_perception = array_sum(array_column($articles, 'perception'));
+		$movement2->action_type_id = ($movement_type ? $movement_type->action_type_id : null);
+		$movement2->created_at = date('Y-m-d', strtotime($since_date));
+		$movement2->traslate_date = date('Y-m-d', strtotime($traslate_date));
+		$movement2->fac_date = date('Y-m-d', strtotime($traslate_date));
+		//	$movement2->route_id = $route_id;
+
+		$movement2->save();
+
+		foreach ($articles as $item) {
+			$article = Article::where('warehouse_type_id', $warehouse_type_id)
+												->where('group_id', 26)
+												->where('code', $item['code'])
+												->first();
+
+			if ($article) {
+
+				$digit_amount = str_replace(',', '', $item['digit_amount']);
+				$converted_amount = str_replace(',', '', $item['converted_amount']);
+				$price = str_replace(',', '', $item['price']);
+				$sale_value = str_replace(',', '', $item['sale_value']);
+				$inaccurate_value = str_replace(',', '', $item['inaccurate_value']);
+				$igv = str_replace(',', '', $item['igv']);
+				$total = str_replace(',', '', $item['total']);
+				$igv_perception = str_replace(',', '', $item['perception']);
+				$group_id = $article->group_id;
+
+				$movementDetail = new WarehouseMovementDetail();
+				$movementDetail->warehouse_movement_id = $movement->id;
+				$movementDetail->item_number = $item['item_number'];
+				$movementDetail->article_code = $item['id'];
+				$movementDetail->article_num = $article->id;
+				$movementDetail->digit_amount = $digit_amount;
+				$movementDetail->converted_amount = $converted_amount;
+				$movementDetail->old_stock_good = $article->stock_good;
+				$movementDetail->new_stock_good = $article->stock_good;
+				$movementDetail->price = $price;
+				$movementDetail->sale_value = $sale_value;
+				$movementDetail->exonerated_value = 0;
+				$movementDetail->inaccurate_value = $inaccurate_value;
+				$movementDetail->igv = $igv;
+				$movementDetail->total = $total;
+				$movementDetail->igv_perception = $igv_perception;
+				$movementDetail->igv_percentage = $item['igv_percentage'];
+				$movementDetail->igv_perception_percentage = $item['perception_percentage'];
+		
+
+				$movementDetail->save();
+
+				if ($group_id != 7) {
+
+					$search_stock_good = intval(floatval($article->stock_good));
+					$difference = $article->stock_good - $digit_amount;
+					$converted_amount = $digit_amount * $article->convertion;
+
+					if ($difference > 0) {
+						$article->stock_good = $difference;
+						$article->edit = 1;
+						$article->save();
+
+						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
+										->where('presentacion', $article->presentacion)
+										->where('group_id', 7)
+										->first();
+
+						if ($warehouse_account_type_id == 1) {
+							$article_balon->stock_good += $digit_amount;
+							$article_balon->save();
+						} elseif ($warehouse_account_type_id == 3) {
+							$article_balon->stock_return += $digit_amount;
+							$article_balon->save();
+						}
+					} elseif ($difference < 0) {
+						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
+										->where('presentacion', $article->presentacion)
+										->first();
+
+						$difference_parse = $difference * -1;
+						$converted_amount = $difference_parse * $article->convertion;
+
+						if ($warehouse_account_type_id == 1) {
+							$articleEnvasado = Article::where('warehouse_type_id', $warehouse_type_id)
+								->where('code', 2)
+								->first();
+							$articleEnvasado->stock_good -= $converted_amount;
+							$articleEnvasado->save();
+	
+							//Movimiento por producción
+							$id = WarehouseMovement::insertGetId([
+								'company_id' => $company_id,
+								'warehouse_type_id' => $warehouse_type_id, //Producción ATE
+								'movement_class_id' => 2,//Salida
+								'movement_type_id' => 5, //Producción
+								'warehouse_account_type_id' => 3, //Trabajador
+								'account_document_number' => $account ? $account->document_number : '',
+								'account_name' => $account ? $account->business_name : '',
+								'referral_guide_series' => $referral_guide_series,
+								'referral_guide_number' => $referral_guide_number,
+								'scop_number' => $scop_number,
+								'license_plate' => $license_plate,
+								'total' => $converted_amount,
+								'created_at' => date('Y-m-d H:i:s'),
+								'updated_at' => date('Y-m-d H:i:s'),
+							]);
+	
+							WarehouseMovementDetail::insert([
+								'warehouse_movement_id' => $id,
+								'item_number' => 1,
+								'article_code' => $articleEnvasado->id,
+								'converted_amount' => $converted_amount,
+								'total' => $converted_amount,
+								'created_at' => date('Y-m-d H:i:s'),
+								'updated_at' => date('Y-m-d H:i:s'),
+							]);
+
+							if ($search_stock_good != 0) {
+								$article_balon->stock_good += $search_stock_good;
+							}
+						} elseif ($warehouse_account_type_id == 3) {
+							$article_balon->stock_good -= $difference_parse;
+							$article_balon->stock_return += $difference_parse;
+
+							$articleEnvasado = Article::where('warehouse_type_id', $warehouse_type_id)
+								->where('code', 2)
+								->first();
+							$articleEnvasado->stock_good -= $converted_amount;
+							$articleEnvasado->save();
+	
+							//Movimiento por producción
+							$id = WarehouseMovement::insertGetId([
+								'company_id' => $company_id,
+								'warehouse_type_id' => $warehouse_type_id, //Producción ATE
+								'movement_class_id' => 2,//Salida
+								'movement_type_id' => 5, //Producción
+								'warehouse_account_type_id' => 3, //Trabajador
+								'account_document_number' => $account ? $account->document_number : '',
+								'account_name' => $account ? $account->business_name : '',
+								'referral_guide_series' => $referral_guide_series,
+								'referral_guide_number' => $referral_guide_number,
+								'scop_number' => $scop_number,
+								'license_plate' => $license_plate,
+								'total' => $converted_amount,
+								'created_at' => date('Y-m-d H:i:s'),
+								'updated_at' => date('Y-m-d H:i:s'),
+							]);
+	
+							WarehouseMovementDetail::insert([
+								'warehouse_movement_id' => $id,
+								'item_number' => 1,
+								'article_code' => $articleEnvasado->id,
+								'converted_amount' => $converted_amount,
+								'total' => $converted_amount,
+								'created_at' => date('Y-m-d H:i:s'),
+								'updated_at' => date('Y-m-d H:i:s'),
+							]);
+						}
+
+						$article_balon->save();
+
+						$article->stock_good = 0;
+						$article->edit = 1;
+						$article->save();
+					} elseif ($difference == 0) {
+						$article->stock_good = 0;
+						$article->edit = 1;
+						$article->save();
+
+						$article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
+										->where('presentacion', $article->presentacion)
+										->first();
+
+						if ($warehouse_account_type_id == 1) {
+							$article_balon->stock_good += $digit_amount;
+							$article_balon->save();
+						} elseif ($warehouse_account_type_id == 3) {
+							$article_balon->stock_return += $digit_amount;
+							$article_balon->save();
+						}
+					}
+				}
+			}
+		}
+
+		$guide_state = GuidesState::select('id')
+						->where('name', 'Generada')
+						->first();
+
+		//Actualizar estado
+		WarehouseMovement::where('id', $movement->id)
+						->update([
+							'state' => $guide_state->id,
+						]);
+
+		return $this->apigeneratePdf($movement, $companyData, $since_date, $traslado_motivo, $license_plate, $processed_articles, $clientData, $firstClientAddress, $nombreChofer, $breveteChofer, $DocChofer );
+	}
+
+	public function apigeneratePdf($warehouseMovement, $companyData, $since_date, $traslado_motivo, $license_plate, $processed_articles, $clientData, $firstClientAddress, $nombreChofer, $breveteChofer, $DocChofer)
+	{
+		$warehouse_movement = WarehouseMovement::leftjoin('company_addresses', function ($join) {
+			$join->on('warehouse_movements.company_id', '=', 'company_addresses.company_id')
+				->where('company_addresses.type', '=', 2);
+		})
+			->leftjoin('employees', 'warehouse_movements.account_id', '=', 'employees.id')
+			->select('warehouse_movements.id', 'warehouse_movements.company_id', 'company_addresses.address as company_address', 'company_addresses.district as company_district', 'company_addresses.province as company_province', 'company_addresses.department as company_department', 'warehouse_type_id', 'movement_class_id', 'movement_type_id', 'movement_number' ,'warehouse_account_type_id','warehouse_account_type_id', 'account_id', 'account_document_number', 'account_name', 'referral_guide_series', 'referral_guide_number', 'scop_number', 'license_plate'/*, 'total'*/, 'warehouse_movements.created_at', 'warehouse_movements.traslate_date', 'employees.license as employee_license')
+			->where('warehouse_movements.id', $warehouseMovement->id)
+			->first();
+
+		$elements = WarehouseMovementDetail::select('warehouse_movement_details.id', 'item_number', 'article_code', 'converted_amount', 'price', 'warehouse_movement_details.total', 'warehouse_movements.id')
+			->join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
+			->where('warehouse_movement_details.warehouse_movement_id', $warehouse_movement->id)
+			->where('company_id', $warehouse_movement->company_id)
+			->where('warehouse_type_id', $warehouse_movement->warehouse_type_id)
+			->get();
+
+		$packaging = WarehouseMovementDetail::join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
+			->join('articles', 'articles.id', '=', 'warehouse_movement_details.article_code')
+			->join('classifications', 'classifications.id', '=', 'articles.subgroup_id')
+			->where('warehouse_movement_details.warehouse_movement_id', $warehouse_movement->id)
+			->where('company_id', $warehouse_movement->company_id)
+			->where('warehouse_movements.warehouse_type_id', $warehouse_movement->warehouse_type_id)
+			->where('articles.subgroup_id', '>=', 55)
+			->where('articles.subgroup_id', '<=', 58)
+			->select('warehouse_movement_details.id', 'item_number', 'article_code', 'converted_amount', 'price', 'warehouse_movement_details.total', 'articles.subgroup_id', 'classifications.name as classification_name', DB::Raw('SUM(converted_amount) as total_converted_amount'))
+			->groupBy('articles.subgroup_id')
+			->get();
+
+		$packaging->map(function ($item, $index) {
+			$item->total_converted_amount = number_format($item->total_converted_amount, 0, '.', ',');
+		});
+
+
+		$packaging = WarehouseMovementDetail::join('warehouse_movements', 'warehouse_movement_details.warehouse_movement_id', '=', 'warehouse_movements.id')
+			->join('articles', 'articles.id', '=', 'warehouse_movement_details.article_code')
+			->join('classifications', 'classifications.id', '=', 'articles.subgroup_id')
+			->where('warehouse_movement_details.warehouse_movement_id', $warehouse_movement->id)
+			->where('company_id', $warehouse_movement->company_id)
+			->where('warehouse_movements.warehouse_type_id', $warehouse_movement->warehouse_type_id)
+			->where('articles.subgroup_id', '>=', 55)
+			->where('articles.subgroup_id', '<=', 58)
+			->select('warehouse_movement_details.id', 'item_number', 'article_code', 'converted_amount', 'price', 'warehouse_movement_details.total', 'articles.subgroup_id', 'classifications.name as classification_name', DB::Raw('SUM(converted_amount) as total_converted_amount'))
+			->groupBy('articles.subgroup_id')
+			->get();
+
+		$packaging->map(function ($item, $index) {
+			$item->total_converted_amount = number_format($item->total_converted_amount, 0, '.', ',');
+		});
+
+		try{
+			
+			$pdf = PDF::loadView('backend.pdf.referral_guide2', compact('warehouse_movement', 'elements', 'packaging', 'companyData', 'since_date', 'traslado_motivo', 'license_plate', 'processed_articles', 'clientData', 'firstClientAddress', 'nombreChofer', 'breveteChofer', 'DocChofer'));
+			return $pdf->download('guia-remision-' . $warehouse_movement->movement_class_name . '-' . $warehouse_movement->movement_type_name . '-N' . $warehouse_movement->movement_number . '.pdf');
+		}catch(Exception $e){
+			return '';
+		}
+	}
+
 }

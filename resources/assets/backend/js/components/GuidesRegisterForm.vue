@@ -88,11 +88,24 @@
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" v-if="model.movement_type_id == '11'">
                         <div class="form-group">
-                            <label class="form-control-label">Brevete:</label>
-                            <input type="text" class="form-control" name="account_document_number" id="account_document_number" v-model="model.account_document_number" @focus="$parent.clearErrorMsg($event)"> 
-                            <div id="account_document_number-error" class="error invalid-feedback"></div>
+                            <label class="form-control-label">Cliente:</label>
+                            <select class="form-control kt-select2" name="client_id" id="client_id" v-model="model.client_id" @focus="$parent.clearErrorMsg($event)">
+                                <option value="">Seleccionar</option>
+                                <option v-for="client in clients" :value="client.id" v-bind:key="client.id">{{ client.business_name }}</option>
+                            </select>
+                            <div id="client_id-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3" v-else>
+                        <div class="form-group">
+                            <label class="form-control-label">Chofer:</label>
+                            <select class="form-control kt-select2" name="driver_id" id="driver_id" v-model="model.driver_id" @focus="$parent.clearErrorMsg($event)">
+                                <option value="">Seleccionar</option>
+                                <option v-for="driver in drivers" :value="driver.id" v-bind:key="driver.id">{{ driver.name }}</option>
+                            </select>
+                            <div id="driver_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
                     <!-- <div class="col-lg-3">
@@ -166,6 +179,14 @@
 
     export default {
         props: {
+            drivers: {
+                type: Array,
+                default: ''
+            },
+            clients: {
+                type: Array,
+                default: () => []
+            },
             movement_classes: {
                 type: Array,
                 default: ''
@@ -234,6 +255,8 @@
         data() {
             return {
                 model: {
+                    client_id: '',
+                    driver_id: '',
                     movement_class_id: '',
                     movement_type_id: '',
                     movement_stock_type_id: '',
@@ -279,7 +302,11 @@
             this.newSelect2();
         },
         watch: {
-            
+            'model.movement_type_id': function(newVal) {
+                if (newVal == 12) {
+                    this.initializeDriverSelect2();
+                }
+            }    
         },
         computed: {
             movementTypes: function() {
@@ -301,6 +328,32 @@
             warehouseAccountTypesChange: function() {
                 this.model.warehouse_account_id = '';
                 $('#warehouse_account_id').val(null).trigger('change');
+            },
+            initializeDriverSelect2: function() {
+                let vm = this;
+                $("#driver_id").select2({
+                placeholder: "Buscar chofer",
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return 'No hay resultados';
+                    },
+                    searching: function() {
+                        return 'Buscando...';
+                    },
+                    inputTooShort: function() {
+                        return 'Ingresa 1 o más caracteres';
+                    },
+                    errorLoading: function() {
+                        return 'No se pudo cargar la información'
+                    }
+                },
+                }).on('select2:select', function(e) {
+                    var selected_element = $(e.currentTarget);
+                    vm.model.driver_id = parseInt(selected_element.val());
+                }).on('select2:unselect', function(e) {
+                    vm.model.driver_id = '';
+                });
             },
             newSelect2: function() {
                 let vm = this;
@@ -374,6 +427,8 @@
                     vm.model.warehouse_account_id = '';
                     vm.perception_percentage = '';
                 });
+
+            
             },
             formController: function(url, event) {
                 var target = $(event.target);
@@ -455,3 +510,4 @@
         }
     };
 </script>
+
