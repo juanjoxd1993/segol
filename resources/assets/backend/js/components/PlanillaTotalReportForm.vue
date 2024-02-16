@@ -60,7 +60,7 @@
         <div class="kt-form__actions">
           <div class="row">
             <div class="col-lg-6">
-              <button type="submit" class="btn btn-primary">Buscar</button>
+              <button type="submit" class="btn btn-primary">Actualizar</button>
             </div>
           </div>
         </div>
@@ -193,6 +193,7 @@ export default {
         .then((response) => {
           // console.log(response);
           EventBus.$emit("show_table", response.data);
+          EventBus.$emit("selectedCycle", vm.model.ciclo_id); 
         })
         .catch((error) => {
           console.log(error.response);

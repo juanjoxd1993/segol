@@ -49,7 +49,7 @@ class LiquidationFinalController extends Controller
 			->orWhere('name', 'Cesión de Uso')
 			->orWhere('name', 'Nota Interna Bonif.')
 			->get();
-		$payment_methods = PaymentMethod::select('id', 'name', 'payment_id')->get();
+		$payment_methods = PaymentMethod::select('id', 'name', 'payment_id')->whereNotIn('id', [4, 6, 7, 8])->get();
 		$currencies = Currency::select('id', 'name')->get();
 		$payments = Payment::all();
 		$payment_cash = Payment::CASH;

@@ -26,6 +26,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+
+        $schedule->command('ciclo:crear')->monthlyOn(1, '00:00');
     }
 
     /**

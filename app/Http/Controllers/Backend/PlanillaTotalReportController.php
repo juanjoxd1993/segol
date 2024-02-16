@@ -9,9 +9,9 @@ use App\Employee;
 use App\Client;
 use App\Company;
 use App\Article;
+use App\Planilla;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Planilla;
 use App\Asist;
 use App\Benefit;
 use Carbon\CarbonImmutable;
@@ -75,6 +75,7 @@ class PlanillaTotalReportController extends Controller
 	{
 
 		$export = request('export');
+
 		$ciclo_id = request('model.ciclo_id');
         // Encuentra el ciclo seleccionado
         $ciclo = Cicle::find($ciclo_id);
@@ -411,6 +412,45 @@ class PlanillaTotalReportController extends Controller
 			$totals_sum_total_apor += $facturation['total_apor'];
 
 			$response[] = $facturation;
+
+
+
+			// Atributos para identificar si el registro ya existe
+			$atributos = [
+				'ciclo' => $ciclo->id,
+				'employ_id' => $facturation->employ_id,
+			];
+
+			// Valores para actualizar o crear
+			$valores = [
+				'año' => $price_year,
+				'mes' => $price_mes,
+				'dias' => $ciclo->dias,
+				'employ_name' => $facturation->employ_name,
+				'cargo' => $facturation->cargo,
+				'sueldo' => $facturation->sueldo,
+				'familiar' => $facturation->familiar,
+				'otros' => null, // Asegúrate de haber calculado esto previamente
+				'bruto' => $facturation->tot_rem_brut,
+				'horas_extra' => null, // Asegúrate de haber calculado esto previamente
+				'noc_25' => $facturation->hn_25,
+				'noc_35' => $facturation->hn_35,
+				'afp_id' => $facturation->afp_id,
+				'afp_name' => $facturation->afp_name,
+				'afp_base' => $facturation->fafp_base,
+				'afp_com' => $facturation->fafp_com,
+				'afp_prima' => $facturation->fafp_prima,
+				'quincena' => null, // Asegúrate de haber calculado esto previamente
+				'total_desc' => $facturation->total_desc,
+				'neto' => $facturation->neto,
+				'salud' => $facturation->salud,
+				'sctr' => $facturation->sctr,
+				'total_apor' => $facturation->total_apor,
+			];
+
+			// Usar updateOrCreate para actualizar o crear el registro
+			Planilla::updateOrCreate($atributos, $valores);
+
 		}
 
 

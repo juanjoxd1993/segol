@@ -14,6 +14,7 @@
 	
 	<planilla-total-report-table
 		:url = "'{{ route('dashboard.report.planilla_total.list') }}'"
+		:ciclos = "{{ $ciclos }}"
 	></planilla-total-report-table>
 
 	<loading></loading>

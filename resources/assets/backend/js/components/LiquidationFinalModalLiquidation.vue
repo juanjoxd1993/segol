@@ -282,7 +282,7 @@
                   </div>
                 </div>
               </div>
-              <!-- <div class="row">
+              <div class="row">
                 <div class="col-12 text-right">
                   <button
                     id="add_payment"
@@ -304,8 +304,8 @@
                     class="kt-separator kt-separator--space kt-separator--dashed"
                   ></div>
                 </div>
-              </div> -->
-              <!-- <div class="row">
+              </div> 
+               <div class="row">
                 <div class="col-12">
                   <table class="table table-vertical-middle table-layout-fixed">
                     <thead>
@@ -364,7 +364,7 @@
                     </tfoot>
                   </table>
                 </div>
-              </div> -->
+              </div> 
             </div>
           </div>
           <div class="modal-footer">
@@ -459,6 +459,8 @@ export default {
       "liquidation_modal",
       function () {
         let vm = this;
+
+        this.title_text = this.$store.state.sale.client_name + ' - Total: ' + this.$store.state.sale.total_perception;
 
         this.model.amount = this.$store.state.sale.total_perception;
         this.model.payment_method = "";
@@ -585,12 +587,12 @@ export default {
       return methods;
     },
 
-    title_text() {
+   /* title_text() {
       if (this.model && this.model.amount) {
         return `${this.$store.state.sale.client_name} - Total: ${this.model.amount}`;
       }
-      return "";
-    },
+      return `${this.$store.state.sale.client_name} - Total:`;
+    },*/
 
     addTotals() {
       return this.liquidations.reduce(
@@ -694,13 +696,19 @@ export default {
           this.liquidations.push(liquidation);
         }
 
+         // Actualiza el monto inicial restante
+        this.initialAmount = parseFloat(this.initialAmount) - parseFloat(liquidation.amount);
+        if (this.initialAmount < 0) this.initialAmount = 0;
+        this.model.amount = this.initialAmount.toString();
+
+        /*
         this.model.payment_method = "";
         this.model.currency = "";
         this.model.exchange_rate = "";
         this.model.bank_account = "";
         this.model.operation_number = "";
-        this.model.amount = "";
         this.model.payment_date = "";
+        */
       }
     },
     resetLiquidation: function () {

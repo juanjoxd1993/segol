@@ -26,7 +26,7 @@ class PriceListController extends Controller
         $articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id')
             ->where('warehouse_type_id', 5)
             ->get();
-        
+
         $articles->map(function ($item, $key) {
             $item->text = $item->code . ' - '  . $item->name . ' ' . $item->sale_unit->name . ' x ' . $item->package_sale;
 

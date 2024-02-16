@@ -98,16 +98,14 @@
                             <div id="client_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3" v-else>
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Chofer:</label>
-                            <select class="form-control kt-select2" name="driver_id" id="driver_id" v-model="model.driver_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
-                                <option v-for="driver in drivers" :value="driver.id" v-bind:key="driver.id">{{ driver.name }}</option>
-                            </select>
+                            <input type="text" class="form-control" name="driver_id" id="driver_id" v-model="model.driver_id" @focus="$parent.clearErrorMsg($event)">
                             <div id="driver_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <!-- <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Ruta:</label>

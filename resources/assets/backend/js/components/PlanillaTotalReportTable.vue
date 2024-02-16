@@ -40,17 +40,26 @@ export default {
       type: String,
       default: "",
     },
+    ciclos: {
+      type: Array,
+      default: () => []
+    },
   },
+  
   data() {
     return {
       planilla_total_report_datatable: undefined,
       show_table: false,
       model: {},
       export: "",
+      selectedCycleId: null,
     };
   },
   created() {},
   mounted() {
+    EventBus.$on("selectedCycle", (cicloId) => {
+      this.selectedCycleId = cicloId;
+    });
     EventBus.$on(
       "show_table",
       function (response) {
@@ -95,10 +104,7 @@ export default {
   watch: {},
   computed: {},
   methods: {
-    getMonthName: function (dateString) {
-      // Asumiendo que la fecha viene en el formato "dd-mm-yyyy"
-      const parts = dateString.split("-");
-      const monthIndex = parseInt(parts[1], 10) - 1; // El índice del mes (0-11)
+    getMonthName: function (monthNumber) {
       const monthNames = [
         "enero",
         "febrero",
@@ -113,8 +119,16 @@ export default {
         "noviembre",
         "diciembre",
       ];
-      return monthNames[monthIndex];
+      // Asegura que el número del mes esté dentro del rango 1-12 y ajusta para el índice del arreglo (0-11)
+      const index = monthNumber - 1;
+      // Verifica que el índice esté dentro del rango del arreglo para evitar errores
+      if (index >= 0 && index < monthNames.length) {
+        return monthNames[index];
+      } else {
+        return "MES_DESCONOCIDO";
+      }
     },
+
 
     fillTableX: function () {
       let vm = this;
@@ -245,7 +259,10 @@ export default {
           EventBus.$emit("loading", false);
 
           // const monthName = this.getMonthName(this.model.initial_date);
-          const fileName = `planilla-${Date.now()}.xls`;
+           const selectedCycle = this.ciclos.find(ciclo => ciclo.id === this.selectedCycleId);
+           const selectedMonth = selectedCycle ? selectedCycle.mes : 'MESDESCONOCIDO';
+           const letraMes = this.getMonthName(selectedMonth);
+           const fileName = `planilla-${letraMes}-${Date.now()}.xls`;
 
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
