@@ -98,13 +98,30 @@
                             <div id="client_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" v-if="model.movement_type_id != '11'">
                         <div class="form-group">
-                            <label class="form-control-label">Chofer:</label>
-                            <input type="text" class="form-control" name="driver_id" id="driver_id" v-model="model.driver_id" @focus="$parent.clearErrorMsg($event)">
-                            <div id="driver_id-error" class="error invalid-feedback"></div>
+                            <label class="form-control-label">Chofer Nombres:</label>
+                            <input type="text" class="form-control" name="driver_name" id="driver_name" v-model="model.driver_name" @focus="$parent.clearErrorMsg($event)">
+                            <div id="driver_name-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    <div class="col-lg-3" v-if="model.movement_type_id != '11'">
+                        <div class="form-group">
+                            <label class="form-control-label">Chofer Brevete:</label>
+                            <input type="text" class="form-control" name="driver_brevete" id="driver_brevete" v-model="model.driver_brevete" @focus="$parent.clearErrorMsg($event)">
+                            <div id="driver_name-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3" v-if="model.movement_type_id != '11'">
+                        <div class="form-group">
+                            <label class="form-control-label">Chofer Documento:</label>
+                            <input type="number" class="form-control" name="driver_document" id="driver_document" v-model.number="model.driver_document" @focus="$parent.clearErrorMsg($event)">
+                            <div id="driver_document-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+
+
+
 
                     <!-- <div class="col-lg-3">
                         <div class="form-group">
@@ -254,7 +271,9 @@
             return {
                 model: {
                     client_id: '',
-                    driver_id: '',
+                    driver_name: '',
+                    driver_brevete: '',
+                    driver_document: '',
                     movement_class_id: '',
                     movement_type_id: '',
                     movement_stock_type_id: '',
@@ -302,7 +321,7 @@
         watch: {
             'model.movement_type_id': function(newVal) {
                 if (newVal == 12) {
-                    this.initializeDriverSelect2();
+                    
                 }
             }    
         },
@@ -327,32 +346,7 @@
                 this.model.warehouse_account_id = '';
                 $('#warehouse_account_id').val(null).trigger('change');
             },
-            initializeDriverSelect2: function() {
-                let vm = this;
-                $("#driver_id").select2({
-                placeholder: "Buscar chofer",
-                allowClear: true,
-                language: {
-                    noResults: function() {
-                        return 'No hay resultados';
-                    },
-                    searching: function() {
-                        return 'Buscando...';
-                    },
-                    inputTooShort: function() {
-                        return 'Ingresa 1 o más caracteres';
-                    },
-                    errorLoading: function() {
-                        return 'No se pudo cargar la información'
-                    }
-                },
-                }).on('select2:select', function(e) {
-                    var selected_element = $(e.currentTarget);
-                    vm.model.driver_id = parseInt(selected_element.val());
-                }).on('select2:unselect', function(e) {
-                    vm.model.driver_id = '';
-                });
-            },
+           
             newSelect2: function() {
                 let vm = this;
                 let token = document.head.querySelector('meta[name="csrf-token"]').content;

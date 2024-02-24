@@ -423,7 +423,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/comercial/clientes/listar-articulos', 'ClientController@priceArticles')->name('dashboard.commercial.clients.price_articles');
 	Route::post('/comercial/clientes/obtener-dia', 'ClientController@priceMinEffectiveDate')->name('dashboard.commercial.clients.price_min_effective_date');
 	Route::post('/comercial/clientes/guardar-precio', 'ClientController@priceStore')->name('dashboard.commercial.clients.price_store');
-	Route::get('/comercial/clientes/bsucar-cliente-ruc', 'ClientController@searchClientByRuc')->name('dashboard.commercial.clients.search_client');
+	Route::get('/comercial/clientes/buscar-cliente-ruc', 'ClientController@searchClientByRuc')->name('dashboard.commercial.clients.search_client');
 
 
 	 /** Comercial > Venta Canal*/
@@ -730,6 +730,10 @@ Route::middleware(['auth'])->namespace('Backend')->group(function() {
 	Route::post('/rrhh/calculo-planilla/validar-formulario', 'PlanillaTotalReportController@validateForm')->name('dashboard.report.planilla_total.validate_form');
 	Route::post('/rrhh/calculo-planilla/obtener-clientes', 'PlanillaTotalReportController@getClients')->name('dashboard.report.planilla_total.get_clients');
 	Route::post('/rrhh/calculo-planilla/listar', 'PlanillaTotalReportController@list')->name('dashboard.report.planilla_total.list');
+
+	/** RRHH > Boleta Planilla */
+	Route::get('/rrhh/boletas-planilla', 'PlanillaBoletaReportController@index')->name('dashboard.report.planilla_boleta');
+	Route::post('/rrhh/boletas-planilla/listar', 'PlanillaBoletaReportController@list')->name('dashboard.report.planilla_boleta.list');
 
 	/** rrhh > Empleados */
 	Route::get('/rrhh/empleados', 'EmployeeController@index')->name('dashboard.rrhh.employees');

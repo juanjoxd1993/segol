@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Liquidation;
 use App\Sale;
+use App\PaymentMethod;
 use App\SaleDetail;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
@@ -120,6 +121,10 @@ class LiquidationReportController extends Controller
 		$totals_sum_45k = 0;
 		$totals_sum_total = 0;
 
+		$totals_saldo_a_favor = 0;
+		$totals_bonificacion = 0;
+
+
 		foreach ($elements as $sale) {
 			$cash_liquidation_amount = Liquidation::where('sale_id', $sale['id'])
 				->where('payment_method_id', 1)
@@ -142,7 +147,17 @@ class LiquidationReportController extends Controller
 				->sum('amount');
 					
 
-
+			$saldo_a_favor_amount = Liquidation::where('sale_id', $sale['id'])
+				->where('payment_method_id', 10)
+				->sum('amount');
+			
+			$bonificacion_amount = Liquidation::where('sale_id', $sale['id'])
+				->where('payment_method_id', 12)
+				->sum('amount');
+			
+			$totals_saldo_a_favor += $saldo_a_favor_amount;
+			$totals_bonificacion += $bonificacion_amount;
+			
 
 			$totals_sale_value += $sale['sale_value'];
 			$totals_igv += $sale['igv'];
@@ -180,14 +195,43 @@ class LiquidationReportController extends Controller
 				$liquidation->total = '';
 				$liquidation->perception = '';
 				$liquidation->total_perception = '';
-				$liquidation->payment_name = 'Contado';
+				if ($liquidation->payment_method_id == 9) {
+					$liquidation->payment_name = 'Contado';
+				} else {
+					// Si no es 9, busca el nombre del método de pago en la base de datos
+					$paymentMethodName = PaymentMethod::where('id', $liquidation->payment_method_id)->first()->name ?? 'Contado';
+					$liquidation->payment_name = $paymentMethodName;
+				}
+
 				$liquidation->credit = '';
 				$liquidation->cash_liquidation_amount = $liquidation->payment_method_id == 1 ? $liquidation->amount : '';
-				$liquidation->deposit_liquidation_amount = $liquidation->payment_method_id == 2 || $liquidation->payment_method_id == 3 ? $liquidation->amount : '';
+				$liquidation->deposit_liquidation_amount = ($liquidation->payment_method_id == 2 || $liquidation->payment_method_id == 3) ? $liquidation->amount : '';
 				$liquidation->remesa_liquidation_amount = $liquidation->payment_method_id == 9 ? $liquidation->amount : '';
 				$liquidation->yape_liquidation_amount = $liquidation->payment_method_id == 11 ? $liquidation->amount : '';
+				$liquidation->saldo_favor_amount = $liquidation->payment_method_id == 10 ? $liquidation->amount : '';
+				$liquidation->bonificacion_amount = $liquidation->payment_method_id == 12 ? $liquidation->amount : '';
+
+
+				if ($liquidation->payment_method_id == 10) {
+					if (!empty($liquidation['bank_short_name'])) {
+						$liquidation->deposit_liquidation_amount = $liquidation->amount;
+						$totals_deposit_liquidation_amount += $liquidation->deposit_liquidation_amount;
+					}
+					if (strpos($liquidation['operation_number'], 'REMESA') !== false) {
+						$liquidation->remesa_liquidation_amount = $liquidation->amount;
+						$totals_remesa_liquidation_amount += $liquidation->remesa_liquidation_amount;
+					}
+					if (!empty($liquidation['operation_number']) && strpos($liquidation['operation_number'], 'REMESA') === false && empty($liquidation['bank_short_name'])) {
+						$liquidation->yape_liquidation_amount = $liquidation->amount;
+						$totals_yape_liquidation_amount += $liquidation->yape_liquidation_amount;
+					}
+				}
+
 				$liquidation->bank_short_name = $liquidation['bank_short_name'];
-				$liquidation->operation_number =$liquidation['operation_number'];
+				$liquidation->operation_number = $liquidation['operation_number'];
+
+
+
 				$liquidation->client_code = $sale['client_code'];
 				$liquidation->client_business_name = $sale['client_business_name'];
 				$liquidation->document_type_name = $sale['document_type_name'];
@@ -221,10 +265,12 @@ class LiquidationReportController extends Controller
 
 				$response[] = $liquidation;
 			}
+			$total_pagado = $cash_liquidation_amount + $deposit_liquidation_amount + $remesa_liquidation_amount + $yape_liquidation_amount + $saldo_a_favor_amount + $bonificacion_amount;
 
-			$totals_credit = number_format($sale['total_perception'] - $cash_liquidation_amount - $deposit_liquidation_amount - $remesa_liquidation_amount - $yape_liquidation_amount, 2, '.', '');
 
-			if ( $totals_credit > 0 ) {
+			$current_credit = $sale['total_perception'] - $total_pagado;
+
+			if ( $current_credit > 0 ) {
 				$credit = new stdClass();
 				$credit->company_short_name = $sale['company_short_name'];
 				$credit->liquidation_date = $sale['liquidation_date'];
@@ -238,12 +284,15 @@ class LiquidationReportController extends Controller
 				$credit->total = '';
 				$credit->perception = '';
 				$credit->total_perception = '';
-				$credit->payment_name = $sale['payment_name'];
-				$credit->credit = $totals_credit;
+				// $credit->payment_name = $sale['payment_name'];
+				$credit->payment_name = 'Crédito';
+				$credit->credit = $current_credit;
 				$credit->cash_liquidation_amount = '';
 				$credit->remesa_liquidation_amount = '';
 				$credit->deposit_liquidation_amount = '';
 				$credit->yape_liquidation_amount = '';
+				$credit->saldo_favor_amount = '';
+				$credit->bonificacion_amount = '';
 				$credit->bank_short_name = '';
 				$credit->operation_number = '';
 				$credit->client_code = $sale['client_code'];
@@ -263,17 +312,18 @@ class LiquidationReportController extends Controller
 				$credit->sum_total = '';
 
 				if ( $liquidations->count() == 0 ) {
-					$totals_credit = $sale['total_perception'];
 
 					$credit->sale_id = $sale['id'];
 					$credit->payment_method_id = $sale['payment_method_id'];
 					$credit->bank_account_id = $sale['bank_account_id'];
 					$credit->operation_number = $sale['operation_number'];
-					$credit->credit = $totals_credit;
+					$credit->credit = $current_credit;
 					$credit->cash_liquidation_amount = $cash_liquidation_amount;
 					$credit->remesa_liquidation_amount = $remesa_liquidation_amount;
 					$credit->deposit_liquidation_amount = $deposit_liquidation_amount;
 					$credit->yape_liquidation_amount = $yape_liquidation_amount;
+					$credit->saldo_favor_amount = $saldo_a_favor_amount;
+					$credit->bonificacion_amount = $bonificacion_amount;
 					$credit->sale_value = $sale['sale_value'];
 					$credit->igv = $sale['igv'];
 					$credit->total = $sale['total'];
@@ -288,7 +338,7 @@ class LiquidationReportController extends Controller
 					$credit->sum_total = $sale['sum_total'];
 				}
 
-				$totals_credit += $totals_credit;
+				$totals_credit += $current_credit;
 
 				$response[] = $credit;
 			}
@@ -313,6 +363,9 @@ class LiquidationReportController extends Controller
 		$totals->remesa_liquidation_amount = $totals_remesa_liquidation_amount;
 		$totals->deposit_liquidation_amount = $totals_deposit_liquidation_amount;
 		$totals->yape_liquidation_amount = $totals_yape_liquidation_amount;
+		$totals->saldo_favor_amount =	$totals_saldo_a_favor;
+		$totals->bonificacion_amount =	$totals_bonificacion;
+
 		$totals->bank_short_name = '';
 		$totals->operation_number = '';
 		$totals->client_code = '';
@@ -368,23 +421,24 @@ class LiquidationReportController extends Controller
 			$sheet->setCellValue('Q3', 'Efectivo');
 			$sheet->setCellValue('R3', 'Yape');
 			$sheet->setCellValue('S3', 'Depósito/Transferencia');
-			$sheet->setCellValue('T3', 'Banco');
-			$sheet->setCellValue('U3', 'Nº Operación');
-			$sheet->setCellValue('V3', 'Código del Cliente');
-			$sheet->setCellValue('W3', 'Razón Social');
-			$sheet->setCellValue('X3', 'Tipo de Doc.');
-			$sheet->setCellValue('Y3', '# de Doc.');
-			$sheet->setCellValue('Z3', '# de Parte');
-			$sheet->setCellValue('AA3', 'Tipo Movimiento');
-			$sheet->setCellValue('AB3', 'Guía');
-			$sheet->setCellValue('AC3', 'Galones');
-			$sheet->setCellValue('AD3', '1K');
-			$sheet->setCellValue('AE3', '5K');
-			$sheet->setCellValue('AF3', '10K');
-			$sheet->setCellValue('AG3', '15K');
-			$sheet->setCellValue('AH3', '45K');
-			$sheet->setCellValue('AI3', 'Total Kg.');
-			$sheet->getStyle('A3:AI3')->applyFromArray([
+			$sheet->setCellValue('T3', 'Bonificación');
+			$sheet->setCellValue('U3', 'Banco');
+			$sheet->setCellValue('V3', 'Nº Operación');
+			$sheet->setCellValue('W3', 'Código del Cliente');
+			$sheet->setCellValue('X3', 'Razón Social');
+			$sheet->setCellValue('Y3', 'Tipo de Doc.');
+			$sheet->setCellValue('Z3', '# de Doc.');
+			$sheet->setCellValue('AA3', '# de Parte');
+			$sheet->setCellValue('AB3', 'Tipo Movimiento');
+			$sheet->setCellValue('AC3', 'Guía');
+			$sheet->setCellValue('AD3', 'Galones');
+			$sheet->setCellValue('AE3', '1K');
+			$sheet->setCellValue('AF3', '5K');
+			$sheet->setCellValue('AG3', '10K');
+			$sheet->setCellValue('AH3', '15K');
+			$sheet->setCellValue('AI3', '45K');
+			$sheet->setCellValue('AJ3', 'Total Kg.');
+			$sheet->getStyle('A3:AJ3')->applyFromArray([
 				'font' => [
 					'bold' => true,
 				],
@@ -431,22 +485,23 @@ class LiquidationReportController extends Controller
 				$sheet->setCellValue('Q'.$row_number, $element->cash_liquidation_amount);
 				$sheet->setCellValue('R'.$row_number, $element->yape_liquidation_amount);		
 				$sheet->setCellValue('S'.$row_number, $element->deposit_liquidation_amount);
-				$sheet->setCellValue('T'.$row_number, $element->bank_short_name);
-				$sheet->setCellValue('U'.$row_number, $element->operation_number);
-				$sheet->setCellValue('V'.$row_number, $element->client_code);
-				$sheet->setCellValue('W'.$row_number, $element->client_business_name);
-				$sheet->setCellValue('X'.$row_number, $element->document_type_name);
-				$sheet->setCellValue('Y'.$row_number, $element->client_document_number);
-				$sheet->setCellValue('Z'.$row_number, $element->warehouse_movement_movement_number);
-				$sheet->setCellValue('AA'.$row_number, $element->movement_type_name);
-				$sheet->setCellValue('AB'.$row_number, $element->guide);
-				$sheet->setCellValue('AC'.$row_number, $element->gallons);
-				$sheet->setCellValue('AD'.$row_number, $element->sum_1k);
-				$sheet->setCellValue('AE'.$row_number, $element->sum_5k);
-				$sheet->setCellValue('AF'.$row_number, $element->sum_10k);
-				$sheet->setCellValue('AG'.$row_number, $element->sum_15k);
-				$sheet->setCellValue('AH'.$row_number, $element->sum_45k);
-				$sheet->setCellValue('AI'.$row_number, $element->sum_total);
+				$sheet->setCellValue('T'.$row_number, $element->bonificacion_amount);
+				$sheet->setCellValue('U'.$row_number, $element->bank_short_name);
+				$sheet->setCellValue('V'.$row_number, $element->operation_number);
+				$sheet->setCellValue('W'.$row_number, $element->client_code);
+				$sheet->setCellValue('X'.$row_number, $element->client_business_name);
+				$sheet->setCellValue('Y'.$row_number, $element->document_type_name);
+				$sheet->setCellValue('Z'.$row_number, $element->client_document_number);
+				$sheet->setCellValue('AA'.$row_number, $element->warehouse_movement_movement_number);
+				$sheet->setCellValue('AB'.$row_number, $element->movement_type_name);
+				$sheet->setCellValue('AC'.$row_number, $element->guide);
+				$sheet->setCellValue('AD'.$row_number, $element->gallons);
+				$sheet->setCellValue('AE'.$row_number, $element->sum_1k);
+				$sheet->setCellValue('AF'.$row_number, $element->sum_5k);
+				$sheet->setCellValue('AG'.$row_number, $element->sum_10k);
+				$sheet->setCellValue('AH'.$row_number, $element->sum_15k);
+				$sheet->setCellValue('AI'.$row_number, $element->sum_45k);
+				$sheet->setCellValue('AJ'.$row_number, $element->sum_total);
 
 			
 				$sheet->getStyle('J'.$row_number)->getNumberFormat()->setFormatCode('0.00');
@@ -457,11 +512,11 @@ class LiquidationReportController extends Controller
 				$sheet->getStyle('P'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('Q'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('R'.$row_number)->getNumberFormat()->setFormatCode('0.00');
-				$sheet->getStyle('AD'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
-				$sheet->getStyle('AE'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 				$sheet->getStyle('AF'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 				$sheet->getStyle('AG'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 				$sheet->getStyle('AH'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
+				$sheet->getStyle('AI'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
+				$sheet->getStyle('AJ'.$row_number)->getNumberFormat()->setFormatCode('0.0000');
 
 				$row_number++;
 			}
@@ -500,6 +555,8 @@ class LiquidationReportController extends Controller
 			$sheet->getColumnDimension('AF')->setAutoSize(true);
 			$sheet->getColumnDimension('AG')->setAutoSize(true);
 			$sheet->getColumnDimension('AH')->setAutoSize(true);
+			$sheet->getColumnDimension('AI')->setAutoSize(true);
+			$sheet->getColumnDimension('AJ')->setAutoSize(true);
 
 
 			$writer = new Xls($spreadsheet);

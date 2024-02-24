@@ -28,47 +28,51 @@ class ReportsBalonesPressController extends Controller {
 	}
 
 	public function getContainers() {
+		
 		$movement_type_id = request('movement_type_id');
-    $export = request('export');
+		$export = request('export');
 		$date_init = CarbonImmutable::createFromDate(request('date_init'))->startOfDay()->format('Y-m-d');
 		$date_end = CarbonImmutable::createFromDate(request('date_end'))->endOfDay()->format('Y-m-d');
-		$init = CarbonImmutable::createFromDate(request('date_init'))->startOfDay()->format('d/m/Y');
-		$end = CarbonImmutable::createFromDate(request('date_end'))->endOfDay()->format('d/m/Y');
-
-
+	
 		$containers = Container::where('date', '>=', $date_init)
-                            ->where('date', '<=', $date_end)
-                            ->where('if_devol', $movement_type_id)
-                            ->select('id',
-                                    'client_id',
-                                    'if_devol',
-                                    'warehouse_movement',
-                                    'date')
-                            ->get();
-
-    foreach ($containers as $container) {
-      $container_detail = ContainerDetail::where('container_id', $container->id)->first();
-
-      if ($container_detail) {
-        $client = Client::find($container->client_id);
-        $warehouse_movement = WarehouseMovement::find($container->warehouse_movement);
-
-        $article = Article::find($container_detail->article_id);
-
-        $warehouse_type = WarehouseType::find($warehouse_movement->warehouse_type_id);
-
-        $container->client_name = $client->business_name;
-        $container->stock = $container_detail->devol;
-        $container->article_name = $article->name;
-        $container->warehouse_type_name = $warehouse_type->name;
-      }
-    }
+							->where('date', '<=', $date_end)
+							->where('if_devol', $movement_type_id)
+							->select('id', 'client_id', 'if_devol', 'warehouse_movement', 'date')
+							->get();
+	
+		// Usar una colección temporal para almacenar los contenedores válidos
+		$validContainers = collect();
+	
+		foreach ($containers as $container) {
+			$container_detail = ContainerDetail::where('container_id', $container->id)->first();
+	
+			if ($container_detail) {
+				$client = Client::find($container->client_id);
+				$warehouse_movement = WarehouseMovement::find($container->warehouse_movement);
+	
+				if ($warehouse_movement) {
+					$article = Article::find($container_detail->article_id);
+					$warehouse_type = WarehouseType::find($warehouse_movement->warehouse_type_id);
+	
+					if ($warehouse_type) {
+						$container->client_name = $client->business_name;
+						$container->stock = $container_detail->devol;
+						$container->article_name = $article->name;
+						$container->warehouse_type_name = $warehouse_type->name;
+	
+						// Solo añadir el contenedor a la colección si cumple con todos los criterios
+						$validContainers->push($container);
+					}
+				}
+			}
+		}
+							
 
     if ( $export) {
 			$spreadsheet = new Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
 			$sheet->mergeCells('A1:U1');
-			$sheet->setCellValue('A1', 'REPORTE DE BALONES PRESTADOS '.$init.' AL '.$end.'  '.'CONSULTADO EL'.CarbonImmutable::now()->format('d/m/Y H:m:s'));
+			$sheet->setCellValue('A1', 'REPORTE DE BALONES PRESTADOS '.$date_init.' AL '.$date_end.'  '.'CONSULTADO EL'.CarbonImmutable::now()->format('d/m/Y H:m:s'));
 			$sheet->getStyle('A1')->applyFromArray([
 				'font' => [
 					'bold' => true,
@@ -83,8 +87,8 @@ class ReportsBalonesPressController extends Controller {
 			$sheet->setCellValue('A3', '#');
 			$sheet->setCellValue('B3', 'Planta');
 			$sheet->setCellValue('C3', 'Cliente');
-      $sheet->setCellValue('D3', 'Fecha de Registro'); 
-      $sheet->setCellValue('E3', 'Stock');
+			$sheet->setCellValue('D3', 'Fecha de Registro'); 
+			$sheet->setCellValue('E3', 'Stock');
 
 			$sheet->getStyle('A3:E3')->applyFromArray([
 				'font' => [
@@ -93,7 +97,7 @@ class ReportsBalonesPressController extends Controller {
 			]);
 
 			$row_number = 4;
-			foreach ($containers as $index => $element) {
+			foreach ($validContainers as $index => $element) {
 				$index++;
 				$sheet->setCellValueExplicit('A'.$row_number, $index, DataType::TYPE_NUMERIC);
 				$sheet->setCellValue('B'.$row_number, $element->warehouse_type_name);
@@ -114,7 +118,7 @@ class ReportsBalonesPressController extends Controller {
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');
 		} else {
-      return $containers;
+			return $validContainers;
     }
 	}
 }

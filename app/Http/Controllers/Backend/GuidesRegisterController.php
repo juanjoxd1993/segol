@@ -544,7 +544,7 @@ class GuidesRegisterController extends Controller
 
 
 		////////////////////////////////////////////////////////////////////////////////////
-		$driverId = request('model.driver_id');
+		
 		$client = request('model.client_id');
 
 		$traslado_motivo = '';
@@ -590,18 +590,23 @@ class GuidesRegisterController extends Controller
 			];
 		});
 
-		$chofer = Chofer::find($driverId);
+		$chofer = null;
+		$chofer_name = request('model.driver_name');
+		$chofer_brevete = request('model.driver_brevete');
+		$chofer_documento = request('model.driver_document');
 		$isTrabajador = false;
 		if($warehouse_account_type_id == 3 && $movement_type_id == 11)
 		{
 			$chofer =  Employee::find($warehouse_account_id);
 			$isTrabajador = true;
 		}
-
-		if ($chofer && !$isTrabajador) {
-			$nombreChofer = $chofer->name;
-			$breveteChofer = $chofer->brevete;
-			$DocChofer = $chofer->documento;
+		$nombreChofer = "";
+		$breveteChofer = "";
+		$DocChofer = "";
+		if (!$chofer && !$isTrabajador) {
+			$nombreChofer = $chofer_name;
+			$breveteChofer = $chofer_brevete;
+			$DocChofer = $chofer_documento;
 		} else {
 			$nombreChofer = $chofer->first_name;
 			$breveteChofer = $chofer->license;

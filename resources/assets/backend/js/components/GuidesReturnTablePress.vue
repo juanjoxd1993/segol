@@ -171,6 +171,22 @@
       }
     },
     methods: {
+      resetForm() {
+        this.model = {
+          client_id: '',
+          client_name: '',
+          article_id: '',
+          article_name: '',
+          press: '',
+          if_devol: this.model.if_devol, // Mantén el estado de devolución para saber si el modal es de prestamo o devolución
+        };
+        this.stock_press = 0;
+        
+        // Reinicia los selects de cliente y artículo
+        $('#client_id_press').val(null).trigger('change');
+        $('#article_id').val('0').trigger('change'); // Asumiendo que '0' es el valor por defecto para seleccionar
+      },
+
       newSelect2: function() {
         let vm = this;
         let token = document.head.querySelector('meta[name="csrf-token"]').content;
@@ -404,10 +420,13 @@
 
         this.fillTableX();
         $("#modalPress").modal('hide');
-
+        this.resetForm();
         }
       },
-      close() {},
+      close() {
+        $("#modalPress").modal('hide');
+        this.resetForm();
+      },
       changeArticleId(val) {
         const item = this.balones.find(element => element.article_id == val);
 

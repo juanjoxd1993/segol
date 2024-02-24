@@ -564,7 +564,6 @@ export default {
       if (saldo) {
         this.model.amount = saldo.total_perception;
         this.model.currency = saldo.currency_id;
-        document.getElementById("amount").disabled = true;
         document.getElementById("currency_id").disabled = true;
       }
     },

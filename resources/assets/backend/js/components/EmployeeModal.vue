@@ -480,7 +480,8 @@
 
                 if (documentType.val() == 1 && documentNumber.val().length == 11) {
                     EventBus.$emit('loading', true);
-                    axios.get(this.url_search_client, {
+            
+                    axios.get('/comercial/clientes/buscar-cliente-ruc', {
                         params: {
                             ruc: documentNumber.val()
                         }
