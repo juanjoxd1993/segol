@@ -20,7 +20,7 @@ class OpeAdjustInventoryController extends Controller
 	public function index()
 	{
 		$companies = Company::select('id', 'name')->get();
-		$warehouse_types = WarehouseType::select('id', 'name')->where('id', 4)->get();
+		$warehouse_types = WarehouseType::select('id', 'name')->where('id', 75)->get();
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
 
 		return view('backend.opeadjustinventories')->with(compact('companies', 'warehouse_types', 'current_date'));

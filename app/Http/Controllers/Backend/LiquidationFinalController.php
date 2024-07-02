@@ -105,13 +105,7 @@ class LiquidationFinalController extends Controller
 			->where('company_id', $company_id)
 			->where('warehouse_type_id', $warehouse_type_id)
 			->where('sale_id', null)
-			->where(function ($query) {
-				$query->where('action_type_id', 3)
-					->orWhere('action_type_id', 4)
-					->orWhere('action_type_id', 6)
-					->orWhere('action_type_id', 7)
-					->orWhere('action_type_id', 8);
-			})
+			
 			->where('state', $guide_state->id)
 			->orderBy('movement_number', 'asc')
 			->get();

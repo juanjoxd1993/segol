@@ -31,7 +31,8 @@
                             <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
                                 <option value="4">PLANTA ATE</option>
-                                <option value="13">PLANTA CALLAO</option>                    
+                                <option value="13">PLANTA CALLAO</option>  
+                                <option value="75">PLANTA IQUITOS</option>                    
                             </select>
                             <div id="warehouse_type-error" class="error invalid-feedback"></div>
                         </div>
