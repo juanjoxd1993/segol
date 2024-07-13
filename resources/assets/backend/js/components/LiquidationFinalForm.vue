@@ -17,9 +17,11 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
-                            <select class="form-control" name="company_id" id="company_id" v-model="model.company_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control" name="company_id" id="company_id" v-model="model.company_id"
+                                @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
-                                <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{ company.name }}</option>
+                                <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{
+            company.name }}</option>
                             </select>
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -28,11 +30,12 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Sede:</label>
-                            <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control" name="warehouse_type_id" id="warehouse_type_id"
+                                v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
                                 <option value="4">PLANTA ATE</option>
-                                <option value="13">PLANTA CALLAO</option>  
-                                <option value="75">PLANTA IQUITOS</option>                    
+                                <option value="13">PLANTA CALLAO</option>
+                                <option value="75">PLANTA IQUITOS</option>              
                             </select>
                             <div id="warehouse_type-error" class="error invalid-feedback"></div>
                         </div>
@@ -41,9 +44,14 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Nº de Parte:</label>
-                            <select class="form-control" name="warehouse_movement_id" id="warehouse_movement_id" v-model="model.warehouse_movement_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control" name="warehouse_movement_id" id="warehouse_movement_id"
+                                v-model="model.warehouse_movement_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
-                                <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id" v-bind:key="warehouse_movement.id"> {{ warehouse_movement.referral_guide_series }}-{{ warehouse_movement.referral_guide_number }} | {{ warehouse_movement.license_plate }} | {{ warehouse_movement.traslate_date }}</option>
+                                <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id"
+                                    v-bind:key="warehouse_movement.id"> {{ warehouse_movement.referral_guide_series
+                                    }}-{{ warehouse_movement.referral_guide_number }} | {{
+            warehouse_movement.license_plate }} | {{ warehouse_movement.traslate_date }}
+                                </option>
                             </select>
                             <div id="warehouse_movement_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -66,45 +74,45 @@
 </template>
 
 <script>
-    import EventBus from '../event-bus';
+import EventBus from '../event-bus';
 
-    export default {
-        props: {
-            companies: {
-                type: Array,
-                default: ''
-            },
-            url: {
-                type: String,
-                default: ''
-            },
-            url_get_warehouse_movements: {
-                type: String,
-                default: ''
-            },
-            url_get_sale_series: {
-                type: String,
-                default: ''
-            },
+export default {
+    props: {
+        companies: {
+            type: Array,
+            default: ''
         },
-        data() {
-            return {
-                model: {
-                    company_id: '',
-                    warehouse_movement_id: '',
-                    warehouse_type_id: '',
-                },
-                warehouse_movements: [],
-            }
+        url: {
+            type: String,
+            default: ''
         },
-        created() {
+        url_get_warehouse_movements: {
+            type: String,
+            default: ''
+        },
+        url_get_sale_series: {
+            type: String,
+            default: ''
+        },
+    },
+    data() {
+        return {
+            model: {
+                company_id: '',
+                warehouse_movement_id: '',
+                warehouse_type_id: '',
+            },
+            warehouse_movements: [],
+        }
+    },
+    created() {
 
-        },
-        mounted() {
-            axios.post(this.url_get_sale_series)
+    },
+    mounted() {
+        axios.post(this.url_get_sale_series)
             .then(response => {
                 const data = response.data;
-                
+
                 this.$store.state.sale_series = data;
             })
             .catch(error => {
@@ -112,104 +120,105 @@
                 console.log(error);
             });
 
-            EventBus.$on('clear_form_sale', function() {
-				$('.kt-form').find('input').prop('disabled', false);
-				$('.kt-form').find('select').prop('disabled', false);
-				$('.kt-form').find('button').prop('disabled', false);
-				
-                this.model = {
-					company_id: '',
-					warehouse_movement_id: '',
-                    warehouse_type_id: '',
-				}
-            }.bind(this));
-        },
-        watch: {
-            // 'model.company_id': function(val) {
-            //     if ( val != '' ) {
-            //         EventBus.$emit('loading', true);
+        EventBus.$on('clear_form_sale', function () {
+            $('.kt-form').find('input').prop('disabled', false);
+            $('.kt-form').find('select').prop('disabled', false);
+            $('.kt-form').find('button').prop('disabled', false);
 
-            //         axios.post(this.url_get_warehouse_movements, {
-            //             company_id: this.model.company_id
-            //         }).then(response => {
-            //             // console.log(response);
-            //             this.model.warehouse_movement_id = '';
-            //             this.warehouse_movements = response.data;
+            this.model = {
+                company_id: '',
+                warehouse_movement_id: '',
+                warehouse_type_id: '',
+            }
+        }.bind(this));
+    },
+    watch: {
+        // 'model.company_id': function(val) {
+        //     if ( val != '' ) {
+        //         EventBus.$emit('loading', true);
 
-            //             EventBus.$emit('loading', false);
-            //         }).catch(error => {
-            //             console.log(error);
-            //             console.log(error.response)
-            //         });
-            //     } else {
-            //         this.model.warehouse_movement_id = '';
-            //         this.warehouse_movements = '';
-            //     }
-            // },
-            'model.warehouse_type_id': function(val) {
-                if ( val != '' ) {
-                    EventBus.$emit('loading', true);
+        //         axios.post(this.url_get_warehouse_movements, {
+        //             company_id: this.model.company_id
+        //         }).then(response => {
+        //             // console.log(response);
+        //             this.model.warehouse_movement_id = '';
+        //             this.warehouse_movements = response.data;
 
-                    axios.post(this.url_get_warehouse_movements, {
-                        company_id: this.model.company_id,
-                        warehouse_type_id: this.model.warehouse_type_id
-                    }).then(response => {
-                        // console.log(response);
-                        this.model.warehouse_movement_id = '';
-                        this.warehouse_movements = response.data;
-
-                        EventBus.$emit('loading', false);
-                    }).catch(error => {
-                        console.log(error);
-                        console.log(error.response)
-                    });
-                } else {
-                    this.model.warehouse_movement_id = '';
-                    this.warehouse_movements = '';
-                }
-            },
-        },
-        computed: {
-
-        },
-        methods: {
-            formController: function(url, event) {
-                var vm = this;
-
-                var target = $(event.target);
-                var url = url;
-                var fd = new FormData(event.target);
-
+        //             EventBus.$emit('loading', false);
+        //         }).catch(error => {
+        //             console.log(error);
+        //             console.log(error.response)
+        //         });
+        //     } else {
+        //         this.model.warehouse_movement_id = '';
+        //         this.warehouse_movements = '';
+        //     }
+        // },
+        'model.warehouse_type_id': function (val) {
+            if (val != '') {
                 EventBus.$emit('loading', true);
-				this.$store.commit('resetState');
 
-                axios.post(url, fd, { headers: {
-                        'Content-type': 'application/x-www-form-urlencoded',
-                    }
+                axios.post(this.url_get_warehouse_movements, {
+                    company_id: this.model.company_id,
+                    warehouse_type_id: this.model.warehouse_type_id
                 }).then(response => {
-                    console.log("response2: ");
-                    console.log(response);
-					target.find('input').prop('disabled', true);
-                    target.find('select').prop('disabled', true);
-                    target.find('button').prop('disabled', true);
-                    EventBus.$emit('show_table', response.data);
-                }).catch(error => {
+                    // console.log(response);
+                    this.model.warehouse_movement_id = '';
+                    this.warehouse_movements = response.data;
+
                     EventBus.$emit('loading', false);
-                    console.log(error.response);
-                    var obj = error.response.data.errors;
-                    $('html, body').animate({
-                        scrollTop: 0
-                    }, 500, 'swing');
-                    $.each(obj, function(i, item) {
-                        // console.log(target);
-                        let c_target = target.find("#" + i + "-error");
-                        let p = c_target.parents('.form-group').find('#' + i);
-                        p.addClass('is-invalid');
-                        c_target.css('display', 'block');
-                        c_target.html(item);
-                    });
+                }).catch(error => {
+                    console.log(error);
+                    console.log(error.response)
                 });
-            },
-        }
-    };
+            } else {
+                this.model.warehouse_movement_id = '';
+                this.warehouse_movements = '';
+            }
+        },
+    },
+    computed: {
+
+    },
+    methods: {
+        formController: function (url, event) {
+            var vm = this;
+
+            var target = $(event.target);
+            var url = url;
+            var fd = new FormData(event.target);
+
+            EventBus.$emit('loading', true);
+            this.$store.commit('resetState');
+
+            axios.post(url, fd, {
+                headers: {
+                    'Content-type': 'application/x-www-form-urlencoded',
+                }
+            }).then(response => {
+                console.log("response2: ");
+                console.log(response);
+                target.find('input').prop('disabled', true);
+                target.find('select').prop('disabled', true);
+                target.find('button').prop('disabled', true);
+                EventBus.$emit('show_table', response.data);
+            }).catch(error => {
+                EventBus.$emit('loading', false);
+                console.log(error.response);
+                var obj = error.response.data.errors;
+                $('html, body').animate({
+                    scrollTop: 0
+                }, 500, 'swing');
+                $.each(obj, function (i, item) {
+                    // console.log(target);
+                    let c_target = target.find("#" + i + "-error");
+                    let p = c_target.parents('.form-group').find('#' + i);
+                    p.addClass('is-invalid');
+                    c_target.css('display', 'block');
+                    c_target.html(item);
+                });
+            });
+        },
+    }
+};
 </script>
