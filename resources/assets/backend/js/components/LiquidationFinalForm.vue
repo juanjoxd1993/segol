@@ -35,7 +35,7 @@
                                 <option disabled value="">Seleccionar</option>
                                 <option value="4">PLANTA ATE</option>
                                 <option value="13">PLANTA CALLAO</option>
-                                <option value="75">PLANTA IQUITOS</option>
+                                <option value="75">PLANTA IQUITOS</option>              
                             </select>
                             <div id="warehouse_type-error" class="error invalid-feedback"></div>
                         </div>
