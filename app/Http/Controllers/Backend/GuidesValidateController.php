@@ -32,17 +32,17 @@ use Illuminate\Support\Facades\DB;
 
 class GuidesValidateController extends Controller
 {
-    
-	public function index()
-	{
-		$companies = Company::select('id', 'name')->get();
 
-		return view('backend.guides_validate')->with(compact(
+    public function index()
+    {
+        $companies = Company::select('id', 'name')->get();
+
+        return view('backend.guides_validate')->with(compact(
             'companies'
         ));
-	}
+    }
 
-	public function validateForm()
+    public function validateForm()
     {
         $messages = [
             'company_id.required' => 'Debe seleccionar una Compañía.',
@@ -54,17 +54,17 @@ class GuidesValidateController extends Controller
 
         request()->validate($rules, $messages);
         return request()->all();
-	}
+    }
 
     public function getWarehouseMovements()
     {
-		$user_id = Auth::user()->id;
+        $user_id = Auth::user()->id;
 
-		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-                                                ->where('user_id', $user_id)
-                                                ->first();
+        $warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+            ->where('user_id', $user_id)
+            ->first();
 
-		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
+        $warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 
         $company_id = request('company_id');
 
@@ -75,7 +75,8 @@ class GuidesValidateController extends Controller
             'license_plate',
             'account_name',
             'license_plate',
-            'created_at')
+            'created_at'
+        )
             ->where('company_id', $company_id)
             ->where('warehouse_type_id', $warehouse_type_id)
             ->where(function ($query) {
@@ -125,7 +126,7 @@ class GuidesValidateController extends Controller
             'converted_amount',
             'new_stock_repair',
             'new_stock_cesion'
-            )
+        )
             ->where('warehouse_movement_id', $warehouse_movement_id)
             ->orderBy('item_number', 'asc')
             ->get();
@@ -181,11 +182,11 @@ class GuidesValidateController extends Controller
 
     public function removeArticle()
     {
-		$user_id = Auth::user()->id;
+        $user_id = Auth::user()->id;
 
-		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-			->where('user_id', $user_id)
-			->first();
+        $warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+            ->where('user_id', $user_id)
+            ->first();
 
         $warehouse_type_id = $warehouse_type_user->warehouse_type_id;
         $warehouse_movement_id = request('model.warehouse_movement_id');
@@ -206,7 +207,7 @@ class GuidesValidateController extends Controller
             'article_num',
             'digit_amount',
             'deleted_at'
-            )
+        )
             ->where('id', $id)
             ->first();
 
@@ -224,10 +225,10 @@ class GuidesValidateController extends Controller
                 ->where('presentacion', $article->presentacion)
                 ->where('group_id', 7)
                 ->first();
-    
+
             $article->stock_good += $stock_movement_detail;
             $article->save();
-    
+
             if ($account_type_id == 3) {
                 $articleBalon->stock_return -= $stock_movement_detail;
                 $articleBalon->save();
@@ -245,17 +246,17 @@ class GuidesValidateController extends Controller
 
     public function updateArticles()
     {
-		$user_id = Auth::user()->id;
+        $user_id = Auth::user()->id;
 
-		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-			->where('user_id', $user_id)
-			->first();
+        $warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+            ->where('user_id', $user_id)
+            ->first();
 
         $warehouse_type_id = $warehouse_type_user->warehouse_type_id;
         $warehouse_movement_id = request('model.warehouse_movement_id');
         $articles = request('articles');
 
-        $movement = WarehouseMovement::select('id','warehouse_account_type_id')
+        $movement = WarehouseMovement::select('id', 'warehouse_account_type_id')
             ->where('id', $warehouse_movement_id)
             ->first();
 
@@ -264,7 +265,7 @@ class GuidesValidateController extends Controller
         $item_number = 0;
 
         foreach ($articles as $item) {
-            $item_number += 1; 
+            $item_number += 1;
             $id = $item['id'];
             $presale = $item['presale'];
             $prestamo = $item['prestamo'];
@@ -287,26 +288,26 @@ class GuidesValidateController extends Controller
                 $articleEnvasado = Article::where('warehouse_type_id', $warehouse_type_id)
                     ->where('code', 2)
                     ->first();
-    
+
                 if ($presale != $stock_movement_detail) {
-    
+
                     $difference = $stock_movement_detail - $presale;
-    
+
                     $movementDetail->digit_amount = $presale;
                     $movementDetail->converted_amount = $presale * $article->convertion;
 
                     if ($article->group_id != 7) {
                         if ($difference < 0) {
                             $differenceParse = $difference * -1;
-        
-                            if ($article->stock_good != 0) {                        
+
+                            if ($article->stock_good != 0) {
                                 $article->stock_good -= $differenceParse;
                                 $article->save();
                             } else {
                                 $articleEnvasado->stock_good -= $article->convertion * $differenceParse;
                                 $articleEnvasado->save();
                             }
-            
+
                             if ($account_type_id == 3) {
                                 $articleBalon->stock_good -= $differenceParse;
                                 $articleBalon->stock_return += $differenceParse;
@@ -314,7 +315,7 @@ class GuidesValidateController extends Controller
                         } elseif ($difference > 0) {
                             $article->stock_good += $difference;
                             $article->save();
-            
+
                             if ($account_type_id == 3) {
                                 $articleBalon->stock_return -= $difference;
                                 $articleBalon->save();
@@ -325,10 +326,10 @@ class GuidesValidateController extends Controller
 
                 if ($prestamo) {
                     $articleBalon->stock_repair += $prestamo;
-    
+
                     $movementDetail->old_stock_repair = $movementDetail->new_stock_repair;
                     $movementDetail->new_stock_repair = $prestamo;
-    
+
                     //Generar Movimiento de Salida - Producción
                     $id_movement = WarehouseMovement::insertGetId([
                         'company_id' => 1,
@@ -341,7 +342,7 @@ class GuidesValidateController extends Controller
                         'created_at' => date('Y-m-d'),
                         'updated_at' => date('Y-m-d'),
                     ]);
-    
+
                     WarehouseMovementDetail::insert([
                         'warehouse_movement_id' => $id_movement,
                         'item_number' => 1,
@@ -427,13 +428,13 @@ class GuidesValidateController extends Controller
                     $movementDetail->igv_perception_percentage = 0;
                     $movementDetail->created_at_user = Auth::user()->user;
                     $movementDetail->updated_at_user = Auth::user()->user;
-    
+
                     if ($prestamo) {
                         $articleBalon->stock_repair += $prestamo;
-        
+
                         $movementDetail->old_stock_repair = $movementDetail->new_stock_repair;
                         $movementDetail->new_stock_repair = $prestamo;
-        
+
                         //Generar Movimiento de Salida - Producción
                         $id_movement = WarehouseMovement::insertGetId([
                             'company_id' => 1,
@@ -446,7 +447,7 @@ class GuidesValidateController extends Controller
                             'created_at' => date('Y-m-d'),
                             'updated_at' => date('Y-m-d'),
                         ]);
-        
+
                         WarehouseMovementDetail::insert([
                             'warehouse_movement_id' => $id_movement,
                             'item_number' => 1,
@@ -458,13 +459,13 @@ class GuidesValidateController extends Controller
                             'updated_at' => date('Y-m-d'),
                         ]);
                     }
-    
+
                     if ($cesion) {
                         $articleBalon->stock_minimum += $cesion;
-        
+
                         $movementDetail->old_stock_cesion = $movementDetail->new_stock_cesion;
                         $movementDetail->new_stock_cesion = $cesion;
-        
+
                         //Generar Movimiento de Salida - Producción
                         $id_movement = WarehouseMovement::insertGetId([
                             'company_id' => 1,
@@ -476,7 +477,7 @@ class GuidesValidateController extends Controller
                             'created_at' => date('Y-m-d'),
                             'updated_at' => date('Y-m-d'),
                         ]);
-        
+
                         WarehouseMovementDetail::insert([
                             'warehouse_movement_id' => $id_movement,
                             'item_number' => 1,
@@ -489,7 +490,7 @@ class GuidesValidateController extends Controller
                             'updated_at' => date('Y-m-d'),
                         ]);
                     }
-    
+
                     $articleBalon->save();
                     $movementDetail->save();
                 }
@@ -506,27 +507,27 @@ class GuidesValidateController extends Controller
     }
 
     public function getArticles()
-	{
-		$company_id = request('company_id');
-		$q = request('q');
+    {
+        $company_id = request('company_id');
+        $q = request('q');
 
         $clients = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
             ->where('warehouse_type_id', 5)
             ->where('articles.name', 'like', '%' . $q . '%')
-			->select(
-				'articles.id',
-				'code',
-				'articles.name',
-				'package_sale',
-				'sale_unit_id',
-				'operation_type_id',
-				'factor',
-				'operation_types.name as operation_type_name',
-				'business_type',
-				'convertion',
+            ->select(
+                'articles.id',
+                'code',
+                'articles.name',
+                'package_sale',
+                'sale_unit_id',
+                'operation_type_id',
+                'factor',
+                'operation_types.name as operation_type_name',
+                'business_type',
+                'convertion',
                 'presentacion',
-				'group_id'
-				)
+                'group_id'
+            )
             ->get();
 
         $clients->map(function ($item, $index) {
@@ -536,8 +537,8 @@ class GuidesValidateController extends Controller
             return $item;
         });
 
-		return $clients;
-	}
+        return $clients;
+    }
 
     public function validateGuides()
     {
@@ -550,20 +551,19 @@ class GuidesValidateController extends Controller
 
             if ($account_type_id == 1) {
                 $guide_state = GuidesState::select('id')
-                                ->where('name', 'Por Liquidar')
-                                ->first();
+                    ->where('name', 'Por Liquidar')
+                    ->first();
 
                 $movement->state = $guide_state->id;
                 $movement->save();
             } else {
                 $guide_state = GuidesState::select('id')
-                                ->where('name', 'Validada')
-                                ->first();
+                    ->where('name', 'Validada')
+                    ->first();
 
                 $movement->state = $guide_state->id;
                 $movement->save();
             }
-            
         }
 
         $data = [

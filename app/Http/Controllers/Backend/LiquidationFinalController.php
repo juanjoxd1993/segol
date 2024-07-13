@@ -41,6 +41,7 @@ class LiquidationFinalController extends Controller
 {
 	public function index()
 	{
+
 		$companies = Company::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')
 			->where('name', 'Factura Electrónica')
@@ -1150,7 +1151,7 @@ class LiquidationFinalController extends Controller
 						if (isset($liquidation['payment_sede'])) {
 							$liquidation_model->payment_sede = $liquidation['payment_sede'];
 						}
-						
+
 						$liquidation_model->created_at_user = Auth::user()->user;
 						$liquidation_model->updated_at_user = Auth::user()->user;
 						$liquidation_model->cede = $warehouse_type_id;
