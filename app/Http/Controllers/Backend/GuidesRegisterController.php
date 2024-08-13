@@ -220,7 +220,7 @@ class GuidesRegisterController extends Controller
 			'ose.required'										=> 'Debe seleccionar el Tipo de guía.',
 			'serie.required_if'									=> 'Debe seleccionar la Serie Electrónico.',
 			'movement_type_id.required'							=> 'Debe seleccionar Tipo Movimiento.',
-			'scop_number.required'								=> 'Debe ingresar Número de SCOP.',
+		//	'scop_number.required'								=> 'Debe ingresar Número de SCOP.',
 		];
 
 		$rules = [
@@ -238,7 +238,7 @@ class GuidesRegisterController extends Controller
 			'ose'									=> 'required',
 			'serie'									=> 'required_if:ose,0',
 			'movement_type_id'						=> 'required',
-			'scop_number'							=> 'required',
+		//	'scop_number'							=> 'required',
 		];
 
 		request()->validate($rules, $messages);
