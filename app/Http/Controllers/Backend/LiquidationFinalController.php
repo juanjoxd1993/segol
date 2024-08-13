@@ -87,13 +87,6 @@ class LiquidationFinalController extends Controller
 
 	public function getWarehouseMovements()
 	{
-		$user_id = Auth::user()->id;
-
-		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-			->where('user_id', $user_id)
-			->first();
-
-		//	$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 
 		$warehouse_type_id = request('warehouse_type_id');
 		$company_id = request('company_id');
@@ -104,9 +97,9 @@ class LiquidationFinalController extends Controller
 
 		$elements = WarehouseMovement::select('id', 'movement_number', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'traslate_date', 'movement_type_id')
 			->where('company_id', $company_id)
-			->where('warehouse_type_id', $warehouse_type_id)
-			->where('sale_id', null)
-			
+			->where('warehouse_type_id',$warehouse_type_id)
+			//->where('sale_id', null)
+
 			->where('state', $guide_state->id)
 			->orderBy('movement_number', 'asc')
 			->get();

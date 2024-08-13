@@ -70,6 +70,15 @@
 									<span class="kt-menu__link-text">Envío OSE</span>
 								</a>
 							</li>
+
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.guide.efact' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.guide.efact') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">EFACT - Guías</span>
+								</a>
+							</li>
 						
 							
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.register_document_charge' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
@@ -359,6 +368,14 @@
 								<span class="kt-menu__link">
 									<span class="kt-menu__link-text">Operaciones</span>
 								</span>
+							</li>
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.guias_electronic.report' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.guias_electronic.report') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Impresión de guías Electrónicas</span>
+								</a>
 							</li>
                             <li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.guides_register') }}" class="kt-menu__link ">

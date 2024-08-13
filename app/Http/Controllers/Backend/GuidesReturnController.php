@@ -52,27 +52,23 @@ class GuidesReturnController extends Controller
 
     public function getWarehouseMovements()
     {
-		$user_id = Auth::user()->id;
-
-		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-                                                ->where('user_id', $user_id)
-                                                ->first();
-
-		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
         $company_id = request('company_id');
+        $user_id = Auth::user()->id;
+        $warehouse_type = WarehouseTypeInUser::where('user_id', $user_id)->first();
 
-		$guide_state = GuidesState::select('id')
-						->where('name', 'Validada')
-						->first();
+        $guide_state = GuidesState::select('id')
+            ->where('name', 'Validada')
+            ->first();
 
         $elements = WarehouseMovement::select(
             'id',
             'referral_guide_series',
             'referral_guide_number',
             'license_plate',
-            'created_at')
+            'created_at'
+        )
             ->where('company_id', $company_id)
-            ->where('warehouse_type_id', $warehouse_type_id)
+            ->where('warehouse_type_id', $warehouse_type->warehouse_type_id)
             ->where(function ($query) {
                 $query->where('action_type_id', 3)
                     ->orWhere('action_type_id', 4)
@@ -105,15 +101,17 @@ class GuidesReturnController extends Controller
         $company_id = request('model.company_id');
         $warehouse_movement_id = request('model.warehouse_movement_id');
 
-        $movementDetails = WarehouseMovementDetail::select('id',
-                                                        'warehouse_movement_id',
-                                                        'item_number',
-                                                        'article_code',
-                                                        'digit_amount',
-                                                        'converted_amount')
-                                                ->where('warehouse_movement_id', $warehouse_movement_id)
-                                                ->orderBy('item_number', 'asc')
-                                                ->get();
+        $movementDetails = WarehouseMovementDetail::select(
+            'id',
+            'warehouse_movement_id',
+            'item_number',
+            'article_code',
+            'digit_amount',
+            'converted_amount'
+        )
+            ->where('warehouse_movement_id', $warehouse_movement_id)
+            ->orderBy('item_number', 'asc')
+            ->get();
 
         $movementDetails->map(function ($item, $index) {
 
@@ -139,7 +137,7 @@ class GuidesReturnController extends Controller
             } else {
                 $item->liquidar = 0;
             };
-            
+
             $item->retorno = 0;
             $item->cambios = 0;
             $item->prestamo = 0;
@@ -153,7 +151,7 @@ class GuidesReturnController extends Controller
             array_push($elements, $val);
         };
 
-        $elements = array_filter($elements, function($val) {
+        $elements = array_filter($elements, function ($val) {
             return $val->group_id != 7;
         });
 
@@ -172,30 +170,26 @@ class GuidesReturnController extends Controller
 
     public function update(Request $request)
     {
-		$user_id = Auth::user()->id;
-		$date = date('Y-m-d');
-
-		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-                                                ->where('user_id', $user_id)
-                                                ->first();
 
         $articles = $request->articles;
         $clients = $request->clients;
         $prestamos = $request->prestamos;
         $warehouse_movement_id = $request->warehouse_movement_id;
-		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
+
+        $user_id = Auth::user()->id;
+        $warehouse_type = WarehouseTypeInUser::where('user_id', $user_id)->first();
 
         $warehouse_movement_index = WarehouseMovement::find($warehouse_movement_id);
 
-        echo count($prestamos);
+
         if (count($prestamos)) {
             $guide_state = GuidesState::select('id')
-                                    ->where('name', 'Por Autorizar')
-                                    ->first();
+                ->where('name', 'Por Autorizar')
+                ->first();
         } else {
             $guide_state = GuidesState::select('id')
-                                    ->where('name', 'Por Liquidar')
-                                    ->first();
+                ->where('name', 'Por Liquidar')
+                ->first();
         }
 
         foreach ($articles as $article) {
@@ -207,16 +201,16 @@ class GuidesReturnController extends Controller
                 ->where('id', $article['article_id'])
                 ->first();
 
-            $articleWT = Article::where('warehouse_type_id', $warehouse_type_id)
+            $articleWT = Article::where('warehouse_type_id', 5)
                 ->where('code', $articleGeneral->code)
                 ->first();
 
-            $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
+            $articleBalon = Article::where('warehouse_type_id',  5)
                 ->where('presentacion', $articleWT->presentacion)
                 ->where('group_id', 7)
                 ->first();
 
-            $articleEnvasado = Article::where('warehouse_type_id', $warehouse_type_id)
+            $articleEnvasado = Article::where('warehouse_type_id',  5)
                 ->where('code', 2)
                 ->first();
 
@@ -360,7 +354,7 @@ class GuidesReturnController extends Controller
                     'press' => 1,
                     'created_at' => date('Y-m-d'),
                     'updated_at' => date('Y-m-d'),
-                //    'warehouse_movement_id' => $warehouse_movement_id,
+                    //    'warehouse_movement_id' => $warehouse_movement_id,
                 ]);
 
                 WarehouseMovementDetail::insert([
@@ -430,7 +424,7 @@ class GuidesReturnController extends Controller
                 $articleBalon->stock_minimum += $article['cesion'];
             }
 
-            if($article['vacios']){
+            if ($article['vacios']) {
                 // Solo debe actualizar el stock _good
                 // Article::where('id', $article['article_id'])
                 //     ->update([
@@ -446,17 +440,17 @@ class GuidesReturnController extends Controller
             $warehouse_movement_detail->save();
             /**Off */
 
-            $articleDetail = Article::where('warehouse_type_id', $warehouse_type_id)
-                                    ->where('code', $article['article_code'])
-                                    ->first();
+            $articleDetail = Article::where('warehouse_type_id', $warehouse_type->id)
+                ->where('code', $article['article_code'])
+                ->first();
 
             //Actualizar new_stock_return
             if ($article['article']['group_id'] == 26) {
                 WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
-                                        ->where('article_code', $article['article_id'])
-                                        ->update([
-                                            'new_stock_return' =>  $article['retorno'] + $article['cambios'],
-                                        ]);
+                    ->where('article_code', $article['article_id'])
+                    ->update([
+                        'new_stock_return' =>  $article['retorno'] + $article['cambios'],
+                    ]);
             } else if ($article['article']['group_id'] == 7) {
                 // el new_stock_return deberia solo registrar los blones en buen estado y no los prestamos ni los mal estado
                 // WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
@@ -465,26 +459,25 @@ class GuidesReturnController extends Controller
                 //         'new_stock_return' =>  $article['converted_amount'] - $article['cesion'],
                 //     ]);
                 WarehouseMovementDetail::where('warehouse_movement_id', $article['warehouse_movement_id'])
-                                    ->where('article_code', $article['article_id'])
-                                    ->update([
-                                        'new_stock_return' =>  $article['converted_amount'] - $article['cesion'] - $article['prestamo'] - $article['cambios'],
-                                    ]);
+                    ->where('article_code', $article['article_id'])
+                    ->update([
+                        'new_stock_return' =>  $article['converted_amount'] - $article['cesion'] - $article['prestamo'] - $article['cambios'],
+                    ]);
             }
 
             $warehouse_movement_id = $article['warehouse_movement_id'];
 
             //Actualizar estado
             WarehouseMovement::where('id', $warehouse_movement_id)
-                            ->update([
-                                'state' => $guide_state->id,
-                            ]);
-
+                ->update([
+                    'state' => $guide_state->id,
+                ]);
         }
 
         foreach ($clients as $client) {
             $client_liquidation = new ClientLiquidations;
             $client_liquidation->warehouse_movement_id = $request->warehouse_movement_id;
-            $client_liquidation->client_id = $client ['client_id'];
+            $client_liquidation->client_id = $client['client_id'];
             $client_liquidation->article_id = $client['article_id'];
             $client_liquidation->quantity = $client['liquidation'];
             $client_liquidation->save();
@@ -524,7 +517,7 @@ class GuidesReturnController extends Controller
         $company_id = request('company_id');
         $client_id = request('client_id');
         $q = request('q');
-        if ( isset($client_id) ) {
+        if (isset($client_id)) {
             $elements = Client::select('id', 'code', 'business_name', 'payment_id', 'perception_percentage_id', 'credit_limit')
                 ->where('id', $client_id)
                 ->first();
@@ -533,14 +526,14 @@ class GuidesReturnController extends Controller
         } else {
             $elements = Client::select('id', 'code', 'business_name', 'document_type_id', 'payment_id', 'perception_percentage_id', 'credit_limit')
                 ->where('company_id', $company_id)
-                ->where('business_name', 'like', '%'.$q.'%') ->orWhere('id', 'like', '%'.$q.'%')
+                ->where('business_name', 'like', '%' . $q . '%')->orWhere('id', 'like', '%' . $q . '%')
                 ->orderBy('business_name', 'asc')
                 ->with(['perception_percentage' => function ($query) {
                     $query->select('id', 'value');
                 }])
                 ->get();
-            $elements->map(function($item, $index) {
-                $item->text = $item->id . ' - ' .$item->business_name;
+            $elements->map(function ($item, $index) {
+                $item->text = $item->id . ' - ' . $item->business_name;
                 unset($item->business_name);
                 unset($item->code);
                 return $item;
@@ -598,9 +591,9 @@ class GuidesReturnController extends Controller
                 $articleGeneral = Article::find($article_id);
 
                 $articleBalon = Article::where('warehouse_type_id', 5)
-                                    ->where('presentacion', $articleGeneral->presentacion)
-                                    ->where('group_id', 7)
-                                    ->first();
+                    ->where('presentacion', $articleGeneral->presentacion)
+                    ->where('group_id', 7)
+                    ->first();
 
                 $article_balon = [
                     'article_id' => $articleBalon->id,
@@ -621,12 +614,12 @@ class GuidesReturnController extends Controller
     }
 
     public function generatePdf($warehouse_movement_id, $elements)
-	{
-		$user_id = Auth::user()->id;
+    {
+        $user_id = Auth::user()->id;
 
-		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-			->where('user_id', $user_id)
-			->first();
+        $warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
+            ->where('user_id', $user_id)
+            ->first();
 
         $warehouse_type_id = $warehouse_type_user->warehouse_type_id;
 
@@ -672,11 +665,11 @@ class GuidesReturnController extends Controller
                 ->where('id', $element['article_id'])
                 ->first();
 
-            $articleWT = Article::where('warehouse_type_id', $warehouse_type_id)
+            $articleWT = Article::where('warehouse_type_id', 5)
                 ->where('code', $articleGeneral->code)
                 ->first();
 
-            $articleBalon = Article::where('warehouse_type_id', $warehouse_type_id)
+            $articleBalon = Article::where('warehouse_type_id', 5)
                 ->where('presentacion', $articleWT->presentacion)
                 ->where('group_id', 7)
                 ->first();
@@ -709,33 +702,37 @@ class GuidesReturnController extends Controller
             $total += $article->total;
         };
 
-		try{
-			$pdf = PDF::loadView('backend.pdf.return_guide',
-                                compact('current_date',
-                                        'current_time',
-                                        'number_page',
-                                        'control_serie_number',
-                                        'control_serie_correlative',
-                                        'name_full_data',
-                                        'state',
-                                        'number_placa',
-                                        'guide_remision',
-                                        'turno',
-                                        'articles',
-                                        'total_quantity',
-                                        'total_return',
-                                        'total_vacios',
-                                        'total_damaged',
-                                        'total_transito',
-                                        'total_consignacion',
-                                        'total_devolucion',
-                                        'total_observador',
-                                        'total_deposito',
-                                        'total'));
+        try {
+            $pdf = PDF::loadView(
+                'backend.pdf.return_guide',
+                compact(
+                    'current_date',
+                    'current_time',
+                    'number_page',
+                    'control_serie_number',
+                    'control_serie_correlative',
+                    'name_full_data',
+                    'state',
+                    'number_placa',
+                    'guide_remision',
+                    'turno',
+                    'articles',
+                    'total_quantity',
+                    'total_return',
+                    'total_vacios',
+                    'total_damaged',
+                    'total_transito',
+                    'total_consignacion',
+                    'total_devolucion',
+                    'total_observador',
+                    'total_deposito',
+                    'total'
+                )
+            );
 
-			return $pdf->download('guia-de-retorno-N°-' . $warehouse_movement->referral_guide_series . '-' . $warehouse_movement->referral_guide_number . '.pdf');
-		}catch(Exception $e){
-			return '';
-		}
-	}
+            return $pdf->download('guia-de-retorno-N°-' . $warehouse_movement->referral_guide_series . '-' . $warehouse_movement->referral_guide_number . '.pdf');
+        } catch (Exception $e) {
+            return '';
+        }
+    }
 }

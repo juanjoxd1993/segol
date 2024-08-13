@@ -11,7 +11,7 @@ class GuidesDetail extends Model
 	protected $dates = ['deleted_at'];
 
     public function guides() {
-        return $this->belongsTo(Guides::class);
+        return $this->belongsTo(Guide::class);
     }
 
     public function article() {

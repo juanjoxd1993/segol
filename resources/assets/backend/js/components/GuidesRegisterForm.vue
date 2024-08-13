@@ -13,7 +13,6 @@
         <form class="kt-form" @submit.prevent="formController(url, $event)">
             <div class="kt-portlet__body">
                 <div class="row">
-
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo Movimiento:</label>
@@ -26,7 +25,6 @@
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
@@ -34,19 +32,43 @@
                                 @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
                                 <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{
-            company.name }}</option>
+                                    company.name }}</option>
                             </select>
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Tipo de guía:</label>
+                            <select class="form-control" name="ose" id="ose" v-model="model.ose"
+                                @focus="$parent.clearErrorMsg($event)">
+                                <option selected disabled value="">Seleccionar</option>
+                                <option value="3">Física</option>
+                                <option value="0">Electrónica</option>
+                            </select>
+                            <div id="ose-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3" v-if="model.ose == 0">
+                        <div class="form-group">
+                            <label class="form-control-label">Serie electrónico:</label>
+                            <select class="form-control" name="serie" id="serie" v-model="model.serie"
+                                @focus="$parent.clearErrorMsg($event)">
+                                <option value="">Seleccionar</option>
+                                <option v-for="serie in series" :value="serie.serie" v-bind:key="serie.id">{{
+                                    serie.serie }}
+                                </option>
+                            </select>
+                            <div id="serie-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Fecha Final:</label>
                             <datetime v-model="model.since_date" placeholder="Selecciona una Fecha"
                                 :format="'dd-LL-yyyy'" input-id="since_date" name="since_date" value-zone="America/Lima"
-                                zone="America/Lima" class="form-control" :max-datetime="this.max_datetime"
-                                @focus="$parent.clearErrorMsg($event)">
+                                zone="America/Lima" class="form-control" :min-datetime="this.current_date"
+                                :max-datetime="this.max_datetime" @focus="$parent.clearErrorMsg($event)">
                             </datetime>
                             <div id="since_date-error" class="error invalid-feedback"></div>
                         </div>
@@ -57,10 +79,10 @@
                             <select class="form-control" name="warehouse_account_type_id" id="warehouse_account_type_id"
                                 v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)"
                                 @change="warehouseAccountTypesChange()">
-                                <option value="">Seleccionar</option>
+                                <option value="" selected disabled>Seleccionar</option>
                                 <option v-for="warehouse_account_type in warehouseAccountTypes"
                                     :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{
-            warehouse_account_type.name }}</option>
+                                        warehouse_account_type.name }}</option>
                             </select>
                             <div id="warehouse_account_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -76,80 +98,64 @@
                             <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <!-- <div class="col-lg-3">
+
+                    <!--SOLO SI TIPO DE MOV. ES VENTA PLATA, SE NECESITA REGISTRAR AL CHOFER PARA JALAR SU LICENCIA -->
+                    <div class="col-lg-3" id="chofer">
+                        <div class="form-group">
+                            <label class="form-control-label">Chofer:</label>
+                            <select class="form-control kt-select2" name="employee_id" id="employee_id"
+                                v-model="model.employee_id" @focus="$parent.clearErrorMsg($event)">
+                                <option value="">Seleccionar</option>
+                            </select>
+                            <div id="employee_id-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Número de SCOP:</label>
-                            <input type="text" class="form-control" name="scop_number" id="scop_number" v-model="model.scop_number" @focus="$parent.clearErrorMsg($event)">
+                            <input type="text" class="form-control" name="scop_number" id="scop_number"
+                                v-model="model.scop_number" @focus="$parent.clearErrorMsg($event)">
                             <div id="scop_number-error" class="error invalid-feedback"></div>
                         </div>
-                    </div> -->
+                    </div>
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Placa:</label>
-                            <input type="text" class="form-control" name="license_plate" id="license_plate"
-                                v-model="model.license_plate" @focus="$parent.clearErrorMsg($event)">
-                            <div id="license_plate-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3" v-if="model.movement_type_id == '11'">
-                        <div class="form-group">
-                            <label class="form-control-label">Cliente:</label>
-                            <select class="form-control kt-select2" name="client_id" id="client_id"
-                                v-model="model.client_id" @focus="$parent.clearErrorMsg($event)">
+                            <!--   <input type="text" class="form-control" name="license_plate" id="license_plate" v-model="model.license_plate" @focus="$parent.clearErrorMsg($event)"> -->
+                            <select class="form-control" name="vehicle_id" id="vehicle_id" v-model="model.vehicle_id"
+                                @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
-                                <option v-for="client in clients" :value="client.id" v-bind:key="client.id">{{
-            client.business_name }}</option>
+                                <option v-for="vehicle in vehicles" :value="vehicle.plate" v-bind:key="vehicle.plate">{{
+                                    vehicle.plate }}</option>
                             </select>
-                            <div id="client_id-error" class="error invalid-feedback"></div>
+                            <div id="vehicle_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3" v-if="model.movement_type_id != '11'">
-                        <div class="form-group">
-                            <label class="form-control-label">Chofer Nombres:</label>
-                            <input type="text" class="form-control" name="driver_name" id="driver_name"
-                                v-model="model.driver_name" @focus="$parent.clearErrorMsg($event)">
-                            <div id="driver_name-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3" v-if="model.movement_type_id != '11'">
-                        <div class="form-group">
-                            <label class="form-control-label">Chofer Brevete:</label>
-                            <input type="text" class="form-control" name="driver_brevete" id="driver_brevete"
-                                v-model="model.driver_brevete" @focus="$parent.clearErrorMsg($event)">
-                            <div id="driver_name-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3" v-if="model.movement_type_id != '11'">
-                        <div class="form-group">
-                            <label class="form-control-label">Chofer Documento:</label>
-                            <input type="number" class="form-control" name="driver_document" id="driver_document"
-                                v-model.number="model.driver_document" @focus="$parent.clearErrorMsg($event)">
-                            <div id="driver_document-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-
-
-
-
-                    <!-- <div class="col-lg-3">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Ruta:</label>
-                            <select class="form-control" name="route_id" id="route_id" v-model="model.route_id" @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control" name="route_id" id="route_id" v-model="model.route_id"
+                                @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
-                                <option v-for="client_route in client_routes" :value="client_route.id" v-bind:key="client_route.id">{{ client_route.name }}</option>
-                            </select>                          
+                                <option v-for="client_route in client_routes" :value="client_route.id"
+                                    v-bind:key="client_route.id">{{ client_route.name }}</option>
+                            </select>
                             <div id="route_id-error" class="error invalid-feedback"></div>
                         </div>
-                    </div>-->
-                    <div class="form-group">
-                        <label class="form-control-label">Fecha de Traslado:</label>
-                        <datetime v-model="model.traslate_date" placeholder="Selecciona una Fecha"
-                            :format="'dd-LL-yyyy'" input-id="traslate_date" name="traslate_date"
-                            value-zone="America/Lima" zone="America/Lima" class="form-control"
-                            :min-datetime="this.min_datetime" :max-datetime="this.max_datetime"
-                            @focus="$parent.clearErrorMsg($event)">
-                        </datetime>
-                        <div id="traslate_date-error" class="error invalid-feedback"></div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Fecha de Traslado:</label>
+                            <datetime v-model="model.traslate_date" placeholder="Selecciona una Fecha"
+                                :format="'dd-LL-yyyy'" input-id="traslate_date" name="traslate_date"
+                                value-zone="America/Lima" zone="America/Lima" class="form-control"
+                                :min-datetime="this.current_date" :max-datetime="this.max_datetime"
+                                @focus="$parent.clearErrorMsg($event)">
+                            </datetime>
+                            <div id="traslate_date-error" class="error invalid-feedback"></div>
+                        </div>
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
@@ -157,20 +163,31 @@
                             <select class="form-control" name="referral_guide_series" id="referral_guide_series"
                                 v-model="model.referral_guide_series" v-on:change="getNextCorrelative()"
                                 @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
+                                <option value="" selected disabled>Seleccionar</option>
                                 <option v-for="guide_serie in guide_series" :value="guide_serie.num_serie"
                                     v-bind:key="guide_serie.num_serie">{{ guide_serie.num_serie }}</option>
                             </select>
-                            <div id="guide_serie.id-error" class="error invalid-feedback"></div>
+                            <div id="referral_guide_series-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Número de Guía de Remisión:</label>
-                            <input type="text" class="form-control" name="referral_guide_number"
+                            <input type="text" class="form-control" name="referral_guide_number" readonly
                                 id="referral_guide_number" v-model="model.referral_guide_number"
-                                @focus="$parent.clearErrorMsg($event)" v-on:change="manageNumberGuide()">
+                                @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_guide_number-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label class="form-control-label">Ubigeo:</label>
+                            <select class="form-control kt-select2" name="ubigeo_id" id="ubigeo_id"
+                                v-model="model.ubigeo_id" @focus="$parent.clearErrorMsg($event)">
+                                <option value="">Seleccionar</option>
+                            </select>
+                            <div id="ubigeo_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
                 </div>
@@ -200,13 +217,17 @@ Vue.use(Datetime);
 
 export default {
     props: {
-        drivers: {
-            type: Array,
+        url_get_series: {
+            type: String,
+            default: '',
+        },
+        url_get_ubigeos: {
+            type: String,
             default: ''
         },
-        clients: {
-            type: Array,
-            default: () => []
+        url_get_employees: {
+            type: String,
+            default: ''
         },
         movement_classes: {
             type: Array,
@@ -236,7 +257,7 @@ export default {
             type: String,
             default: ''
         },
-        min_datetime: {
+        online: {
             type: String,
             default: ''
         },
@@ -264,6 +285,14 @@ export default {
             type: String,
             default: ''
         },
+        client_routes: {
+            type: Array,
+            default: ''
+        },
+        vehicles: {
+            type: Array,
+            default: ''
+        },
         guide_series: {
             type: Array,
             default: ''
@@ -276,26 +305,27 @@ export default {
     data() {
         return {
             model: {
-                client_id: '',
-                driver_name: '',
-                driver_brevete: '',
-                driver_document: '',
                 movement_class_id: '',
                 movement_type_id: '',
                 movement_stock_type_id: '',
                 warehouse_type_id: '',
                 company_id: '',
-                traslate_date: this.min_datetime,
-                since_date: this.current_date,
+                traslate_date: this.online,
+                since_date: this.online,
                 warehouse_account_type_id: '',
-                account_document_number: '',
                 warehouse_account_id: '',
                 referral_guide_series: '',
                 referral_guide_number: '',
                 scop_number: '',
-                license_plate: '',
-                // route_id:'',
+                vehicle_id: '',
+                route_id: '',
+                ose: '',
+                serie: '',
+                ubigeo_id: '',
+                employee_id: '',
+
             },
+            series: [],
         }
     },
     created() {
@@ -308,13 +338,15 @@ export default {
             this.model.traslate_date = this.traslate_date;
             this.model.since_date = this.current_date;
             this.model.warehouse_account_type_id = '';
-            this.model.account_document_number = '';
             this.model.warehouse_account_id = '';
             this.model.referral_guide_series = '';
             this.model.referral_guide_number = '';
             this.model.scop_number = '';
-            this.model.license_plate = '';
-            //   this.model.route_id = '';
+            this.model.vehicle_id = '';
+            this.model.route_id = '';
+            this.model.ose = '';
+            this.model.serie = '';
+            this.model.ubigeo_id = '';
 
             $('.kt-form').find('input').prop('disabled', false);
             $('.kt-form').find('select').prop('disabled', false);
@@ -323,11 +355,37 @@ export default {
     },
     mounted() {
         this.newSelect2();
+        this.newSelect3();
+        this.newSelect4();
+        $('#chofer').hide();
     },
     watch: {
-        'model.movement_type_id': function (newVal) {
-            if (newVal == 12) {
+        'model.company_id': function (val) {
+            if (val != '') {
+                EventBus.$emit('loading', true);
 
+                axios.post(this.url_get_series, {
+                    company_id: this.model.company_id
+                }).then(response => {
+                    // console.log(response);
+                    this.model.serie = '';
+                    this.series = response.data;
+
+                    EventBus.$emit('loading', false);
+                }).catch(error => {
+                    console.log(error);
+                    console.log(error.response)
+                });
+            } else {
+                this.model.serie = '';
+                this.series = '';
+            }
+        },
+        'model.movement_type_id': function (val) {
+            if (val == 12) {
+                $('#chofer').show();
+            } else {
+                $('#chofer').hide();
             }
         }
     },
@@ -342,7 +400,10 @@ export default {
                 return this.warehouse_account_types.filter(wat => wat.id === 2);
             } else if (this.model.movement_type_id == 12 || this.model.movement_type_id == 13 || this.model.movement_type_id == 14 || this.model.movement_type_id == 16) {
                 return this.warehouse_account_types.filter(wat => wat.id === 1);
-            } else {
+            } else if (this.model.movement_type_id == 11) {
+                return this.warehouse_account_types.filter(wat => wat.id === 3);
+            }
+            else {
                 return this.warehouse_account_types;
             }
         },
@@ -352,7 +413,61 @@ export default {
             this.model.warehouse_account_id = '';
             $('#warehouse_account_id').val(null).trigger('change');
         },
+        newSelect3: function () {
+            let vm = this;
+            let token = document.head.querySelector('meta[name="csrf-token"]').content;
 
+            $("#ubigeo_id").select2({
+                placeholder: "Buscar",
+                allowClear: true,
+                language: {
+                    noResults: function () {
+                        return 'No hay resultados';
+                    },
+                    searching: function () {
+                        return 'Buscando...';
+                    },
+                    inputTooShort: function () {
+                        return 'Ingresa 1 o más caracteres';
+                    },
+                    errorLoading: function () {
+                        return 'No se pudo cargar la información'
+                    }
+                },
+                ajax: {
+                    url: this.url_get_ubigeos,
+                    dataType: 'json',
+                    delay: 250,
+                    type: 'POST',
+                    data: function (params) {
+                        var queryParameters = {
+                            q: params.term,
+                            ubigeo_id: vm.model.ubigeo_id,
+                            _token: token,
+                        }
+
+                        return queryParameters;
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data,
+                            pagination: {
+                                more: (params.page * 30) < data.total_count
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 1,
+            }).on('select2:select', function (e) {
+                var selected_element = $(e.currentTarget);
+                vm.model.ubigeo_id = parseInt(selected_element.val());
+            }).on('select2:unselect', function (e) {
+                vm.model.ubigeo_id = '';
+            });
+        },
         newSelect2: function () {
             let vm = this;
             let token = document.head.querySelector('meta[name="csrf-token"]').content;
@@ -399,21 +514,6 @@ export default {
                         };
                     },
 
-                    /*      url: this.url_get_correlative,
-                          dataType: 'json',
-                          delay: 250,
-                          type: 'POST',
-                          data: function (params) {
-                              var queryParameters = {
-                                  q: params.term,
-                                  company_id: vm.model.company_id,
-                                  guides_serie_id: vm.model.guides_serie_id,
-                                  _token: token,
-                              }
-  
-                              return queryParameters;
-                          },*/
-
                     cache: true
 
                 },
@@ -425,17 +525,66 @@ export default {
                 vm.model.warehouse_account_id = '';
                 vm.perception_percentage = '';
             });
+        },
+        newSelect4: function () {
+            let vm = this;
+            let token = document.head.querySelector('meta[name="csrf-token"]').content;
 
+            $("#employee_id").select2({
+                placeholder: "Buscar",
+                allowClear: true,
+                language: {
+                    noResults: function () {
+                        return 'No hay resultados';
+                    },
+                    searching: function () {
+                        return 'Buscando...';
+                    },
+                    inputTooShort: function () {
+                        return 'Ingresa 1 o más caracteres';
+                    },
+                    errorLoading: function () {
+                        return 'No se pudo cargar la información'
+                    }
+                },
+                ajax: {
+                    url: this.url_get_employees,
+                    dataType: 'json',
+                    delay: 250,
+                    type: 'POST',
+                    data: function (params) {
+                        var queryParameters = {
+                            q: params.term,
+                            employee_id: vm.model.employee_id,
+                            _token: token,
+                        }
 
+                        return queryParameters;
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data,
+                            pagination: {
+                                more: (params.page * 30) < data.total_count
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 1,
+            }).on('select2:select', function (e) {
+                var selected_element = $(e.currentTarget);
+                vm.model.employee_id = parseInt(selected_element.val());
+            }).on('select2:unselect', function (e) {
+                vm.model.employee_id = '';
+            });
         },
         formController: function (url, event) {
             var target = $(event.target);
             var url = url;
             var fd = new FormData(event.target);
-
-            const warehouse_account_type_id = this.model.warehouse_account_type_id;
-
-            this.$store.commit('registerWarehouseAccountTypeId', warehouse_account_type_id);
 
             EventBus.$emit('loading', true);
             axios.post(url, fd, {
@@ -475,34 +624,10 @@ export default {
                     company: $('#company_id').val()
                 }
             }).then((response) => {
-                const { data } = response;
-
-                $('#referral_guide_number').val(data);
+                //$('#referral_guide_number').val(response.data);
+                this.model.referral_guide_number=response.data;
             }).catch((error) => {
                 console.log(error.response);
-            });
-        },
-        manageNumberGuide() {
-            EventBus.$emit('loading', true);
-            $('#liquidar').prop('disabled', true);
-            $('#referral_guide_number-error').hide();
-            $('#referral_guide_number-error').text('');
-
-            axios.post('/facturacion/liquidaciones-glp/get-guide-number', {
-                params: {
-                    serie_number: this.model.referral_guide_series,
-                    guide_number: this.model.referral_guide_number,
-                }
-            }).then(response => {
-                EventBus.$emit('loading', false);
-                $('.kt-form').find('button').prop('disabled', false);
-                $('#referral_guide_number-error').text('');
-                $('#referral_guide_number-error').hide();
-            }).catch(error => {
-                EventBus.$emit('loading', false);
-                $('.kt-form').find('button').prop('disabled', true);
-                $('#referral_guide_number-error').text('El Nro. de Guía ya fue usado anteriormente');
-                $('#referral_guide_number-error').show();
             });
         },
     }

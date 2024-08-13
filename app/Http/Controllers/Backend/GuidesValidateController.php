@@ -59,12 +59,7 @@ class GuidesValidateController extends Controller
     public function getWarehouseMovements()
     {
         $user_id = Auth::user()->id;
-
-        $warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-            ->where('user_id', $user_id)
-            ->first();
-
-        $warehouse_type_id = $warehouse_type_user->warehouse_type_id;
+        $warehouse_type = WarehouseTypeInUser::where('user_id',$user_id)->first();
 
         $company_id = request('company_id');
 
@@ -78,7 +73,7 @@ class GuidesValidateController extends Controller
             'created_at'
         )
             ->where('company_id', $company_id)
-            ->where('warehouse_type_id', $warehouse_type_id)
+            ->where('warehouse_type_id', $warehouse_type->warehouse_type_id)
             ->where(function ($query) {
                 $query->where('action_type_id', 3)
                     ->orWhere('action_type_id', 4)

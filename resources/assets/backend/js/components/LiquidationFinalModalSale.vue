@@ -1,26 +1,15 @@
 <template>
   <div>
     <!--begin::Modal-->
-    <div
-      class="modal fade"
-      id="modal-sale"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="modalSaleLabel"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="modal-sale" tabindex="-1" role="dialog" aria-labelledby="modalSaleLabel"
+      aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="modalSaleLabel">
               {{ button_text }} venta
             </h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="kt-portlet__body">
@@ -28,230 +17,121 @@
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Cliente:</label>
-                    <select
-                      class="form-control"
-                      name="client_id"
-                      id="client_id"
-                      v-model="sale.client_id"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <select class="form-control" name="client_id" id="client_id" v-model="sale.client_id"
+                      @focus="$parent.clearErrorMsg($event)">
                       <option value="0">Seleccionar</option>
-                      <option
-                        v-for="client in clients"
-                        v-bind:key="client.id"
-                        :value="client.id"
-                      >
+                      <option v-for="client in clients" v-bind:key="client.id" :value="client.id">
                         {{ client.business_name }}
                       </option>
                     </select>
-                    <div
-                      id="client_id-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="client_id-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Tipo Referencia:</label>
-                    <select
-                      class="form-control"
-                      name="warehouse_document_type_id"
-                      id="warehouse_document_type_id"
-                      v-model="sale.warehouse_document_type_id"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <select class="form-control" name="warehouse_document_type_id" id="warehouse_document_type_id"
+                      v-model="sale.warehouse_document_type_id" @focus="$parent.clearErrorMsg($event)">
                       <option value="">Seleccionar</option>
-                      <option
-                        v-for="warehouse_document_type in warehouse_document_types"
-                        :value="warehouse_document_type.id"
-                        v-bind:key="warehouse_document_type.id"
-                      >
+                      <option v-for="warehouse_document_type in warehouse_document_types"
+                        :value="warehouse_document_type.id" v-bind:key="warehouse_document_type.id">
                         {{ warehouse_document_type.name }}
                       </option>
                     </select>
-                    <div
-                      id="warehouse_document_type_id-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="warehouse_document_type_id-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Serie de Usuario:</label>
-                    <select
-                      class="form-control"
-                      name="sale_serie_id"
-                      id="sale_serie_id"
-                      v-model="sale.sale_serie_id"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <select class="form-control" name="sale_serie_id" id="sale_serie_id" v-model="sale.sale_serie_id"
+                      @focus="$parent.clearErrorMsg($event)">
                       <option value="0">Seleccionar</option>
-                      <option
-                        v-for="sale_serie in sale_series"
-                        :value="sale_serie.id"
-                        v-bind:key="sale_serie.id"
-                      >
+                      <option v-for="sale_serie in sale_series" :value="sale_serie.id" v-bind:key="sale_serie.id">
                         {{ sale_serie.num_serie }}
                       </option>
                     </select>
-                    <div
-                      id="sale_serie_id-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="sale_serie_id-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <!-- <div class="col-lg-3" v-if="this.sale.warehouse_document_type_id >= 4 && this.sale.warehouse_document_type_id <= 9"> -->
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Correlativo:</label>
-                    <input
-                      type="text"
-                      readonly
-                      class="form-control"
-                      name="referral_serie_number"
-                      id="referral_serie_number"
-                      v-model="sale.referral_serie_number"
-                      @focus="$parent.clearErrorMsg($event)"
-                    />
-                    <div
-                      id="referral_serie_number-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <input type="text" readonly class="form-control" name="referral_serie_number"
+                      id="referral_serie_number" v-model="sale.referral_serie_number"
+                      @focus="$parent.clearErrorMsg($event)" />
+                    <div id="referral_serie_number-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
-                <div
-                  class="col-lg-3"
-                  v-if="
-                    this.sale.warehouse_document_type_id == 4 ||
-                    this.sale.warehouse_document_type_id == 6 ||
-                    this.sale.warehouse_document_type_id == 8
-                  "
-                >
+                <div class="col-lg-3" v-if="
+                  this.sale.warehouse_document_type_id == 4 ||
+                  this.sale.warehouse_document_type_id == 6 ||
+                  this.sale.warehouse_document_type_id == 8
+                ">
                   <div class="form-group">
-                    <label class="form-control-label"
-                      >Número de Referencia:</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="referral_voucher_number"
-                      id="referral_voucher_number"
-                      v-model="sale.referral_voucher_number"
-                      @focus="$parent.clearErrorMsg($event)"
-                    />
-                    <div
-                      id="referral_voucher_number-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <label class="form-control-label">Número de Referencia:</label>
+                    <input type="text" class="form-control" name="referral_voucher_number" id="referral_voucher_number"
+                      v-model="sale.referral_voucher_number" @focus="$parent.clearErrorMsg($event)" />
+                    <div id="referral_voucher_number-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
-                <div
-                  class="col-lg-3"
-                  v-if="
-                    this.sale.warehouse_document_type_id == 5 ||
-                    this.sale.warehouse_document_type_id == 7 ||
-                    this.sale.warehouse_document_type_id == 9 ||
-                    this.sale.warehouse_document_type_id == 17
-                  "
-                >
+                <div class="col-lg-3" v-if="
+                  this.sale.warehouse_document_type_id == 5 ||
+                  this.sale.warehouse_document_type_id == 7 ||
+                  this.sale.warehouse_document_type_id == 9 ||
+                  this.sale.warehouse_document_type_id == 17
+                ">
                   <div class="form-group">
                     <label class="form-control-label">Serie de Guía:</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="referral_guide_series"
-                      id="referral_guide_series"
-                      v-model="sale.referral_guide_series"
-                      @focus="$parent.clearErrorMsg($event)"
-                    />
-                    <div
-                      id="referral_guide_series-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <input type="text" class="form-control" name="referral_guide_series" id="referral_guide_series"
+                      v-model="sale.referral_guide_series" @focus="$parent.clearErrorMsg($event)" />
+                    <div id="referral_guide_series-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
-                <div
-                  class="col-lg-3"
-                  v-if="
-                    this.sale.warehouse_document_type_id == 5 ||
-                    this.sale.warehouse_document_type_id == 7 ||
-                    this.sale.warehouse_document_type_id == 9 ||
-                    this.sale.warehouse_document_type_id == 17
-                  "
-                >
+                <div class="col-lg-3" v-if="
+                  this.sale.warehouse_document_type_id == 5 ||
+                  this.sale.warehouse_document_type_id == 7 ||
+                  this.sale.warehouse_document_type_id == 9 ||
+                  this.sale.warehouse_document_type_id == 17
+                ">
                   <div class="form-group">
                     <label class="form-control-label">Número de Guía:</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="referral_guide_number"
-                      id="referral_guide_number"
-                      v-model="sale.referral_guide_number"
-                      @focus="$parent.clearErrorMsg($event)"
-                      @input="manageNumberGuide"
-                    />
-                    <div
-                      id="referral_guide_number-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <input type="text" class="form-control" name="referral_guide_number" id="referral_guide_number"
+                      v-model="sale.referral_guide_number" @focus="$parent.clearErrorMsg($event)"
+                      @input="manageNumberGuide" />
+                    <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
-                <div
-                  class="col-lg-3"
-                  v-if="
-                    this.sale.warehouse_document_type_id === 4 ||
-                    this.sale.warehouse_document_type_id === 5 ||
-                    this.sale.warehouse_document_type_id === 18
-                  "
-                >
+                <div class="col-lg-3" v-if="
+                  this.sale.warehouse_document_type_id === 4 ||
+                  this.sale.warehouse_document_type_id === 5 ||
+                  this.sale.warehouse_document_type_id === 18
+                ">
                   <div class="form-group">
                     <label class="form-control-label">Nº SCOP:</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      v-model="sale.scop_number"
-                      name="scop_number"
-                      id="scop_number"
-                      @focus="$parent.clearErrorMsg($event)"
-                      @input="manageScopNumber"
-                    />
-                    <div
-                      id="scop_number-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <input type="text" class="form-control" v-model="sale.scop_number" name="scop_number"
+                      id="scop_number" @focus="$parent.clearErrorMsg($event)" @input="manageScopNumber" />
+                    <div id="scop_number-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Moneda:</label>
-                    <select
-                      class="form-control"
-                      name="currency_id"
-                      id="currency_id"
-                      v-model="sale.currency_id"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <select class="form-control" name="currency_id" id="currency_id" v-model="sale.currency_id"
+                      @focus="$parent.clearErrorMsg($event)">
                       <option value="">Seleccionar</option>
-                      <option
-                        v-for="currency in currencies"
-                        :value="currency.id"
-                        v-bind:key="currency.id"
-                      >
+                      <option v-for="currency in currencies" :value="currency.id" v-bind:key="currency.id">
                         {{ currency.name }}
                       </option>
                     </select>
-                    <div
-                      id="currency_id-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="currency_id-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
               </div>
               <div class="row align-items-end">
                 <div class="col-12">
-                  <div
-                    class="kt-separator kt-separator--space kt-separator--dashed"
-                  ></div>
+                  <div class="kt-separator kt-separator--space kt-separator--dashed"></div>
                 </div>
                 <div class="col-12">
                   <div class="kt-section">
@@ -261,71 +141,35 @@
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Artículo:</label>
-                    <select
-                      class="form-control"
-                      name="article_id"
-                      id="article_id"
-                      v-model="model.article_id"
-                      @change="getArticlePrice()"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <select class="form-control" name="article_id" id="article_id" v-model="model.article_id"
+                      @change="getArticlePrice()" @focus="$parent.clearErrorMsg($event)">
                       <option value="">Seleccionar</option>
-                      <option
-                        v-for="article in filterArticles"
-                        :value="article.id"
-                        v-bind:key="article.id"
-                      >
+                      <option v-for="article in filterArticles" :value="article.id" v-bind:key="article.id">
                         {{ article.name }}
                       </option>
                     </select>
-                    <div
-                      id="article_id-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="article_id-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Precio:</label>
-                    <input
-                      type="text"
-                      readonly
-                      class="form-control"
-                      name="price_igv"
-                      id="price_igv"
-                      v-model="model.price_igv"
-                      @focus="$parent.clearErrorMsg($event)"
-                    />
-                    <div
-                      id="price_igv-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <input type="text" readonly class="form-control" name="price_igv" id="price_igv"
+                      v-model="model.price_igv" @focus="$parent.clearErrorMsg($event)" />
+                    <div id="price_igv-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Cantidad:</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      name="quantity"
-                      id="quantity"
-                      v-model="model.quantity"
-                      @focus="$parent.clearErrorMsg($event)"
-                    />
-                    <div
-                      id="quantity-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <input type="number" class="form-control" name="quantity" id="quantity" v-model="model.quantity"
+                      @focus="$parent.clearErrorMsg($event)" />
+                    <div id="quantity-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3">
                   <div class="form-group">
-                    <button
-                      type="submit"
-                      class="btn btn-success"
-                      @click.prevent="addArticle()"
-                    >
+                    <button type="submit" class="btn btn-success" @click.prevent="addArticle()">
                       Agregar
                     </button>
                     <button type="button" class="btn btn-secondary">
@@ -336,9 +180,7 @@
               </div>
               <div class="row">
                 <div class="col-12">
-                  <div
-                    class="kt-separator kt-separator--space kt-separator--dashed"
-                  ></div>
+                  <div class="kt-separator kt-separator--space kt-separator--dashed"></div>
                   <table class="table table-vertical-middle">
                     <thead>
                       <tr>
@@ -358,10 +200,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr
-                        v-for="(item, index) in setDetails"
-                        v-bind:key="index"
-                      >
+                      <tr v-for="(item, index) in setDetails" v-bind:key="index">
                         <td>{{ item.article_name }}</td>
                         <td style="text-align: right; width: 110px">
                           {{ item.price_igv }}
@@ -379,11 +218,8 @@
                           {{ item.total_perception }}
                         </td>
                         <td style="text-align: right; width: 80px">
-                          <a
-                            href="#"
-                            class="btn-sm btn btn-label-danger btn-bold"
-                            @click.prevent="removeArticle(index)"
-                          >
+                          <a href="#" class="btn-sm btn btn-label-danger btn-bold"
+                            @click.prevent="removeArticle(index)">
                             <i class="la la-trash-o pr-0"></i>
                           </a>
                         </td>
@@ -392,54 +228,42 @@
                     <tfoot>
                       <tr>
                         <td></td>
-                        <td
-                          style="
+                        <td style="
                             text-align: right;
                             width: 110px;
                             font-weight: 600;
-                          "
-                        ></td>
-                        <td
-                          style="
+                          "></td>
+                        <td style="
                             text-align: right;
                             width: 110px;
                             font-weight: 600;
-                          "
-                        ></td>
-                        <td
-                          style="
+                          "></td>
+                        <td style="
                             text-align: right;
                             width: 110px;
                             font-weight: 600;
-                          "
-                        >
+                          ">
                           {{ sale.total }}
                         </td>
-                        <td
-                          style="
+                        <td style="
                             text-align: right;
                             width: 110px;
                             font-weight: 600;
-                          "
-                        >
+                          ">
                           {{ sale.perception }}
                         </td>
-                        <td
-                          style="
+                        <td style="
                             text-align: right;
                             width: 110px;
                             font-weight: 600;
-                          "
-                        >
+                          ">
                           {{ sale.total_perception }}
                         </td>
-                        <td
-                          style="
+                        <td style="
                             text-align: right;
                             width: 80px;
                             font-weight: 600;
-                          "
-                        ></td>
+                          "></td>
                       </tr>
                     </tfoot>
                   </table>
@@ -448,18 +272,10 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button
-              type="submit"
-              class="btn btn-success"
-              @click.prevent="liquidationModal()"
-            >
+            <button type="submit" class="btn btn-success" @click.prevent="liquidationModal()">
               Liquidar
             </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              @click.prevent="closeModal()"
-            >
+            <button type="button" class="btn btn-secondary" @click.prevent="closeModal()">
               Cerrar
             </button>
           </div>
@@ -547,7 +363,7 @@ export default {
       clients: [],
     };
   },
-  created() {},
+  created() { },
   mounted() {
     // this.newSelect2();
     EventBus.$on("paymentMethodChanged", (paymentMethodId) => {
@@ -790,68 +606,13 @@ export default {
 
       this.filterArticles = articles;
       this.$store.state.articles_filter = articles;
-      // axios.post(this.url_get_articles_clients,{
-      //     client_id,
-      //     warehouse_movement_id
-      // }).then(response => {
-      //     document.getElementById('client_id').disabled = true;
-      //     let data = response.data;
-
-      //     const sales = this.$store.state.sales;
-
-      //     if (sales.length) {
-      //         sales.map(sale => {
-      //             const {
-      //                 client_id,
-      //                 details
-      //             } = sale;
-
-      //             details.map(detail => {
-      //                 const {
-      //                     article_id,
-      //                     quantity
-      //                 } = detail;
-
-      //                 data = data.filter(item => item.id != article_id && client_id != val);
-      //                 console.log('val: ', val);
-      //                 console.log('article id: ', article_id);
-      //                 console.log('client id: ', client_id);
-
-      //                 // data.map(dat => {
-      //                 //     const {id} = dat;
-      //                 //     const quantityDat = dat.quantity;
-
-      //                 //     let add = true;
-
-      //                 //     if (article_id == id && client_id == val) {
-      //                 //         add = false;
-      //                 //         const rest = quantityDat - parseQuantity;
-
-      //                 //         if (rest > 0) {
-      //                 //             add = true;
-      //                 //             dat.quantity = rest;
-      //                 //         };
-      //                 //     };
-
-      //                 //     if (add) {
-      //                 //         dataParse.push(dat);
-      //                 //     };
-      //                 // })
-      //             })
-      //         });
-      //     };
-
-      //     this.filterArticles = data;
-      //     this.$store.state.articles_filter = data;
-      // }).catch(error => {
-      //     console.log(error);
-      //     console.log(error.response);
-      // });
     },
     "model.article_id": function (val) {
       const article = this.filterArticles.find((item) => item.id === val);
 
       if (article) {
+        alert(this.model.quantity);
+        alert(article.quantity);
         this.model.quantity = article.quantity;
       }
     },
@@ -893,13 +654,12 @@ export default {
       if (this.model.article_id != "") {
         EventBus.$emit("loading", true);
 
-        axios
-          .post(this.url_get_article_price, {
-            article_id: this.model.article_id,
-            client_id: this.sale.client_id,
-            warehouse_movement_id:
-              this.$store.state.model.warehouse_movement_id,
-          })
+        axios.post(this.url_get_article_price, {
+          article_id: this.model.article_id,
+          client_id: this.sale.client_id,
+          warehouse_movement_id:
+            this.$store.state.model.warehouse_movement_id,
+        })
           .then((response) => {
             EventBus.$emit("loading", false);
             // console.log(response);

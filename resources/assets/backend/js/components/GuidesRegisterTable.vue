@@ -91,15 +91,6 @@ export default {
             this.addArticle(model, this.igv.value, this.perception_percentage);
         }.bind(this));
 
-        EventBus.$on('sendEditArticle', function (index, id, cesion, press) {
-            this.datatable.destroy();
-
-            this.article_list[index].cesion = cesion;
-            this.article_list[index].press = press;
-
-            this.fillTableX();
-        }.bind(this));
-
         EventBus.$on('reset_stock_register', function () {
             this.show_table = 0;
             this.datatable = undefined;
@@ -121,14 +112,7 @@ export default {
     },
     methods: {
         openModal: function () {
-            EventBus.$emit(
-                'guides_register_modal',
-                this.articles,
-                this.igv,
-                this.perception_percentage,
-                this.model.movement_class_id,
-                this.model.movement_type_id
-            );
+            EventBus.$emit('guides_register_modal', this.articles, this.igv, this.perception_percentage, this.model.movement_class_id, this.model.movement_type_id);
         },
         addArticle: function (model, igv_percentage, perception_percentage) {
             axios.post(this.url_get_article, {
@@ -138,39 +122,14 @@ export default {
                 item_number: this.article_list.length,
                 movement_type_id: this.model.movement_type_id,
             }).then(response => {
+                console.log(response.data);
+                this.article_list.push(response.data);
+                this.datatable.destroy();
+                this.fillTableX();
+                EventBus.$emit('loading', false);
 
-                if (!response.data.isSuccess) {
-                    return alert('No se encontró conversión')
-                };
-
-                const data = response.data;
-
-                const articles = data.articles;
-
-                articles.map(article => {
-                    this.article_list.push(article);
-                    this.datatable.destroy();
-                    this.fillTableX();
-                    EventBus.$emit('loading', false);
-                    EventBus.$emit('guides_register_modal_hide');
-                    EventBus.$emit('add_article_id', article.id);
-                });
-                // this.article_list.push(article);
-
-                // if (article2) {
-                //     this.article_list.push(data.article2);
-                // };
-
-                // this.datatable.destroy();
-                // this.fillTableX();
-                // EventBus.$emit('loading', false);
-
-                // EventBus.$emit('guides_register_modal_hide');
-                // EventBus.$emit('add_article_id', article.id);
-
-                // if (article2) {
-                //     EventBus.$emit('add_article_id', response.data.article2.id);
-                // };
+                EventBus.$emit('guides_register_modal_hide');
+                EventBus.$emit('add_article_id', response.data.id);
             }).catch(error => {
                 console.log(error);
                 console.log(error.response);
@@ -286,18 +245,6 @@ export default {
                         width: 80,
                         textAlign: 'right',
                     },
-                    {
-                        field: 'cesion',
-                        title: 'Cesion',
-                        width: 80,
-                        textAlign: 'right',
-                    },
-                    {
-                        field: 'press',
-                        title: 'prestamo',
-                        width: 80,
-                        textAlign: 'right',
-                    },
                     // {
                     //    field: 'currency',
                     //     title: 'Moneda',
@@ -370,18 +317,15 @@ export default {
                         width: 120,
                         overflow: 'visible',
                         autoHide: false,
-                        textAlign: 'right',
-                        class: 'td-sticky',
-                        template: function (val) {
-                            const group_id = val.group_id;
-                            const id = vm.$store.state.warehouse_account_type_id;
+                        textAlign: 'center',
+                        template: function () {
                             return '\
-                                    <div class="actions">\
-                                        <a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">\
-                                            <i class="la la-trash"></i>\
-                                        </a>\
-                                    </div>\
-                                    ';
+                                <div class="actions">\
+                                    <a href="#" class="delete btn btn-danger btn-sm btn-icon btn-icon-md" title="Eliminar">\
+                                        <i class="la la-trash"></i>\
+                                    </a>\
+                                </div>\
+                            ';
                         },
                     },
                 ]
@@ -424,20 +368,6 @@ export default {
                         EventBus.$emit('remove_article_id', id);
                     }
                 });
-            } else if ($(event.target).hasClass('edit')) {
-                event.preventDefault();
-                const item_number = $(event.target).parents('tr').find('td[data-field="item_number"] span').html();
-                const id = $(event.target).parents('tr').find('td[data-field="id"] span').html();
-                const index = this.article_list.findIndex((element) => element.item_number == item_number);
-
-                const article = this.article_list[index];
-                EventBus.$emit(
-                    'guides_register_modal_article',
-                    item_number,
-                    id,
-                    index,
-                    article
-                );
             }
         },
         formController: function (url, event) {
@@ -456,8 +386,6 @@ export default {
                 article.igv = accounting.unformat(article.igv).toFixed(4);
                 article.total = accounting.unformat(article.total).toFixed(4);
                 article.perception = accounting.unformat(article.perception).toFixed(4);
-                article.business_type = article.business_type;
-                article.convertion = article.convertion;
             });
 
             if (this.article_list != '' && this.article_list != []) {
@@ -465,8 +393,6 @@ export default {
                 axios.post(this.url, {
                     model: this.model,
                     article_list: this.article_list,
-                }, {
-                    responseType: 'blob',
                 }).then(response => {
                     EventBus.$emit('loading', false);
                     console.log(response);
@@ -492,27 +418,12 @@ export default {
                         title: '¡Bien!',
                         text: 'Movimiento creado correctamente',
                         type: "success",
-                        heightAuto: false,
-                    });
+                        timer: 2000,
+                        heightAuto: false
+                    }).then((confirmed) => {
+                        window.location = '/operaciones/registro-movimiento-existencias';
+                    })
 
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', 'guia-remision-' + Date.now() + '.pdf');
-                    document.body.appendChild(link);
-                    link.click();
-
-                    this.$nextTick(function () {
-                        EventBus.$emit('reset_stock_register');
-
-                        this.show_table = 0;
-                        this.datatable = undefined;
-                        this.article_list = [];
-                        this.model = '';
-                        this.perception_percentage = '';
-                        this.articles = [];
-                        this.item_number = 0;
-                    });
                 }).catch(error => {
                     EventBus.$emit('loading', false);
                     console.log(error);
