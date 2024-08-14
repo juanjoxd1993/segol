@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" 
+xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" 
+xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" 
+xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
+<cbc:UBLVersionID>2.1</cbc:UBLVersionID>
+<cbc:CustomizationID>2.0</cbc:CustomizationID>
+<cbc:ID>B001-2</cbc:ID>
+<cbc:IssueDate>2023-09-25</cbc:IssueDate>
+        <cbc:DueDate>2023-10-02</cbc:DueDate>
+<cbc:InvoiceTypeCode listID="0101" listAgencyName="PE:SUNAT" listSchemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo51" name="Tipo de Operacion">01</cbc:InvoiceTypeCode>
+<cbc:Note languageLocaleID="1000">NOVECIENTOS CUARENTA Y CINCO CON 00/100 SOLES</cbc:Note>
+
+
+<cbc:DocumentCurrencyCode listAgencyName="United Nations Economic Commission for Europe" listID="ISO 4217 Alpha" listName="Currency">PEN</cbc:DocumentCurrencyCode>
+<cbc:LineCountNumeric>1</cbc:LineCountNumeric>
+<cac:Signature>
+<cbc:ID>IDSignKG</cbc:ID>
+<cac:SignatoryParty>
+<cac:PartyIdentification>
+<cbc:ID>20293658146</cbc:ID>
+</cac:PartyIdentification>
+<cac:PartyName>
+<cbc:Name>compania1</cbc:Name>
+</cac:PartyName>
+</cac:SignatoryParty>
+<cac:DigitalSignatureAttachment>
+<cac:ExternalReference>
+<cbc:URI>#SignST</cbc:URI>
+</cac:ExternalReference>
+</cac:DigitalSignatureAttachment>
+</cac:Signature>
+<cac:AccountingSupplierParty>
+<cac:Party>
+<cac:PartyIdentification>
+<cbc:ID schemeAgencyName="PE:SUNAT" schemeID="6" schemeName="Registro Unico de Contribuyentes" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">20293658146</cbc:ID>
+</cac:PartyIdentification>
+<cac:PartyName>
+<cbc:Name>compania1</cbc:Name>
+</cac:PartyName>
+<cac:PartyLegalEntity>
+<cbc:RegistrationName>compania1</cbc:RegistrationName>
+<cac:RegistrationAddress>
+<cbc:ID schemeAgencyName="PE:INEI" schemeName="Ubigeos">150125</cbc:ID>
+<cbc:AddressTypeCode listAgencyName="PE:SUNAT" listName="Establecimientos anexos">0000</cbc:AddressTypeCode>
+<cbc:CitySubdivisionName>URBANIZACION</cbc:CitySubdivisionName>
+<cbc:CityName>Lima</cbc:CityName>
+<cbc:CountrySubentity>Lima</cbc:CountrySubentity>
+<cbc:District>Puente Piedra</cbc:District>
+<cac:AddressLine>
+<cbc:Line>DIRECCION COMPANIA 1</cbc:Line>
+</cac:AddressLine>
+<cac:Country>
+<cbc:IdentificationCode listAgencyName="United Nations Economic Commission for Europe" listID="ISO 3166-1" listName="Country">PE</cbc:IdentificationCode>
+</cac:Country>
+</cac:RegistrationAddress>
+</cac:PartyLegalEntity>
+</cac:Party>
+</cac:AccountingSupplierParty>
+<cac:AccountingCustomerParty>
+<cac:Party>
+<cac:PartyIdentification>
+<cbc:ID schemeAgencyName="PE:SUNAT" schemeID="6" schemeName="Documento de Identidad" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">20445501485</cbc:ID>
+</cac:PartyIdentification>
+<cac:PartyName>
+<cbc:Name>TRANSPORTE DULCEMAR SOCIEDAD ANONIMA CERRADA</cbc:Name>
+</cac:PartyName>
+<cac:PartyLegalEntity>
+<cbc:RegistrationName>TRANSPORTE DULCEMAR SOCIEDAD ANONIMA CERRADA</cbc:RegistrationName>
+<cac:RegistrationAddress>
+<cbc:ID schemeAgencyName="PE:INEI" schemeName="Ubigeos"></cbc:ID>
+<cbc:CitySubdivisionName>URBANIZACION</cbc:CitySubdivisionName>
+<cbc:CityName></cbc:CityName>
+<cbc:CountrySubentity></cbc:CountrySubentity>
+<cbc:District></cbc:District>
+<cac:AddressLine>
+<cbc:Line>AV.PRUEBA</cbc:Line>
+</cac:AddressLine>
+<cac:Country>
+<cbc:IdentificationCode listAgencyName="United Nations Economic Commission for Europe" listID="ISO 3166-1" listName="Country">PE</cbc:IdentificationCode>
+</cac:Country>
+</cac:RegistrationAddress>
+</cac:PartyLegalEntity>
+<cac:Contact>
+<cbc:ElectronicMail>enviofacturacion@puntodedistribucion.com</cbc:ElectronicMail>
+</cac:Contact>
+</cac:Party>
+</cac:AccountingCustomerParty>
+
+
+<cac:PaymentTerms>
+    <cbc:ID>FormaPago</cbc:ID>
+            <cbc:PaymentMeansID>Credito</cbc:PaymentMeansID>
+        <cbc:Amount currencyID="PEN">945.00</cbc:Amount>
+    </cac:PaymentTerms>
+
+
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>Cuota001</cbc:PaymentMeansID>
+        <cbc:Amount currencyID="PEN">945.00</cbc:Amount>
+        <cbc:PaymentDueDate>2023-10-02</cbc:PaymentDueDate>
+    </cac:PaymentTerms>
+
+<cac:TaxTotal>
+<cbc:TaxAmount currencyID="PEN">10.68</cbc:TaxAmount>
+<cac:TaxSubtotal>
+<cbc:TaxableAmount currencyID="PEN">59.32</cbc:TaxableAmount>
+<cbc:TaxAmount currencyID="PEN">10.68</cbc:TaxAmount>
+<cac:TaxCategory>
+<cac:TaxScheme>
+<cbc:ID schemeAgencyID="6" schemeID="UN/ECE 5153">1000</cbc:ID>
+<cbc:Name>IGV</cbc:Name>
+<cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
+</cac:TaxScheme>
+</cac:TaxCategory>
+</cac:TaxSubtotal>
+</cac:TaxTotal>
+<cac:LegalMonetaryTotal>
+<cbc:LineExtensionAmount currencyID="PEN">59.32</cbc:LineExtensionAmount>
+<cbc:TaxInclusiveAmount currencyID="PEN">945.00</cbc:TaxInclusiveAmount>
+<cbc:PayableAmount currencyID="PEN">945.00</cbc:PayableAmount>
+</cac:LegalMonetaryTotal>
+
+    <cac:InvoiceLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:Note>UNIDAD</cbc:Note>
+    <cbc:InvoicedQuantity unitCode="ZZ" unitCodeListAgencyName="United Nations Economic Commission for Europe" unitCodeListID="UN/ECE rec 20">2.0000</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="PEN">59.32</cbc:LineExtensionAmount>
+    <cac:PricingReference>
+    <cac:AlternativeConditionPrice>
+    <cbc:PriceAmount currencyID="PEN">35.000000</cbc:PriceAmount>
+    <cbc:PriceTypeCode listAgencyName="PE:SUNAT" listName="Tipo de Precio" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo16">01</cbc:PriceTypeCode>
+    </cac:AlternativeConditionPrice>
+    </cac:PricingReference>
+    <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="PEN">10.68</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+    <cbc:TaxableAmount currencyID="PEN">59.32</cbc:TaxableAmount>
+    <cbc:TaxAmount currencyID="PEN">10.68</cbc:TaxAmount>
+    <cac:TaxCategory>
+    <cbc:Percent>18.0</cbc:Percent>
+    <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">10</cbc:TaxExemptionReasonCode>
+    <cac:TaxScheme>
+    <cbc:ID schemeAgencyName="PE:SUNAT" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">1000</cbc:ID>
+    <cbc:Name>IGV</cbc:Name>
+    <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
+    </cac:TaxScheme>
+    </cac:TaxCategory>
+    </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:Item>
+    <cbc:Description>PETROAMERICA GLP 10 KG</cbc:Description>
+    <cac:SellersItemIdentification>
+    <cbc:ID>P001</cbc:ID>
+    </cac:SellersItemIdentification>
+    </cac:Item>
+    <cac:Price>
+    <cbc:PriceAmount currencyID="PEN">29.6610000000</cbc:PriceAmount>
+    </cac:Price>
+    </cac:InvoiceLine>
+</Invoice>

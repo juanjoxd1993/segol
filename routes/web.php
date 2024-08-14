@@ -31,6 +31,15 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/facturacion/obtener-detalle-documento', 'VoucherController@get_voucher_detail')->name('dashboard.voucher.get_voucher_detail');
 	Route::post('/facturacion/enviar-documento', 'VoucherController@send_voucher')->name('dashboard.voucher.send_voucher');
 
+	/** Facturación > EFACT API OSE */
+	Route::get('/Efact/api', 'EnvioEfactController@sendOse')->name('dashboard.api.send_efact');
+	Route::post('/Efact/validar-formulario-documentos', 'EnvioEfactController@validate_voucher_form')->name('dashboard.api.send_efact.validate_voucher_form');
+	Route::post('/Efact/obtener-documentos-tabla', 'EnvioEfactController@get_vouchers_for_table')->name('dashboard.api.send_efact.get_vouchers_for_table');
+	Route::post('/Efact/listar', 'EnvioEfactController@list')->name('dashboard.send_efact.list');
+	Route::post('/Efact/obtener-detalle-documento', 'EnvioEfactController@get_voucher_detail')->name('dashboard.api.send_efact.get_voucher_detail');
+	Route::post('/Efact/enviar-documento', 'EnvioEfactController@send_voucher')->name('dashboard.api.send_efact.send_voucher');
+
+
 	/** Facturación > Envío Guía de Remisión OSE PUNTO */
 	Route::get('/facturacion/reporte-gr-ose', 'GuideEfactController@index')->name('dashboard.guide.efact');
 	Route::post('/facturacion/validar-formulario-gr-ose', 'GuideEfactController@validate_voucher_form')->name('dashboard.guide.efact.validate_voucher_form');

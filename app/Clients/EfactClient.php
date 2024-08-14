@@ -2,6 +2,8 @@
 
 namespace App\Clients;
 
+//use GuzzleHttp\Exception\RequestException;
+
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Log;
 
@@ -14,7 +16,6 @@ class EfactClient extends BaseClient
     public const URL_CREATE_TOKEN = 'oauth/token';
     public const URL_SEND_XML = 'v1/document';
     public const URL_GET_XML_FROM_TICKET = 'v1/pdf/%s';
-    public const API_EFACT_BASE_URL = 'https://ose.efact.pe/api-efact-ose/';
     public function __construct()
     {
         parent::__construct(env('API_EFACT_BASE_URL'));
@@ -78,8 +79,6 @@ class EfactClient extends BaseClient
 
     private function storeTokenInSession(array $response)
     {
-
-
         $data = [
             self::EFACT_CLIENT_AUTH_TOKEN_TOKEN => $response['access_token'],
             self::EFACT_CLIENT_AUTH_TOKEN_EXPIRES_IN => $response['expires_in'],
@@ -108,22 +107,6 @@ class EfactClient extends BaseClient
 
     private function getTokenValueFromSession(): string
     {
-
         return session(self::EFACT_CLIENT_AUTH_TOKEN)[self::EFACT_CLIENT_AUTH_TOKEN_TOKEN];
-    }
-
-    public function getTokenRemainingTime(): int
-    {
-        if (!session()->exists(self::EFACT_CLIENT_AUTH_TOKEN)) {
-            return 0;
-        }
-
-        $currentTs = now()->getTimestamp();
-        $tokenData = session(self::EFACT_CLIENT_AUTH_TOKEN);
-        $expirationTs = $tokenData[self::EFACT_CLIENT_AUTH_TOKEN_CREATED_AT_TS] + $tokenData[self::EFACT_CLIENT_AUTH_TOKEN_EXPIRES_IN];
-
-        $remainingTime = $expirationTs - $currentTs;
-
-        return $remainingTime > 0 ? $remainingTime : 0;
     }
 }

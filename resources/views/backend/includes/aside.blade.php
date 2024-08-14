@@ -70,6 +70,14 @@
 									<span class="kt-menu__link-text">Envío OSE</span>
 								</a>
 							</li>
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.api.send_efact' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.api.send_efact') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">EFACT - Boletas - Facturas - CP</span>
+								</a>
+							</li>
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.guide.efact' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.guide.efact') }}" class="kt-menu__link ">

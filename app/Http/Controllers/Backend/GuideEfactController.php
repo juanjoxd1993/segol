@@ -10,14 +10,13 @@ use Auth;
 use App\Company;
 use App\Guide;
 use App\GuidesDetail;
-use App\Http\Clients\CompanyClient;
 
 class GuideEfactController extends Controller
 {
     private $env = 'production';
     private $billingClientPunto;
 
-    public function __construct(CompanyClient $billingClientPunto)
+    public function __construct(EfactClient $billingClientPunto)
     {
         $this->billingClientPunto = $billingClientPunto;
     }
@@ -136,9 +135,6 @@ class GuideEfactController extends Controller
                     'guides.referral_serie_number as referral_serie_number',
                     'guides.referral_voucher_number as referral_voucher_number',
                     'client_routes.id as client_id',
-                    'client_routes.province as client_province',
-                    'client_routes.department as client_department',
-                    'client_routes.district as client_district',
                     'warehouse_account_types.id as persona_id',
                     'guides.id',
                     'guides.company_id as company_id',
@@ -190,9 +186,6 @@ class GuideEfactController extends Controller
                         'guides.referral_serie_number as referral_serie_number',
                         'guides.referral_voucher_number as referral_voucher_number',
                         'client_routes.id as client_id',
-                        'client_routes.province as client_province',
-                        'client_routes.department as client_department',
-                        'client_routes.district as client_district',
                         'warehouse_account_types.id as persona_id',
                         'guides.id',
                         'guides.company_id as company_id',
@@ -246,25 +239,21 @@ class GuideEfactController extends Controller
             $total_text = $guides->tip_mov . ' | ' . $guides->referral_serie_number . '-' . $guides->referral_voucher_number . ' | SCOP: ' . $guides->scop_number;
 
             if ($task == 'xml') {
+                /*
+                $ruta = 'uploads/' . $guides->short_name . '/' . $guides->issue_date . '/xml/' .
+                    $guides->company_document_number . '-09-' . $guides->serie_number . '-' . $guides->voucher_number . '.xml';
+                    */
 
                 $ruta = 'uploads/' . $guides->short_name . '/' . $guides->issue_date . '/xml/' .
                     $guides->company_document_number . '-09-' . $guides->serie_number . '-' . $guides->voucher_number . '.xml';
+
                 $xml_render = $this->xml_render($guides, $guides_detail, $ruta, $total_text);
                 $response[] = $xml_render;
 
-                if ($guides->company_id == 1) {
-                    $res = $this->billingClientPunto->sendDocumentXML(asset($ruta));
-                    //$res = $this->billingClientPunto->sendDocumentXML('https://puntodedistribucion.com/'.$ruta);
-                } else {
-                    $res = $this->billingClientCordia->sendDocumentXML(asset($ruta));
-                }
+                $res = $this->billingClientPunto->sendDocumentXML(base_path('html/'.$ruta));
 
                 if ($res !== null) {
-                    if ($guides->company_id == 1) {
-                        $responseXml = $this->billingClientPunto->getXmlFromTicket($res['description']);
-                    } else {
-                        $responseXml = $this->billingClientCordia->getXmlFromTicket($res['description']);
-                    }
+                    $responseXml = $this->billingClientPunto->getXmlFromTicket($res['description']);
                     $guides->state = 1;
                     $guides->update();
                 }

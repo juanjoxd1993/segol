@@ -13,6 +13,7 @@ use PDF;
 use App\ClientAddress;
 use App\Client;
 use App\Clients\EfactClient;
+use App\Clients\EfactCordClient;
 use App\Company;
 use App\CompanyAddress;
 use App\Currency;
@@ -43,28 +44,18 @@ use stdClass;
 
 class EnvioEfactController extends Controller
 {
-    private $env = 'production';
     private $billingClientPunto;
- 
 
     public function __construct(EfactClient $billingClientPunto)
     {
         $this->billingClientPunto = $billingClientPunto;
-
     }
 
     public function sendOse()
     {
 
-        if (Auth::user()->id == 45 || Auth::user()->id == 46) {
-            $companies = Company::select('id', 'name')->whereIn('id', [2])->get();
-            $voucher_types = VoucherType::select('id', 'name')->whereIn('id', [1, 2])->get();
-        } else {
-            $companies = Company::select('id', 'name')->whereIn('id', [1, 2])->get();
-            $voucher_types = VoucherType::select('id', 'name')->whereIn('id', [1, 2, 14])->get();
-        }
-
-
+        $companies = Company::select('id', 'name')->get();
+        $voucher_types = VoucherType::select('id', 'name')->whereIn('id', [1, 2])->get();
         $user_name = Auth::user()->user;
         return view('backend.efact_voucher_send_ose')->with(compact('companies', 'voucher_types', 'user_name'));
     }
@@ -542,26 +533,20 @@ class EnvioEfactController extends Controller
                 $xml_render = $this->xml_render($item);
                 $response[] = $xml_render;
 
-                if ($item->company_id == 1) {
-                    $res = $this->billingClientPunto->sendDocumentXML(asset($item->nombre_ruta_xml));
-                } else {
-                    $res = $this->billingClientCordia->sendDocumentXML(asset($item->nombre_ruta_xml));
-                }
+                $res = $this->billingClientPunto->sendDocumentXML(base_path('html/' . $item->nombre_ruta_xml));
 
                 if ($res !== null) {
 
-                    if ($item->company_id == 1) {
-                        $responseXml = $this->billingClientPunto->getXmlFromTicket($res['description']);
-                    } else {
-                        $responseXml = $this->billingClientCordia->getXmlFromTicket($res['description']);
-                    }
+                    $responseXml = $this->billingClientPunto->getXmlFromTicket($res['description']);
 
+                    /*
                     if ($item->client_email != null) {
                         Mail::to($item->client_email)->queue(new VoucherMailOficial($item));
                     }
                     if ($item->manager_mail != null) {
                         Mail::to($item->manager_mail)->queue(new VoucherMailOficial($item));
                     }
+                        */
                     //Mail::to('juan.olivas@puntodedistribucion.com')->queue(new VoucherMailOficial($item));
                     //Mail::to('desarrollopdd@puntodedistribucion.com')->queue(new VoucherMailOficial($item));
                 }
