@@ -23,10 +23,10 @@ class GuideEfactController extends Controller
 
     public function index()
     {
-
         $companies = Company::select('id', 'name')->whereIn('id', [1, 2])->get();
         $user_name = Auth::user()->user;
         return view('backend.guide_efact')->with(compact('companies', 'user_name'));
+        
     }
 
     public function validate_voucher_form()
@@ -250,7 +250,7 @@ class GuideEfactController extends Controller
                 $xml_render = $this->xml_render($guides, $guides_detail, $ruta, $total_text);
                 $response[] = $xml_render;
 
-                $res = $this->billingClientPunto->sendDocumentXML(base_path('html/'.$ruta));
+                $res = $this->billingClientPunto->sendDocumentXML(public_path($ruta));
 
                 if ($res !== null) {
                     $responseXml = $this->billingClientPunto->getXmlFromTicket($res['description']);

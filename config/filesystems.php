@@ -51,8 +51,8 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => '../html',
-            'url' => env('APP_URL') . '/html',
+            'root' => '../public',
+            'url' => env('APP_URL') . '/public',
             'visibility' => 'public',
         ],
 
