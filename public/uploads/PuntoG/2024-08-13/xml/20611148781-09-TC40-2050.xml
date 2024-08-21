@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DespatchAdvice xmlns="urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2" 
+xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" 
+xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" 
+xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
+<cbc:UBLVersionID>2.1</cbc:UBLVersionID>
+<cbc:CustomizationID>2.0</cbc:CustomizationID>
+<cbc:ID>TC40-2050</cbc:ID>
+<cbc:IssueDate>2024-08-13</cbc:IssueDate>
+<!--TIPO DE DOCUMENTO 09 = GUIA DE REMISION REMITENTE -->
+<cbc:DespatchAdviceTypeCode>09</cbc:DespatchAdviceTypeCode>
+<cbc:Note>Pre-Venta | 15-12 | SCOP: 20</cbc:Note>
+<cbc:LineCountNumeric>1</cbc:LineCountNumeric>
+<!-- DOCUMENTOS RELACIONADOS 
+<cac:AdditionalDocumentReference>
+<cbc:ID>F001-6</cbc:ID>
+<cbc:DocumentTypeCode>01</cbc:DocumentTypeCode>
+<cbc:DocumentType>Factura</cbc:DocumentType>
+<cac:IssuerParty>
+<cac:PartyIdentification>
+<cbc:ID schemeID="6">20611148781</cbc:ID>
+</cac:PartyIdentification>
+</cac:IssuerParty>
+</cac:AdditionalDocumentReference>
+-->
+<cac:Signature>
+<cbc:ID>IDSignature</cbc:ID>
+<cac:SignatoryParty>
+<cac:PartyIdentification>
+<cbc:ID>20611148781</cbc:ID>
+</cac:PartyIdentification>
+<cac:PartyName>
+<cbc:Name>PG SELVA</cbc:Name>
+</cac:PartyName>
+</cac:SignatoryParty>
+<cac:DigitalSignatureAttachment>
+<cac:ExternalReference>
+<cbc:URI>IDSignature</cbc:URI>
+</cac:ExternalReference>
+</cac:DigitalSignatureAttachment>
+</cac:Signature>
+<cac:DespatchSupplierParty>
+<cac:Party>
+<cac:PartyIdentification>
+<cbc:ID schemeID="6">20611148781</cbc:ID>
+</cac:PartyIdentification>
+<!-- Datos del remitente -->
+<cac:PostalAddress>
+<cbc:ID>150125</cbc:ID>
+<cbc:StreetName>DIRECCION COMPANIA 1</cbc:StreetName>
+<cbc:CitySubdivisionName>URBANIZACION</cbc:CitySubdivisionName>
+<cbc:CityName>Lima</cbc:CityName>
+<cbc:CountrySubentity>Lima</cbc:CountrySubentity>
+<cbc:District>Puente Piedra</cbc:District>
+<cac:Country>
+<cbc:IdentificationCode>PE</cbc:IdentificationCode>
+</cac:Country>
+</cac:PostalAddress>
+<cac:PartyLegalEntity>
+<cbc:RegistrationName>PG SELVA</cbc:RegistrationName>
+</cac:PartyLegalEntity>
+</cac:Party>
+</cac:DespatchSupplierParty>
+<!-- Datos del destinario -->
+<cac:DeliveryCustomerParty>
+<cac:Party>
+<cac:PartyIdentification>
+<cbc:ID schemeID="6">20611148781</cbc:ID>
+</cac:PartyIdentification>
+<cac:PostalAddress>
+<cbc:ID>15122</cbc:ID>
+<cbc:StreetName>Lima</cbc:StreetName>
+<cbc:CitySubdivisionName>Lima</cbc:CitySubdivisionName>
+<cbc:CityName>Lima</cbc:CityName>
+<cbc:CountrySubentity>Lima</cbc:CountrySubentity>
+<cbc:District>Lima</cbc:District>
+<cac:Country>
+<cbc:IdentificationCode>PE</cbc:IdentificationCode>
+</cac:Country>
+</cac:PostalAddress>
+<cac:PartyLegalEntity>
+<cbc:RegistrationName>Emisor Itinerante</cbc:RegistrationName>
+</cac:PartyLegalEntity>
+<cac:Contact>
+<cbc:ElectronicMail>enviofacturacion@puntodedistribucion.com</cbc:ElectronicMail>
+</cac:Contact>
+</cac:Party>
+</cac:DeliveryCustomerParty>
+<!-- SUNAT MOTIVO DE TRASLADO -->
+<cac:Shipment>
+<cbc:ID>SUNAT_Envio</cbc:ID>
+<cbc:HandlingCode>18</cbc:HandlingCode>
+<cbc:HandlingInstructions>TRASLADO EMISOR ITINERANTE CP</cbc:HandlingInstructions>
+<cbc:GrossWeightMeasure unitCode="KGM">200.00</cbc:GrossWeightMeasure>
+<cac:ShipmentStage>
+<cbc:TransportModeCode>02</cbc:TransportModeCode>
+<cac:TransitPeriod>
+<cbc:StartDate>2024-08-13</cbc:StartDate>
+</cac:TransitPeriod>
+<cac:DriverPerson>
+    <!-- Datos del CONDUCTOR -->
+<cbc:ID schemeID="1">003961251</cbc:ID>
+<cbc:FirstName>AYUDANTE DE ENVASADO</cbc:FirstName>
+<cbc:FamilyName>MATUTE ORTEGA CARLOS MANUEL</cbc:FamilyName>
+<cbc:JobTitle>Principal</cbc:JobTitle>
+<cac:IdentityDocumentReference>
+<cbc:ID>607591CMOUE0</cbc:ID>
+</cac:IdentityDocumentReference>
+</cac:DriverPerson>
+</cac:ShipmentStage>
+
+<cac:Delivery>
+    <!-- Datos del PUNTO DE LLEGADA -->
+<cac:DeliveryAddress>
+<cbc:ID>230102</cbc:ID>
+<cbc:CitySubdivisionName>URBANIZACION</cbc:CitySubdivisionName>
+<cbc:CityName>TACNA</cbc:CityName>
+<cbc:CountrySubentity>TACNA</cbc:CountrySubentity>
+<cbc:District>ALTO DE LA ALIANZA</cbc:District>
+<cac:AddressLine>
+<cbc:Line>AV. CAJAMARCA NRO. 586 APV. EL DORADO URB.ZAPALLAL LIMA - LIMA - PUENTE PIEDRA</cbc:Line>
+</cac:AddressLine>
+<cac:Country>
+<cbc:IdentificationCode>PE</cbc:IdentificationCode>
+</cac:Country>
+</cac:DeliveryAddress>
+<!-- Datos del PUNTO DE PARTIDA -->
+<cac:Despatch>
+<cac:DespatchAddress>
+<cbc:ID>150125</cbc:ID>
+<cbc:CitySubdivisionName>URBANIZACION</cbc:CitySubdivisionName>
+<cbc:CityName>Lima</cbc:CityName>
+<cbc:CountrySubentity>Lima</cbc:CountrySubentity>
+<cbc:District>Puente Piedra</cbc:District>
+<cac:AddressLine>
+<cbc:Line>DIRECCION COMPANIA 1</cbc:Line>
+</cac:AddressLine>
+<cac:Country>
+<cbc:IdentificationCode>PE</cbc:IdentificationCode>
+</cac:Country>
+</cac:DespatchAddress>
+</cac:Despatch>
+</cac:Delivery>
+<cac:TransportHandlingUnit>
+<cac:TransportEquipment>
+<cbc:ID>F9J897</cbc:ID>
+</cac:TransportEquipment>
+</cac:TransportHandlingUnit>
+</cac:Shipment>
+<cac:DespatchLine>
+<cbc:ID>1</cbc:ID>
+<cbc:Note>UNIDAD</cbc:Note>
+<cbc:DeliveredQuantity unitCode="NIU">20.00</cbc:DeliveredQuantity>
+<cac:OrderLineReference>
+<cbc:LineID>1</cbc:LineID>
+</cac:OrderLineReference>
+<cac:Item>
+<cbc:Description>PETROAMERICA GLP 10 KG</cbc:Description>
+<cac:SellersItemIdentification>
+<cbc:ID>4773</cbc:ID>
+</cac:SellersItemIdentification>
+</cac:Item>
+</cac:DespatchLine>
+</DespatchAdvice>
