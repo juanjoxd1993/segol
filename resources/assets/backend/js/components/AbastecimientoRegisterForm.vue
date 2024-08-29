@@ -41,6 +41,7 @@
                             <div id="warehouse_receiver-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    <!--
                     <div class="col-lg-3" >
                         <div class="form-group">
                             <label class="form-control-label">Guia:</label>
@@ -51,6 +52,7 @@
                             <div id="invoice-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    -->
 					<div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Fecha Emisión:</label>
@@ -88,6 +90,7 @@
                             <div id="warehouse_account_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    <!--
                     <div v-bind:class="'col-lg-3' + (model.movement_type_id != 32 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Numero de Pedido:</label>
@@ -95,6 +98,9 @@
                             <div id="referral_guide_series-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    -->
+                    
+                    <!--
                     <div v-bind:class="'col-lg-3' + (model.movement_type_id != 32 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Número de Guía de Remisión:</label>
@@ -102,6 +108,7 @@
                             <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    -->
                     
                     <div class="col-lg-3">
                         <div class="form-group">
@@ -117,6 +124,7 @@
                             <div id="referral_voucher_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    <!--
                     <div v-bind:class="'col-lg-3' + (model.movement_type_id != 32 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Cisterna:</label>
@@ -124,9 +132,10 @@
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                     -->
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Tracto:</label>
+                            <label class="form-control-label">Placa:</label>
                             <input type="text" class="form-control" name="license_plate_2" id="license_plate_2" v-model="model.license_plate_2" @focus="$parent.clearErrorMsg($event)">
                             <div id="license_plate_2-error" class="error invalid-feedback"></div>
                         </div>
