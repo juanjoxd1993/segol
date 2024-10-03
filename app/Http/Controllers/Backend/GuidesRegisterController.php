@@ -56,7 +56,8 @@ class GuidesRegisterController extends Controller
 		$current_date = date('d-m-Y');
 		$date = CarbonImmutable::now()->startOfDay();
 		$current_date = $date->startOfDay()->toAtomString();
-		$min_datetime = $date->subDays(1)->startOfDay()->toAtomString();
+		$min_datetime = $date->startOfDay()->toAtomString();
+		//$min_datetime = $date->subDays(1)->startOfDay()->toAtomString();
 
 		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();

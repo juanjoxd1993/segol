@@ -19,9 +19,8 @@
                             <label class="form-control-label">Tipo Movimiento:</label>
                             <select class="form-control" name="movement_type_id" id="movement_type_id"
                                 v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
-                                <option disabled value="">Seleccionar</option>
-                                <option value="11">Pre-Venta</option>
                                 <option value="12">Venta Planta</option>
+                                <option value="11">Pre-Venta</option>
                             </select>
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -42,15 +41,23 @@
 
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label class="form-control-label">Fecha Final:</label>
-                            <datetime v-model="model.since_date" placeholder="Selecciona una Fecha"
-                                :format="'dd-LL-yyyy'" input-id="since_date" name="since_date" value-zone="America/Lima"
-                                zone="America/Lima" class="form-control" :max-datetime="this.max_datetime"
+                            <label class="form-control-label">Fecha de Emisión:</label>
+                            <datetime
+                                v-model="model.since_date"
+                                placeholder="Selecciona una Fecha"
+                                :format="'dd-LL-yyyy'"
+                                input-id="since_date"
+                                name="since_date"
+                                value-zone="America/Lima"
+								zone="America/Lima"
+                                class="form-control"
+                                :max-datetime="this.max_datetime"
                                 @focus="$parent.clearErrorMsg($event)">
                             </datetime>
                             <div id="since_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo:</label>
@@ -119,6 +126,7 @@
                             <div id="driver_name-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
                     <div class="col-lg-3" v-if="model.movement_type_id != '11'">
                         <div class="form-group">
                             <label class="form-control-label">Chofer Documento:</label>
@@ -146,7 +154,8 @@
                         <datetime v-model="model.traslate_date" placeholder="Selecciona una Fecha"
                             :format="'dd-LL-yyyy'" input-id="traslate_date" name="traslate_date"
                             value-zone="America/Lima" zone="America/Lima" class="form-control"
-                            :min-datetime="this.min_datetime" :max-datetime="this.max_datetime"
+                            :min-datetime="this.min_datetime" 
+                            :max-datetime="this.max_datetime"
                             @focus="$parent.clearErrorMsg($event)">
                         </datetime>
                         <div id="traslate_date-error" class="error invalid-feedback"></div>
