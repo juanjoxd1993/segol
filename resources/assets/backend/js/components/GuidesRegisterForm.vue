@@ -98,6 +98,7 @@
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                    
                     <div class="col-lg-3" v-if="model.movement_type_id == '11'">
                         <div class="form-group">
                             <label class="form-control-label">Cliente:</label>
@@ -112,7 +113,7 @@
                     </div>
 
                     
-                <!--    <div class="col-lg-3" v-if="model.movement_type_id != '11'">
+              <div class="col-lg-3" v-if="model.movement_type_id != '11'">
                         <div class="form-group">
                             <label class="form-control-label">Chofer Nombres:</label>
                             <input type="text" class="form-control" name="driver_name" id="driver_name"
@@ -120,7 +121,7 @@
                             <div id="driver_name-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3" v-if="model.movement_type_id != '11'">
+                   <!--       <div class="col-lg-3" v-if="model.movement_type_id != '11'">
                         <div class="form-group">
                             <label class="form-control-label">Chofer Brevete:</label>
                             <input type="text" class="form-control" name="driver_brevete" id="driver_brevete"
