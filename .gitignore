@@ -10,3 +10,5 @@ yarn-error.log
 /.vscode
 /.phpintel
 storage/logs/*.log
+bootstrap/cache/packages.php
+bootstrap/cache/services.php
