@@ -173,7 +173,7 @@ class GuidesRegisterController extends Controller
 			'referral_guide_series.required_if'			        => 'Debe digitar la Serie de Guía de Remisión.',
 			'referral_guide_number.required_if'					=> 'Debe digitar el Número de Guía de Remisión.',
 			//	'vehicle_id.required_if'							=> 'Debe digitar el Número de Placa.',
-			'traslate_date.required_if'                         => 'Debe seleccionar la fecha de traslado.',
+			//'traslate_date.required_if'                         => 'Debe seleccionar la fecha de traslado.',
 
 		];
 
@@ -185,7 +185,7 @@ class GuidesRegisterController extends Controller
 			'referral_guide_number'					=> 'required_if:movement_type_id,1,7,8,9,11,13,15,19,20',
 			//	'scop_number'							=> 'required_if:movement_type_id,1,12,13,14,15,16',
 			//	'vehicle_id'							=> 'required_if:movement_type_id,11,12,13,14,19,20',
-			'traslate_date'							=> 'required',
+			//'traslate_date'							=> 'required',
 			//	'route_id'							    => 'required',
 
 		];
@@ -1141,8 +1141,8 @@ class GuidesRegisterController extends Controller
 		$movement->total_perception = array_sum(array_column($articles, 'perception'));
 		$movement->action_type_id = ($movement_type ? $movement_type->action_type_id : null);
 		$movement->created_at = date('Y-m-d', strtotime($since_date));
-		$movement->traslate_date = date('Y-m-d', strtotime($traslate_date));
-		$movement->fac_date = date('Y-m-d', strtotime($traslate_date));
+		$movement->traslate_date = date('Y-m-d', strtotime($since_date));
+		$movement->fac_date = date('Y-m-d', strtotime($since_date));
 		$movement->state = 1;
 		//	$movement->route_id = $route_id;
 
@@ -1172,8 +1172,8 @@ class GuidesRegisterController extends Controller
 		$movement2->total_perception = array_sum(array_column($articles, 'perception'));
 		$movement2->action_type_id = ($movement_type ? $movement_type->action_type_id : null);
 		$movement2->created_at = date('Y-m-d', strtotime($since_date));
-		$movement2->traslate_date = date('Y-m-d', strtotime($traslate_date));
-		$movement2->fac_date = date('Y-m-d', strtotime($traslate_date));
+		$movement2->traslate_date = date('Y-m-d', strtotime($since_date));
+		$movement2->fac_date = date('Y-m-d', strtotime($since_date));
 		//	$movement2->route_id = $route_id;
 
 		$movement2->save();
