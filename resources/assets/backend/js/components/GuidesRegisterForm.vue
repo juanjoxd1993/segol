@@ -17,9 +17,9 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo Movimiento:</label>
-                            <select class="form-control" name="movement_type_id" id="movement_type_id"
+                            <select class="form-control readonly" name="movement_type_id" id="movement_type_id"
                                 v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="12">Venta Planta</option>
+                                <option selected value="12">Venta Planta</option>
                                 <option value="11">Pre-Venta</option>
                             </select>
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
@@ -29,9 +29,9 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
-                            <select class="form-control" name="company_id" id="company_id" v-model="model.company_id"
+                            <select class="form-control readonly" name="company_id" id="company_id" v-model="model.company_id"
                                 @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
+                                <option value="1">PUNTO GAS</option>
                                 <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{
             company.name }}</option>
                             </select>
@@ -61,10 +61,10 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo:</label>
-                            <select class="form-control" name="warehouse_account_type_id" id="warehouse_account_type_id"
+                            <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id"
                                 v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)"
                                 @change="warehouseAccountTypesChange()">
-                                <option value="">Seleccionar</option>
+                                <option value="1">Cliente</option>
                                 <option v-for="warehouse_account_type in warehouseAccountTypes"
                                     :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{
             warehouse_account_type.name }}</option>
@@ -98,7 +98,7 @@
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    
+
                     <div class="col-lg-3" v-if="model.movement_type_id == '11'">
                         <div class="form-group">
                             <label class="form-control-label">Cliente:</label>
@@ -294,13 +294,13 @@ export default {
                 driver_brevete: '',
                 driver_document: '',
                 movement_class_id: '',
-                movement_type_id: '',
+                movement_type_id: 12,
                 movement_stock_type_id: '',
                 warehouse_type_id: '',
-                company_id: '',
+                company_id: 2,
                 traslate_date: this.min_datetime,
                 since_date: this.current_date,
-                warehouse_account_type_id: '',
+                warehouse_account_type_id: 1,
                 account_document_number: '',
                 warehouse_account_id: '',
                 referral_guide_series: '',
