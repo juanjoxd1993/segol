@@ -123,9 +123,7 @@ export default {
         openModal: function () {
             EventBus.$emit(
                 'guides_register_modal',
-                this.articles,
-                this.igv,
-                this.perception_percentage,
+                this.articles,  
                 this.model.movement_class_id,
                 this.model.movement_type_id
             );

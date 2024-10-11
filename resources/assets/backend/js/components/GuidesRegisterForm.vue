@@ -29,11 +29,11 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
-                            <select class="form-control readonly" name="company_id" id="company_id" v-model="model.company_id"
-                                @focus="$parent.clearErrorMsg($event)">
+                            <select class="form-control readonly" name="company_id" id="company_id"
+                                v-model="model.company_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="1">PUNTO GAS</option>
                                 <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{
-            company.name }}</option>
+                                    company.name }}</option>
                             </select>
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -42,16 +42,9 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Fecha de Emisión:</label>
-                            <datetime
-                                v-model="model.since_date"
-                                placeholder="Selecciona una Fecha"
-                                :format="'dd-LL-yyyy'"
-                                input-id="since_date"
-                                name="since_date"
-                                value-zone="America/Lima"
-								zone="America/Lima"
-                                class="form-control"
-                                :max-datetime="this.max_datetime"
+                            <datetime v-model="model.since_date" placeholder="Selecciona una Fecha"
+                                :format="'dd-LL-yyyy'" input-id="since_date" name="since_date" value-zone="America/Lima"
+                                zone="America/Lima" class="form-control" :max-datetime="this.max_datetime"
                                 @focus="$parent.clearErrorMsg($event)">
                             </datetime>
                             <div id="since_date-error" class="error invalid-feedback"></div>
@@ -61,13 +54,13 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tipo:</label>
-                            <select class="form-control readonly" name="warehouse_account_type_id" id="warehouse_account_type_id"
-                                v-model="model.warehouse_account_type_id" @focus="$parent.clearErrorMsg($event)"
-                                @change="warehouseAccountTypesChange()">
+                            <select class="form-control readonly" name="warehouse_account_type_id"
+                                id="warehouse_account_type_id" v-model="model.warehouse_account_type_id"
+                                @focus="$parent.clearErrorMsg($event)" @change="warehouseAccountTypesChange()">
                                 <option value="1">Cliente</option>
                                 <option v-for="warehouse_account_type in warehouseAccountTypes"
                                     :value="warehouse_account_type.id" v-bind:key="warehouse_account_type.id">{{
-            warehouse_account_type.name }}</option>
+                                        warehouse_account_type.name }}</option>
                             </select>
                             <div id="warehouse_account_type_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -106,14 +99,14 @@
                                 v-model="model.client_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
                                 <option v-for="client in clients" :value="client.id" v-bind:key="client.id">{{
-            client.business_name }}</option>
+                                    client.business_name }}</option>
                             </select>
                             <div id="client_id-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
 
-                    
-              <div class="col-lg-3" v-if="model.movement_type_id != '11'">
+
+                    <div class="col-lg-3" v-if="model.movement_type_id != '11'">
                         <div class="form-group">
                             <label class="form-control-label">Chofer Nombres:</label>
                             <input type="text" class="form-control" name="driver_name" id="driver_name"
@@ -121,7 +114,7 @@
                             <div id="driver_name-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                   <!--       <div class="col-lg-3" v-if="model.movement_type_id != '11'">
+                    <!--       <div class="col-lg-3" v-if="model.movement_type_id != '11'">
                         <div class="form-group">
                             <label class="form-control-label">Chofer Brevete:</label>
                             <input type="text" class="form-control" name="driver_brevete" id="driver_brevete"
@@ -158,8 +151,7 @@
                         <datetime v-model="model.traslate_date" placeholder="Selecciona una Fecha"
                             :format="'dd-LL-yyyy'" input-id="traslate_date" name="traslate_date"
                             value-zone="America/Lima" zone="America/Lima" class="form-control"
-                            :min-datetime="this.min_datetime" 
-                            :max-datetime="this.max_datetime"
+                            :min-datetime="this.min_datetime" :max-datetime="this.max_datetime"
                             @focus="$parent.clearErrorMsg($event)">
                         </datetime>
                         <div id="traslate_date-error" class="error invalid-feedback"></div>
