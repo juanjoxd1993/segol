@@ -38,6 +38,9 @@
 		<div id="kt_aside_menu" class="kt-aside-menu " data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
 			<ul class="kt-menu__nav ">
 				
+
+				@if(Auth::user()->id == 7 || Auth::user()->id == 45 || Auth::user()->id == 46 || Auth::user()->id == 21 || Auth::user()->id == 44 || Auth::user()->id == 1 || Auth::user()->id == 11 || Auth::user()->id == 2 || Auth::user()->id == 3 || Auth::user()->id == 4 || Auth::user()->id == 8 || Auth::user()->id == 9 || Auth::user()->id == 10 || Auth::user()->id == 42 || Auth::user()->id == 28 || Auth::user()->id == 17 )
+
 				<li class="kt-menu__item kt-menu__item--submenu {{ ( strpos(url()->current(), '/facturacion/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
 						<span class="kt-menu__link-icon">
@@ -61,6 +64,8 @@
 									<span class="kt-menu__link-text">Facturación</span>
 								</span>
 							</li>
+
+
 						
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.send_ose' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.voucher.send_ose') }}" class="kt-menu__link ">
@@ -119,6 +124,8 @@
 					</ul>
 				</div>
 			</li>
+
+			@endif
 
 				<li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/reporte/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
