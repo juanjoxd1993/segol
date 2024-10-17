@@ -39,7 +39,7 @@
 			<ul class="kt-menu__nav ">
 				
 
-				@if(Auth::user()->id == 7 || Auth::user()->id == 45 || Auth::user()->id == 46 || Auth::user()->id == 21 || Auth::user()->id == 44 || Auth::user()->id == 1 || Auth::user()->id == 11 || Auth::user()->id == 2 || Auth::user()->id == 3 || Auth::user()->id == 4 || Auth::user()->id == 8 || Auth::user()->id == 9 || Auth::user()->id == 10 || Auth::user()->id == 42 || Auth::user()->id == 28 || Auth::user()->id == 17 )
+			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 36)
 
 				<li class="kt-menu__item kt-menu__item--submenu {{ ( strpos(url()->current(), '/facturacion/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -121,11 +121,14 @@
 								</a>
 							</li>
 							
-					</ul>
-				</div>
-			</li>
+					  </ul>
+				   </div>
+			    </li>
 
-			@endif
+		    @endif
+
+
+			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 36)
 
 				<li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/reporte/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -267,6 +270,8 @@
 					</div>
 				</li>
 
+				@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24)
+
 				<li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/logistica/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
 						<span class="kt-menu__link-icon">
@@ -343,7 +348,9 @@
 						</ul>
 					</div>
 				</li>
-		
+			@endif
+
+			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24)
 	            <li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/operaciones/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
 						<span class="kt-menu__link-icon">
@@ -375,7 +382,7 @@
 									<span class="kt-menu__link-text">Registro de Guías de Remisión</span>
 								</a>
 							</li>
-
+							@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24 || Auth::user()->id == 35)
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_validate' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.guides_validate') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -384,6 +391,7 @@
 									<span class="kt-menu__link-text">Validacion de Guías de Remisión</span>
 								</a>
 							</li>
+							@endif
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_return' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.guides_return') }}" class="kt-menu__link ">
@@ -466,6 +474,11 @@
 			            </ul>
 					</div>
 				</li>
+
+			@endif
+
+				
+			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24)
 
 				<li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/comercial/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -563,10 +576,7 @@
 								</a>
 							</li> 
 
-							
-
 						
-
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.report.days_glp' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								  <a href="{{ route('dashboard.report.days_glp') }}" class="kt-menu__link ">
@@ -582,6 +592,10 @@
 					  </ul>
 					</div>
 				</li>
+
+			@endif
+				
+			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 36)
 				<li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/creditos/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
 						<span class="kt-menu__link-icon">
@@ -669,7 +683,10 @@
 					</div>
 				</li>
 
+			@endif
+
 				
+			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 )
 
 				<li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/contabilidad/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -756,6 +773,9 @@
 					</div>
 				</li>
 
+			@endif
+
+			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24)
 
                 <li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/comprasglp/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -877,22 +897,21 @@
 									<span class="kt-menu__link-text">Placas</span>
 								</a>
 							</li>
-
-
-						
-
-
-							
-						    	
+	
 
 					  </ul>
 					</div>
 				</li>
 
+			@endif
+
 
 
 
             <!--Menú de Finanzas-->
+
+
+			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24)
 
 				<li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/administracion/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -957,9 +976,12 @@
 					  </ul>
 					</div>
 				</li>
+				@endif
 
              <!-- cierre Menú de RRHH-->
 
+
+			 @if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24)
 
 			 <li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/rrhh/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -1164,6 +1186,8 @@
 								</a>
 							</li>
 
+					
+
 
 
 
@@ -1173,6 +1197,9 @@
 					  </ul>
 					</div>
 				</li>
+
+
+				@endif
 
              <!-- cierre Menú de RRHH-->
 
