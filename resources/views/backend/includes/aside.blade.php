@@ -66,7 +66,7 @@
 							</li>
 
 
-						
+							@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 36)
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.send_ose' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.voucher.send_ose') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -75,8 +75,9 @@
 									<span class="kt-menu__link-text">Envío OSE</span>
 								</a>
 							</li>
+							@endif
 						
-							
+							@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 36)
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.register_document_charge' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.voucher.register_document_charge') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -85,7 +86,10 @@
 									<span class="kt-menu__link-text">Generación de Documentos </span>
 								</a>
 							</li>
+							@endif
 
+
+							@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 36)
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.collection_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.voucher.collection_register') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -94,6 +98,9 @@
 									<span class="kt-menu__link-text">Registro de Cobranzas</span>
 								</a>
 							</li>
+							@endif
+
+							@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 36)
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.liquidations_final' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.voucher.liquidations_final') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -102,7 +109,9 @@
 									<span class="kt-menu__link-text">Liquidaciones Final</span>
 								</a>
 							</li>
+							@endif
 
+							@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 36)
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.voucher.liquidations_glp' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.voucher.liquidations_glp') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -111,7 +120,9 @@
 									<span class="kt-menu__link-text">Liquidación GLP</span>
 								</a>
 							</li>
+							@endif
 
+							@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 36)
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.facturation.voucher.remesas' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.facturation.voucher.remesas') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -120,6 +131,7 @@
 									<span class="kt-menu__link-text">Registro de Remesas</span>
 								</a>
 							</li>
+							@endif
 							
 					  </ul>
 				   </div>
@@ -269,6 +281,8 @@
 						</ul>
 					</div>
 				</li>
+			@endif	
+
 
 				@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24)
 
@@ -976,12 +990,12 @@
 					  </ul>
 					</div>
 				</li>
-				@endif
+			@endif
 
              <!-- cierre Menú de RRHH-->
 
 
-			 @if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24)
+			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24)
 
 			 <li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/rrhh/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -1185,74 +1199,21 @@
 									<span class="kt-menu__link-text">AFP / AFP NET </span>
 								</a>
 							</li>
-
-					
-
-
-
-
-
-
-
 					  </ul>
 					</div>
 				</li>
 
 
-				@endif
+			@endif
 
              <!-- cierre Menú de RRHH-->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 			</ul>
 		</div>
 	</div>				
 	<!-- end:: Aside Menu -->
+
+
 </div>
 <!-- end:: Aside -->
