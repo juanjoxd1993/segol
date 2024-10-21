@@ -273,7 +273,7 @@ export default {
         },
         sendForm: function () {
 
-            if (Number(this.stock) > Number(this.model.quantity)) {
+           /* if (Number(this.stock) > Number(this.model.quantity)) {
                 Swal.fire({
                     title: 'Error',
                     text: 'Cantidad insuficiente',
@@ -281,7 +281,7 @@ export default {
                     heightAuto: false,
                 })
                 return;
-            }
+            }*/
 
             document.getElementById('add_article_2').disabled = true;
 

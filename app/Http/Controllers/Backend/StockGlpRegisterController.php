@@ -614,12 +614,13 @@ class StockGlpRegisterController extends Controller
 	public function getInvoices()
 	{
 		return response()->json(
-			WarehouseMovement::where('movement_type_id', request('movement_type'))
+			WarehouseMovement::where('movement_type_id', 1)
 				->where('warehouse_type_id', request('warehouse_type'))
 				->whereNotNull('stock_pend')
 				->where('stock_pend', '>', 0)
-				->get(),
+				->sum('stock_pend'),
 			200
+		
 		);
 	}
 }
