@@ -17,15 +17,15 @@
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label class="form-control-label">Artículo:</label>
-                                        <select class="form-control kt-select2" name="article" id="article"
+                                        <select class="form-control kt-select2" name="article_id" id="article_id"
                                             v-model="model.article_id" @focus="$parent.clearErrorMsg($event)">
                                             <option disabled value="">Seleccionar</option>
-                                            <option v-for="article in filterArticles" :value="article.id"
+                                            <option v-for="article in articles" :value="article.id"
                                                 v-bind:key="article.id">
-                                                {{ article.full_name }}
+                                                {{ article.code }} - {{ article.name }}
                                             </option>
                                         </select>
-                                        <div id="article-error" class="error invalid-feedback"></div>
+                                        <div id="article_id-error" class="error invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
@@ -60,8 +60,8 @@ import EventBus from '../event-bus';
 
 export default {
     props: {
-        url_get_article: {
-            type: String,
+        articles: {
+            type: Array,
             default: ''
         }
     },
@@ -69,43 +69,24 @@ export default {
         return {
             model: {
                 article_id: '',
+                article_code: '',
+                article_name: '',
                 quantity: '',
-                price: '',
-                sale_value: '',
-                inaccurate_value: 0,
-                igv: 0,
-                total: 0,
-                perception: 0,
+                stock_good: '',
+                convertion: '',
             },
-            articles: [],
-            article_list: [],
-            igv: '',
-            perception_percentage: '',
-            igv_flag: 0,
-            perception_flag: 0,
-            currency: {},
-            movement_class_id: '',
-            movement_type_id: '',
             stock: ''
         }
     },
     watch: {
         'model.quantity': function (val) {
-            this.model.sale_value = (val * this.model.price).toFixed(4);
-            if (this.movement_class_id == 2 && Number(val) > Number(this.stock)) {
-                // $('input#quantity').addClass('is-invalid');
-                // $('#quantity-error').html('La cantidad supera el Stock disponible');
-                document.getElementById('add_article_2').disabled = false;
-            } else if (this.model.article_id != '' && (Number(val) != '' && Number(val) > 0)) {
+            if (this.model.article_id != '' && (Number(val) != '' && Number(val) > 0)) {
                 $('input#quantity').removeClass('is-invalid');
                 $('#quantity-error').html('');
                 document.getElementById('add_article_2').disabled = false;
             } else {
                 document.getElementById('add_article_2').disabled = true;
             }
-        },
-        'model.price': function (val) {
-            this.model.sale_value = (this.model.quantity * val).toFixed(4);
         },
         'model.article_id': function (val) {
             if (val != '' && (this.model.quantity != '' || Number(this.model.quantity) > 0)) {
@@ -122,169 +103,48 @@ export default {
         }
     },
     computed: {
-        getIgv: function () {
-            if (this.igv_flag == 0) {
-                this.model.igv = 0;
-            } else {
-                let igv = this.model.sale_value * (this.igv / 100);
-                this.model.igv = igv.toFixed(4);
-            }
-            return this.model.igv;
-        },
-        getTotal: function () {
-            let total = Number(this.model.sale_value) - Number(this.model.inaccurate_value) + Number(this.model.igv);
-            this.model.total = total.toFixed(4);
-            return this.model.total;
-        },
-        getPerception: function () {
-            if (this.perception_flag == 0) {
-                this.perception_percentage = 0;
-            } else {
-                let perception = Number(this.model.total) * (this.perception_percentage / 100);
-                this.model.perception = perception.toFixed(4);
-            }
-            return this.model.perception;
-        },
-        filterArticles() {
-            if (this.movement_class_id == 1 && (this.movement_type_id == 1 || this.movement_type_id == 2)) {
-                this.articles.map(element => {
-                    element.full_name = element.code + ' - ' + element.name + ' ' + element.sale_unit_id + ' x ' + element.package_sale;
-                });
-            } else {
-                this.articles.map(element => {
-                    element.full_name = element.code + ' - ' + element.name + ' ' + element.warehouse_unit_id + ' x ' + element.package_warehouse;
-                });
-            }
-            return this.articles;
-        }
     },
     created() {
-        EventBus.$on('guides_register_modal', function (articles, movement_class_id, movement_type_id) {
-            this.articles = articles;
-            this.stock = 0;
-            this.movement_class_id = movement_class_id;
-            this.movement_type_id = movement_type_id;
-            $('#guides-register-modal').modal('show');
-        }.bind(this));
-
-        EventBus.$on('guides_register_modal_hide', function () {
+        EventBus.$on('guides_register_modal', function () {
             this.model.article_id = '';
+            this.model.article_code = '';
+            this.model.article_name = '';
             this.model.quantity = '';
-            $('#article').val(null).trigger('change');
-            $('#guides-register-modal').modal('hide');
-            // document.getElementById('add_article_2').disabled = false;
-        }.bind(this));
-
-        EventBus.$on('add_article_id', function (id) {
-            this.article_list.push(id);
-        }.bind(this));
-
-        EventBus.$on('remove_article_id', function (id) {
-            let index = this.article_list.findIndex((element) => element == id);
-            this.article_list.splice(index, 1);
-            console.log(index, id);
+            this.stock = 0;
+            $('#guides-register-modal').modal('show');
         }.bind(this));
 
         EventBus.$on('reset_stock_register', function () {
             this.model.article_id = '';
+            this.model.article_code = '';
+            this.model.article_name = '';
             this.model.quantity = '';
-            this.articles = [];
-            this.article_list = [];
-            this.movement_class_id = '';
-            this.movement_type_id = '';
             this.stock = 0;
+            $('#guides-register-modal').modal('hide');
         }.bind(this));
     },
     mounted() {
-        this.newSelect2();
-
-        $('#guides-register-modal').on('hide.bs.modal', function (e) {
-            this.model.article_id = '';
-            this.model.quantity = '';
-            $('#article').val(null).trigger('change');
-            // document.getElementById('add_article_2').disabled = false;
-        }.bind(this));
     },
     methods: {
-        newSelect2: function () {
-            let vm = this;
-
-            $('#article').select2({
-                placeholder: "Selecciona un Artículo",
-            }).on('select2:select', function (e) {
-                var selected_element = $(e.currentTarget);
-                vm.model.article_id = parseInt(selected_element.val());
-
-                var current_article = vm.articles.find(article => article.id === vm.model.article_id);
-
-                document.getElementById('add_article_2').disabled = false;
-
-                if (vm.movement_class_id == 1) {
-                    vm.stock = vm.stock_good;
-                } else if (vm.movement_class_id == 2) {
-                    if (vm.movement_type_id == 15) {
-                        vm.stock = vm.stock_return;
-                    } else if (vm.movement_type_id == 4) {
-                        vm.stock = vm.stock_repair;
-                    } else {
-                        vm.stock = vm.stock_good;
-                    }
-                };
-
-                if (vm.article_list.includes(current_article.id)) {
-                    Swal.fire({
-                        title: '¡Error!',
-                        text: 'Este artículo ya se encuentra en el registro.',
-                        type: "error",
-                        heightAuto: false,
-                    });
-
-                    vm.model.article_id = '';
-                    $('#article').val(null).trigger('change');
-
-                    document.getElementById('add_article_2').disabled = true;
-                } else {
-                    document.getElementById('add_article_2').disabled = false;
-
-                    vm.igv_flag = current_article.igv;
-                    vm.perception_flag = current_article.perception;
-                    vm.stock_good = current_article.stock_good;
-                    vm.stock_repair = current_article.stock_repair;
-                    vm.stock_return = current_article.stock_return;
-                    vm.stock_damaged = current_article.stock_damaged;
-
-                    if (vm.movement_class_id == 1) {
-                        vm.stock = vm.stock_good;
-                    } else if (vm.movement_class_id == 2) {
-                        if (vm.movement_type_id == 15) {
-                            vm.stock = vm.stock_return;
-                        } else if (vm.movement_type_id == 4) {
-                            vm.stock = vm.stock_repair;
-                        } else {
-                            vm.stock = vm.stock_good;
-                        }
-                    };
-                }
-            }).on('select2:unselect', function (e) {
-                vm.model.article_id = '';
-                vm.igv_flag = 0;
-                vm.perception_flag = 0;
-            });
-        },
         sendForm: function () {
 
-           /* if (Number(this.stock) > Number(this.model.quantity)) {
+            if (Number(this.model.quantity) < 1 || this.model.quantity == '') {
                 Swal.fire({
                     title: 'Error',
-                    text: 'Cantidad insuficiente',
+                    text: 'Cantidad inválida',
                     type: "error",
                     heightAuto: false,
                 })
                 return;
-            }*/
+            }
+
+            const current_article = this.articles.find(article => article.id === this.model.article_id);
+            this.model.article_code = current_article.code;
+            this.model.article_name = current_article.name;
+            this.model.stock_good = current_article.stock_good;
+            this.model.convertion = current_article.convertion;
 
             document.getElementById('add_article_2').disabled = true;
-
             EventBus.$emit('sendForm', this.model);
         }
     }

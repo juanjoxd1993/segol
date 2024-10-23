@@ -289,13 +289,9 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 
 	/** Operaciones > Guias */
 	Route::get('/operaciones/registro-movimiento-existencias', 'GuidesRegisterController@index')->name('dashboard.operations.guides_register');
-	Route::post('/operaciones/registro-movimiento-existencias/validar-formulario', 'GuidesRegisterController@validateForm')->name('dashboard.operations.guides_register.validate_form');
 	Route::post('/operaciones/registro-movimiento-existencias/listar', 'GuidesRegisterController@list')->name('dashboard.operations.guides_register.list');
-	Route::post('/operaciones/registro-movimiento-existencias/listar-cuentas', 'GuidesRegisterController@getAccounts')->name('dashboard.operations.guides_register.get_accounts');
-	Route::post('/operaciones/registro-movimiento-existencias/listar-articulos', 'GuidesRegisterController@getArticles')->name('dashboard.operations.guides_register.get_articles');
-	Route::post('/operaciones/registro-movimiento-existencias/obtener-percepcion', 'GuidesRegisterController@getPerceptionPercentage')->name('dashboard.operations.guides_register.get_perception_percentage');
-	Route::post('/operaciones/registro-movimiento-existencias/obtener-tasas', 'GuidesRegisterController@getArticleRates')->name('dashboard.operations.guides_register.get_article_rates');
-	Route::post('/operaciones/registro-movimiento-existencias/obtener-articulo', 'GuidesRegisterController@getArticle')->name('dashboard.operations.guides_register.get_article');
+	Route::post('/operaciones/registro-movimiento-existencias/listar-clientes', 'GuidesRegisterController@getClients')->name('dashboard.operations.guides_register.get_clients');
+	Route::post('/operaciones/registro-movimiento-existencias/listar-choferes', 'GuidesRegisterController@getEmployees')->name('dashboard.operations.guides_register.get_employees');
 	Route::post('/operaciones/registro-movimiento-existencias/guardar', 'GuidesRegisterController@store')->name('dashboard.operations.guides_register.store');
 	Route::get('/operaciones/registro-movimiento-existencias/obtener-siguiente-correlativo', 'GuidesRegisterController@getNextcorrelative')->name('dashboard.operations.guides_register.next_correlative');
 
