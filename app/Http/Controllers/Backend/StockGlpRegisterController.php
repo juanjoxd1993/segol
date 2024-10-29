@@ -26,7 +26,8 @@ use PDF;
 
 class StockGlpRegisterController extends Controller
 {
-    public function index() {
+	public function index()
+	{
 		$movement_classes = MoventClass::select('id', 'name')->get();
 		$movement_types = MoventType::select('id', 'movent_class', 'name')->get();
 		$movement_stock_types = MovementStockType::select('id', 'name')->get();
@@ -50,43 +51,44 @@ class StockGlpRegisterController extends Controller
 		return view('backend.stock_glp_register')->with(compact('movement_classes', 'movement_types', 'movement_stock_types', 'warehouse_types', 'companies', 'currencies', 'current_date', 'min_datetime', 'max_datetime', 'warehouse_account_types', 'warehouse_document_types', 'igv', 'warehouse_providers', 'warehouse_receivers'));
 	}
 
-	public function getAccounts() {
+	public function getAccounts()
+	{
 		$company_id = 1;
 		$warehouse_account_type_id = request('warehouse_account_type_id');
 		$q = request('q');
-		
-		if ( $warehouse_account_type_id == 1 ) {
+
+		if ($warehouse_account_type_id == 1) {
 			$clients = Client::select('id', 'business_name')
 				->where('company_id', $company_id)
-				->where('business_name', 'like', '%'.$q.'%')
+				->where('business_name', 'like', '%' . $q . '%')
 				->get();
 
-			$clients->map(function($item, $index){
+			$clients->map(function ($item, $index) {
 				$item->text = $item->business_name;
 				unset($item->business_name);
 
 				return $item;
 			});
-		} elseif ( $warehouse_account_type_id == 2 ) {			
+		} elseif ($warehouse_account_type_id == 2) {
 			$clients = Provider::select('id', 'business_name')
-				->where('business_name', 'like', '%'.$q.'%')
+				->where('business_name', 'like', '%' . $q . '%')
 				->get();
 
-			$clients->map(function($item, $index){
+			$clients->map(function ($item, $index) {
 				$item->text = $item->business_name;
 				unset($item->business_name);
 
 				return $item;
 			});
-		} elseif ( $warehouse_account_type_id == 3 ) {
+		} elseif ($warehouse_account_type_id == 3) {
 			$clients = Employee::select('id', 'first_name', 'last_name')
 				->where(function ($query) use ($q) {
-					$query->where('first_name', 'like', '%'.$q.'%')
-						->orWhere('last_name', 'like', '%'.$q.'%');
+					$query->where('first_name', 'like', '%' . $q . '%')
+						->orWhere('last_name', 'like', '%' . $q . '%');
 				})
 				->get();
 
-			$clients->map(function($item, $index){
+			$clients->map(function ($item, $index) {
 				$item->text = $item->first_name . ' ' . $item->last_name;
 				unset($item->first_name);
 				unset($item->last_name);
@@ -98,7 +100,8 @@ class StockGlpRegisterController extends Controller
 		return $clients;
 	}
 
-	public function validateForm() {
+	public function validateForm()
+	{
 		$messages = [
 			'warehouse_type_id.required'						=> 'Debe seleccionar un Almacén Proveedor.',
 			'warehouse_receiver.required'						=> 'Debe seleccionar un Almacén Receptor.',
@@ -115,7 +118,7 @@ class StockGlpRegisterController extends Controller
 		];
 
 		$rules = [
-		
+
 
 			'warehouse_type_id'						=> 'required',
 			'warehouse_receiver'					=> 'required',
@@ -135,7 +138,8 @@ class StockGlpRegisterController extends Controller
 		return request()->all();
 	}
 
-	public function list() {
+	public function list()
+	{
 		$this->validateForm();
 
 		$movement_class_id = 2;
@@ -162,17 +166,17 @@ class StockGlpRegisterController extends Controller
 		$model = request()->all();
 
 		// Porcentage de Percepción del Cliente/Proveedor
-		if ( $warehouse_account_type_id == 1 ) {
+		if ($warehouse_account_type_id == 1) {
 			$perception_percentage = Client::select('perception_percentage_id')
 				->where('id', $warehouse_account_id)
 				->first();
-			
+
 			$perception_percentage = $perception_percentage->perception_percentage->value;
-		} elseif ( $warehouse_account_type_id == 2 ) {
+		} elseif ($warehouse_account_type_id == 2) {
 			$perception_percentage = Provider::select('perception_agent_id')
 				->where('id', $warehouse_account_id)
 				->first();
-			
+
 			$perception_percentage = $perception_percentage->perception_agent->value;
 		} else {
 			$perception_percentage = 0;
@@ -187,15 +191,14 @@ class StockGlpRegisterController extends Controller
 			$articles = [$article];
 		} else {
 			// Obtener artículos
-			$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged','group_id')
+			$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged', 'group_id')
 				->where('warehouse_type_id', $warehouse_type_id)
 				->orderBy('code', 'asc')
 				->get();
 
-			$articles->map(function($item, $index) {
+			$articles->map(function ($item, $index) {
 				$item->sale_unit_id = $item->sale_unit['name'];
 				$item->warehouse_unit_id = $item->warehouse_unit['name'];
-			
 			});
 		}
 
@@ -206,7 +209,8 @@ class StockGlpRegisterController extends Controller
 		]);
 	}
 
-	public function validateModalForm() {
+	public function validateModalForm()
+	{
 		$messages = [
 			'article_id.required'	=> 'Debe seleccionar un Artículo.',
 			'quantity.required'		=> 'La Cantidad es obligatoria.',
@@ -221,7 +225,8 @@ class StockGlpRegisterController extends Controller
 		return request()->all();
 	}
 
-	public function getArticle() {
+	public function getArticle()
+	{
 		// $this->validateModalForm();
 
 		$article_id = request('model.article_id');
@@ -231,28 +236,28 @@ class StockGlpRegisterController extends Controller
 		$item_number = request('item_number');
 		$movement_type_id = request('movement_type_id');
 
-		
+
 
 		$article = Article::leftjoin('operation_types', 'operation_types.id', '=', 'articles.operation_type_id')
 			->where('articles.id', $article_id)
-			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name','group_id')
+			->select('articles.id', 'code', 'articles.name', 'package_sale', 'sale_unit_id', 'operation_type_id', 'factor', 'operation_types.name as operation_type_name', 'group_id')
 			->first();
-		
+
 		$article->item_number = ++$item_number;
 		$article->sale_unit_id = $article->sale_unit->name;
 		$article->group_id = $article->group_id;
 		$article->digit_amount = number_format($quantity, 4, '.', ',');
 		$article->old_stock_return = number_format($quantity_2, 4, '.', ',');
 		$article->old_stock_damaged = number_format($quantity_3, 4, '.', ',');
-		if ( $movement_type_id == 1 || $movement_type_id == 2 ) {
-			
-			if ( $article->operation_type_name == 'Suma' ) {
+		if ($movement_type_id == 1 || $movement_type_id == 2) {
+
+			if ($article->operation_type_name == 'Suma') {
 				$article->converted_amount = number_format($quantity + $article->factor, 4, '.', ',');
-			} elseif ( $article->operation_type_name == 'Resta' ) {
+			} elseif ($article->operation_type_name == 'Resta') {
 				$article->converted_amount = number_format($quantity - $article->factor, 4, '.', ',');
-			} elseif ( $article->operation_type_name == 'Multiplica' ) {
+			} elseif ($article->operation_type_name == 'Multiplica') {
 				$article->converted_amount = number_format($quantity * $article->factor, 4, '.', ',');
-			} elseif ( $article->operation_type_name == 'Divide' ) {
+			} elseif ($article->operation_type_name == 'Divide') {
 				$article->converted_amount = number_format($quantity / $article->factor, 4, '.', ',');
 			}
 		} else {
@@ -273,18 +278,19 @@ class StockGlpRegisterController extends Controller
 		return $article;
 	}
 
-	public function getArticleReceiver() {
+	public function getArticleReceiver()
+	{
 		$warehouse_type_id = request('warehouse_type_id');
 		$article_id = request('article_id');
 
 		$item = Article::where('id', $article_id)
-						->select('code')
-						->first();
+			->select('code')
+			->first();
 
 		$article = Article::where('warehouse_type_id', $warehouse_type_id)
-							->where('code', $item->code)
-							->select('id')
-							->first();
+			->where('code', $item->code)
+			->select('id')
+			->first();
 
 		if ($article) {
 			return response()->json([
@@ -295,10 +301,10 @@ class StockGlpRegisterController extends Controller
 				'msg' => 'Producto no encontrado en el almacen receptor'
 			], 400);
 		}
-		
 	}
 
-	public function store() {
+	public function store()
+	{
 		$movement_class_id = 2;
 		$movement_type_id = 30;
 		$warehouse_type_id = request('model.warehouse_type_id');
@@ -325,32 +331,32 @@ class StockGlpRegisterController extends Controller
 			->where('warehouse_type_id', $warehouse_type_id)
 			->where('company_id', $company_id)
 			->max('movement_number');
-		
-		$movement_number = ( $movement_number ? $movement_number + 1 : 1 );
+
+		$movement_number = ($movement_number ? $movement_number + 1 : 1);
 
 		$license = WarehouseType::select('name')
-		->where('id', $plate)
-		->first();
+			->where('id', $plate)
+			->first();
 
-		$cost_glp=WarehouseMovement::select('cost_glp')
-		->where('referral_voucher_number',$referral_voucher_number)
-		->where('movement_type_id', 1)
-		->sum('cost_glp');
+		$cost_glp = WarehouseMovement::select('cost_glp')
+			->where('referral_voucher_number', $referral_voucher_number)
+			->where('movement_type_id', 1)
+			->sum('cost_glp');
 
-		if ( $warehouse_account_type_id == 1 ) {
+		if ($warehouse_account_type_id == 1) {
 			$account = Client::select('business_name', 'document_number')
 				->where('id', $warehouse_account_id)
 				->first();
-		} elseif ( $warehouse_account_type_id == 2 ) {
+		} elseif ($warehouse_account_type_id == 2) {
 			$account = Provider::select('business_name', 'document_number')
 				->where('id', $warehouse_account_id)
 				->first();
-		} elseif ( $warehouse_account_type_id == 3 ) {
+		} elseif ($warehouse_account_type_id == 3) {
 			$account = Employee::select('first_name', 'last_name')
 				->where('id', $warehouse_account_id)
 				->first();
 
-			if ($account) {		
+			if ($account) {
 				$account->business_name = $account->first_name . ' ' . $account->last_name;
 				$account->document_number = '';
 			}
@@ -379,10 +385,10 @@ class StockGlpRegisterController extends Controller
 		$movement->price_mes = $price_mes;
 		$movement->mezcla = $mezcla;
 		$movement->isla = $isla;
-		$movement->igv=$cost_glp;
-		$movement->total=$cost_glp* (array_sum(array_column($articles, 'converted_amount')));
-		$movement->origin= array_sum(array_column($articles, 'group_id'));
-		$movement->action_type_id = ( $movement_type ? $movement_type->action_type_id : '' );
+		$movement->igv = $cost_glp;
+		$movement->total = $cost_glp * (array_sum(array_column($articles, 'converted_amount')));
+		$movement->origin = array_sum(array_column($articles, 'group_id'));
+		$movement->action_type_id = ($movement_type ? $movement_type->action_type_id : '');
 		$movement->created_at = date('Y-m-d', strtotime($since_date));
 		$movement->created_at_user = Auth::user()->user;
 		$movement->updated_at_user = Auth::user()->user;
@@ -399,7 +405,7 @@ class StockGlpRegisterController extends Controller
 			$converted_amount = str_replace(',', '', $item['converted_amount']);
 			$old_stock_return = str_replace(',', '', $item['old_stock_return']);
 			$old_stock_damaged = str_replace(',', '', $item['old_stock_damaged']);
-		
+
 
 			$movementDetail = new WarehouseMovementDetail();
 			$movementDetail->warehouse_movement_id = $movement->id;
@@ -417,32 +423,31 @@ class StockGlpRegisterController extends Controller
 			$movementDetail->new_stock_damaged = $article->stock_damaged;
 			$movementDetail->created_at_user = Auth::user()->user;
 			$movementDetail->updated_at_user = Auth::user()->user;
-			
-			if ( $movement->movement_class_id == 1 ) {
+
+			if ($movement->movement_class_id == 1) {
 				$article->stock_good += $movementDetail->converted_amount;
 				$movementDetail->new_stock_good += $movementDetail->converted_amount;
-				
-				if ( $movement->movement_type_id == 1 || $movement->movement_type_id == 2 ) {
+
+				if ($movement->movement_type_id == 1 || $movement->movement_type_id == 2) {
 					$article->last_price = $movementDetail->price;
 				}
-			} elseif ( $movement->movement_class_id == 2 ) {
-				if ( $movement->movement_type_id == 15 ) {
+			} elseif ($movement->movement_class_id == 2) {
+				if ($movement->movement_type_id == 15) {
 					$article->stock_return -= $movementDetail->converted_amount;
 					$movementDetail->new_stock_return -= $movementDetail->converted_amount;
-				} elseif ( $movement->movement_type_id == 4 ) {
+				} elseif ($movement->movement_type_id == 4) {
 					$article->stock_repair -= $movementDetail->converted_amount;
 					$movementDetail->new_stock_repair -= $movementDetail->converted_amount;
 				} else {
 					$article->stock_good -= $movementDetail->converted_amount;
 					$movementDetail->new_stock_good -= $movementDetail->converted_amount;
-
 				}
 			}
 
 			if (request('model.movement_type_id') == 30) {
 				$tmpArticle = Article::where('warehouse_type_id', request('model.warehouse_type_id'))
-									->where('code', $item['code'])
-									->first();
+					->where('code', $item['code'])
+					->first();
 				if ($tmpArticle) {
 					$tmpArticle->stock_good += $converted_amount;
 					$tmpArticle->save();
@@ -477,10 +482,10 @@ class StockGlpRegisterController extends Controller
 			$movementReceptor->price_mes = $price_mes;
 			$movementReceptor->mezcla = $mezcla;
 			$movementReceptor->isla = $isla;
-			$movementReceptor->igv=$cost_glp;
-			$movementReceptor->total=$cost_glp* (array_sum(array_column($articles, 'converted_amount')));
-			$movementReceptor->origin= array_sum(array_column($articles, 'group_id'));
-			$movementReceptor->action_type_id = ( $movement_type ? $movement_type->action_type_id : '' );
+			$movementReceptor->igv = $cost_glp;
+			$movementReceptor->total = $cost_glp * (array_sum(array_column($articles, 'converted_amount')));
+			$movementReceptor->origin = array_sum(array_column($articles, 'group_id'));
+			$movementReceptor->action_type_id = ($movement_type ? $movement_type->action_type_id : '');
 			$movementReceptor->created_at = date('Y-m-d', strtotime($since_date));
 			$movementReceptor->created_at_user = Auth::user()->user;
 			$movementReceptor->updated_at_user = Auth::user()->user;
@@ -503,9 +508,9 @@ class StockGlpRegisterController extends Controller
 				$old_stock_damaged = str_replace(',', '', $item['old_stock_damaged']);
 
 				$article_code = Article::where('warehouse_type_id', $movementReceptor->warehouse_type_id)
-										->where('code', $item['code'])
-										->select('id')
-										->sum('id');
+					->where('code', $item['code'])
+					->select('id')
+					->sum('id');
 
 				$movementDetail = new WarehouseMovementDetail();
 				$movementDetail->warehouse_movement_id = $movementReceptor->id;
@@ -521,21 +526,21 @@ class StockGlpRegisterController extends Controller
 				$movementDetail->new_stock_repair = $article->stock_repair;
 				$movementDetail->new_stock_return = $article->stock_return;
 				$movementDetail->new_stock_damaged = $article->stock_damaged;
-			//	$movementDetail->price = $price;
-			//	$movementDetail->sale_value = $sale_value;
-			//	$movementDetail->exonerated_value = 0;
-			//	$movementDetail->inaccurate_value = $inaccurate_value;
-			//	$movementDetail->igv = $igv;
-			//	$movementDetail->total = $total;
-			//	$movementDetail->igv_perception = $igv_perception;
-			//	$movementDetail->igv_percentage = $item['igv_percentage'];
-			//	$movementDetail->igv_perception_percentage = $item['perception_percentage'];
+				//	$movementDetail->price = $price;
+				//	$movementDetail->sale_value = $sale_value;
+				//	$movementDetail->exonerated_value = 0;
+				//	$movementDetail->inaccurate_value = $inaccurate_value;
+				//	$movementDetail->igv = $igv;
+				//	$movementDetail->total = $total;
+				//	$movementDetail->igv_perception = $igv_perception;
+				//	$movementDetail->igv_percentage = $item['igv_percentage'];
+				//	$movementDetail->igv_perception_percentage = $item['perception_percentage'];
 				$movementDetail->created_at_user = Auth::user()->user;
 				$movementDetail->updated_at_user = Auth::user()->user;
 
 				$tmpArticle = Article::where('warehouse_type_id', request('model.warehouse_receiver'))
-									->where('code', $item['code'])
-									->first();
+					->where('code', $item['code'])
+					->first();
 
 				if ($tmpArticle) {
 					$tmpArticle->stock_good += $converted_amount;
@@ -558,7 +563,7 @@ class StockGlpRegisterController extends Controller
 			$referral_guide_number = request('model.referral_guide_number');
 			$warehouse_type_id_receiver = request('model.warehouse_receiver');
 
-			$article_code= $item['id'];
+			$article_code = $item['id'];
 
 			$id = WarehouseMovement::insertGetId([
 				'company_id' => $company_id,
@@ -566,12 +571,12 @@ class StockGlpRegisterController extends Controller
 				'movement_class_id' => 2,
 				'movement_type_id' => 11, //Pre Venta
 				'warehouse_account_type_id' => 3, //Trabajador
-				'referral_guide_series'=> $referral_guide_series,
-				'referral_guide_number'=> $referral_guide_number,
+				'referral_guide_series' => $referral_guide_series,
+				'referral_guide_number' => $referral_guide_number,
 				'stock_pend' => $converted_amount,
 				'total' => $converted_amount,
-				'created_at' => date('Y-m-d H:i:s') ,
-				'updated_at' => date('Y-m-d H:i:s') ,
+				'created_at' => date('Y-m-d H:i:s'),
+				'updated_at' => date('Y-m-d H:i:s'),
 			]);
 
 			WarehouseMovementDetail::insert([
@@ -579,9 +584,9 @@ class StockGlpRegisterController extends Controller
 				'item_number' => 1,
 				'article_code' => $article_code,
 				'article_num' => 4771,
-				'converted_amount' => $converted_amount,			
+				'converted_amount' => $converted_amount,
 				'total' => $converted_amount,
-				'sale_value'=>1,
+				'sale_value' => 1,
 				'created_at' => date('Y-m-d H:i:s'),
 				'updated_at' => date('Y-m-d H:i:s'),
 			]);
@@ -591,19 +596,19 @@ class StockGlpRegisterController extends Controller
 				'article_code' => 4856,
 				'article_num' => 4856,
 				'digit_amount' => $converted_amount,
-				'converted_amount' => ($converted_amount/($isla*3.785412)),
-				'sale_value'=>($isla*3.785412),
+				'converted_amount' => ($converted_amount / ($isla * 3.785412)),
+				'sale_value' => ($isla * 3.785412),
 				'total' => $converted_amount,
 				'created_at' => date('Y-m-d H:i:s'),
 				'updated_at' => date('Y-m-d H:i:s'),
 			]);
 
 			$tmpArticle = Article::where('warehouse_type_id', request('model.warehouse_receiver'))
-									->where('code', 3)
-									->first();
+				->where('code', 3)
+				->first();
 
 			if ($tmpArticle) {
-				$tmpArticle->stock_good += ($converted_amount/($isla*3.785412));
+				$tmpArticle->stock_good += ($converted_amount / ($isla * 3.785412));
 				$tmpArticle->save();
 			}
 		}
@@ -614,13 +619,13 @@ class StockGlpRegisterController extends Controller
 	public function getInvoices()
 	{
 		return response()->json(
-			WarehouseMovement::where('movement_type_id', 1)
+			WarehouseMovement::where('movement_type_id', request('movement_type'))
 				->where('warehouse_type_id', request('warehouse_type'))
 				->whereNotNull('stock_pend')
 				->where('stock_pend', '>', 0)
 				->sum('stock_pend'),
 			200
-		
+
 		);
 	}
 }
