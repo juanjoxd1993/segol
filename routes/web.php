@@ -350,6 +350,18 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/logistica/registro-produccion/obtener-articulo', 'ProductionController@getArticle')->name('dashboard.logistics.production_register.get_article');
 	Route::post('/logistica/registro-produccion/guardar', 'ProductionController@store')->name('dashboard.logistics.production_register.store');
 
+	/** Operaciones > Registro de Producción */
+	Route::get('/logistica/produccion', 'MovementRegisterController@index')->name('dashboard.logistics.movement_register');
+	Route::post('/logistica/produccion/validar-formulario', 'MovementRegisterController@validateForm')->name('dashboard.logistics.movement_register.validate_form');
+	Route::post('/logistica/produccion/listar', 'MovementRegisterController@list')->name('dashboard.logistics.movement_register.list');
+	Route::post('/logistica/produccion/listar-cuentas', 'MovementRegisterController@getAccounts')->name('dashboard.logistics.movement_register.get_accounts');
+	Route::post('/logistica/produccion/listar-articulos', 'MovementRegisterController@getArticles')->name('dashboard.logistics.movement_register.get_articles');
+	Route::post('/logistica/produccion/obtener-percepcion', 'MovementRegisterController@getPerceptionPercentage')->name('dashboard.logistics.movement_register.get_perception_percentage');
+	Route::post('/logistica/produccion/obtener-tasas', 'MovementRegisterController@getArticleRates')->name('dashboard.logistics.movement_register.get_article_rates');
+	Route::post('/logistica/produccion/obtener-articulo', 'MovementRegisterController@getArticle')->name('dashboard.logistics.movement_register.get_article');
+	Route::post('/logistica/produccion/guardar', 'MovementRegisterController@store')->name('dashboard.logistics.movement_register.store');
+
+
 	/** Operaciones > Reporte de Stock ATE */
 	Route::get('operaciones/reporte/reporte-masa', 'StockAteReportController@index')->name('dashboard.report.stock_ate');
 	Route::post('operaciones/reporte/reporte-masa/validar-formulario', 'StockAteReportController@validateForm')->name('dashboard.report.stock_ate.validate_form');

@@ -459,6 +459,14 @@
 									<span class="kt-menu__link-text">Ajuste de Inventario</span>
 								</a>
 							</li>
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.logistics.movement_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.logistics.movement_register') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Registro de Producción</span>
+								</a>
+							</li>
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.anulacionguias' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.anulacionguias') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
