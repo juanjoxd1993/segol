@@ -41,7 +41,7 @@
                             <div id="warehouse_receiver-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3" >
+                  <!-- <div class="col-lg-3" >
                         <div class="form-group">
                             <label class="form-control-label">Guia:</label>
                             <select class="form-control" name="invoice" id="invoice" v-model="model.invoice" @focus="$parent.clearErrorMsg($event)">
@@ -51,6 +51,7 @@
                             <div id="invoice-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+                   -->  
 					<div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Fecha Emisión:</label>
@@ -117,13 +118,13 @@
                             <div id="referral_voucher_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 32 ? '' : ' d-none')">
+                <!--    <div v-bind:class="'col-lg-3' + (model.movement_type_id != 32 ? '' : ' d-none')">
                         <div class="form-group">
                             <label class="form-control-label">Cisterna:</label>
                             <input type="text" class="form-control" name="license_plate" id="license_plate" v-model="model.license_plate" @focus="$parent.clearErrorMsg($event)">
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
-                    </div>
+                    </div> --> 
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tracto:</label>
@@ -148,7 +149,7 @@
                             <div id="traslate_date-error" class="error invalid-feedback"></div>
                         </div>
 
-                        <div class="col-lg-3">
+                    <!--    <div class="col-lg-3">
                         <div class="form-group">
                         <label class="form-control-label">Mezcla:</label>
                             <select class="form-control" name="mezcla" id="mezcla" v-model="model.mezcla" @focus="$parent.clearErrorMsg($event)">
@@ -159,14 +160,15 @@
                             </select>
                             <div id="mezcla-error" class="error invalid-feedback"></div>
                     </div>
-                    </div>
-                    <div class="col-lg-3">
+                    </div>-->
+
+                 <!--   <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Gravedad:</label>
                             <input type="text" class="form-control" name="isla" id="isla" v-model="model.isla" @focus="$parent.clearErrorMsg($event)">
                             <div id="isla-error" class="error invalid-feedback"></div>
                         </div>
-                    </div>
+                    </div>-->
 
 
                 </div>

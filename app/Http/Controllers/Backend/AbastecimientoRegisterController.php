@@ -30,7 +30,7 @@ class AbastecimientoRegisterController extends Controller
 		$movement_classes = MoventClass::select('id', 'name')->get();
 		$movement_types = MoventType::select('id', 'movent_class', 'name')->get();
 		$movement_stock_types = MovementStockType::select('id', 'name')->get();
-		$warehouse_types = WarehouseType::select('id', 'name')->get();
+		$warehouse_types = WarehouseType::whereIn('id', [2,3,4])->get();
 		$companies = Company::select('id', 'name')->get();
 		$currencies = Currency::select('id', 'name', 'symbol')->get();
 		$current_date = date('d-m-Y');
@@ -204,10 +204,11 @@ class AbastecimientoRegisterController extends Controller
 					'stock_repair',
 					'stock_return',
 					'stock_damaged',
-					'group_id'
+					'group_id',
+					'family_id'
 				)
 				->where('warehouse_type_id', $warehouse_type_id)
-				->whereIn('code', [1,2])
+				->whereIn('family_id', [1,6])
 				->orderBy('code', 'asc')
 				->get();
 
@@ -434,6 +435,7 @@ class AbastecimientoRegisterController extends Controller
 			$movementDetail->new_stock_damaged = $article->stock_damaged;
 			$movementDetail->created_at_user = Auth::user()->user;
 			$movementDetail->updated_at_user = Auth::user()->user;
+
 
 			$article->stock_good -= $movementDetail->converted_amount;
 			$movementDetail->new_stock_good -= $movementDetail->converted_amount;
