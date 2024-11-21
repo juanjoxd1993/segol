@@ -104,6 +104,7 @@ class LiquidationFinalController extends Controller
 
 		$elements = WarehouseMovement::select('id', 'movement_number', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'traslate_date', 'movement_type_id')
 			->where('company_id', $company_id)
+			->whereIn('movement_type_id', [11,12])
 			->where('warehouse_type_id', $warehouse_type_id)
 			->where('sale_id', null)
 			
