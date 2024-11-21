@@ -245,7 +245,26 @@ class GuidesRegisterController extends Controller
 			$movementDetail = new WarehouseMovementDetail();
 			$movementDetail->warehouse_movement_id = $movement->id;
 			$movementDetail->item_number = $item['item_number'];
-			$movementDetail->article_code = $item['article_id'];
+			
+			if ($item['article_id']== 4841){
+				$article_mer=4773;
+			}
+			elseif ($item['article_id']== 4844){
+				$article_mer=4775;
+			}
+			elseif ($item['article_id']== 4846){
+				$article_mer=4777;
+			}
+			elseif ($item['article_id']== 4848){
+				$article_mer=4779;
+			}
+			else{
+				$article_mer=4773;
+			}
+
+
+
+			$movementDetail->article_code = $article_mer;
 			$movementDetail->article_num = $article->id;
 			$movementDetail->digit_amount = $digit_amount;
 			$movementDetail->converted_amount = $converted_amount;
