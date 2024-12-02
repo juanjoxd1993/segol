@@ -41,6 +41,7 @@
                                 <option value="1">Planta Ate</option>
                                 <option value="2">Planta Callao</option>
                                 <option value="3">Granel</option>
+                                <option value="75">Planta Iquitos</option>
                                 <!-- <option v-for="planta in plantas" v-bind:value="planta.id">{{ planta.name }}</option> -->
                             </select>
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
@@ -93,10 +94,11 @@
                     warehouse_type_index: 0,
                 },
                 warehouse_types: [
-                    [1,4,13,''],
+                    [1,4,13,75,''],
                     [4],
                     [13],
                     [1],
+                    [75],
                 ]
             }
         },
