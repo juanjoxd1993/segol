@@ -819,4 +819,13 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/rrhh/recursive/listar', 'RecursiveRegisterController@list')->name('dashboard.rrhh.recursive.list');
 	Route::post('/rrhh/recursive/obtener-dia', 'RecursiveRegisterController@getMinEffectiveDate')->name('dashboard.rrhh.recursive.get_min_effective_date');
 	Route::post('/rrhh/recursive/guardar', 'RecursiveRegisterController@store')->name('dashboard.rrhh.recursive.store');
+
+
+	/* Reporte de ventas congráficos */
+	Route::get('/grafico/volumen-ventas', 'SalesReportGraficController@index')->name('dashboard.report.sales_grafic');
+	Route::post('/grafico/volumen-ventas/validar-formulario', 'SalesReportGraficController@validateForm')->name('dashboard.report.sales_grafic.validate_form');
+	Route::post('/grafico/volumen-ventas/listar', 'SalesReportGraficController@list')->name('dashboard.report.sales_grafic.list');
+	Route::post('/grafico/volumen-ventas/exportar', 'SalesReportGraficController@export')->name('dashboard.report.sales_grafic.export');
+
+	
 });
