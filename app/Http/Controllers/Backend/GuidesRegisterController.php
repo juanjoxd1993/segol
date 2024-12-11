@@ -205,7 +205,7 @@ class GuidesRegisterController extends Controller
 		$movement->created_at = date('Y-m-d', strtotime($since_date));
 		$movement->created_at_user = Auth::user()->user;
 		$movement->updated_at_user = Auth::user()->user;
-		$movement->traslate_date = date('Y-m-d', strtotime($traslate_date));
+		$movement->traslate_date = date('Y-m-d', strtotime($since_date));
 		$movement->fac_date = date('Y-m-d', strtotime($traslate_date));
 		$movement->state = 1;
 		$movement->save();
