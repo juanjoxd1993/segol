@@ -945,7 +945,7 @@
             <!--Menú de Finanzas-->
 
 
-			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24)
+			@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 24|| Auth::user()->id == 36 )
 
 				<li class="kt-menu__item  kt-menu__item--submenu {{ ( strpos(url()->current(), '/administracion/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' ) }}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
 					<a href="javascript:;" class="kt-menu__link kt-menu__toggle">
