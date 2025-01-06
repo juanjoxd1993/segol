@@ -182,25 +182,18 @@ class StockGlpRegisterController extends Controller
 			$perception_percentage = 0;
 		}
 
-		if (request('movement_type_id') == 30) {
-			// Obtener artículos
-			$article = WarehouseMovementDetail::where('warehouse_movement_id', request('invoice'))->first()->article;
-			$article->sale_unit_id = $article->sale_unit->name;
-			$article->warehouse_unit_id = $article->warehouse_unit->name;
 
-			$articles = [$article];
-		} else {
-			// Obtener artículos
-			$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged', 'group_id')
-				->where('warehouse_type_id', $warehouse_type_id)
-				->orderBy('code', 'asc')
-				->get();
+		// Obtener artículos
+		$articles = Article::select('id', 'code', 'name', 'package_sale', 'sale_unit_id', 'package_warehouse', 'warehouse_unit_id', 'igv', 'perception', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged', 'group_id')
+			->where('warehouse_type_id', $warehouse_type_id)
+			->orderBy('code', 'asc')
+			->get();
 
-			$articles->map(function ($item, $index) {
-				$item->sale_unit_id = $item->sale_unit['name'];
-				$item->warehouse_unit_id = $item->warehouse_unit['name'];
-			});
-		}
+		$articles->map(function ($item, $index) {
+			$item->sale_unit_id = $item->sale_unit['name'];
+			$item->warehouse_unit_id = $item->warehouse_unit['name'];
+		});
+
 
 		return response()->json([
 			'model'					=> $model,

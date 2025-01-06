@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DespatchAdvice xmlns="urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2" 
+xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" 
+xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" 
+xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
+<cbc:UBLVersionID>2.1</cbc:UBLVersionID>
+<cbc:CustomizationID>2.0</cbc:CustomizationID>
+<cbc:ID>TC40-10014</cbc:ID>
+<cbc:IssueDate>2025-01-05</cbc:IssueDate>
+<!--TIPO DE DOCUMENTO 09 = GUIA DE REMISION REMITENTE -->
+<cbc:DespatchAdviceTypeCode>09</cbc:DespatchAdviceTypeCode>
+<cbc:Note>Venta-Planta | 2-3328 | SCOP: </cbc:Note>
+<cbc:LineCountNumeric>1</cbc:LineCountNumeric>
+<!-- DOCUMENTOS RELACIONADOS 
+<cac:AdditionalDocumentReference>
+<cbc:ID>F001-6</cbc:ID>
+<cbc:DocumentTypeCode>01</cbc:DocumentTypeCode>
+<cbc:DocumentType>Factura</cbc:DocumentType>
+<cac:IssuerParty>
+<cac:PartyIdentification>
+<cbc:ID schemeID="6">20293658146</cbc:ID>
+</cac:PartyIdentification>
+</cac:IssuerParty>
+</cac:AdditionalDocumentReference>
+-->
+<cac:Signature>
+<cbc:ID>IDSignature</cbc:ID>
+<cac:SignatoryParty>
+<cac:PartyIdentification>
+<cbc:ID>20293658146</cbc:ID>
+</cac:PartyIdentification>
+<cac:PartyName>
+<cbc:Name>PUNTO GAS SELVA S.A.C.</cbc:Name>
+</cac:PartyName>
+</cac:SignatoryParty>
+<cac:DigitalSignatureAttachment>
+<cac:ExternalReference>
+<cbc:URI>IDSignature</cbc:URI>
+</cac:ExternalReference>
+</cac:DigitalSignatureAttachment>
+</cac:Signature>
+<cac:DespatchSupplierParty>
+<cac:Party>
+<cac:PartyIdentification>
+<cbc:ID schemeID="6">20293658146</cbc:ID>
+</cac:PartyIdentification>
+<!-- Datos del remitente -->
+<cac:PostalAddress>
+<cbc:ID>160101</cbc:ID>
+<cbc:StreetName>AV. JOSE ABELARDO QUIÑONES KM. 4.5 (ANTES DE LLEGAR PARADERO DE SECADA)</cbc:StreetName>
+<cbc:CitySubdivisionName>URBANIZACION</cbc:CitySubdivisionName>
+<cbc:CityName>MAYNAS</cbc:CityName>
+<cbc:CountrySubentity>LORETO</cbc:CountrySubentity>
+<cbc:District>SAN JUAN BAUTISTA</cbc:District>
+<cac:Country>
+<cbc:IdentificationCode>PE</cbc:IdentificationCode>
+</cac:Country>
+</cac:PostalAddress>
+<cac:PartyLegalEntity>
+<cbc:RegistrationName>PUNTO GAS SELVA S.A.C.</cbc:RegistrationName>
+</cac:PartyLegalEntity>
+</cac:Party>
+</cac:DespatchSupplierParty>
+<!-- Datos del destinario -->
+<cac:DeliveryCustomerParty>
+<cac:Party>
+<cac:PartyIdentification>
+<cbc:ID schemeID="6">10102981737</cbc:ID>
+</cac:PartyIdentification>
+<cac:PostalAddress>
+<cbc:ID>349</cbc:ID>
+<cbc:StreetName>NUEVA UBICACION</cbc:StreetName>
+<cbc:CitySubdivisionName>URBANIZACION</cbc:CitySubdivisionName>
+<cbc:CityName>LIMA</cbc:CityName>
+<cbc:CountrySubentity>PERU</cbc:CountrySubentity>
+<cbc:District>ATE</cbc:District>
+<cac:Country>
+<cbc:IdentificationCode>PE</cbc:IdentificationCode>
+</cac:Country>
+</cac:PostalAddress>
+<cac:PartyLegalEntity>
+<cbc:RegistrationName>BOGATICH ALIAGA VICENTE</cbc:RegistrationName>
+</cac:PartyLegalEntity>
+<cac:Contact>
+<cbc:ElectronicMail>enviofacturacion@puntodedistribucion.com</cbc:ElectronicMail>
+</cac:Contact>
+</cac:Party>
+</cac:DeliveryCustomerParty>
+<!-- SUNAT MOTIVO DE TRASLADO -->
+<cac:Shipment>
+<cbc:ID>SUNAT_Envio</cbc:ID>
+<cbc:HandlingCode>18</cbc:HandlingCode>
+<cbc:HandlingInstructions>TRASLADO EMISOR ITINERANTE CP</cbc:HandlingInstructions>
+<cbc:GrossWeightMeasure unitCode="KGM">140.00</cbc:GrossWeightMeasure>
+<cac:ShipmentStage>
+<cbc:TransportModeCode>02</cbc:TransportModeCode>
+<cac:TransitPeriod>
+<cbc:StartDate>2025-01-08</cbc:StartDate>
+</cac:TransitPeriod>
+<cac:DriverPerson>
+    <!-- Datos del CONDUCTOR -->
+<cbc:ID schemeID="1">03961250</cbc:ID>
+<cbc:FirstName>AYUDANTE DE ENVASADO</cbc:FirstName>
+<cbc:FamilyName>MATUTE ORTEGA CARLOS MANUEL</cbc:FamilyName>
+<cbc:JobTitle>Principal</cbc:JobTitle>
+<cac:IdentityDocumentReference>
+<cbc:ID>Q03961250</cbc:ID>
+</cac:IdentityDocumentReference>
+</cac:DriverPerson>
+</cac:ShipmentStage>
+
+<cac:Delivery>
+    <!-- Datos del PUNTO DE LLEGADA -->
+<cac:DeliveryAddress>
+<cbc:ID>349</cbc:ID>
+<cbc:CitySubdivisionName>URBANIZACION</cbc:CitySubdivisionName>
+<cbc:CityName>LIMA</cbc:CityName>
+<cbc:CountrySubentity>LIMA</cbc:CountrySubentity>
+<cbc:District>ATE</cbc:District>
+<cac:AddressLine>
+<cbc:Line>NUEVA UBICACION</cbc:Line>
+</cac:AddressLine>
+<cac:Country>
+<cbc:IdentificationCode>PE</cbc:IdentificationCode>
+</cac:Country>
+</cac:DeliveryAddress>
+<!-- Datos del PUNTO DE PARTIDA -->
+<cac:Despatch>
+<cac:DespatchAddress>
+<cbc:ID>160101</cbc:ID>
+<cbc:CitySubdivisionName>URBANIZACION</cbc:CitySubdivisionName>
+<cbc:CityName>MAYNAS</cbc:CityName>
+<cbc:CountrySubentity>LORETO</cbc:CountrySubentity>
+<cbc:District>SAN JUAN BAUTISTA</cbc:District>
+<cac:AddressLine>
+<cbc:Line>AV. JOSE ABELARDO QUIÑONES KM. 4.5 (ANTES DE LLEGAR PARADERO DE SECADA)</cbc:Line>
+</cac:AddressLine>
+<cac:Country>
+<cbc:IdentificationCode>PE</cbc:IdentificationCode>
+</cac:Country>
+</cac:DespatchAddress>
+</cac:Despatch>
+</cac:Delivery>
+<cac:TransportHandlingUnit>
+<cac:TransportEquipment>
+<cbc:ID>XXXYYY</cbc:ID>
+</cac:TransportEquipment>
+</cac:TransportHandlingUnit>
+</cac:Shipment>
+<cac:DespatchLine>
+<cbc:ID>1</cbc:ID>
+<cbc:Note>UNIDAD</cbc:Note>
+<cbc:DeliveredQuantity unitCode="NIU">5.00</cbc:DeliveredQuantity>
+<cac:OrderLineReference>
+<cbc:LineID>1</cbc:LineID>
+</cac:OrderLineReference>
+<cac:Item>
+<cbc:Description>PETROAMERICA GLP 10 KG</cbc:Description>
+<cac:SellersItemIdentification>
+<cbc:ID>4773</cbc:ID>
+</cac:SellersItemIdentification>
+</cac:Item>
+</cac:DespatchLine>
+<cac:DespatchLine>
+<cbc:ID>2</cbc:ID>
+<cbc:Note>UNIDAD</cbc:Note>
+<cbc:DeliveredQuantity unitCode="NIU">2.00</cbc:DeliveredQuantity>
+<cac:OrderLineReference>
+<cbc:LineID>1</cbc:LineID>
+</cac:OrderLineReference>
+<cac:Item>
+<cbc:Description>PETROAMERICA GLP 45 KG</cbc:Description>
+<cac:SellersItemIdentification>
+<cbc:ID>4775</cbc:ID>
+</cac:SellersItemIdentification>
+</cac:Item>
+</cac:DespatchLine>
+</DespatchAdvice>

@@ -17,7 +17,7 @@
                         <div class="form-group">
                             <label class="form-control-label">Compañía:</label>
                             <select class="form-control" name="company_id" id="company_id" v-model="model.company_id" @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
+                                <option value="" selected disabled>Seleccionar</option>
                                 <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{ company.name }}</option>
                             </select>
                             <div id="company_id-error" class="error invalid-feedback"></div>
@@ -62,7 +62,7 @@
         data() {
             return {
                 model: {
-                    company_id: ''
+                    company_id: '2'
                 },
             }
         },

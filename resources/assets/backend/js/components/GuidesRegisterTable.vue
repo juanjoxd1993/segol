@@ -47,10 +47,6 @@ import EventBus from '../event-bus';
 
 export default {
     props: {
-        igv: {
-            type: Object,
-            default: ''
-        },
         url: {
             type: String,
             default: ''

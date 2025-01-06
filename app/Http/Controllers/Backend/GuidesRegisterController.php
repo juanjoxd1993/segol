@@ -19,6 +19,15 @@ class GuidesRegisterController extends Controller
 {
 	public function index()
 	{
+
+		$max_electronic = WarehouseMovement::where('company_id', 2)
+			->where('warehouse_type_id', 75)
+			->where('movement_type_id', 12)
+			->where('electronic', 1)
+			->where('referral_serie_number', 'TC40')
+			->max('referral_voucher_number');
+		$max_electronic = $max_electronic ? $max_electronic + 1 : 1;
+
 		$warehouse_account_types = WarehouseAccountType::whereIn('id', [1, 3])->get();
 		$companies = Company::select('id', 'name')->whereIn('id', [2])->get();
 		$current_date = date('d-m-Y');
@@ -40,6 +49,7 @@ class GuidesRegisterController extends Controller
 			'warehouse_account_types',
 			'guide_series',
 			'articles',
+			'max_electronic',
 		));
 	}
 
@@ -152,6 +162,11 @@ class GuidesRegisterController extends Controller
 		$license_plate = request('model.license_plate');
 		$since_date = request('model.since_date');
 		$traslate_date = request('model.traslate_date');
+
+		$electronic = request('model.electronic');
+		$serie_electronic = request('model.serie_electronic');
+		$number_electronic = request('model.number_electronic');
+
 		$articles = request('article_list');;
 
 		$tmpGuideSerie = GuidesSerie::where('company_id', $company_id)
@@ -199,10 +214,14 @@ class GuidesRegisterController extends Controller
 		$movement->account_name = $movement_type_id == 12 ? $account->business_name : '';
 		$movement->referral_guide_series = $referral_guide_series;
 		$movement->referral_guide_number = $referral_guide_number;
+		$movement->referral_serie_number = $electronic == 1 ? $serie_electronic : null;
+		$movement->referral_voucher_number = $electronic == 1 ? $number_electronic : null;
 		$movement->license_plate = $license_plate;
+		$movement->electronic = $electronic;
 		$movement->total = array_sum(array_column($articles, 'quantity'));
 		$movement->action_type_id = ($movement_type ? $movement_type->action_type_id : null);
 		$movement->created_at = date('Y-m-d', strtotime($since_date));
+		$movement->efact = 0;
 		$movement->created_at_user = Auth::user()->user;
 		$movement->updated_at_user = Auth::user()->user;
 		$movement->traslate_date = date('Y-m-d', strtotime($since_date));
@@ -245,21 +264,17 @@ class GuidesRegisterController extends Controller
 			$movementDetail = new WarehouseMovementDetail();
 			$movementDetail->warehouse_movement_id = $movement->id;
 			$movementDetail->item_number = $item['item_number'];
-			
-			if ($item['article_id']== 4841){
-				$article_mer=4773;
-			}
-			elseif ($item['article_id']== 4844){
-				$article_mer=4775;
-			}
-			elseif ($item['article_id']== 4846){
-				$article_mer=4777;
-			}
-			elseif ($item['article_id']== 4848){
-				$article_mer=4779;
-			}
-			else{
-				$article_mer=4773;
+
+			if ($item['article_id'] == 4841) {
+				$article_mer = 4773;
+			} elseif ($item['article_id'] == 4844) {
+				$article_mer = 4775;
+			} elseif ($item['article_id'] == 4846) {
+				$article_mer = 4777;
+			} elseif ($item['article_id'] == 4848) {
+				$article_mer = 4779;
+			} else {
+				$article_mer = 4773;
 			}
 
 

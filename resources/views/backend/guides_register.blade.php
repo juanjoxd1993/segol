@@ -12,6 +12,7 @@
 		:guide_series = "{{ $guide_series }}"
 		:current_date = "'{{ $current_date }}'"
 		:min_datetime = "'{{ $min_datetime }}'"
+		:max_electronic = "'{{ $max_electronic }}'"
 		:max_datetime = "'{{ $max_datetime }}'"
 		:url = "'{{ route('dashboard.operations.guides_register.list') }}'"
 		:url_get_clients = "'{{ route('dashboard.operations.guides_register.get_clients') }}'"

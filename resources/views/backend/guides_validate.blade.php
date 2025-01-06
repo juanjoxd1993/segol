@@ -17,4 +17,6 @@
 		:url_get_articles = "'{{ route('dashboard.operations.guides_validate.get_articles') }}'"
 		:url_validate = "'{{ route('dashboard.operations.guides_validate.validate_guides') }}'"
     ></guides-validate-table>
+
+	<loading></loading>
 @endsection

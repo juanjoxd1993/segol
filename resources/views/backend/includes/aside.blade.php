@@ -67,12 +67,12 @@
 
 
 							@if(Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5|| Auth::user()->id == 34 || Auth::user()->id == 36)
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.voucher.send_ose' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.voucher.send_ose') }}" class="kt-menu__link ">
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.guide.efact' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.guide.efact') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
-									<span class="kt-menu__link-text">Envío OSE</span>
+									<span class="kt-menu__link-text">EFACT :: Guias de Remisión</span>
 								</a>
 							</li>
 							@endif
@@ -475,8 +475,8 @@
 									<span class="kt-menu__link-text">Anulación Guías</span>
 								</a>
 							</li>
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.operations_part' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.operations.operations_part') }}" class="kt-menu__link ">
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.guias_electronic.report' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.guias_electronic.report') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
 										<span></span>
 									</i>
@@ -853,17 +853,6 @@
 								</a>
 							</li>
 
-							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.stock_glp_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
-								<a href="{{ route('dashboard.operations.stock_glp_register') }}" class="kt-menu__link ">
-									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
-										<span></span>
-									</i>
-									<span class="kt-menu__link-text">Abastecimiento GLP</span>
-								</a>
-							</li>
-
-
-							
 
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.inventories' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.inventories') }}" class="kt-menu__link ">

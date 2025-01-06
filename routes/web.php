@@ -31,6 +31,13 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/facturacion/obtener-detalle-documento', 'VoucherController@get_voucher_detail')->name('dashboard.voucher.get_voucher_detail');
 	Route::post('/facturacion/enviar-documento', 'VoucherController@send_voucher')->name('dashboard.voucher.send_voucher');
 
+	/** Facturación > Envío Guía de Remisión OSE */
+	Route::get('/facturacion/reporte-gr-ose', 'GuideEfactController@index')->name('dashboard.guide.efact');
+	Route::post('/facturacion/validar-formulario-gr-ose', 'GuideEfactController@validate_voucher_form')->name('dashboard.guide.efact.validate_voucher_form');
+	Route::post('/facturacion/listar-gr-ose', 'GuideEfactController@list')->name('dashboard.guide.efact.list');
+	Route::post('/facturacion/obtener-detalle-gr-ose', 'GuideEfactController@get_detail')->name('dashboard.guide.efact.get_detail');
+	Route::post('/facturacion/enviar-gr-ose', 'GuideEfactController@send_voucher')->name('dashboard.guide.efact.send_voucher');
+
 	/** Facturación > Registro de Documentos por Cobrar */
 	Route::get('/facturacion/documentos-por-cobrar', 'RegisterDocumentChargeController@index')->name('dashboard.voucher.register_document_charge');
 	Route::post('/facturacion/documentos-por-cobrar/validar-primer-paso', 'RegisterDocumentChargeController@validateFirstStep')->name('dashboard.voucher.register_document_charge.validate_first_step');
@@ -295,13 +302,12 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/operaciones/registro-movimiento-existencias/guardar', 'GuidesRegisterController@store')->name('dashboard.operations.guides_register.store');
 	Route::get('/operaciones/registro-movimiento-existencias/obtener-siguiente-correlativo', 'GuidesRegisterController@getNextcorrelative')->name('dashboard.operations.guides_register.next_correlative');
 
-	/** Operaciones > Parte de Almacén */
-	Route::get('/operaciones/parte-almacen', 'OperationsPartController@index')->name('dashboard.operations.operations_part');
-	Route::post('/operaciones/parte-almacen/validar-formulario', 'OperationsPartController@validateForm')->name('dashboard.operations.operations_part.validate_form');
-	Route::post('/operaciones/parte-almacen/obtener-movimientos-almacen', 'OperationsPartController@getWarehouseMovements')->name('dashboard.operations.operations_part.get_warehouse_movements');
-	Route::post('/operaciones/parte-almacen/listar', 'OperationsPartController@list')->name('dashboard.operations.operations_part.list');
-	Route::post('/operaciones/parte-almacen/exportar', 'OperationsPartController@export')->name('dashboard.operations.operations_part.export');
-	Route::get('/operaciones/parte-almacen/exportar-guia-remision', 'OperationsPartController@exportReferralGuide')->name('dashboard.operations.operations_part.export_referral_guide');
+	/** Control GLP > Impresión de Guias */
+	Route::get('/operaciones/guias-electronicas', 'GuiasElectronicReportController@index')->name('dashboard.guias_electronic.report');
+	Route::post('/operaciones/guias-electronicas-validar-form', 'GuiasElectronicReportController@validateForm')->name('dashboard.guias_electronic.validar_form');
+	Route::post('/operaciones/guias-electronicas-listar', 'GuiasElectronicReportController@list')->name('dashboard.guias_electronic.list');
+	Route::post('/operaciones/guias-electronicas-descargar-pdf', 'GuiasElectronicReportController@generarPdf')->name('dashboard.guias_electronic.descargar');
+	Route::post('/operaciones/guias-electronicas-detalle', 'GuiasElectronicReportController@detail')->name('dashboard.guias_electronic.detalle');
 
 	/** Operaciones > Validar Guías */
 	Route::get('/operaciones/validar-guias', 'GuidesValidateController@index')->name('dashboard.operations.guides_validate');

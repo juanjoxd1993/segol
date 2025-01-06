@@ -2,32 +2,14 @@
 
 namespace App\Http\Controllers\Backend;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Company;
-use App\MoventClass;
-use App\MoventType;
-use App\WarehouseDocumentType;
-use App\WarehouseType;
 use App\Article;
-use App\Currency;
-use App\WarehouseAccountType;
-use App\Client;
-use App\Employee;
-use App\MovementStockType;
-use App\Provider;
-use App\Rate;
-use App\Unit;
 use App\WarehouseMovement;
 use App\WarehouseMovementDetail;
-use App\ClientRoute;
-use App\GuidesSerie;
-use App\Vehicle;
 use App\GuidesState;
 use App\WarehouseTypeInUser;
 use Auth;
-use Carbon\CarbonImmutable;
-use Exception;
 use Illuminate\Support\Facades\DB;
 
 class GuidesValidateController extends Controller
@@ -35,7 +17,7 @@ class GuidesValidateController extends Controller
 
     public function index()
     {
-        $companies = Company::select('id', 'name')->get();
+        $companies = Company::select('id', 'name')->where('id', 2)->get();
 
         return view('backend.guides_validate')->with(compact(
             'companies'
@@ -70,12 +52,13 @@ class GuidesValidateController extends Controller
 
         $elements = WarehouseMovement::select(
             'id',
-            'referral_guide_series',
-            'referral_guide_number',
+            DB::Raw('CONCAT(referral_guide_series,"-",referral_guide_number) as fisico'),
+            DB::Raw('CONCAT(referral_serie_number,"-",referral_voucher_number) as electronico'),
             'license_plate',
             'account_name',
             'license_plate',
-            'created_at'
+            'created_at',
+            DB::raw('CASE WHEN electronic = 1 THEN "Electrónico" ELSE "Físico" END as tipo_documento')
         )
             ->where('company_id', $company_id)
             ->where('warehouse_type_id', $warehouse_type_id)
@@ -87,6 +70,7 @@ class GuidesValidateController extends Controller
                     ->orWhere('action_type_id', 8);
             })
             ->where('state', 1)
+            ->whereIn('movement_type_id', [11, 12])
             ->orderBy('movement_number', 'asc')
             ->get();
 
@@ -111,7 +95,10 @@ class GuidesValidateController extends Controller
         $company_id = request('company_id');
         $warehouse_movement_id = request('warehouse_movement_id');
 
-        $movement = WarehouseMovement::select('warehouse_account_type_id')
+        $movement = WarehouseMovement::select(
+            DB::Raw('CONCAT(referral_guide_series,"-",referral_guide_number) as title'),
+            'warehouse_account_type_id'
+        )
             ->where('id', $warehouse_movement_id)
             ->first();
 
@@ -176,7 +163,8 @@ class GuidesValidateController extends Controller
 
         return [
             'articles' => $elements,
-            'account_type_id' => $account_type_id
+            'account_type_id' => $account_type_id,
+            'movement' => $movement
         ];
     }
 

@@ -21,9 +21,39 @@
                                 v-model="model.movement_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="" selected disabled>Seleccionar</option>
                                 <option value="12">Venta Planta</option>
-                                <option value="11">Pre-Venta</option>
                             </select>
                             <div id="movement_type_id-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Tipo de Guía:</label>
+                            <select class="form-control" name="electronic" id="electronic" v-model="model.electronic"
+                                @focus="$parent.clearErrorMsg($event)">
+                                <option value="" selected disabled>Seleccionar</option>
+                                <option value="0">Físico</option>
+                                <option value="1">Electrónico</option>
+                            </select>
+                            <div id="electronic-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3" v-if="model.electronic == 1">
+                        <div class="form-group">
+                            <label class="form-control-label">Serie Electrónico:</label>
+                            <input type="text" class="form-control" name="serie_electronic" id="serie_electronic" v-model="model.serie_electronic" readonly
+                                @focus="$parent.clearErrorMsg($event)">
+                            <div id="serie_electronic-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3" v-if="model.electronic == 1">
+                        <div class="form-group">
+                            <label class="form-control-label">N° Electrónico:</label>
+                            <input type="text" class="form-control" name="number_electronic" id="number_electronic" v-model="model.number_electronic" readonly
+                                @focus="$parent.clearErrorMsg($event)">
+                            <div id="number_electronic-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
 
@@ -64,7 +94,7 @@
                             <div id="traslate_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-3" id="cliente">
+                    <div class="col-lg-3" >
                         <div class="form-group">
                             <label class="form-control-label">Cliente:</label>
                             <select class="form-control kt-select2" name="client_id" id="client_id"
@@ -75,7 +105,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3" id="chofer">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Chofer:</label>
                             <select class="form-control kt-select2" name="chofer_id" id="chofer_id"
@@ -96,20 +126,20 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-1">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Serie:</label>
                             <select class="form-control" name="referral_guide_series" id="referral_guide_series"
                                 v-model="model.referral_guide_series" v-on:change="getNextCorrelative()"
                                 @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Serie</option>
+                                <option value="" selected disabled>Seleccionar</option>
                                 <option v-for="guide_serie in guide_series" :value="guide_serie.num_serie"
                                     v-bind:key="guide_serie.id">{{ guide_serie.num_serie }}</option>
                             </select>
                             <div id="referral_guide_series-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-2">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Número de Guía de Remisión:</label>
                             <input type="text" class="form-control readonly" name="referral_guide_number"
@@ -154,6 +184,10 @@ export default {
             type: String,
             default: ''
         },
+        max_electronic: {
+            type: String,
+            default: ''
+        },
         max_datetime: {
             type: String,
             default: ''
@@ -186,8 +220,8 @@ export default {
     data() {
         return {
             model: {
-                movement_type_id: '',
-                company_id: '',
+                movement_type_id: 12,
+                company_id: 2,
                 since_date: '',
                 traslate_date: '',
                 client_id: '',
@@ -195,7 +229,10 @@ export default {
                 license_plate: '',
                 driver_name: '',
                 referral_guide_series: '',
-                referral_guide_number: ''
+                referral_guide_number: '',
+                electronic: 0,
+                serie_electronic:'TC40',
+                number_electronic: this.max_electronic
             },
         }
     },
@@ -203,26 +240,10 @@ export default {
 
     },
     mounted() {
-        $('#chofer').hide();
-        $('#cliente').hide();
         this.newSelect2();
         this.newSelect3();
     },
     watch: {
-        'model.movement_type_id': function (val) {
-            if (val != '') {
-                $('#chofer').hide();
-                $('#cliente').hide();
-
-                if (val == 11) {
-                    $('#chofer').show();
-                } else if (val == 12) {
-                    $('#chofer').show();
-                    $('#cliente').show();
-                }
-            }
-
-        },
     },
     computed: {
 
