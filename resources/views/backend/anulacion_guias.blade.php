@@ -8,5 +8,8 @@
     <anulacion-guias
         :companies = "{{ $companies }}"
         :warehouse_types = "{{ $warehouse_types }}"
-    />
+    ></anulacion-guias>
+
+    <loading></loading>
+
 @endsection

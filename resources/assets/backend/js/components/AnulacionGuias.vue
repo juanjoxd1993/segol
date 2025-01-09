@@ -17,7 +17,7 @@
                             <div class="form-group">
                                 <label class="form-control-label">Compañía:</label>
                                 <select class="form-control" v-model="company_id">
-                                    <option value="">Seleccionar</option>
+                                    <option value="" selected disabled>Seleccionar</option>
                                     <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{
                                         company.name }}</option>
                                 </select>
@@ -29,7 +29,7 @@
                                 <label class="form-control-label">Almacén:</label>
                                 <select class="form-control" name="warehouse_type_id" id="warehouse_type_id"
                                     v-model="warehouse_type_id">
-                                    <option value="">Seleccionar</option>
+                                    <option value="" selected disabled>Seleccionar</option>
                                     <option v-for="warehouse_type in warehouse_types" :value="warehouse_type.id"
                                         v-bind:key="warehouse_type.id">{{ warehouse_type.name }}</option>
                                 </select>
@@ -84,8 +84,8 @@ export default {
     props: ['warehouse_types', 'companies'],
     data() {
         return {
-            company_id: '',
-            warehouse_type_id: '',
+            company_id: '2',
+            warehouse_type_id: '75',
             show_table: false,
 
             datatable: null,
@@ -197,18 +197,28 @@ export default {
                         textAlign: 'center',
                     },
                     {
-                        field: 'creation_date',
-                        title: 'Fecha',
+                        field: 'fecha_despacho',
+                        title: 'Fecha Despacho',
                         textAlign: 'center',
                     },
                     {
-                        field: 'referral_guide_series',
-                        title: 'Serie',
+                        field: 'fecha_traslado',
+                        title: 'Fecha Traslado',
                         textAlign: 'center',
                     },
                     {
-                        field: 'referral_guide_number',
-                        title: 'Número',
+                        field: 'license_plate',
+                        title: 'Placa',
+                        textAlign: 'center',
+                    },
+                    {
+                        field: 'cliente',
+                        title: 'Cliente',
+                        textAlign: 'center',
+                    },
+                    {
+                        field: 'guia',
+                        title: 'Guía de Remisión',
                         textAlign: 'center',
                     },
                     {

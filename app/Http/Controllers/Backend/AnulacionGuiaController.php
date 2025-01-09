@@ -10,14 +10,15 @@ use App\WarehouseType;
 use App\Article;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AnulacionGuiaController extends Controller
 {
     public function index()
     {
 
-        $companies = Company::select('id', 'name')->get();
-        $warehouse_types = WarehouseType::select('id', 'name')->get();
+        $companies = Company::select('id', 'name')->whereIn('id', [2])->get();
+        $warehouse_types = WarehouseType::select('id', 'name')->whereIn('id', [75])->get();
 
         return view('backend.anulacion_guias', compact('warehouse_types', 'companies'));
     }
@@ -25,12 +26,21 @@ class AnulacionGuiaController extends Controller
     public function searchGuides(Request $request)
     {
 
-        $elements = WarehouseMovement::select()
-                                    ->where('company_id', $request->company_id)
-                                    ->where('warehouse_type_id', $request->warehouse_type_id)
-                                    ->where('state', 1)
-                                    ->orderBy('movement_number', 'desc')
-                                    ->get();
+        $elements = WarehouseMovement::select(
+            'id',
+            'movement_number',
+            DB::Raw('DATE_FORMAT(created_at, "%Y-%m %d") as fecha_despacho'),
+            DB::Raw('DATE_FORMAT(fac_date, "%Y-%m %d") as fecha_traslado'),
+            DB::Raw('CONCAT(referral_guide_series,"-",referral_guide_number) as guia'),
+            'account_name as cliente',
+            'license_plate'
+
+        )
+            ->where('company_id', $request->company_id)
+            ->where('warehouse_type_id', $request->warehouse_type_id)
+            ->where('state', 1)
+            ->orderBy('movement_number', 'desc')
+            ->get();
 
         $elements->map(function ($item, $index) {
             $item->creation_date = Carbon::parse($item->traslate_date)->format('d/m/Y');
@@ -44,8 +54,8 @@ class AnulacionGuiaController extends Controller
         $warehouse_movement = WarehouseMovement::find($request->id);
 
         $warehouse_movements = WarehouseMovement::where('referral_guide_number', $warehouse_movement->referral_guide_number)
-                                                ->where('referral_guide_series', $warehouse_movement->referral_guide_series)
-                                                ->get();
+            ->where('referral_guide_series', $warehouse_movement->referral_guide_series)
+            ->get();
 
         $warehouse_movement_details = WarehouseMovementDetail::where('warehouse_movement_id', $warehouse_movement->id)->get();
 
@@ -60,8 +70,8 @@ class AnulacionGuiaController extends Controller
             $convertion = $article->convertion;
 
             $article_balon = Article::where('warehouse_type_id', $warehouse_type_id)
-                                    ->where('convertion', $convertion)
-                                    ->first();
+                ->where('convertion', $convertion)
+                ->first();
 
             $article->stock_good += $digit_amount;
             $article->save();

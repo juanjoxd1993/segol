@@ -88,6 +88,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/facturacion/liquidaciones-glp/get-scop-number', 'LiquidacionGlpController@getScopNumber')->name('dashboard.operations.voucher.liquidations_glp.get_scop_number');
 	Route::post('/facturacion/liquidaciones-glp/get-saldo-favor', 'LiquidacionGlpController@getSaldoFavor')->name('dashboard.operations.voucher.liquidations_glp.get_saldo_favor');
 	Route::post('/facturacion/liquidaciones-glp/get-empleados', 'LiquidacionGlpController@getAccounts')->name('dashboard.operations.voucher.liquidations_glp.get_accounts');
+	Route::post('/facturacion/liquidaciones-glp/get-series', 'LiquidacionGlpController@getSeries')->name('dashboard.voucher.liquidations_final.get_series');
 
 	/** Facturación > Remesas */
 	Route::get('/facturacion/remesas', 'RemesasController@index')->name('dashboard.facturation.voucher.remesas');
@@ -728,6 +729,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/administracion/finanzas-detallado-resumido/validar-formulario', 'FinanzasDetailTotalReportController@validateForm')->name('dashboard.report.finanzas_detail_total.validate_form');
 	Route::post('/administracion/finanzas-detallado-resumido/obtener-clientes', 'FinanzasDetailTotalReportController@getClients')->name('dashboard.report.finanzas_detail_total.get_clients');
 	Route::post('/administracion/finanzas-detallado-resumido/listar', 'FinanzasDetailTotalReportController@list')->name('dashboard.report.finanzas_detail_total.list');
+	Route::post('/administracion/finanzas-detallado-resumido/estado', 'FinanzasDetailTotalReportController@getState')->name('dashboard.report.finanzas_detail_total.get_state');
 
 
 

@@ -29,6 +29,7 @@ use Carbon\Carbon;
 use App\Payment;
 use App\WarehouseType;
 use App\Employee;
+use App\SaleSeries;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use DB;
@@ -39,14 +40,15 @@ class LiquidacionGlpController extends Controller
 {
 	public function index()
 	{
-		$companies = Company::select('id', 'name')->get();
+		$companies = Company::select('id', 'name')->whereIn('id', [2])->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')
 			->where('name', 'Factura Electrónica')
 			->orWhere('name', 'Boleta de Venta Electrónica')
 			->orWhere('name', 'Nota Interna')
+			->orWhere('name', 'Resumen de Boletas')
 			->get();
 		$warehouse_types = WarehouseType::select('id', 'name')
-			->whereIn('type', [3, 4])
+			->whereIn('id', [78])
 			->get();
 		$payment_methods = PaymentMethod::select('id', 'name', 'payment_id')->get();
 		$currencies = Currency::select('id', 'name')->get();
@@ -336,8 +338,8 @@ class LiquidacionGlpController extends Controller
 					]);
 				} else {
 					return response()->json([
-						'verify' => false,
-						'msg' => 'Ya existe comprobante con fecha posterior al despacho de este parte. Debe cambiar la Serie de Referencia.',
+						'verify' => true,
+						//'msg' => 'Ya existe comprobante con fecha posterior al despacho de este parte. Debe cambiar la Serie de Referencia.',
 					]);
 				}
 			}
@@ -376,7 +378,6 @@ class LiquidacionGlpController extends Controller
 			->select('id', 'value')
 			->first();
 
-		$employe = Employee::find($model['warehouse_account_id']);
 
 		$warehouse_type_id = $model['warehouse_type_id'];
 
@@ -385,7 +386,7 @@ class LiquidacionGlpController extends Controller
 		foreach ($sales as $sale) {
 			$total_sale_amount = $sale['total'];
 
-			GlpSeries::where('id', $sale['sale_serie_id'])
+			SaleSeries::where('num_serie', $sale['sale_serie_num'])
 				->update(
 					['correlative' => $sale['referral_voucher_number']]
 				);
@@ -428,14 +429,10 @@ class LiquidacionGlpController extends Controller
 			$sale_model->guide_series = $sale['referral_guide_series'];
 			$sale_model->guide_number = $sale['referral_guide_number'];
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
-			$sale_model->warehouse_account_type_id = 3;
-			$sale_model->account_id = $employe ? $employe->id : null;
-			$sale_model->account_document_number = $employe ? $employe->document_number : null;
-			$sale_model->account_name = $employe ? $employe->first_name . ' ' . $employe->last_name : '';
 			$sale_model->credit_limit_days = $client->credit_limit_days;
 			$sale_model->cede = 1;
 
-			if ($sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 5 || $sale['warehouse_document_type_id'] == 18) {
+			if ($sale['warehouse_document_type_id'] == 5 || $sale['warehouse_document_type_id'] == 7) {
 				switch ($sale['warehouse_document_type_id']) {
 					case 4:
 						$voucher_type_id = 5;
@@ -481,8 +478,8 @@ class LiquidacionGlpController extends Controller
 				$voucher->voucher_type_id = $voucher_type->id;
 				$voucher->serie_number = $serie_number;
 				$voucher->voucher_number = ++$last_voucher_number;
-				$voucher->referral_guide_series = ($sale['referral_guide_series'] ? $sale['referral_guide_series'] : $warehouse_movement->referral_guide_series);
-				$voucher->referral_guide_number = ($sale['referral_guide_number'] ? $sale['referral_guide_number'] : $warehouse_movement->referral_guide_number);
+				$voucher->referral_guide_series = ($sale['referral_guide_series'] ? $sale['referral_guide_series'] : '');
+				$voucher->referral_guide_number = ($sale['referral_guide_number'] ? $sale['referral_guide_number'] : '');
 				$voucher->issue_date = $sale_date;
 				// $voucher->issue_hour = date('H:i:s', strtotime($warehouse_movement->created_at));
 				$voucher->expiry_date = $expiry_date;
@@ -523,6 +520,7 @@ class LiquidacionGlpController extends Controller
 					$voucher_detail->total = round($detail['sale_value'], 4);
 					$voucher_detail->user = Auth::user()->user;
 					$voucher_detail->article_id = $article->id;
+					$voucher_detail->name = $article->name;
 					$voucher_detail->save();
 
 					//validar que se actualize el stock del article
@@ -553,8 +551,8 @@ class LiquidacionGlpController extends Controller
 				$voucher->igv = round($igv, 4);
 				$voucher->save();
 
-				$sale_model->referral_serie_number = $sale['referral_serie_number'];
-				$sale_model->referral_voucher_number = $voucher->voucher_number;
+				$sale_model->referral_serie_number = $sale['sale_serie_num'];
+				$sale_model->referral_voucher_number = $sale['referral_voucher_number'];
 			} else {
 				$referral_serie_number = CarbonImmutable::now()->format('Ym');
 				$last_voucher_number = Sale::where('company_id', $model['company_id'])
@@ -563,12 +561,12 @@ class LiquidacionGlpController extends Controller
 					->max('referral_voucher_number');
 
 				if ($sale['warehouse_document_type_id'] == 4 || $sale['warehouse_document_type_id'] == 6 || $sale['warehouse_document_type_id'] == 8) {
-					$sale_model->referral_serie_number = $sale['referral_serie_number'];
+					$sale_model->referral_serie_number = $sale['sale_serie_num'];
 					$sale_model->referral_voucher_number = $sale['referral_voucher_number'];
 				} else {
 					$int_last_voucher_number = (int)$last_voucher_number;
-					$sale_model->referral_serie_number = $referral_serie_number;
-					$sale_model->referral_voucher_number = $last_voucher_number != '' ? ++$int_last_voucher_number : 1;
+					$sale_model->referral_serie_number = $sale['sale_serie_num'];
+					$sale_model->referral_voucher_number =  $sale['referral_voucher_number'];
 				}
 			}
 
@@ -627,6 +625,8 @@ class LiquidacionGlpController extends Controller
 				// validar tipo de articulo por su warehouse_unit_id
 				// el warehouse_type_id determina el almacen
 				$article = Article::find($detail['article_id']);
+				$article->stock_good = $article->stock_good - $detail['quantity'];
+				$article->save();
 				$quantity = $detail['quantity'];
 
 				$warehouse_type_id = $article->warehouse_type_id;
@@ -675,6 +675,7 @@ class LiquidacionGlpController extends Controller
 				$sale_detail->sale_id = $sale_model->id;
 				$sale_detail->item_number = ++$index;
 				$sale_detail->article_id = $detail['article_id'];
+				$sale_detail->concept = $article->name;
 				$sale_detail->quantity = $detail['quantity'];
 				$sale_detail->price_igv = round($detail['price_igv'], 4);
 				$sale_detail->sale_value = round($detail['sale_value'], 4);
@@ -836,6 +837,34 @@ class LiquidacionGlpController extends Controller
 		};
 
 		return response()->json([], 200);
+	}
+
+	public function getSeries()
+	{
+
+		$warehouse_document_type_id = request('warehouse_document_type_id') == 31 ? 7 : request('warehouse_document_type_id');
+
+		$sale_series = SaleSeries::select(
+			'id',
+			'num_serie',
+			'correlative',
+			'warehouse_document_type_id'
+		)
+			->where('warehouse_document_type_id', $warehouse_document_type_id)
+			->get();
+
+		$series = array();
+
+		foreach ($sale_series as $sale_serie) {
+			$obj = new stdClass();
+			$obj->id = $sale_serie->id;
+			$obj->num_serie = $sale_serie->num_serie;
+			$obj->correlative = $sale_serie->correlative + 1;
+			$obj->warehouse_document_type_id = $sale_serie->warehouse_document_type_id;
+			array_push($series, $obj);
+		}
+
+		return $series;
 	}
 
 	public function getScopNumber()

@@ -28,6 +28,7 @@
 		:url_get_clients = "'{{ route('dashboard.operations.voucher.liquidations_glp.get_clients') }}'"
 		:url_get_article_price = "'{{ route('dashboard.operations.voucher.liquidations_glp.get_article_price') }}'"
 		:url_verify_document_type = "'{{ route('dashboard.operations.voucher.liquidations_glp.verify_document_type') }}'"
+		:url_get_series = "'{{ route('dashboard.voucher.liquidations_final.get_series') }}'"
 	></liquidation-final-modal-sale-glp>
 
 	<liquidation-final-modal-liquidation
