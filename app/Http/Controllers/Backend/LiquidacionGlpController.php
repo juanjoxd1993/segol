@@ -431,6 +431,7 @@ class LiquidacionGlpController extends Controller
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
 			$sale_model->credit_limit_days = $client->credit_limit_days;
 			$sale_model->cede = 1;
+			$sale_model->if_bol = 0;
 
 			if ($sale['warehouse_document_type_id'] == 5 || $sale['warehouse_document_type_id'] == 7) {
 				switch ($sale['warehouse_document_type_id']) {
