@@ -5,21 +5,7 @@
 @section('subtitle', 'Envío OSE')
 
 @section('content')
-	<billing-ose-form
-		:companies = "{{ $companies }}"
-		:voucher_types = "{{ $voucher_types }}"
-		:url = "'{{ route('dashboard.voucher.validate_voucher_form') }}'"
-		:user_name = "'{{ $user_name }}'"
-	></billing-ose-form>
-
-	<billing-ose-table
-		:url_list = "'{{ route('dashboard.voucher.list') }}'"
-		:url_get_vouchers_for_table = "'{{ route('dashboard.voucher.get_vouchers_for_table') }}'"
-		:url_send_voucher = "'{{ route('dashboard.voucher.send_voucher') }}'"
-		:url_get_voucher_detail = "'{{ route('dashboard.voucher.get_voucher_detail') }}'"
-		:user_name = "'{{ $user_name }}'"
-	></billing-ose-table>
-
-	<loading></loading>
-	<billing-ose-table-modal></billing-ose-table-modal>
+<iframe title="SEGOL-CANT_BALONES" width="100%" height="600" 
+src="https://app.powerbi.com/view?r=eyJrIjoiN2YwYzRjOTEtMmU5My00MjAyLTk1OTUtOTVmNzQ1MTM2Mzg1IiwidCI6Ijc1MDRlMzE4LThlMWUtNGQ1NS1iZmZkLTg3NWI0ZGVlODI2MCIsImMiOjR9" 
+frameborder="0" allowFullScreen="true"></iframe>
 @endsection
