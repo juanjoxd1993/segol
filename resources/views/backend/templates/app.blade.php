@@ -108,6 +108,7 @@
 		<script src="{{ asset('backend/js/main.js?'.time()) }}" type="text/javascript"></script>
 		<script src="{{ asset('backend/js/app.js?'.time()) }}" type="text/javascript"></script>
 		<!--end::Global Theme Bundle -->
+		<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 	</body>
 	<!-- end::Body -->
 </html>

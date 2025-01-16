@@ -24,7 +24,7 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/facturacion/importar', 'FacturationController@postImport')->name('facturations.import');
 
 	/** Facturación > Envío OSE */
-	Route::get('/', 'VoucherController@sendOse')->name('dashboard.voucher.send_ose');
+	Route::get('/', 'VoucherController@index')->name('dashboard.voucher.send_ose');
 	Route::post('/facturacion/validar-formulario-documentos', 'VoucherController@validate_voucher_form')->name('dashboard.voucher.validate_voucher_form');
 	Route::post('/facturacion/obtener-documentos-tabla', 'VoucherController@get_vouchers_for_table')->name('dashboard.voucher.get_vouchers_for_table');
 	Route::post('/facturacion/listar', 'VoucherController@list')->name('dashboard.voucher.list');
