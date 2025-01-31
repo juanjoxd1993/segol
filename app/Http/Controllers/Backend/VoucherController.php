@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Article;
+use App\Client;
 use App\Http\Controllers\Controller;
 use App\Sale;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +24,7 @@ class VoucherController extends Controller
                 SUM(sale_details.quantity) as total_quantity
             ")
             ->where('sales.company_id', 2)
-            ->whereIn('cede',[1, 4, 13, 75])
+            ->whereIn('cede', [1, 4, 13, 75])
             ->whereIn('sales.warehouse_document_type_id', [5, 31]) // Factura electrónica, Resumen de Boletas
             ->groupBy('fecha_emision', 'weight')
             ->orderBy('fecha_emision', 'DESC')
@@ -46,8 +48,8 @@ class VoucherController extends Controller
             DB::Raw('SUM(total_perception) as venta_total')
         )
             ->where('company_id', 2)
-            ->whereIn('cede',[1, 4, 13, 75])
-            ->whereIn('warehouse_document_type_id', [5,13, 31]) // Factura electrónica,NOTA DE PEDIDO, Resumen de Boletas
+            ->whereIn('cede', [1, 4, 13, 75])
+            ->whereIn('warehouse_document_type_id', [5, 13, 31]) // Factura electrónica,NOTA DE PEDIDO, Resumen de Boletas
             ->groupBy('sale_date')
             ->orderBy('sale_date', 'DESC')
             ->take(4)
@@ -62,7 +64,33 @@ class VoucherController extends Controller
             ];
         })->values();
 
+        //GRAFICO DE PORCENTAJE
 
-        return view('backend.voucher_send_ose', compact('resultadosPorFecha', 'barrasData'));
+        $articles = Article::leftjoin('warehouse_types', 'warehouse_types.id', '=', 'articles.warehouse_type_id')
+            ->select(
+                'warehouse_types.name as warehouse_type_name',
+                'articles.name as article_name',
+                'articles.stock_good as article_stock',
+                'articles.stock_minimum as article_minimum'
+            )
+            ->whereIn('articles.id', [4952, 4953, 4959, 4791, 4792])
+            ->get();
+
+        //Numero de Clientes
+
+        $clients = Client::where('company_id', 2)
+            ->count();
+
+        //GRAFICO DE Stock de Articulos
+
+        $articles_stock = Article::leftjoin('warehouse_types', 'warehouse_types.id', '=', 'articles.warehouse_type_id')
+            ->select(
+                DB::Raw('CONCAT(warehouse_types.name," ::: ",articles.name) AS producto'),
+                'articles.stock_good as article_stock',
+            )
+            ->whereIn('articles.id', [4841,4846,4844,4848,4954,4956,4957,4958])
+            ->get();
+
+        return view('backend.voucher_send_ose', compact('resultadosPorFecha', 'barrasData', 'articles', 'clients','articles_stock'));
     }
 }

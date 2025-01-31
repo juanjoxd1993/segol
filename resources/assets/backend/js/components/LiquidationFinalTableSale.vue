@@ -254,6 +254,7 @@ export default {
         },
         manageActions: function (event) {
             if ($(event.target).hasClass('delete')) {
+                
                 event.preventDefault();
 
                 let client_id = $(event.target).parents('tr').find('td[data-field="client_id"] span').html();

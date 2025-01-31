@@ -7,6 +7,37 @@
 @section('content')
 
     <div class="row g-3">
+        <div class="col-md-2">
+            <div class="kt-portlet" style="width: 100%;">
+                <div class="kt-portlet__head" style="background-color:crimson;">
+                    <div class="kt-portlet__head-label">
+                        <h3 class="kt-portlet__head-title" style="color: white">
+                            # Clientes
+                        </h3>
+                    </div>
+                </div>
+                <div class="kt-portlet__body">
+                    <div id="chartClientes" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="kt-portlet" style="width: 100%;">
+                <div class="kt-portlet__head" style="background-color:darkturquoise;">
+                    <div class="kt-portlet__head-label">
+                        <h3 class="kt-portlet__head-title" style="color: white">
+                            Areas
+                        </h3>
+                    </div>
+                </div>
+                <div class="kt-portlet__body">
+                    <div id="chartAreas" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
         <div class="col-md-6">
             <div class="kt-portlet" style="width: 100%;">
                 <div class="kt-portlet__head" style="background-color: green;">
@@ -21,7 +52,7 @@
                 </div>
             </div>
         </div>
-    
+
         <div class="col-md-6">
             <div class="kt-portlet" style="width: 100%;">
                 <div class="kt-portlet__head" style="background-color: darkorange;">
@@ -36,13 +67,42 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-md-12">
+            <div class="kt-portlet" style="width: 100%;">
+                <div class="kt-portlet__head" style="background-color: blueviolet;">
+                    <div class="kt-portlet__head-label">
+                        <h3 class="kt-portlet__head-title" style="color: white">
+                            Stock (%) Artículo
+                        </h3>
+                    </div>
+                </div>
+                <div class="kt-portlet__body">
+                    <div id="chartPorcentaje" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="kt-portlet" style="width: 100%;">
+                <div class="kt-portlet__head" style="background-color: darkblue;">
+                    <div class="kt-portlet__head-label">
+                        <h3 class="kt-portlet__head-title" style="color: white">
+                            Stock Artículo
+                        </h3>
+                    </div>
+                </div>
+                <div class="kt-portlet__body">
+                    <div id="chartStockArticulos" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
 @endsection
 
 <script>
-    
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
 
         // ****INICIO GRAFICO DE LINEAS****
         var resultadosPorFecha = @json($resultadosPorFecha);
@@ -70,8 +130,7 @@
         }
 
         var options = {
-            series: [
-                {
+            series: [{
                     name: '10 KG',
                     data: cantidad10kg,
                     color: '#1E90FF',
@@ -86,15 +145,15 @@
                 height: 350,
                 type: 'line',
                 zoom: {
-                    enabled: true 
+                    enabled: true
                 },
                 toolbar: {
-                    show: true, 
+                    show: true,
                 },
-                width: '100%' 
+                width: '100%'
             },
             dataLabels: {
-                enabled: true, 
+                enabled: true,
                 style: {
                     fontSize: '12px',
                     fontWeight: 'bold',
@@ -102,7 +161,7 @@
                 },
             },
             stroke: {
-                width: [2, 4], 
+                width: [2, 4],
                 curve: 'straight',
             },
             title: {
@@ -115,16 +174,16 @@
                 },
             },
             legend: {
-                position: 'top', 
-                horizontalAlign: 'center',  
+                position: 'top',
+                horizontalAlign: 'center',
                 markers: {
                     width: 12,
                     height: 12,
-                    radius: 12, 
+                    radius: 12,
                 },
             },
             xaxis: {
-                categories: fechas, 
+                categories: fechas,
                 title: {
                     text: 'Fecha',
                     style: {
@@ -151,21 +210,19 @@
                 },
             },
             tooltip: {
-                y: [
-                    {
-                        title: {
-                            formatter: function (val) {
-                                return val + " unidades";
-                            }
+                y: [{
+                    title: {
+                        formatter: function(val) {
+                            return val + " unidades";
                         }
                     }
-                ],
-                shared: true, 
-                intersect: false,  
+                }],
+                shared: true,
+                intersect: false,
             },
             grid: {
                 borderColor: '#f1f1f1',
-                strokeDashArray: 5, 
+                strokeDashArray: 5,
             }
         };
 
@@ -175,140 +232,446 @@
         // FIN  GRAFICO DE LINEAS
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
 
         var options = {
-    series: [{
-        name: "S/",
-        data: @json($barrasData)
-    }],
-    chart: {
-        type: 'bar',
-        height: 350,
-        toolbar: {
-            show: true,
-            tools: {
-                download: true,
-                selection: true,
-                zoom: true,
-                zoomin: true,
-                zoomout: true,
-                pan: true,
-                reset: true
+            series: [{
+                name: "S/",
+                data: @json($barrasData)
+            }],
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: {
+                    show: true,
+                    tools: {
+                        download: true,
+                        selection: true,
+                        zoom: true,
+                        zoomin: true,
+                        zoomout: true,
+                        pan: true,
+                        reset: true
+                    },
+                    autoSelected: 'zoom'
+                },
+                zoom: {
+                    enabled: true,
+                    type: 'x',
+                    autoScaleYaxis: true
+                }
             },
-            autoSelected: 'zoom'
-        },
-        zoom: {
-            enabled: true,
-            type: 'x',
-            autoScaleYaxis: true
-        }
-    },
-    plotOptions: {
-        bar: {
-            horizontal: false,
-            borderRadius: 8, 
-            columnWidth: '55%',
-            colors: {
-                backgroundBarColors: ['#f3f3f3'],
-                backgroundBarOpacity: 0.6
-            }
-        }
-    },
-    dataLabels: {
-        enabled: true,
-        style: {
-            fontSize: '12px',
-            fontWeight: 'bold',
-            colors: ['#FFFFFF']
-        },
-        formatter: function(val) {
-            return 'S/ ' + val.toFixed(2);
-        }
-    },
-    xaxis: {
-        type: 'category',
-        labels: {
-            rotate: -45,
-            style: {
-                colors: '#4B5563',
-                fontSize: '12px',
-                fontWeight: 600
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    borderRadius: 8,
+                    columnWidth: '55%',
+                    colors: {
+                        backgroundBarColors: ['#f3f3f3'],
+                        backgroundBarOpacity: 0.6
+                    }
+                }
             },
-            formatter: function(val) {
-                return val;
-            }
-        },
-        title: {
-            text: 'Fecha',
-            style: {
-                color: '#4B5563',
-                fontSize: '14px',
-                fontWeight: 'bold'
-            }
-        }
-    },
-    yaxis: {
-        labels: {
-            style: {
-                colors: '#4B5563',
-                fontSize: '12px',
-                fontWeight: 600
+            dataLabels: {
+                enabled: true,
+                style: {
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    colors: ['#FFFFFF']
+                },
+                formatter: function(val) {
+                    return 'S/ ' + val.toFixed(2);
+                }
             },
-            formatter: function(val) {
-                return 'S/ ' + val.toFixed(2);
+            xaxis: {
+                type: 'category',
+                labels: {
+                    rotate: -45,
+                    style: {
+                        colors: '#4B5563',
+                        fontSize: '12px',
+                        fontWeight: 600
+                    },
+                    formatter: function(val) {
+                        return val;
+                    }
+                },
+                title: {
+                    text: 'Fecha',
+                    style: {
+                        color: '#4B5563',
+                        fontSize: '14px',
+                        fontWeight: 'bold'
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: '#4B5563',
+                        fontSize: '12px',
+                        fontWeight: 600
+                    },
+                    formatter: function(val) {
+                        return 'S/ ' + val.toFixed(2);
+                    }
+                },
+                title: {
+                    text: 'Monto (S/)',
+                    style: {
+                        color: '#4B5563',
+                        fontSize: '14px',
+                        fontWeight: 'bold'
+                    }
+                }
+            },
+            grid: {
+                borderColor: '#E0E0E0',
+                strokeDashArray: 5,
+                xaxis: {
+                    lines: {
+                        show: true
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            },
+            tooltip: {
+                enabled: true,
+                theme: 'dark',
+                x: {
+                    formatter: function(val) {
+                        return 'Fecha: ' + val;
+                    }
+                },
+                y: {
+                    formatter: function(val) {
+                        return 'S/ ' + val.toFixed(2);
+                    }
+                }
+            },
+            legend: {
+                show: true,
+                position: 'top',
+                horizontalAlign: 'center',
+                labels: {
+                    colors: '#4B5563'
+                }
             }
-        },
-        title: {
-            text: 'Monto (S/)',
-            style: {
-                color: '#4B5563',
-                fontSize: '14px',
-                fontWeight: 'bold'
-            }
-        }
-    },
-    grid: {
-        borderColor: '#E0E0E0',
-        strokeDashArray: 5, 
-        xaxis: {
-            lines: {
-                show: true
-            }
-        },
-        yaxis: {
-            lines: {
-                show: true
-            }
-        }
-    },
-    tooltip: {
-        enabled: true,
-        theme: 'dark',
-        x: {
-            formatter: function(val) {
-                return 'Fecha: ' + val;
-            }
-        },
-        y: {
-            formatter: function(val) {
-                return 'S/ ' + val.toFixed(2);
-            }
-        }
-    },
-    legend: {
-        show: true,
-        position: 'top',
-        horizontalAlign: 'center',
-        labels: {
-            colors: '#4B5563'
-        }
-    }
-};
+        };
 
 
-    var chart = new ApexCharts(document.querySelector("#chartBarra"), options);
-    chart.render();
-    
+        var chart = new ApexCharts(document.querySelector("#chartBarra"), options);
+        chart.render();
+
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const articles = @json($articles);
+        const categories = articles.map(item => `${item.warehouse_type_name} - ${item.article_name}`);
+
+        const seriesData = articles.map(item => {
+            const percentage = ((item.article_stock / item.article_minimum) * 100).toFixed(
+                2);
+            return parseFloat(percentage) + "%";
+        });
+
+        var options = {
+            series: [{
+                name: "Stock (%)",
+                data: seriesData
+            }],
+            chart: {
+                type: "bar",
+                height: 350,
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                },
+            },
+            xaxis: {
+                categories: categories,
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        fontSize: '12px',
+                        fontFamily: 'Arial, sans-serif',
+                    },
+                    offsetX: 0,
+                    maxWidth: 300
+                },
+
+            },
+            tooltip: {
+                y: {
+                    formatter: function(val) {
+                        return val + "%";
+                    }
+                }
+            },
+            fill: {
+                opacity: 1,
+            },
+            legend: {
+                position: "top",
+                horizontalAlign: "left",
+                offsetX: 40,
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val) {
+                    return parseFloat(val).toFixed(2) + "%";
+                },
+                style: {
+                    colors: ['#000']
+                },
+                offsetX: 10,
+            },
+            colors: ['#FFC300']
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chartPorcentaje"), options);
+        chart.render();
+
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const clients = @json($clients);
+
+        var options = {
+            chart: {
+                type: 'radialBar',
+                width: 150,
+                height: 150
+            },
+            series: [clients],
+            plotOptions: {
+                radialBar: {
+                    startAngle: -90,
+                    endAngle: 90,
+                    hollow: {
+                        margin: 15,
+                        size: '50%',
+                        background: '#fff',
+                    },
+                    track: {
+                        background: '#e6e6e6',
+                        strokeWidth: '97%',
+                        margin: 5
+                    },
+                    dataLabels: {
+                        show: true,
+                        name: {
+                            offsetY: -10,
+                            show: true
+                        },
+                        value: {
+                            fontSize: '30px',
+                            fontWeight: 'bold',
+                            color: '#000',
+                            show: true,
+                            offsetY: 10,
+                            formatter: function(val) {
+                                return val;
+                            }
+                        }
+                    }
+                }
+            },
+            labels: ['Clientes'],
+        };
+
+
+        var chart = new ApexCharts(document.querySelector("#chartClientes"), options);
+        chart.render();
+
+
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const articles_stock = @json($articles_stock);
+        const colors = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#546E7A', '#26A69A', '#D10CE8'];
+
+        const categories = articles_stock.map(article => {
+            return article.producto;
+        });
+
+        var options = {
+            series: [{
+                data: articles_stock.map(article => article.article_stock)
+            }],
+            chart: {
+                height: 350,
+                type: 'bar',
+                events: {
+                    click: function(chart, w, e) {}
+                }
+            },
+            colors: colors,
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                    distributed: true,
+                    borderRadius: 5,
+                    dataLabels: {
+                        position: 'center',
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                style: {
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    colors: ['#000']
+                },
+                formatter: function(val) {
+                    return val;
+                }
+            },
+            legend: {
+                show: false
+            },
+            xaxis: {
+                categories: categories,
+                labels: {
+                    style: {
+                        colors: colors,
+                        fontSize: '14px',
+                        fontWeight: '600',
+                    },
+                    align: 'center',
+                    offsetX: 30,
+                    maxWidth: 250,
+                    rotate: -45,
+                },
+                axisBorder: {
+                    show: true,
+                    color: '#B2B2B2',
+                    width: 2,
+                },
+                axisTicks: {
+                    show: true,
+                    color: '#B2B2B2',
+                    width: 2,
+                }
+            },
+            yaxis: {
+                axisBorder: {
+                    show: true,
+                    color: '#B2B2B2',
+                    width: 2,
+                },
+                axisTicks: {
+                    show: true,
+                    color: '#B2B2B2',
+                    width: 2,
+                },
+                labels: {
+                    padding: 20,
+                    style: {
+                        fontSize: '12px',
+                        colors: ['#0644f7']
+                    },
+                    maxWidth: 600,
+                    overflow: 'ellipsis',
+                }
+            },
+            tooltip: {
+                enabled: true,
+                shared: false,
+                theme: 'dark',
+                x: {
+                    show: false
+                },
+                y: {
+                    formatter: function(val) {
+                        return `Stock: <strong>${val}</strong>`;
+                    }
+                },
+                custom: function({
+                    seriesIndex,
+                    dataPointIndex,
+                    w
+                }) {
+                    const article = articles_stock[dataPointIndex];
+                    const productName = article.producto;
+                    const stockAmount = article.article_stock;
+
+                    return `<div style="padding: 10px; background: #333; color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); font-size: 14px;">
+                            <strong style="font-size: 16px; color: #00E396;">${productName}</strong><br>
+                            <span style="font-size: 14px;">Stock: <strong>${stockAmount}</strong></span>
+                            </div>`;
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chartStockArticulos"), options);
+        chart.render();
+
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+
+        var options = {
+            series: [{
+                data: [{
+                        x: 'GERENCIA',
+                        y: 1
+                    },
+                    {
+                        x: 'ADMINISTRACIÓN',
+                        y: 1
+                    },
+                    {   
+                        x: 'OPERACIONES',
+                        y: 1
+                    },
+                    {
+                        x: 'COMERCIAL',
+                        y: 1
+                    }
+                ]
+            }],
+            legend: {
+                show: false
+            },
+            chart: {
+                height: 107,
+                type: 'treemap'
+            },
+            title: {
+                text: '',
+                align: 'center'
+            },
+            colors: [
+                '#7F94B0',
+                '#F7B844',  
+                '#ADD8C7',
+                '#EC3C65',
+            ],
+            plotOptions: {
+                treemap: {
+                    distributed: true,
+                    enableShades: false
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chartAreas"), options);
+        chart.render();
+
     });
 </script>
