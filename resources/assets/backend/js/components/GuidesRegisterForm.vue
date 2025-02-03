@@ -148,6 +148,19 @@
                             <div id="referral_guide_number-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Tanque:</label>
+                            <select class="form-control" name="tanque" id="tanque" v-model="model.tanque"
+                                @focus="$parent.clearErrorMsg($event)">
+                                <option value="" selected disabled>Seleccionar</option>
+                                <option value="4791">TANQUE 1</option>
+                                <option value="4792">TANQUE 2</option>
+                            </select>
+                            <div id="tanque-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="kt-portlet__foot">
@@ -232,7 +245,8 @@ export default {
                 referral_guide_number: '',
                 electronic: 0,
                 serie_electronic:'TC40',
-                number_electronic: this.max_electronic
+                number_electronic: this.max_electronic,
+                tanque: ''
             },
         }
     },

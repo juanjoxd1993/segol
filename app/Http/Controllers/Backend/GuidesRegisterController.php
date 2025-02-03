@@ -118,6 +118,7 @@ class GuidesRegisterController extends Controller
 			'client_id.required_if'								=> 'Debe seleccionar al Cliente.',
 			'chofer_id.required'								=> 'Debe seleccionar al Chofer.',
 			'referral_guide_number.required'					=> 'Este campo se completa al seleccionar la Serie de Guía de Remisión.',
+			'tanque.required'									=> 'Seleccionar tanque.'
 		];
 
 		$rules = [
@@ -130,6 +131,7 @@ class GuidesRegisterController extends Controller
 			'client_id'											=> 'required_if:movement_type_id,12',
 			'chofer_id'											=> 'required',
 			'referral_guide_number'								=> 'required',
+			'tanque'											=> 'required',
 		];
 
 		request()->validate($rules, $messages);
@@ -166,6 +168,7 @@ class GuidesRegisterController extends Controller
 		$electronic = request('model.electronic');
 		$serie_electronic = request('model.serie_electronic');
 		$number_electronic = request('model.number_electronic');
+		$tanque = request('model.tanque');
 
 		$articles = request('article_list');;
 
@@ -323,7 +326,7 @@ class GuidesRegisterController extends Controller
 					$fierro->save();
 				}
 
-				$granel = Article::findOrFail(4791); //GRANEL KG ENVASADO
+				$granel = Article::findOrFail($tanque); //GRANEL KG ENVASADO
 				$granel->stock_good = $granel->stock_good - (($digit_amount - $article->stock_good) * $article->convertion);
 				$granel->save();
 			}

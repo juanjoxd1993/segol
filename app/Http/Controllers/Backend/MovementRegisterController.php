@@ -43,6 +43,7 @@ class MovementRegisterController extends Controller
 			'warehouse_type_id.required'						=> 'Debe seleccionar un Almacén.',
 			'company_id.required'							    => 'Debe seleccionar una Compañía.',
 			'since_date.required'								=> 'Debe seleccionar una Fecha.',
+			'tanque.required'									=> 'Debe seleccionar el tanque.',
 		];
 
 		$rules = [
@@ -51,6 +52,7 @@ class MovementRegisterController extends Controller
 			'warehouse_type_id'						=> 'required',
 			'company_id'							=> 'required',
 			'since_date'							=> 'required',
+			'tanque'								=> 'required',
 		];
 
 		request()->validate($rules, $messages);
@@ -74,6 +76,7 @@ class MovementRegisterController extends Controller
 		$movement_type_id = request('model.movement_type_id');
 		$since_date = request('model.since_date');
 		$warehouse_type_id = request('model.warehouse_type_id');
+		$tanque = request('model.tanque');
 		$articles = request('article_list');
 
 		$movement = new WarehouseMovement();
@@ -119,7 +122,7 @@ class MovementRegisterController extends Controller
 			$fierro->save();
 
 			//GRANEL KG ENVASADO
-			$granel = Article::findOrFail(4791);
+			$granel = Article::findOrFail($tanque);
 			$granel->stock_good = $granel->stock_good - ($article['quantity'] * $article['convertion']);
 			$granel->save();
 		}

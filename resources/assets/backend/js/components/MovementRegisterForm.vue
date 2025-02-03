@@ -74,6 +74,19 @@
                             <div id="since_date-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
+
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Tanque:</label>
+                            <select class="form-control" name="tanque" id="tanque" v-model="model.tanque"
+                                @focus="$parent.clearErrorMsg($event)">
+                                <option value="" selected disabled>Seleccionar</option>
+                                <option value="4791">TANQUE 1</option>
+                                <option value="4792">TANQUE 2</option>
+                            </select>
+                            <div id="tanque-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="kt-portlet__foot">
@@ -129,7 +142,8 @@ export default {
                 movement_type_id: '5',
                 warehouse_type_id: '75',
                 company_id: '2',
-                since_date: ''
+                since_date: '',
+                tanque:''
             },
         }
     },
