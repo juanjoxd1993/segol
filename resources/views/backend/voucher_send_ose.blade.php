@@ -38,17 +38,32 @@
     </div>
 
     <div class="row g-3">
-        <div class="col-md-6">
+
+        <div class="col-md-12">
             <div class="kt-portlet" style="width: 100%;">
-                <div class="kt-portlet__head" style="background-color: green;">
+                <div class="kt-portlet__head" style="background-color: darkorange;">
                     <div class="kt-portlet__head-label">
                         <h3 class="kt-portlet__head-title" style="color: white">
-                            Cantidad vendida (10 KG y 45 KG) por Fecha
+                            Total venta por Mes - Contado y Crédito - PORCENTAJE
                         </h3>
                     </div>
                 </div>
                 <div class="kt-portlet__body">
-                    <div id="chart" style="width: 100%; height: 100%;"></div>
+                    <div id="chartTipoVentaPorcentaje" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="kt-portlet" style="width: 100%;">
+                <div class="kt-portlet__head" style="background-color: darkorange;">
+                    <div class="kt-portlet__head-label">
+                        <h3 class="kt-portlet__head-title" style="color: white">
+                            Total venta por Día - Contado y Crédito
+                        </h3>
+                    </div>
+                </div>
+                <div class="kt-portlet__body">
+                    <div id="chartTipoVenta" style="width: 100%; height: 100%;"></div>
                 </div>
             </div>
         </div>
@@ -64,6 +79,21 @@
                 </div>
                 <div class="kt-portlet__body">
                     <div id="chartBarra" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="kt-portlet" style="width: 100%;">
+                <div class="kt-portlet__head" style="background-color: green;">
+                    <div class="kt-portlet__head-label">
+                        <h3 class="kt-portlet__head-title" style="color: white">
+                            Cantidad vendida (10 KG y 45 KG) por Fecha
+                        </h3>
+                    </div>
+                </div>
+                <div class="kt-portlet__body">
+                    <div id="chart" style="width: 100%; height: 100%;"></div>
                 </div>
             </div>
         </div>
@@ -635,7 +665,7 @@
                         x: 'ADMINISTRACIÓN',
                         y: 1
                     },
-                    {   
+                    {
                         x: 'OPERACIONES',
                         y: 1
                     },
@@ -658,7 +688,7 @@
             },
             colors: [
                 '#7F94B0',
-                '#F7B844',  
+                '#F7B844',
                 '#ADD8C7',
                 '#EC3C65',
             ],
@@ -671,6 +701,258 @@
         };
 
         var chart = new ApexCharts(document.querySelector("#chartAreas"), options);
+        chart.render();
+
+    });
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+
+        var options = {
+            series: [{
+                name: '💰 Contado',
+                data: {!! json_encode($tipo_ventas->pluck('total_contado')) !!}
+            }, {
+                name: '🏦 Crédito',
+                data: {!! json_encode($tipo_ventas->pluck('total_credito')) !!}
+            }],
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: {
+                    show: true
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '60%',
+                    borderRadius: 8,
+                    borderRadiusApplication: 'end',
+                    dataLabels: {
+                        position: 'top'
+                    }
+                },
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val) {
+                    return "S/ " + val.toFixed(2);
+                },
+                style: {
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    colors: ['#fff']
+                },
+                background: {
+                    enabled: true,
+                    foreColor: '#000',
+                    padding: 6,
+                    borderRadius: 4,
+                    borderWidth: 1,
+                    borderColor: '#000'
+                }
+            },
+            stroke: {
+                show: true,
+                width: 3,
+                colors: ['transparent']
+            },
+            colors: ['#faf713', '#0041fd'],
+            xaxis: {
+                categories: {!! json_encode($tipo_ventas->pluck('fecha')) !!},
+                labels: {
+                    style: {
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        colors: ['#333']
+                    }
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Ventas en S/',
+                    style: {
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        color: '#333'
+                    }
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function(val) {
+                        return "💵 S/ " + val.toFixed(2);
+                    }
+                },
+                theme: 'dark'
+            },
+            fill: {
+                opacity: 1
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'center',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                markers: {
+                    width: 12,
+                    height: 12,
+                    radius: 12
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chartTipoVenta"), options);
+        chart.render();
+
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        var meses = @json($tipo_ventas_porcentaje->pluck('mes')->toArray());
+        var total_contado = @json($tipo_ventas_porcentaje->pluck('total_contado')->toArray());
+        var total_credito = @json($tipo_ventas_porcentaje->pluck('total_credito')->toArray());
+        var porcentaje_contado = @json($tipo_ventas_porcentaje->pluck('porcentaje_contado')->toArray());
+        var porcentaje_credito = @json($tipo_ventas_porcentaje->pluck('porcentaje_credito')->toArray());
+
+        var options = {
+            series: [{
+                name: 'Contado',
+                data: total_contado,
+                color: '#eb5efa'
+            }, {
+                name: 'Credito',
+                data: total_credito,
+                color: '#11feda'
+            }],
+            chart: {
+                type: 'bar',
+                height: 430,
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                    barHeight: '100%',
+                    dataLabels: {
+                        position: 'center',
+                    },
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                offsetX: 12,
+                offsetY: -6,
+                style: {
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    colors: ['#000'],
+                    background: '#000',
+                    borderRadius: 4,
+                    padding: 8,
+                    dropShadow: {
+                        enabled: true,
+                        blur: 5,
+                        opacity: 0.7,
+                        color: '#000'
+                    }
+                },
+                formatter: function(val, opts) {
+                    var porcentaje = opts.seriesIndex === 0 ? porcentaje_contado[opts.dataPointIndex] :
+                        porcentaje_credito[opts.dataPointIndex];
+                    return `S/ ${val} (${porcentaje.toFixed(2)}%)`;
+                }
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['#fff']
+            },
+            tooltip: {
+                shared: true,
+                intersect: false,
+                y: {
+                    formatter: function(val, opts) {
+                        var porcentaje = opts.seriesIndex === 0 ? porcentaje_contado[opts
+                            .dataPointIndex] : porcentaje_credito[opts.dataPointIndex];
+                        return `S/ ${val} (${porcentaje.toFixed(2)}%)`;
+                    }
+                },
+                theme: 'dark',
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'center',
+                floating: true,
+                fontSize: '16px',
+                fontFamily: 'Arial, sans-serif',
+                labels: {
+                    useSeriesColors: true
+                },
+                markers: {
+                    width: 16,
+                    height: 16,
+                    radius: 4
+                }
+            },
+            xaxis: {
+                categories: meses,
+                title: {
+                    text: 'Total Ventas S/.',
+                    style: {
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        color: '#333'
+                    }
+                },
+                labels: {
+                    style: {
+                        fontSize: '12px',
+                        colors: ['#666']
+                    }
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Meses',
+                    style: {
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        color: '#333'
+                    }
+                },
+                labels: {
+                    style: {
+                        fontSize: '12px',
+                        colors: ['#666']
+                    }
+                }
+            },
+            grid: {
+                borderColor: '#e0e0e0',
+                strokeDashArray: 5,
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            },
+            fill: {
+                opacity: 0.9,
+            },
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chartTipoVentaPorcentaje"), options);
         chart.render();
 
     });

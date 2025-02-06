@@ -1,24 +1,13 @@
 <template>
   <div>
     <!--begin::Liquidation Modal-->
-    <div
-      class="modal fade"
-      id="modal-liquidation"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="liquidationModal"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="modal-liquidation" tabindex="-1" role="dialog" aria-labelledby="liquidationModal"
+      aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="liquidationModal">{{ title_text }}</h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="kt-portlet__body">
@@ -26,286 +15,150 @@
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Condición de Pago:</label>
-                    <select
-                      class="form-control"
-                      name="payment_id"
-                      id="payment_id"
-                      v-model="model.payment_id"
-                      @focus="$parent.clearErrorMsg($event)"
-                      v-on:change="checkPayment"
-                    >
+                    <select class="form-control" name="payment_id" id="payment_id" v-model="model.payment_id"
+                      @focus="$parent.clearErrorMsg($event)" v-on:change="checkPayment">
                       <option value="">Seleccionar</option>
-                      <option
-                        v-for="payment in payments"
-                        :value="payment.id"
-                        v-bind:key="payment.id"
-                      >
+                      <option v-for="payment in payments" :value="payment.id" v-bind:key="payment.id">
                         {{ payment.name }}
                       </option>
                     </select>
-                    <div
-                      id="payment_id-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="payment_id-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Forma de Pago:</label>
-                    <select
-                      class="form-control"
-                      name="payment_method_id"
-                      id="payment_method_id"
-                      v-model="model.payment_method"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <select class="form-control" name="payment_method_id" id="payment_method_id"
+                      v-model="model.payment_method" @focus="$parent.clearErrorMsg($event)">
                       <option value="">Seleccionar</option>
-                      <option
-                        v-for="payment_method in filteredPaymentMethods"
-                        :value="payment_method.id"
-                        v-bind:key="payment_method.id"
-                      >
+                      <option v-for="payment_method in filteredPaymentMethods" :value="payment_method.id"
+                        v-bind:key="payment_method.id">
                         {{ payment_method.name }}
                       </option>
                     </select>
 
-                    <div
-                      id="payment_method_id-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="payment_method_id-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3" v-if="model.payment_method == 9">
                   <div class="form-group">
                     <label class="form-control-label">Sede:</label>
-                    <select
-                      class="form-control"
-                      name="payment_sede"
-                      id="payment_sede"
-                      v-model="model.payment_sede"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <select class="form-control" name="payment_sede" id="payment_sede" v-model="model.payment_sede"
+                      @focus="$parent.clearErrorMsg($event)">
                       <option value="ATE">ATE</option>
                       <option value="CALLAO">CALLAO</option>
                       <option value="COLONIAL">COLONIAL</option>
                     </select>
-                    <div
-                      id="payment_sede-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="payment_sede-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3" v-if="model.payment_method == 9">
                   <div class="form-group">
                     <label class="form-control-label">Nº de Hermeticase:</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="operation_number"
-                      id="operation_number"
-                      v-model="model.operation_number"
-                      @focus="$parent.clearErrorMsg($event)"
-                      v-on:change="manageOperationNumber"
-                    />
-                    <div
-                      id="operation_number-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <input type="text" class="form-control" name="operation_number" id="operation_number"
+                      v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)"
+                      v-on:change="manageOperationNumber" />
+                    <div id="operation_number-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3" v-if="model.payment_method == 10">
                   <div class="form-group">
                     <label class="form-control-label">Saldo a Favor:</label>
-                    <select
-                      class="form-control"
-                      name="saldo_favor_id"
-                      id="saldo_favor_id"
-                      v-model="model.saldo_favor_id"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <select class="form-control" name="saldo_favor_id" id="saldo_favor_id"
+                      v-model="model.saldo_favor_id" @focus="$parent.clearErrorMsg($event)">
                       <option value="">Seleccionar</option>
-                      <option
-                        v-for="saldo_favor in saldos_favor"
-                        :value="saldo_favor.id"
-                        v-bind:key="saldo_favor.id"
-                      >
+                      <option v-for="saldo_favor in saldos_favor" :value="saldo_favor.id" v-bind:key="saldo_favor.id">
                         {{ saldo_favor.name }}
                       </option>
                     </select>
-                    <div
-                      id="saldo_favor_id-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="saldo_favor_id-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Moneda:</label>
-                    <select
-                      class="form-control"
-                      name="currency_id"
-                      id="currency_id"
-                      v-model="model.currency"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <select class="form-control" name="currency_id" id="currency_id" v-model="model.currency"
+                      @focus="$parent.clearErrorMsg($event)">
                       <option value="">Seleccionar</option>
-                      <option
-                        v-for="currency in currencies"
-                        :value="currency.id"
-                        v-bind:key="currency.id"
-                      >
+                      <option v-for="currency in currencies" :value="currency.id" v-bind:key="currency.id">
                         {{ currency.name }}
                       </option>
                     </select>
-                    <div
-                      id="currency_id-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="currency_id-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
-                <div
-                  class="col-lg-3"
-                  v-if="model.currency != '' && model.currency != 1"
-                >
+                <div class="col-lg-3" v-if="model.currency != '' && model.currency != 1">
                   <div class="form-group">
                     <label class="form-control-label">Tipo de Cambio:</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      name="exchange_rate"
-                      id="exchange_rate"
-                      min="0"
-                      v-model="model.exchange_rate"
-                      @focus="$parent.clearErrorMsg($event)"
-                    />
-                    <div
-                      id="exchange_rate-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <input type="number" class="form-control" name="exchange_rate" id="exchange_rate" min="0"
+                      v-model="model.exchange_rate" @focus="$parent.clearErrorMsg($event)" />
+                    <div id="exchange_rate-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
-                <div
-                  class="col-lg-3"
-                  v-if="model.payment_method == 2 || model.payment_method == 3"
-                >
+                <div class="col-lg-3" v-if="model.payment_method == 2 || model.payment_method == 3">
                   <div class="form-group">
                     <label class="form-control-label">Banco:</label>
-                    <select
-                      class="form-control"
-                      name="bank_account_id"
-                      id="bank_account_id"
-                      v-model="model.bank_account"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <select class="form-control" name="bank_account_id" id="bank_account_id"
+                      v-model="model.bank_account" @focus="$parent.clearErrorMsg($event)">
                       <option value="">Seleccionar</option>
-                      <option
-                        v-for="bank_account in bank_accounts"
-                        :value="bank_account.id"
-                        v-bind:key="bank_account.id"
-                      >
+                      <option v-for="bank_account in bank_accounts" :value="bank_account.id"
+                        v-bind:key="bank_account.id">
                         {{ bank_account.name }}
                       </option>
                     </select>
-                    <div
-                      id="bank_account_id-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="bank_account_id-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
-                <div
-                  class="col-lg-3"
-                  v-if="
-                    model.payment_method == 2 ||
-                    model.payment_method == 3 ||
-                    model.payment_method == 11
-                  "
-                >
+                <div class="col-lg-3" v-if="
+                  model.payment_method == 2 ||
+                  model.payment_method == 3 ||
+                  model.payment_method == 11
+                ">
                   <div class="form-group">
                     <label class="form-control-label">Nº de Operación:</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="operation_number"
-                      id="operation_number"
-                      v-model="model.operation_number"
-                      @focus="$parent.clearErrorMsg($event)"
-                      v-on:change="manageOperationNumber"
-                    />
-                    <div
-                      id="operation_number-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <input type="text" class="form-control" name="operation_number" id="operation_number"
+                      v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)"
+                      v-on:change="manageOperationNumber" />
+                    <div id="operation_number-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
-                <div
-                  class="col-lg-3"
-                  v-if="
-                    model.payment_method == 9 ||
-                    model.payment_method == 3 ||
-                    model.payment_method == 2 ||
-                    model.payment_method == 11
-                  "
-                >
+                <div class="col-lg-3" v-if="
+                  model.payment_method == 9 ||
+                  model.payment_method == 3 ||
+                  model.payment_method == 2 ||
+                  model.payment_method == 11
+                ">
                   <div class="form-group">
                     <label class="form-control-label">Fecha de Pago:</label>
-                    <datetime
-                      v-model="model.payment_date"
-                      placeholder="Selecciona una Fecha"
-                      :format="'dd-LL-yyyy'"
-                      input-id="since_date"
-                      name="since_date"
-                      value-zone="America/Lima"
-                      zone="America/Lima"
-                      class="form-control"
-                      @focus="$parent.clearErrorMsg($event)"
-                    >
+                    <datetime v-model="model.payment_date" placeholder="Selecciona una Fecha" :format="'dd-LL-yyyy'"
+                      input-id="since_date" name="since_date" value-zone="America/Lima" zone="America/Lima"
+                      class="form-control" @focus="$parent.clearErrorMsg($event)">
                     </datetime>
-                    <div
-                      id="payment_date-error"
-                      class="error invalid-feedback"
-                    ></div>
+                    <div id="payment_date-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="col-lg-3">
                   <div class="form-group">
                     <label class="form-control-label">Monto:</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      name="amount"
-                      id="amount"
-                      min="0"
-                      v-model="model.amount"
-                      @focus="$parent.clearErrorMsg($event)"
-                    />
+                    <input type="number" class="form-control" name="amount" id="amount" min="0" v-model="model.amount"
+                      @focus="$parent.clearErrorMsg($event)" />
                     <div id="amount-error" class="error invalid-feedback"></div>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-12 text-right">
-                  <button
-                    id="add_payment"
-                    type="submit"
-                    class="btn btn-success"
-                    @click.prevent="addLiquidation(model)"
-                    :disabled="model.payment_method == 2"
-                  >
+                  <button id="add_payment" type="submit" class="btn btn-success" @click.prevent="addLiquidation(model)"
+                    :disabled="model.payment_method == 2">
                     Agregar
                   </button>
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    @click.prevent="resetLiquidation()"
-                  >
+                  <button type="button" class="btn btn-secondary" @click.prevent="resetLiquidation()">
                     Cancelar
                   </button>
-                  <div
-                    class="kt-separator kt-separator--space kt-separator--dashed"
-                  ></div>
+                  <div class="kt-separator kt-separator--space kt-separator--dashed"></div>
                 </div>
-              </div> 
-               <div class="row">
+              </div>
+              <div class="row">
                 <div class="col-12">
                   <table class="table table-vertical-middle table-layout-fixed">
                     <thead>
@@ -320,10 +173,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr
-                        v-for="(item, index) in liquidations"
-                        v-bind:key="index"
-                      >
+                      <tr v-for="(item, index) in liquidations" v-bind:key="index">
                         <td>{{ item.payment_method.name }}</td>
                         <td>{{ item.currency.name }}</td>
                         <td>{{ item.exchange_rate }}</td>
@@ -333,11 +183,8 @@
                           {{ item.amount }}
                         </td>
                         <td style="text-align: right">
-                          <a
-                            href="#"
-                            class="btn-sm btn btn-label-danger btn-bold"
-                            @click.prevent="removeLiquidation(index)"
-                          >
+                          <a href="#" class="btn-sm btn btn-label-danger btn-bold"
+                            @click.prevent="removeLiquidation(index)">
                             <i class="la la-trash-o pr-0"></i>
                           </a>
                         </td>
@@ -350,13 +197,11 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td
-                          style="
+                        <td style="
                             text-align: right;
                             width: 120px;
                             font-weight: 600;
-                          "
-                        >
+                          ">
                           {{ addTotals }}
                         </td>
                         <td style="text-align: right"></td>
@@ -364,22 +209,14 @@
                     </tfoot>
                   </table>
                 </div>
-              </div> 
+              </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button
-              type="submit"
-              class="btn btn-success"
-              @click.prevent="addLiquidations()"
-            >
+            <button type="submit" class="btn btn-success" @click.prevent="addLiquidations()">
               Crear
             </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
               Cerrar
             </button>
           </div>
@@ -579,19 +416,19 @@ export default {
         methods = this.payment_methods.filter((method) => method.id === 12);
       }
 
-      
+
       this.model.payment_method = methods[0].id;
 
 
       return methods;
     },
 
-   /* title_text() {
-      if (this.model && this.model.amount) {
-        return `${this.$store.state.sale.client_name} - Total: ${this.model.amount}`;
-      }
-      return `${this.$store.state.sale.client_name} - Total:`;
-    },*/
+    /* title_text() {
+       if (this.model && this.model.amount) {
+         return `${this.$store.state.sale.client_name} - Total: ${this.model.amount}`;
+       }
+       return `${this.$store.state.sale.client_name} - Total:`;
+     },*/
 
     addTotals() {
       return this.liquidations.reduce(
@@ -695,7 +532,7 @@ export default {
           this.liquidations.push(liquidation);
         }
 
-         // Actualiza el monto inicial restante
+        // Actualiza el monto inicial restante
         this.initialAmount = parseFloat(this.initialAmount) - parseFloat(liquidation.amount);
         if (this.initialAmount < 0) this.initialAmount = 0;
         this.model.amount = this.initialAmount.toString();

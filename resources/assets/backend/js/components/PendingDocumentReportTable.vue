@@ -112,8 +112,8 @@
 					},
 
 					// column sorting
-					sortable: false,
-					pagination: false,
+					sortable: true,
+					pagination: true,
 
 					search: {
 						input: $('#generalSearch'),

@@ -125,7 +125,18 @@
                             <div id="license_plate-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="form-control-label">Tanque:</label>
+                            <select class="form-control" name="tanque" id="tanque" v-model="model.tanque"
+                                @focus="$parent.clearErrorMsg($event)">
+                                <option value="" selected disabled>Seleccionar</option>
+                                <option value="4791">TANQUE 1</option>
+                                <option value="4792">TANQUE 2</option>
+                            </select>
+                            <div id="tanque-error" class="error invalid-feedback"></div>
+                        </div>
+                    </div>
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Serie:</label>
@@ -146,19 +157,6 @@
                                 id="referral_guide_number" v-model="model.referral_guide_number"
                                 @focus="$parent.clearErrorMsg($event)">
                             <div id="referral_guide_number-error" class="error invalid-feedback"></div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Tanque:</label>
-                            <select class="form-control" name="tanque" id="tanque" v-model="model.tanque"
-                                @focus="$parent.clearErrorMsg($event)">
-                                <option value="" selected disabled>Seleccionar</option>
-                                <option value="4791">TANQUE 1</option>
-                                <option value="4792">TANQUE 2</option>
-                            </select>
-                            <div id="tanque-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
                 </div>

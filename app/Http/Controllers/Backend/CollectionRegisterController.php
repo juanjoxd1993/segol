@@ -21,8 +21,9 @@ use Auth;
 
 class CollectionRegisterController extends Controller
 {
-  public function index() {
-		$companies = Company::select('id', 'name')->get();
+	public function index()
+	{
+		$companies = Company::select('id', 'name')->whereIn('id',[2])->get();
 		$max_sale_date = CarbonImmutable::now()->toAtomString();
 		$payment_methods = PaymentMethod::select('id', 'name')->get();
 		$currencies = Currency::select('id', 'name')->get();
@@ -34,21 +35,23 @@ class CollectionRegisterController extends Controller
 		return view('backend.collection_register')->with(compact('companies', 'max_sale_date', 'payment_methods', 'currencies', 'bank_accounts', 'warehouse_document_types'));
 	}
 
-	public function getClients() {
+	public function getClients()
+	{
 		$company_id = request('company_id');
 		$q = request('q');
 
-		$clients = Client::select('id', 'business_name as text','code')
+		$clients = Client::select('id', 'business_name as text', 'code')
 			->where('company_id', $company_id)
-			->where('business_name', 'like', '%'.$q.'%')
-			->orWhere('code', 'like', '%'.$q.'%')
-			->orWhere('id', 'like', '%'.$q.'%')
+			->where('business_name', 'like', '%' . $q . '%')
+			->orWhere('code', 'like', '%' . $q . '%')
+			->orWhere('id', 'like', '%' . $q . '%')
 			->get();
 
 		return $clients;
 	}
 
-	public function validateFirstStep() {
+	public function validateFirstStep()
+	{
 		$messages = [
 			'company_id.required'	=> 'Debe seleccionar una Compañía.',
 			'client_id.required'	=> 'Debe seleccionar un Cliente.',
@@ -63,7 +66,8 @@ class CollectionRegisterController extends Controller
 		return request()->all();
 	}
 
-	public function validateSecondStep() {
+	public function validateSecondStep()
+	{
 		$messages = [
 			'sale_date.required'								=> 'Debe seleccionar una Fecha de Cancelación.',
 			'payment_method_id.required'						=> 'Debe seleccionar un Tipo de Cancelación.',
@@ -91,7 +95,7 @@ class CollectionRegisterController extends Controller
 		request()->validate($rules, $messages);
 
 		$payment_method_id = request('payment_method_id');
-		if ( $payment_method_id > 3 ) {
+		if ($payment_method_id > 3) {
 			$company_id = request('company_id');
 			$referral_warehouse_document_type_id = request('referral_warehouse_document_type_id');
 			$referral_serie_number = request('referral_serie_number');
@@ -127,7 +131,8 @@ class CollectionRegisterController extends Controller
 		return request()->all();
 	}
 
-	public function getSales() {
+	public function getSales()
+	{
 		$company_id = request('company_id');
 		$client_id = request('client_id');
 
@@ -141,12 +146,13 @@ class CollectionRegisterController extends Controller
 		return $sales;
 	}
 
-	public function store() {
+	public function store()
+	{
 		$user_id = Auth::user()->id;
 
 		$warehouse_type_user = WarehouseTypeInUser::select('warehouse_type_id')
-																							->where('user_id', $user_id)
-																							->first();
+			->where('user_id', $user_id)
+			->first();
 
 		// Este valor debe ser dependiendo del almacen que tenga asignado el usuario
 		$warehouse_type_id = $warehouse_type_user->warehouse_type_id;
@@ -169,7 +175,7 @@ class CollectionRegisterController extends Controller
 		foreach ($items as $item) {
 			$last_collection_number = Liquidation::max('collection_number');
 			$collection_number = $last_collection_number ? ++$last_collection_number : 1;
-			
+
 			$liquidation = new Liquidation();
 			$liquidation->sale_id = $item['id'];
 			$liquidation->collection_number = $collection_number;
@@ -181,11 +187,10 @@ class CollectionRegisterController extends Controller
 			$liquidation->operation_number = $operation_number;
 			$liquidation->detraction_number = $detraction_number;
 			$liquidation->amount = $item['paid'];
-			if ($liquidation['payment_date']) {
-				$liquidation_model->rem_date = $liquidation['payment_date'];
-			}
+			$liquidation->rem_date = request('model.payment_date') ? request('model.payment_date') : request('model.sale_date');
+			
 			if ($liquidation['payment_sede']) {
-				$liquidation_model->payment_sede = $liquidation['payment_sede'];
+				$liquidation->payment_sede = $item['payment_sede'];
 			}
 			$liquidation->collection = 1;
 			$liquidation->cede = $warehouse_type_id;
@@ -207,7 +212,7 @@ class CollectionRegisterController extends Controller
 		}
 
 		$client = Client::find($client_id);
-		if ( $payment_method_id < 5 ) {
+		if ($payment_method_id < 5) {
 			$client->credit_balance = $total_paid;
 			$client->save();
 		}
@@ -240,11 +245,11 @@ class CollectionRegisterController extends Controller
 			$saldo->save();
 		};
 
-		if ( $total_paid > 0 && $to_be_assigned > 0 ) {
+		if ($total_paid > 0 && $to_be_assigned > 0) {
 			$referral_serie_number = date('Ym', strtotime($sale_date));
 			$last_referral_voucher_number = Sale::where('company_id', $company_id)
-																					->where('referral_serie_number', $referral_serie_number)
-																					->max('referral_voucher_number');
+				->where('referral_serie_number', $referral_serie_number)
+				->max('referral_voucher_number');
 
 			$newSale = new Sale();
 			$newSale->company_id = $company_id;
@@ -280,7 +285,7 @@ class CollectionRegisterController extends Controller
 			$newSaleDetail->igv_perception_percentage = 0;
 			$newSaleDetail->igv_percentage = 0;
 			$newSaleDetail->save();
-			
+
 			$last_collection_number = Liquidation::max('collection_number');
 			$collection_number = $last_collection_number ? ++$last_collection_number : 1;
 
@@ -334,21 +339,24 @@ class CollectionRegisterController extends Controller
 	// 	return request()->all();
 	// }
 
-	public function getSaldosFavor() {
+	public function getSaldosFavor()
+	{
 		$client_id = request('client_id');
 
 		$saldos_favor = Sale::where('warehouse_document_type_id', 30)
-												->where('client_id', $client_id)
-												->where('total_perception', '>', 0)
-												->select('id',
-																'sale_date',
-																'referral_serie_number',
-																'referral_voucher_number',
-																'currency_id',
-																'total_perception')
-												->get();
+			->where('client_id', $client_id)
+			->where('total_perception', '>', 0)
+			->select(
+				'id',
+				'sale_date',
+				'referral_serie_number',
+				'referral_voucher_number',
+				'currency_id',
+				'total_perception'
+			)
+			->get();
 
-		$saldos_favor->map(function($item, $index) {
+		$saldos_favor->map(function ($item, $index) {
 			$item->name = $item->sale_date . ' | ' . $item->referral_serie_number . '-' . $item->referral_voucher_number . ' | ' . $item->total_perception;
 
 			return $item;
@@ -357,22 +365,25 @@ class CollectionRegisterController extends Controller
 		return response()->json($saldos_favor, 200);
 	}
 
-	public function getDocuments() {
+	public function getDocuments()
+	{
 		$client_id = request('client_id');
 		$warehouse_document_type_id = request('warehouse_document_type_id');
 
 		$documents = Sale::where('warehouse_document_type_id', $warehouse_document_type_id)
-												->where('client_id', $client_id)
-												->where('total_perception', '>', 0)
-												->select('id',
-																'sale_date',
-																'referral_serie_number',
-																'referral_voucher_number',
-																'currency_id',
-																'total_perception')
-												->get();
+			->where('client_id', $client_id)
+			->where('total_perception', '>', 0)
+			->select(
+				'id',
+				'sale_date',
+				'referral_serie_number',
+				'referral_voucher_number',
+				'currency_id',
+				'total_perception'
+			)
+			->get();
 
-		$documents->map(function($item, $index) {
+		$documents->map(function ($item, $index) {
 			$item->name = $item->sale_date . ' | ' . $item->referral_serie_number . '-' . $item->referral_voucher_number;
 
 			return $item;
