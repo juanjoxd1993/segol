@@ -416,6 +416,15 @@
 								</a>
 							</li>
 
+							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.abastecimiento_planta_register' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+								<a href="{{ route('dashboard.operations.abastecimiento_planta_register') }}" class="kt-menu__link ">
+									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+										<span></span>
+									</i>
+									<span class="kt-menu__link-text">Abastecimiento Planta</span>
+								</a>
+							</li>
+
 							<li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.operations.guides_validate_press' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
 								<a href="{{ route('dashboard.operations.guides_validate_press') }}" class="kt-menu__link ">
 									<i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
