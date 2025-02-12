@@ -171,7 +171,7 @@ class FinanzasDetailTotalReportController extends Controller
 			->whereIn('liquidations.cede', $warehouse_types)
 			//		->whereNotIn('sales.client_id', $client_ids)	 
 			->whereIn('liquidations.payment_method_id', [1])
-			->where('liquidations.collection', [1])
+			->whereIn('liquidations.collection', [1])
 			->select('liquidations.amount')
 			->sum('liquidations.amount');
 		$cobranza_remesa = Liquidation::leftjoin('sales', 'liquidations.sale_id', '=', 'sales.id')
@@ -180,7 +180,7 @@ class FinanzasDetailTotalReportController extends Controller
 			->whereIn('liquidations.cede', $warehouse_types)
 			//		->whereNotIn('sales.client_id', $client_ids)	 
 			->whereIn('liquidations.payment_method_id', [9])
-			->where('liquidations.collection', [1])
+			->whereIn('liquidations.collection', [1])
 			->select('liquidations.amount')
 			->sum('liquidations.amount');
 
@@ -190,7 +190,7 @@ class FinanzasDetailTotalReportController extends Controller
 			->whereIn('liquidations.cede', $warehouse_types)
 			//		->whereNotIn('sales.client_id', $client_ids)	 
 			->whereIn('liquidations.payment_method_id', [2, 3])
-			->Where('liquidations.collection', [1])
+			->whereIn('liquidations.collection', [1])
 			->select('liquidations.amount')
 			->sum('liquidations.amount');
 
