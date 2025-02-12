@@ -38,14 +38,13 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label class="form-control-label">Tanque Receptor:</label>
-                            <select class="form-control" name="warehouse_receiver" id="warehouse_receiver"
-                                v-model="model.warehouse_receiver" @focus="$parent.clearErrorMsg($event)">
-                                <option disabled value="">Seleccionar</option>
-                                <option v-for="warehouseType in warehouse_receivers" :value="warehouseType.id"
-                                    v-bind:key="warehouseType.id">{{
-                                        warehouseType.name }}</option>
+                            <select class="form-control" name="tanque" id="tanque" v-model="model.tanque"
+                                @focus="$parent.clearErrorMsg($event)">
+                                <option disabled value="" selected>Seleccionar</option>
+                                <option value="4791">TANQUE 1</option>
+                                <option value="4792">TANQUE 2</option>
                             </select>
-                            <div id="warehouse_receiver-error" class="error invalid-feedback"></div>
+                            <div id="tanque-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
                     <!-- <div class="col-lg-3" >
@@ -178,15 +177,7 @@ Vue.use(Datetime);
 
 export default {
     props: {
-        movement_classes: {
-            type: Array,
-            default: ''
-        },
         movement_types: {
-            type: Array,
-            default: ''
-        },
-        movement_stock_types: {
             type: Array,
             default: ''
         },
@@ -198,26 +189,10 @@ export default {
             type: Array,
             default: ''
         },
-        warehouse_receivers: {
-            type: Array,
-            default: ''
-        },
-        companies: {
-            type: Array,
-            default: ''
-        },
-        currencies: {
-            type: Array,
-            default: ''
-        },
         current_date: {
             type: String,
             default: ''
         },
-        // min_datetime: {
-        //     type: String,
-        //     default: ''
-        // },
         max_datetime: {
             type: String,
             default: ''
@@ -251,7 +226,7 @@ export default {
                 movement_stock_type_id: '',
                 warehouse_type_id: '',
                 company_id: '1',
-                //   currency: 1,
+                tanque: '',
                 traslate_date: this.min_datetime,
                 since_date: this.current_date,
                 warehouse_account_type_id: '3',
@@ -262,7 +237,6 @@ export default {
                 referral_serie_number: '',
                 referral_voucher_number: '',
                 scop_number: '',
-                license_plate: '',
                 license_plate_2: '',
                 price_mes: '',
                 mezcla: '',
@@ -291,15 +265,12 @@ export default {
             this.model.referral_serie_number = '';
             this.model.referral_voucher_number = '';
             this.model.scop_number = '';
-            this.model.license_plate = '';
             this.model.license_plate_2 = '';
             this.model.price_mes = '';
             this.model.mezcla = '';
             this.model.isla = '';
 
-            $('.kt-form').find('input').prop('disabled', false);
-            $('.kt-form').find('select').prop('disabled', false);
-            $('.kt-form').find('button').prop('disabled', false);
+
         }.bind(this));
     },
     mounted() {
@@ -425,32 +396,9 @@ export default {
             }).then(response => {
                 EventBus.$emit('loading', false);
                 EventBus.$emit('show_table', response.data);
-                this.model = {
-                    movement_class_id: '',
-                    movement_type_id: '31',
-                    movement_stock_type_id: '',
-                    warehouse_type_id: '',
-                    company_id: '1',
-                    //   currency: 1,
-                    traslate_date: this.min_datetime,
-                    since_date: this.current_date,
-                    warehouse_account_type_id: '3',
-                    warehouse_account_id: '',
-                    referral_guide_series: '',
-                    referral_guide_number: '',
-                    referral_warehouse_document_type_id: '',
-                    referral_serie_number: '',
-                    referral_voucher_number: '',
-                    scop_number: '',
-                    license_plate: '',
-                    license_plate_2: '',
-                    price_mes: '',
-                    mezcla: '',
-                    isla: '',
-                    warehouse_receiver: '',
-                    invoices: [],
-                }
-                // console.log(response);
+                target.find('input').prop('disabled', true);
+                target.find('select').prop('disabled', true);
+                target.find('button').prop('disabled', true);
             }).catch(error => {
                 EventBus.$emit('loading', false);
                 console.log(error.response);

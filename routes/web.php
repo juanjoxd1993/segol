@@ -331,16 +331,16 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/operaciones/retorno-guias/obtener-balones', 'GuidesReturnController@getBalons')->name('dashboard.operations.guides_return.get_balons');
 
 	/** Compras GLP > Abastecimiento Planta*/
-	Route::get('/operaciones/registro-abas-planta', 'AbastecimientoPlantaController@index')->name('dashboard.operations.abastecimiento_planta_register');
-	Route::post('/operaciones/registro-abas-planta/validar-formulario', 'AbastecimientoPlantaController@validateForm')->name('dashboard.operations.abastecimiento_planta_register.validate_form');
-	Route::post('/operaciones/registro-abas-planta/listar', 'AbastecimientoPlantaController@list')->name('dashboard.operations.abastecimiento_planta_register.list');
-	Route::post('/operaciones/registro-abas-planta/listar-cuentas', 'AbastecimientoPlantaController@getAccounts')->name('dashboard.operations.abastecimiento_planta_register.get_accounts');
-	Route::post('/operaciones/registro-abas-planta/listar-articulos', 'AbastecimientoPlantaController@getArticles')->name('dashboard.operations.abastecimiento_planta_register.get_articles');
-	Route::post('/operaciones/registro-abas-planta/obtener-percepcion', 'AbastecimientoPlantaController@getPerceptionPercentage')->name('dashboard.operations.abastecimiento_planta_register.get_perception_percentage');
-	Route::post('/operaciones/registro-abas-planta/obtener-tasas', 'AbastecimientoPlantaController@getArticleRates')->name('dashboard.operations.abastecimiento_planta_register.get_article_rates');
-	Route::post('/operaciones/registro-abas-planta/obtener-articulo', 'AbastecimientoPlantaController@getArticle')->name('dashboard.operations.abastecimiento_planta_register.get_article');
-	Route::post('/operaciones/registro-abas-planta/guardar', 'AbastecimientoPlantaController@store')->name('dashboard.operations.abastecimiento_planta_register.store');
-	Route::post('/operaciones/registro-abas-planta/get-invoices', 'AbastecimientoPlantaController@getInvoices')->name('dashboard.operations.abastecimiento_planta_register.get_invoices');
+	Route::get('/operaciones/registro-abas-planta', 'AbastecimientoPlantaRegisterController@index')->name('dashboard.operations.abastecimiento_planta_register');
+	Route::post('/operaciones/registro-abas-planta/validar-formulario', 'AbastecimientoPlantaRegisterController@validateForm')->name('dashboard.operations.abastecimiento_planta_register.validate_form');
+	Route::post('/operaciones/registro-abas-planta/listar', 'AbastecimientoPlantaRegisterController@list')->name('dashboard.operations.abastecimiento_planta_register.list');
+	Route::post('/operaciones/registro-abas-planta/listar-cuentas', 'AbastecimientoPlantaRegisterController@getAccounts')->name('dashboard.operations.abastecimiento_planta_register.get_accounts');
+	Route::post('/operaciones/registro-abas-planta/listar-articulos', 'AbastecimientoPlantaRegisterController@getArticles')->name('dashboard.operations.abastecimiento_planta_register.get_articles');
+	Route::post('/operaciones/registro-abas-planta/obtener-percepcion', 'AbastecimientoPlantaRegisterController@getPerceptionPercentage')->name('dashboard.operations.abastecimiento_planta_register.get_perception_percentage');
+	Route::post('/operaciones/registro-abas-planta/obtener-tasas', 'AbastecimientoPlantaRegisterController@getArticleRates')->name('dashboard.operations.abastecimiento_planta_register.get_article_rates');
+	Route::post('/operaciones/registro-abas-planta/obtener-articulo', 'AbastecimientoPlantaRegisterController@getArticle')->name('dashboard.operations.abastecimiento_planta_register.get_article');
+	Route::post('/operaciones/registro-abas-planta/guardar', 'AbastecimientoPlantaRegisterController@store')->name('dashboard.operations.abastecimiento_planta_register.store');
+	Route::post('/operaciones/registro-abas-planta/get-invoices', 'AbastecimientoPlantaRegisterController@getInvoices')->name('dashboard.operations.abastecimiento_planta_register.get_invoices');
 
 
 	/** Operaciones > Validar Prestamos */
