@@ -133,8 +133,8 @@ class FinanzasDetailTotalReportController extends Controller
 			->whereIn('sales.cede', $warehouse_types)
 			->where('sales.sale_date', '=',  $initial_date)
 			->whereIn('sales.warehouse_document_type_id', [13, 7, 5])
-			->select('sales.balance')
-			->sum('sales.balance');
+			->select('sales.pre_balance')
+			->sum('sales.pre_balance');
 
 		/*	$saldo_favor = Sale::leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 								->whereIn('sales.cede', $warehouse_types)
