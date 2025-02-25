@@ -2,7 +2,7 @@
   <div>
     <!--begin::Liquidation Modal-->
     <div class="modal fade" id="modal-liquidation" tabindex="-1" role="dialog" aria-labelledby="liquidationModal"
-      aria-hidden="true">
+      aria-hidden="true" data-backdrop="static" data-keyboard="false">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
