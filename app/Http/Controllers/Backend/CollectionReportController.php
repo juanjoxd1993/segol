@@ -92,8 +92,13 @@ class CollectionReportController extends Controller
 					->where('sales.sale_date', '<=', $final_date->format('Y-m-d'));
 			})
 			->when($date_type_id == 2, function ($query) use ($initial_date, $final_date) {
-				return $query->where('liquidations.created_at', '>=', $initial_date->startOfDay()->format('Y-m-d H:i:s'))
-					->where('liquidations.created_at', '<=', $final_date->endOfDay()->format('Y-m-d H:i:s'));
+				return $query->whereBetween(
+					DB::raw("CASE WHEN liquidations.collection = 1 THEN liquidations.rem_date ELSE liquidations.created_at END"),
+					[
+						$initial_date->startOfDay()->format('Y-m-d H:i:s'),
+						$final_date->endOfDay()->format('Y-m-d H:i:s')
+					]
+				);
 			})
 			->when($client_id, function ($query, $client_id) {
 				return $query->where('clients.id', $client_id);
