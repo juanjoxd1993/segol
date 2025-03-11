@@ -34,7 +34,7 @@ class GuidesRegisterController extends Controller
 		$date = CarbonImmutable::now()->startOfDay();
 		$current_date = $date->startOfDay()->toAtomString();
 		$min_datetime = $date->startOfDay()->toAtomString();
-		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
+		$max_datetime = $date->startOfDay()->addDays(0)->toAtomString();
 		$guide_series = GuidesSerie::select('id', 'num_serie', 'correlative')->get();
 		$articles = Article::select('id', 'code', 'name', 'package_sale', 'stock_good', 'convertion')
 			->orderBy('code', 'asc')

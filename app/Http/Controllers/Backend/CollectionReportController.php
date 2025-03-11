@@ -93,10 +93,10 @@ class CollectionReportController extends Controller
 			})
 			->when($date_type_id == 2, function ($query) use ($initial_date, $final_date) {
 				return $query->whereBetween(
-					DB::raw("CASE WHEN liquidations.collection = 1 THEN liquidations.rem_date ELSE liquidations.created_at END"),
+					DB::raw("CASE WHEN liquidations.collection = 1 THEN liquidations.rem_date ELSE sales.sale_date END"),
 					[
-						$initial_date->startOfDay()->format('Y-m-d H:i:s'),
-						$final_date->endOfDay()->format('Y-m-d H:i:s')
+						$initial_date->format('Y-m-d'),
+						$final_date->format('Y-m-d')
 					]
 				);
 			})

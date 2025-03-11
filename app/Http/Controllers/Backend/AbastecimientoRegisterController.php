@@ -37,7 +37,9 @@ class AbastecimientoRegisterController extends Controller
 		$date = CarbonImmutable::now()->startOfDay();
 		$current_date = $date->startOfDay()->toAtomString();
 		$min_datetime = $date->startOfDay()->toAtomString();
-		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
+		$max_datetime = $date->startOfDay()->addDays(0)->toAtomString();
+
+		$max_datetime_ingreso = $date->startOfDay()->addDays(2)->toAtomString();
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->get();
 		$igv = Rate::select('description', 'value')
@@ -47,7 +49,7 @@ class AbastecimientoRegisterController extends Controller
 		$warehouse_providers = WarehouseType::select('id', 'name')->whereIn('type',[2,3,4])->get();
 		$warehouse_receivers = WarehouseType::select('id', 'name')->whereIn('type', [2,3,4])->get();
 
-		return view('backend.abastecimiento_register')->with(compact('movement_classes', 'movement_types', 'movement_stock_types', 'warehouse_types', 'companies', 'currencies', 'current_date', 'min_datetime', 'max_datetime', 'warehouse_account_types', 'warehouse_document_types', 'igv', 'warehouse_providers', 'warehouse_receivers'));
+		return view('backend.abastecimiento_register')->with(compact('max_datetime_ingreso','movement_classes', 'movement_types', 'movement_stock_types', 'warehouse_types', 'companies', 'currencies', 'current_date', 'min_datetime', 'max_datetime', 'warehouse_account_types', 'warehouse_document_types', 'igv', 'warehouse_providers', 'warehouse_receivers'));
 	}
 
 	public function getAccounts() {

@@ -75,7 +75,7 @@
                             <label class="form-control-label">Fecha de Emisión:</label>
                             <datetime v-model="model.since_date" placeholder="Selecciona una Fecha"
                                 :format="'dd-LL-yyyy'" input-id="since_date" name="since_date" value-zone="America/Lima"
-                                zone="America/Lima" class="form-control" :max-datetime="this.max_datetime"
+                                zone="America/Lima" class="form-control" :min-datetime="this.min_datetime" :max-datetime="this.max_datetime"
                                 @focus="$parent.clearErrorMsg($event)">
                             </datetime>
                             <div id="since_date-error" class="error invalid-feedback"></div>
@@ -233,8 +233,8 @@ export default {
             model: {
                 movement_type_id: 12,
                 company_id: 2,
-                since_date: '',
-                traslate_date: '',
+                since_date: this.max_datetime,
+                traslate_date: this.max_datetime,
                 client_id: '',
                 chofer_id: '',
                 license_plate: '',

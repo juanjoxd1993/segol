@@ -11,6 +11,7 @@
 		:movement_types = "{{ $movement_types }}"
 		:warehouse_types = "{{ $warehouse_types }}"
 		:url = "'{{ route('dashboard.logistics.movement_register.list') }}'"
+		:max_datetime = "'{{ $max_datetime }}'"
 	></movement-register-form>
 
 	<movement-register-table

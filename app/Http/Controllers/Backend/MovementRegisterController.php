@@ -15,6 +15,7 @@ use App\Provider;
 use App\WarehouseMovement;
 use App\WarehouseMovementDetail;
 use Auth;
+use Carbon\CarbonImmutable;
 
 class MovementRegisterController extends Controller
 {
@@ -26,12 +27,16 @@ class MovementRegisterController extends Controller
 		$warehouse_types = WarehouseType::select('id', 'name')->whereIn('id', [75])->get();
 		$companies = Company::select('id', 'name')->whereIn('id', [2])->get();
 
+		$date = CarbonImmutable::now()->startOfDay();
+		$max_datetime = $date->startOfDay()->addDays(0)->toAtomString();
+
 		return view('backend.movement_register_controller')->with(compact(
 			'articles',
 			'movement_classes',
 			'movement_types',
 			'warehouse_types',
 			'companies',
+			'max_datetime'
 		));
 	}
 

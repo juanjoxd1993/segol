@@ -8,8 +8,8 @@
 	<abastecimiento-planta-register-form
 		:movement_types = "{{ $movement_types }}"
 		:current_date = "'{{ $current_date }}'"
-		{{-- :min_datetime = "'{{ $min_datetime }}'" --}}
 		:max_datetime = "'{{ $max_datetime }}'"
+		:max_datetime_ingreso = "'{{ $max_datetime_ingreso }}'"
 		:warehouse_types = "{{ $warehouse_types }}"
 		:warehouse_providers = "{{ $warehouse_providers }}"
 		:warehouse_account_types = "{{ $warehouse_account_types }}"	

@@ -57,8 +57,8 @@
                             <select value="1" class="form-control" name="company_id" id="company_id"
                                 v-model="model.company_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="" selected disabled>Seleccionar</option>
-                                <option v-for="company in companies" :value="company.id"
-                                    v-bind:key="company.id">{{ company.name }}</option>
+                                <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{
+                                    company.name }}</option>
                             </select>
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -68,8 +68,8 @@
                             <label class="form-control-label">Fecha de Emisión:</label>
                             <datetime v-model="model.since_date" placeholder="Selecciona una Fecha"
                                 :format="'dd-LL-yyyy'" input-id="since_date" name="since_date" value-zone="America/Lima"
-                                zone="America/Lima" class="form-control" :max-datetime="this.max_datetime"
-                                @focus="$parent.clearErrorMsg($event)">
+                                zone="America/Lima" class="form-control" :min-datetime="this.max_datetime"
+                                :max-datetime="this.max_datetime" @focus="$parent.clearErrorMsg($event)">
                             </datetime>
                             <div id="since_date-error" class="error invalid-feedback"></div>
                         </div>
@@ -134,6 +134,10 @@ export default {
             type: String,
             default: ''
         },
+        max_datetime: {
+            type: String,
+            default: ''
+        },
     },
     data() {
         return {
@@ -143,7 +147,7 @@ export default {
                 warehouse_type_id: '75',
                 company_id: '2',
                 since_date: '',
-                tanque:''
+                tanque: ''
             },
         }
     },

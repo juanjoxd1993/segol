@@ -14,6 +14,7 @@
 		:current_date = "'{{ $current_date }}'"
 		{{-- :min_datetime = "'{{ $min_datetime }}'" --}}
 		:max_datetime = "'{{ $max_datetime }}'"
+		:max_datetime_ingreso = "'{{ $max_datetime_ingreso }}'"
 		:warehouse_types = "{{ $warehouse_types }}"
 		:warehouse_providers = "{{ $warehouse_providers }}"
 		:warehouse_receivers = "{{ $warehouse_receivers }}"

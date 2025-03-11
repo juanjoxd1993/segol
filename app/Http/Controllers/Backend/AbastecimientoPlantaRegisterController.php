@@ -33,8 +33,8 @@ class AbastecimientoPlantaRegisterController extends Controller
 		$current_date = date('d-m-Y');
 		$date = CarbonImmutable::now()->startOfDay();
 		$current_date = $date->startOfDay()->toAtomString();
-		$min_datetime = $date->startOfDay()->toAtomString();
-		$max_datetime = $date->startOfDay()->addDays(2)->toAtomString();
+		$max_datetime = $date->startOfDay()->toAtomString();
+		$max_datetime_ingreso = $date->startOfDay()->addDays(2)->toAtomString();
 		$warehouse_account_types = WarehouseAccountType::select('id', 'name')->get();
 		$igv = Rate::select('description', 'value')
 			->where('description', 'IGV')
@@ -46,8 +46,8 @@ class AbastecimientoPlantaRegisterController extends Controller
 			'movement_types',
 			'warehouse_types',
 			'current_date',
-			'min_datetime',
 			'max_datetime',
+			'max_datetime_ingreso',
 			'warehouse_account_types',
 			'igv',
 			'warehouse_providers'

@@ -186,7 +186,10 @@ class FinanzasDetailTotalReportController extends Controller
 
 		$cobranza_deposit = Liquidation::leftjoin('sales', 'liquidations.sale_id', '=', 'sales.id')
 			->leftjoin('clients', 'sales.client_id', '=', 'clients.id')
-			->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $initial_date)
+			->whereDate(
+				DB::raw("DATE(CASE WHEN liquidations.collection = 1 THEN liquidations.rem_date ELSE liquidations.created_at END)"),
+				$initial_date
+			)
 			->whereIn('liquidations.cede', $warehouse_types)
 			//		->whereNotIn('sales.client_id', $client_ids)	 
 			->whereIn('liquidations.payment_method_id', [2, 3])

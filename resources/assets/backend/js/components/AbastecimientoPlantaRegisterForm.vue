@@ -63,8 +63,8 @@
                             <label class="form-control-label">Fecha Emisión:</label>
                             <datetime v-model="model.since_date" placeholder="Selecciona una Fecha"
                                 :format="'dd-LL-yyyy'" input-id="since_date" name="since_date" value-zone="America/Lima"
-                                zone="America/Lima" class="form-control" :max-datetime="this.max_datetime"
-                                @focus="$parent.clearErrorMsg($event)">
+                                zone="America/Lima" class="form-control" :min-datetime="this.max_datetime"
+                                :max-datetime="this.max_datetime" @focus="$parent.clearErrorMsg($event)">
                             </datetime>
                             <div id="since_date-error" class="error invalid-feedback"></div>
                         </div>
@@ -145,7 +145,8 @@
                             <datetime v-model="model.traslate_date" placeholder="Selecciona una Fecha"
                                 :format="'dd-LL-yyyy'" input-id="traslate_date" name="traslate_date"
                                 value-zone="America/Lima" zone="America/Lima" class="form-control"
-                                :max-datetime="this.max_datetime" @focus="$parent.clearErrorMsg($event)">
+                                :min-datetime="this.max_datetime" :max-datetime="this.max_datetime_ingreso"
+                                @focus="$parent.clearErrorMsg($event)">
                             </datetime>
                             <div id="traslate_date-error" class="error invalid-feedback"></div>
                         </div>
@@ -194,6 +195,10 @@ export default {
             default: ''
         },
         max_datetime: {
+            type: String,
+            default: ''
+        },
+        max_datetime_ingreso: {
             type: String,
             default: ''
         },
