@@ -19,9 +19,9 @@
                             <label class="form-control-label">Compañía:</label>
                             <select class="form-control" name="company_id" id="company_id" v-model="model.company_id"
                                 @focus="$parent.clearErrorMsg($event)">
-                                <option value="">Seleccionar</option>
+                                <option value="" selected disabled>Seleccionar</option>
                                 <option v-for="company in companies" :value="company.id" v-bind:key="company.id">{{
-            company.name }}</option>
+                                    company.name }}</option>
                             </select>
                             <div id="company_id-error" class="error invalid-feedback"></div>
                         </div>
@@ -35,7 +35,7 @@
                                 <option disabled value="">Seleccionar</option>
                                 <option value="4">PLANTA ATE</option>
                                 <option value="13">PLANTA CALLAO</option>
-                                <option value="75">PLANTA IQUITOS</option>              
+                                <option value="75">PLANTA IQUITOS</option>
                             </select>
                             <div id="warehouse_type-error" class="error invalid-feedback"></div>
                         </div>
@@ -50,7 +50,7 @@
                                 <option v-for="warehouse_movement in warehouse_movements" :value="warehouse_movement.id"
                                     v-bind:key="warehouse_movement.id"> {{ warehouse_movement.referral_guide_series
                                     }}-{{ warehouse_movement.referral_guide_number }} | {{
-            warehouse_movement.license_plate }} | {{ warehouse_movement.traslate_date }}
+                                        warehouse_movement.license_plate }} | {{ warehouse_movement.traslate_date }}
                                 </option>
                             </select>
                             <div id="warehouse_movement_id-error" class="error invalid-feedback"></div>
@@ -98,7 +98,7 @@ export default {
     data() {
         return {
             model: {
-                company_id: '',
+                company_id: '2',
                 warehouse_movement_id: '',
                 warehouse_type_id: '',
             },

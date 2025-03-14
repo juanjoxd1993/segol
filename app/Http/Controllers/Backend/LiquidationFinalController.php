@@ -42,7 +42,7 @@ class LiquidationFinalController extends Controller
 	public function index()
 	{
 
-		$companies = Company::select('id', 'name')->get();
+		$companies = Company::select('id', 'name')->whereIn('id',[2])->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')
 			->where('name', 'Factura Electrónica')
 			->orWhere('name', 'Boleta de Venta Electrónica')

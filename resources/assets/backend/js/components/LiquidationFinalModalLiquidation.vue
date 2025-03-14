@@ -123,6 +123,7 @@
                   </div>
                 </div>
                 <div class="col-lg-3" v-if="
+                  model.payment_method == 1 ||
                   model.payment_method == 9 ||
                   model.payment_method == 3 ||
                   model.payment_method == 2 ||
