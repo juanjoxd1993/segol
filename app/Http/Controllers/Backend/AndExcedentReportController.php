@@ -73,8 +73,8 @@ class AndExcedentReportController extends Controller
 
 		$export = request('export');
 
-		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d H:i:s');
-		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d H:i:s');
+		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-01');
+		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d');
 
 		$elements = Inventory::leftjoin('companies', 'inventories.company_id', '=', 'companies.id')
 			->leftjoin('articles', 'inventories.article_id', '=', 'articles.id')
