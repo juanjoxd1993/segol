@@ -82,11 +82,11 @@ class MasaReportController extends Controller
 			$response=[];
 
             
-            $totals_sum_5kt = 0;
-			      $totals_sum_10kt = 0;
-		        $totals_sum_15kt = 0;
-            $totals_sum_45kt = 0;
-		    $totals_sum_m15t = 0;
+       $totals_sum_5kt = 0;
+			 $totals_sum_10kt = 0;
+       $totals_sum_15kt = 0;
+       $totals_sum_45kt = 0;
+		  $totals_sum_m15t = 0;
 		    $totals_sum_5kc = 0;
 		    $totals_sum_10kc = 0;
 		    $totals_sum_15kc = 0;
@@ -377,7 +377,7 @@ class MasaReportController extends Controller
 			]);
 
 
-        $sheet->setCellValue('B4', 'STOCK INICIAL GLOBAL 2022 ');
+        $sheet->setCellValue('B4', 'STOCK INICIAL GLOBAL 2023 ');
 
         $sheet->setCellValue('B5', ' COMPRAS');
         $sheet->setCellValue('B6', ' CILINDROS EN CALIDAD CESION DE USO');

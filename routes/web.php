@@ -848,5 +848,13 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/grafico/volumen-ventas/listar', 'SalesReportGraficController@list')->name('dashboard.report.sales_grafic.list');
 	Route::post('/grafico/volumen-ventas/exportar', 'SalesReportGraficController@export')->name('dashboard.report.sales_grafic.export');
 
+
+
+	/** Reportes > Excedente*/
+	Route::get('/beta/excedent-report', 'AndExcedentReportController@index')->name('dashboard.report.excedent');
+	Route::post('/beta/excedent-report/validar-formulario', 'AndExcedentReportController@validateForm')->name('dashboard.report.excedent.validate_form');
+	Route::post('/beta/excedent-report/listar', 'AndExcedentReportController@list')->name('dashboard.report.excedent.list');
+
+
 	
 });
