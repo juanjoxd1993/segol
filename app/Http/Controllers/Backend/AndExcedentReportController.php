@@ -99,20 +99,27 @@ class AndExcedentReportController extends Controller
 
 			$stock_est=Article::leftjoin('warehouse_types','articles.warehouse_type_id','warehouse_types.id');
 
+			$fecha_anterior = date("d-m-Y", strtotime($inventory->creation_date, "- 1 days"));
+			$stock_anterior = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
+				->where('inventories.creation_date', $fecha_anterior)
+				->whereIn('articles.id', [4791,4792])
+				->select('inventories.stock_good')
+				->sum('inventories.stock_good');
+			$inventory->stock_anterior = $stock_anterior;
 
 			$stock_piso_5k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [9292, 9296, 9300, 9304, 9308])
-				->select('articles.stock_good')
-				->sum('articles.stock_good');
+				->where('inventories.creation_date', $fecha_anterior)
+				->select('inventories.stock_good')
+				->sum('inventories.stock_good');
 
 			$stock_piso_10k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
 					4841,
-					4846
-					
-				])
-				->select('articles.stock_good')
-				->sum('articles.stock_good');
+					4846])
+				->where('inventories.creation_date', $fecha_anterior)
+				->select('inventories.stock_good')
+				->sum('inventories.stock_good');
 
 			$stock_piso_15k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
@@ -123,31 +130,100 @@ class AndExcedentReportController extends Controller
 					9310,
 					9975,
 				])
-				->select('articles.stock_good')
-				->sum('articles.stock_good');
+				->where('inventories.creation_date', $fecha_anterior)
+				->select('inventories.stock_good')
+				->sum('inventories.stock_good');
 
 			$stock_piso_45k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
 					4844,
 					4848
 				])
-				->select('articles.stock_good')
-				->sum('articles.stock_good');
+				->where('inventories.creation_date', $fecha_anterior)
+				->select('inventories.stock_good')
+				->sum('inventories.stock_good');
 
 			$stock_piso = ($stock_piso_5k * 5) + ($stock_piso_10k * 10) + ($stock_piso_15k * 15) + ($stock_piso_45k * 45);
 			$inventory->stock_piso = $stock_piso;
-			$fecha_anterior = date("d-m-Y", strtotime($inventory->creation_date, "- 1 days"));
-			$stock_anterior = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
-				->where('inventories.creation_date', $fecha_anterior)
-				->whereIn('articles.id', [4791,4792])
-				->select('inventories.stock_good')
-				->sum('inventories.stock_good');
-			$inventory->stock_anterior = $stock_anterior;
+			
+			$stock_inicial=$inventory->stock_anterior+$inventory->stock_piso;
+			$inventory->stock_inicial = $stock_inicial;
 			$ingresos_glp = WarehouseMovement::innerjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
 				->where('warehouse_movements.movement_type_id', 31)
 				->where('warehouse_movements.created_date',  $inventory->creation_date)
 				->select('warehouse_movement_details.converted_amount')
 				->sum('warehouse_movement_details.converted_amount');
+			$inventory->ingresos_glp = $ingresos_glp;
+
+			$stock_tienda_10k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
+				->whereIn('articles.id', [
+					4954,
+					4956])
+				->where('inventories.creation_date', $fecha_anterior)
+				->select('inventories.stock_good')
+				->sum('inventories.stock_good');
+
+			$stock_tienda_45k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
+				->whereIn('articles.id', [
+					4957,
+					4958])
+				->where('inventories.creation_date', $fecha_anterior)
+				->select('inventories.stock_good')
+				->sum('inventories.stock_good');
+
+			$stock_tienda =  ($stock_tienda_10k * 10)  + ($stock_tienda_45k * 45);
+			
+			$inventory->stock_tienda = $stock_tienda;
+
+
+			$stock_venta_5k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
+			    ->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
+				->whereIn('articles.id', [9292, 9296, 9300, 9304, 9308])
+				->where('warehouse_movements.created_at','=',$fecha_anterior)
+				->select('warehouse_movement_details.digit_amount')
+				->sum('warehouse_movement_details.digit_amount');
+
+			$stock_venta_10k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
+				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
+				->whereIn('articles.id', [
+					4841,
+					4846])
+					->where('warehouse_movements.created_at','=',$fecha_anterior)
+					->select('warehouse_movement_details.digit_amount')
+					->sum('warehouse_movement_details.digit_amount');
+
+			$stock_venta_15k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
+				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
+				->whereIn('articles.id', [
+					9294,
+					9298,
+					9302,
+					9306,
+					9310,
+					9975,
+				])
+				->where('warehouse_movements.created_at','=',$fecha_anterior)
+				->select('warehouse_movement_details.digit_amount')
+				->sum('warehouse_movement_details.digit_amount');
+
+			$stock_venta_45k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
+				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
+				->whereIn('articles.id', [
+					4844,
+					4848
+				])
+				->where('warehouse_movements.created_at','=',$fecha_anterior)
+				->select('warehouse_movement_details.digit_amount')
+				->sum('warehouse_movement_details.digit_amount');
+
+			$stock_venta = ($stock_venta_5k * 5) + ($stock_venta_10k * 10) + ($stock_venta_15k * 15) + ($stock_venta_45k * 45);
+			
+			$inventory->stock_venta = $stock_venta;
+			$inventory->stock_venta_5k = $stock_venta_5k;
+			$inventory->stock_venta_10k = $stock_venta_10k;
+			$inventory->stock_venta_15k = $stock_venta_15k;
+			$inventory->stock_venta_45k = $stock_venta_45k;
+
 
 			$inventory->company_name = $inventory['company_name'];
 			$inventory->article_name = $inventory['article_name'];
@@ -337,7 +413,7 @@ class AndExcedentReportController extends Controller
 					'startColor' => array('rgb' => 'd7bde2')
 				]
 			]);
-			$sheet->setCellValue('F3', 'GLP RT19-RT16');
+			$sheet->setCellValue('F3', 'GLP Granel a Terceros');
 			$sheet->getStyle('F3')->applyFromArray([
 				'fill' => [
 					'fillType' => Fill::FILL_SOLID,
@@ -351,41 +427,42 @@ class AndExcedentReportController extends Controller
 					'startColor' => array('rgb' => 'f5eef8')
 				]
 			]);
-			$sheet->setCellValue('H3', '5 Kg');
-			$sheet->getStyle('H3')->applyFromArray([
+			$sheet->setCellValue('I3', '5 Kg');
+			$sheet->getStyle('I3')->applyFromArray([
 				'fill' => [
 					'fillType' => Fill::FILL_SOLID,
 					'startColor' => array('rgb' => 'eaf2f8')
 				]
 			]);
-			$sheet->setCellValue('I3', '10 Kg');
-			$sheet->getStyle('I3')->applyFromArray([
+			$sheet->setCellValue('J3', '10 Kg');
+			$sheet->getStyle('J3')->applyFromArray([
 				'fill' => [
 					'fillType' => Fill::FILL_SOLID,
 					'startColor' => array('rgb' => 'd4e6f1')
 				]
 			]);
-			$sheet->setCellValue('J3', '15 Kg');
-			$sheet->getStyle('J3')->applyFromArray([
+			$sheet->setCellValue('K3', '15 Kg');
+			$sheet->getStyle('K3')->applyFromArray([
 				'fill' => [
 					'fillType' => Fill::FILL_SOLID,
 					'startColor' => array('rgb' => 'a9cce3')
 				]
 			]);
-			$sheet->setCellValue('K3', '45 Kg');
-			$sheet->getStyle('K3')->applyFromArray([
+			$sheet->setCellValue('L3', '45 Kg');
+			$sheet->getStyle('L3')->applyFromArray([
 				'fill' => [
 					'fillType' => Fill::FILL_SOLID,
 					'startColor' => array('rgb' => '7fb3d5')
 				]
 			]);
-			$sheet->setCellValue('L3', 'Total Kg');
-			$sheet->getStyle('L3')->applyFromArray([
+			$sheet->setCellValue('M3', 'Total Kg');
+			$sheet->getStyle('M3')->applyFromArray([
 				'fill' => [
 					'fillType' => Fill::FILL_SOLID,
 					'startColor' => array('rgb' => '5499c7')
 				]
 			]);
+			/*
 			$sheet->setCellValue('M3', '5 Kg');
 			$sheet->getStyle('M3')->applyFromArray([
 				'fill' => [
@@ -414,24 +491,21 @@ class AndExcedentReportController extends Controller
 					'startColor' => array('rgb' => 'd4e6f1')
 				]
 			]);
-			$sheet->setCellValue('Q3', 'Total Kg');
-			$sheet->getStyle('Q3')->applyFromArray([
+			*/
+			$sheet->setCellValue('N3', 'Stock Teorico GLP Kg');
+			$sheet->getStyle('N3')->applyFromArray([
 				'fill' => [
 					'fillType' => Fill::FILL_SOLID,
 					'startColor' => array('rgb' => 'eaf2f8')
 				]
 			]);
-			$sheet->setCellValue('R3', 'Stock Teórico');
-			$sheet->setCellValue('S3', 'Stock en estacionario');
-			$sheet->setCellValue('T3', 'Stock en piso');
-			$sheet->setCellValue('U3', 'Stock Físico');
-			$sheet->setCellValue('V3', 'Diferencial');
-			$sheet->setCellValue('W3', 'Acumulado');
-			$sheet->setCellValue('X3', 'Proyectado Kg');
-			$sheet->setCellValue('Y3', 'Cambios 10 Kg');
-			$sheet->setCellValue('Z3', 'GLP Perdido Trasc');
-			$sheet->setCellValue('AA3', 'GLP Perdido');
-
+			
+			$sheet->setCellValue('O3', 'Stock en estacionario');
+			$sheet->setCellValue('P3', 'Stock en piso');
+			$sheet->setCellValue('Q3', 'Stock Físico');
+			$sheet->setCellValue('R3', 'Diferencial');
+			$sheet->setCellValue('S3', 'Acumulado');
+			
 			$sheet->getStyle('A3:AA3')->applyFromArray([
 				'font' => [
 					'bold' => true,
@@ -442,46 +516,19 @@ class AndExcedentReportController extends Controller
 			foreach ($response as $index => $element) {
 				$index++;
 
-				$saleDateYear = null;
-				//	$saleDateMonth = null;
-				//	$saleDateDay = null;
-
-				if ($element->sale_date) {
-					$saleDateObject = date('d/m/Y', strtotime($element->sale_date));
-					$saleDateYear = $saleDateObject;
-					//		$saleDateMonth = str_pad($saleDateObject->month, 2, '0', STR_PAD_LEFT);
-					//		$saleDateDay = str_pad($saleDateObject->day, 2, '0', STR_PAD_LEFT);
-				}
-
-				$sheet->setCellValueExplicit('A' . $row_number, $index, DataType::TYPE_NUMERIC);
-				$sheet->setCellValue('B' . $row_number, $element->company_short_name);
-				//	$sheet->setCellValue('C'.$row_number, $saleDateYear);
-				//	$sheet->setCellValue('D'.$row_number, $saleDateMonth);
-				$sheet->setCellValue('C' . $row_number, $saleDateYear);
-				$sheet->setCellValue('D' . $row_number, $element->business_unit_name);
-				$sheet->setCellValue('E' . $row_number, $element->client_sector_name);
-				$sheet->setCellValue('F' . $row_number, $element->client_channel_name);
-				$sheet->setCellValue('G' . $row_number, $element->client_route_id);
-				$sheet->setCellValue('H' . $row_number, $element->warehouse_document_type_short_name);
-				$sheet->setCellValue('I' . $row_number, $element->referral_serie_number);
-				$sheet->setCellValue('J' . $row_number, $element->referral_voucher_number);
-				$sheet->setCellValue('K' . $row_number, $element->client_id);
-				//	$sheet->setCellValue('L'.$row_number, $element->client_code);
-				$sheet->setCellValue('L' . $row_number, $element->client_business_name);
-				$sheet->setCellValue('M' . $row_number, $element->article_name);
-				$sheet->setCellValue('N' . $row_number, $element->sum_total);
-				$sheet->setCellValue('O' . $row_number, $element->price);
-				$sheet->setCellValue('P' . $row_number, $element->total);
-				$sheet->setCellValue('Q' . $row_number, $element->warehouse_movement_movement_number);
-				$sheet->setCellValue('R' . $row_number, $element->movement_type_name);
-				$sheet->setCellValue('S' . $row_number, $element->guide);
-				$sheet->setCellValue('T' . $row_number, $element->electronica);
-				$sheet->setCellValue('U' . $row_number, $element->plate);
-				$sheet->setCellValue('V' . $row_number, $element->negocio);
-				$sheet->setCellValue('W' . $row_number, $element->client_zone_name);
-				$sheet->setCellValue('X' . $row_number, $element->sector);
-				$sheet->setCellValue('Y' . $row_number, $element->zona);
-				$sheet->setCellValue('Z' . $row_number, $element->district);
+				$sheet->setCellValueExplicit('A' . $row_number, $element->creation_date);
+				$sheet->setCellValue('B' . $row_number, $element->stock_anterior);
+				$sheet->setCellValue('C' . $row_number, $element->stock_piso);
+				$sheet->setCellValue('D' . $row_number, $element->stock_inicial);
+				$sheet->setCellValue('E' . $row_number, $element->ingresos_glp);
+				$sheet->setCellValue('H' . $row_number, $element->stock_tienda);
+				$sheet->setCellValue('I' . $row_number, $element->stock_venta_5k);
+				$sheet->setCellValue('J' . $row_number, $element->stock_venta_10k);
+				$sheet->setCellValue('K' . $row_number, $element->stock_venta_15k);
+				$sheet->setCellValue('L' . $row_number, $element->stock_venta_45k);
+				$sheet->setCellValue('M' . $row_number, $element->stock_venta);
+				
+				
 
 				//   $sheet->getStyle('N'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('O' . $row_number)->getNumberFormat()->setFormatCode('0.00');
