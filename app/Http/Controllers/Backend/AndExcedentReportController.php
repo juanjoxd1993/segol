@@ -85,7 +85,7 @@ class AndExcedentReportController extends Controller
 				'inventories.creation_date as creation_date',
 				'companies.name as company_name',
 				'articles.name as article_name',
-				'inventories.found_stock_good as stock',
+				'inventories.found_found_stock_good as stock',
 				'warehouse_types.name as warehouse_name'
 			)
 
@@ -103,23 +103,23 @@ class AndExcedentReportController extends Controller
 			$stock_anterior = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->where('inventories.creation_date', $fecha_anterior)
 				->whereIn('articles.id', [4791,4792])
-				->select('inventories.stock_good')
-				->sum('inventories.stock_good');
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
 			$inventory->stock_anterior = $stock_anterior;
 
 			$stock_piso_5k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [9292, 9296, 9300, 9304, 9308])
 				->where('inventories.creation_date', $fecha_anterior)
-				->select('inventories.stock_good')
-				->sum('inventories.stock_good');
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
 
 			$stock_piso_10k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
 					4841,
 					4846])
 				->where('inventories.creation_date', $fecha_anterior)
-				->select('inventories.stock_good')
-				->sum('inventories.stock_good');
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
 
 			$stock_piso_15k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
@@ -131,8 +131,8 @@ class AndExcedentReportController extends Controller
 					9975,
 				])
 				->where('inventories.creation_date', $fecha_anterior)
-				->select('inventories.stock_good')
-				->sum('inventories.stock_good');
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
 
 			$stock_piso_45k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
@@ -140,8 +140,8 @@ class AndExcedentReportController extends Controller
 					4848
 				])
 				->where('inventories.creation_date', $fecha_anterior)
-				->select('inventories.stock_good')
-				->sum('inventories.stock_good');
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
 
 			$stock_piso = ($stock_piso_5k * 5) + ($stock_piso_10k * 10) + ($stock_piso_15k * 15) + ($stock_piso_45k * 45);
 			$inventory->stock_piso = $stock_piso;
@@ -160,16 +160,16 @@ class AndExcedentReportController extends Controller
 					4954,
 					4956])
 				->where('inventories.creation_date', $fecha_anterior)
-				->select('inventories.stock_good')
-				->sum('inventories.stock_good');
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
 
 			$stock_tienda_45k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
 					4957,
 					4958])
 				->where('inventories.creation_date', $fecha_anterior)
-				->select('inventories.stock_good')
-				->sum('inventories.stock_good');
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
 
 			$stock_tienda =  ($stock_tienda_10k * 10)  + ($stock_tienda_45k * 45);
 			
@@ -218,6 +218,67 @@ class AndExcedentReportController extends Controller
 
 			$stock_venta = ($stock_venta_5k * 5) + ($stock_venta_10k * 10) + ($stock_venta_15k * 15) + ($stock_venta_45k * 45);
 			
+
+			$stock_teorico= $inventory->stock_inicial+$inventory->ingresos_glp-$inventory->stock_tienda-$stock_venta;
+			$inventory->stock_teorico =$stock_teorico;
+
+			$stock_tanque = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
+			->where('inventories.creation_date', $inventory->creation_date)
+			->whereIn('articles.id', [4791,4792])
+			->select('inventories.found_stock_good')
+			->sum('inventories.found_stock_good');
+			$inventory->stock_tanque= $stock_tanque;
+
+
+			$stock_planta_5k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
+				->whereIn('articles.id', [9292, 9296, 9300, 9304, 9308])
+				->where('inventories.creation_date', $inventory->creation_date)
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
+
+			$stock_planta_10k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
+				->whereIn('articles.id', [
+					4841,
+					4846])
+				->where('inventories.creation_date', $inventory->creation_date)
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
+
+			$stock_planta_15k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
+				->whereIn('articles.id', [
+					9294,
+					9298,
+					9302,
+					9306,
+					9310,
+					9975,
+				])
+				->where('inventories.creation_date', $inventory->creation_date)
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
+
+			$stock_planta_45k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
+				->whereIn('articles.id', [
+					4844,
+					4848
+				])
+				->where('inventories.creation_date', $inventory->creation_date)
+				->select('inventories.found_stock_good')
+				->sum('inventories.found_stock_good');
+
+			$stock_planta = ($stock_planta_5k * 5) + ($stock_planta_10k * 10) + ($stock_planta_15k * 15) + ($stock_planta_45k * 45);
+			$inventory->stock_planta = $stock_planta;
+
+
+
+			$stock_fisico_final=$inventory->stock_tanque+$inventory->stock_planta;
+			$inventory->stock_fisico_final = $stock_fisico_final;
+
+
+
+
+
+
 			$inventory->stock_venta = $stock_venta;
 			$inventory->stock_venta_5k = $stock_venta_5k;
 			$inventory->stock_venta_10k = $stock_venta_10k;
@@ -338,23 +399,10 @@ class AndExcedentReportController extends Controller
 				]
 			]);
 
-			$sheet->setCellValue('M2', 'Retorno');
-			$sheet->getStyle('M2')->applyFromArray([
-				'font' => [
-					'Verdana' => true,
-					'size' => 16,
-				],
-				'alignment' => [
-					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
-				],
-				'fill' => [
-					'fillType' => Fill::FILL_SOLID,
-					'startColor' => array('rgb' => 'f1c40f')
-				]
-			]);
+			
 
-			$sheet->setCellValue('R2', 'Stock Físico');
-			$sheet->getStyle('R2')->applyFromArray([
+			$sheet->setCellValue('O2', 'Stock Físico');
+			$sheet->getStyle('O2')->applyFromArray([
 				'font' => [
 					'Verdana' => true,
 					'size' => 16,
@@ -422,6 +470,14 @@ class AndExcedentReportController extends Controller
 			]);
 			$sheet->setCellValue('G3', 'Graneleras');
 			$sheet->getStyle('G3')->applyFromArray([
+				'fill' => [
+					'fillType' => Fill::FILL_SOLID,
+					'startColor' => array('rgb' => 'f5eef8')
+				]
+			]);
+		
+			$sheet->setCellValue('H3', 'Local de Venta');
+			$sheet->getStyle('H3')->applyFromArray([
 				'fill' => [
 					'fillType' => Fill::FILL_SOLID,
 					'startColor' => array('rgb' => 'f5eef8')
@@ -501,10 +557,40 @@ class AndExcedentReportController extends Controller
 			]);
 			
 			$sheet->setCellValue('O3', 'Stock en estacionario');
+			$sheet->getStyle('O3')->applyFromArray([
+				'fill' => [
+					'fillType' => Fill::FILL_SOLID,
+					'startColor' => array('rgb' => 'eaf2f8')
+				]
+			]);
 			$sheet->setCellValue('P3', 'Stock en piso');
+			$sheet->getStyle('P3')->applyFromArray([
+				'fill' => [
+					'fillType' => Fill::FILL_SOLID,
+					'startColor' => array('rgb' => 'eaf2f8')
+				]
+			]);
 			$sheet->setCellValue('Q3', 'Stock Físico');
+			$sheet->getStyle('Q3')->applyFromArray([
+				'fill' => [
+					'fillType' => Fill::FILL_SOLID,
+					'startColor' => array('rgb' => 'eaf2f8')
+				]
+			]);
 			$sheet->setCellValue('R3', 'Diferencial');
+			$sheet->getStyle('R3')->applyFromArray([
+				'fill' => [
+					'fillType' => Fill::FILL_SOLID,
+					'startColor' => array('rgb' => 'eaf2f8')
+				]
+			]);
 			$sheet->setCellValue('S3', 'Acumulado');
+			$sheet->getStyle('S3')->applyFromArray([
+				'fill' => [
+					'fillType' => Fill::FILL_SOLID,
+					'startColor' => array('rgb' => 'eaf2f8')
+				]
+			]);
 			
 			$sheet->getStyle('A3:AA3')->applyFromArray([
 				'font' => [
@@ -527,6 +613,13 @@ class AndExcedentReportController extends Controller
 				$sheet->setCellValue('K' . $row_number, $element->stock_venta_15k);
 				$sheet->setCellValue('L' . $row_number, $element->stock_venta_45k);
 				$sheet->setCellValue('M' . $row_number, $element->stock_venta);
+				$sheet->setCellValue('N' . $row_number, $element->stock_teorico);
+				$sheet->setCellValue('O' . $row_number, $element->stock_tanque);
+				$sheet->setCellValue('P' . $row_number, $element->stock_planta);
+				$sheet->setCellValue('Q' . $row_number, $element->stock_fisico_final);
+				
+
+			
 				
 				
 
