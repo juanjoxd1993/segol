@@ -52,21 +52,7 @@ class AndExcedentReportController extends Controller
 		return request()->all();
 	}
 
-	public function getClients()
-	{
-		$business_unit_id = request('business_unit_id');
-		$q = request('q');
 
-		$clients = Client::select('id', 'business_name as text')
-			->when($business_unit_id, function ($query, $business_unit_id) {
-				return $query->where('business_unit_id', $business_unit_id);
-			})
-			->where('business_name', 'like', '%' . $q . '%')
-			->withTrashed()
-			->get();
-
-		return $clients;
-	}
 
 	public function list()
 	{
@@ -97,14 +83,20 @@ class AndExcedentReportController extends Controller
 			$inventory->creation_date = $inventory['creation_date'];
 			$inventory->stock = $inventory['stock'];
 
-			$stock_est=Article::leftjoin('warehouse_types','articles.warehouse_type_id','warehouse_types.id');
+			$stock_est = Article::leftjoin('warehouse_types', 'articles.warehouse_type_id', 'warehouse_types.id');
 
-			$fecha_anterior = date("d-m-Y", strtotime($inventory->creation_date, "- 1 days"));
+			$fecha_anterior = date("Y-m-d", strtotime($inventory->creation_date . "-1 days"));
 			$stock_anterior = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->where('inventories.creation_date', $fecha_anterior)
+<<<<<<< HEAD
 				->whereIn('articles.id', [4791,4792])
 				->select('inventories.found_stock_good')
 				->sum('inventories.found_stock_good');
+=======
+				->whereIn('inventories.article_id', [4791, 4792])
+				->select('inventories.stock_good')
+				->sum('inventories.stock_good');
+>>>>>>> 89a6e9c917220358f7ffe36217a4da5006870ea5
 			$inventory->stock_anterior = $stock_anterior;
 
 			$stock_piso_5k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
@@ -116,7 +108,8 @@ class AndExcedentReportController extends Controller
 			$stock_piso_10k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
 					4841,
-					4846])
+					4846
+				])
 				->where('inventories.creation_date', $fecha_anterior)
 				->select('inventories.found_stock_good')
 				->sum('inventories.found_stock_good');
@@ -145,12 +138,12 @@ class AndExcedentReportController extends Controller
 
 			$stock_piso = ($stock_piso_5k * 5) + ($stock_piso_10k * 10) + ($stock_piso_15k * 15) + ($stock_piso_45k * 45);
 			$inventory->stock_piso = $stock_piso;
-			
-			$stock_inicial=$inventory->stock_anterior+$inventory->stock_piso;
+
+			$stock_inicial = $inventory->stock_anterior + $inventory->stock_piso;
 			$inventory->stock_inicial = $stock_inicial;
-			$ingresos_glp = WarehouseMovement::innerjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
+			$ingresos_glp = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
 				->where('warehouse_movements.movement_type_id', 31)
-				->where('warehouse_movements.created_date',  $inventory->creation_date)
+				->where('warehouse_movements.created_at',  $inventory->creation_date)
 				->select('warehouse_movement_details.converted_amount')
 				->sum('warehouse_movement_details.converted_amount');
 			$inventory->ingresos_glp = $ingresos_glp;
@@ -158,7 +151,8 @@ class AndExcedentReportController extends Controller
 			$stock_tienda_10k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
 					4954,
-					4956])
+					4956
+				])
 				->where('inventories.creation_date', $fecha_anterior)
 				->select('inventories.found_stock_good')
 				->sum('inventories.found_stock_good');
@@ -166,20 +160,21 @@ class AndExcedentReportController extends Controller
 			$stock_tienda_45k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
 					4957,
-					4958])
+					4958
+				])
 				->where('inventories.creation_date', $fecha_anterior)
 				->select('inventories.found_stock_good')
 				->sum('inventories.found_stock_good');
 
 			$stock_tienda =  ($stock_tienda_10k * 10)  + ($stock_tienda_45k * 45);
-			
+
 			$inventory->stock_tienda = $stock_tienda;
 
 
 			$stock_venta_5k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
-			    ->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
+				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
 				->whereIn('articles.id', [9292, 9296, 9300, 9304, 9308])
-				->where('warehouse_movements.created_at','=',$fecha_anterior)
+				->where('warehouse_movements.created_at', '=', $fecha_anterior)
 				->select('warehouse_movement_details.digit_amount')
 				->sum('warehouse_movement_details.digit_amount');
 
@@ -187,10 +182,11 @@ class AndExcedentReportController extends Controller
 				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
 				->whereIn('articles.id', [
 					4841,
-					4846])
-					->where('warehouse_movements.created_at','=',$fecha_anterior)
-					->select('warehouse_movement_details.digit_amount')
-					->sum('warehouse_movement_details.digit_amount');
+					4846
+				])
+				->where('warehouse_movements.created_at', '=', $fecha_anterior)
+				->select('warehouse_movement_details.digit_amount')
+				->sum('warehouse_movement_details.digit_amount');
 
 			$stock_venta_15k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
 				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
@@ -202,7 +198,7 @@ class AndExcedentReportController extends Controller
 					9310,
 					9975,
 				])
-				->where('warehouse_movements.created_at','=',$fecha_anterior)
+				->where('warehouse_movements.created_at', '=', $fecha_anterior)
 				->select('warehouse_movement_details.digit_amount')
 				->sum('warehouse_movement_details.digit_amount');
 
@@ -212,11 +208,12 @@ class AndExcedentReportController extends Controller
 					4844,
 					4848
 				])
-				->where('warehouse_movements.created_at','=',$fecha_anterior)
+				->where('warehouse_movements.created_at', '=', $fecha_anterior)
 				->select('warehouse_movement_details.digit_amount')
 				->sum('warehouse_movement_details.digit_amount');
 
 			$stock_venta = ($stock_venta_5k * 5) + ($stock_venta_10k * 10) + ($stock_venta_15k * 15) + ($stock_venta_45k * 45);
+<<<<<<< HEAD
 			
 
 			$stock_teorico= $inventory->stock_inicial+$inventory->ingresos_glp-$inventory->stock_tienda-$stock_venta;
@@ -278,6 +275,8 @@ class AndExcedentReportController extends Controller
 
 
 
+=======
+>>>>>>> 89a6e9c917220358f7ffe36217a4da5006870ea5
 
 			$inventory->stock_venta = $stock_venta;
 			$inventory->stock_venta_5k = $stock_venta_5k;
@@ -293,8 +292,7 @@ class AndExcedentReportController extends Controller
 		}
 
 		$totals = new stdClass();
-		$totals->sale_date = '';
-		$totals->create_date = 'TOTAL';
+		$totals->creation_date = 'TOTAL';
 		$totals->stock = '';
 		$totals->company_name = '';
 		$totals->article_name = '';
@@ -324,6 +322,16 @@ class AndExcedentReportController extends Controller
 		$totals->sector = '';
 		$totals->zona = '';
 		$totals->district = '';
+		$totals->stock_anterior = '';
+		$totals->stock_piso = '';
+		$totals->stock_inicial = '';
+		$totals->ingresos_glp = '';
+		$totals->stock_tienda = '';
+		$totals->stock_venta_5k = '';
+		$totals->stock_venta_10k = '';
+		$totals->stock_venta_15k = '';
+		$totals->stock_venta_45k = '';
+		$totals->stock_venta = '';
 
 		$response[] = $totals;
 
@@ -555,7 +563,7 @@ class AndExcedentReportController extends Controller
 					'startColor' => array('rgb' => 'eaf2f8')
 				]
 			]);
-			
+
 			$sheet->setCellValue('O3', 'Stock en estacionario');
 			$sheet->getStyle('O3')->applyFromArray([
 				'fill' => [
@@ -585,6 +593,7 @@ class AndExcedentReportController extends Controller
 				]
 			]);
 			$sheet->setCellValue('S3', 'Acumulado');
+<<<<<<< HEAD
 			$sheet->getStyle('S3')->applyFromArray([
 				'fill' => [
 					'fillType' => Fill::FILL_SOLID,
@@ -592,6 +601,9 @@ class AndExcedentReportController extends Controller
 				]
 			]);
 			
+=======
+
+>>>>>>> 89a6e9c917220358f7ffe36217a4da5006870ea5
 			$sheet->getStyle('A3:AA3')->applyFromArray([
 				'font' => [
 					'bold' => true,
@@ -602,7 +614,7 @@ class AndExcedentReportController extends Controller
 			foreach ($response as $index => $element) {
 				$index++;
 
-				$sheet->setCellValueExplicit('A' . $row_number, $element->creation_date);
+				$sheet->setCellValue('A' . $row_number, $element->creation_date);
 				$sheet->setCellValue('B' . $row_number, $element->stock_anterior);
 				$sheet->setCellValue('C' . $row_number, $element->stock_piso);
 				$sheet->setCellValue('D' . $row_number, $element->stock_inicial);
@@ -613,6 +625,7 @@ class AndExcedentReportController extends Controller
 				$sheet->setCellValue('K' . $row_number, $element->stock_venta_15k);
 				$sheet->setCellValue('L' . $row_number, $element->stock_venta_45k);
 				$sheet->setCellValue('M' . $row_number, $element->stock_venta);
+<<<<<<< HEAD
 				$sheet->setCellValue('N' . $row_number, $element->stock_teorico);
 				$sheet->setCellValue('O' . $row_number, $element->stock_tanque);
 				$sheet->setCellValue('P' . $row_number, $element->stock_planta);
@@ -622,6 +635,10 @@ class AndExcedentReportController extends Controller
 			
 				
 				
+=======
+
+
+>>>>>>> 89a6e9c917220358f7ffe36217a4da5006870ea5
 
 				//   $sheet->getStyle('N'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('O' . $row_number)->getNumberFormat()->setFormatCode('0.00');
