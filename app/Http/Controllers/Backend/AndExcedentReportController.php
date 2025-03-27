@@ -71,7 +71,7 @@ class AndExcedentReportController extends Controller
 				'inventories.creation_date as creation_date',
 				'companies.name as company_name',
 				'articles.name as article_name',
-				'inventories.found_found_stock_good as stock',
+				'inventories.found_stock_good as stock',
 				'warehouse_types.name as warehouse_name'
 			)
 
@@ -208,7 +208,7 @@ class AndExcedentReportController extends Controller
 				->sum('warehouse_movement_details.digit_amount');
 
 			$stock_venta = ($stock_venta_5k * 5) + ($stock_venta_10k * 10) + ($stock_venta_15k * 15) + ($stock_venta_45k * 45);
-			
+
 			$stock_teorico= $inventory->stock_inicial+$inventory->ingresos_glp-$inventory->stock_tienda-$stock_venta;
 			$inventory->stock_teorico =$stock_teorico;
 
@@ -330,8 +330,8 @@ class AndExcedentReportController extends Controller
 			$sheet->mergeCells('A1:AA1');
 			$sheet->mergeCells('B2:D2');
 			$sheet->mergeCells('E2:G2');
-			$sheet->mergeCells('H2:L2');
-			$sheet->mergeCells('M2:Q2');
+			$sheet->mergeCells('H2:M2');
+			$sheet->mergeCells('O2:Q2');
 			$sheet->mergeCells('R2:U2');
 			$sheet->mergeCells('V2:AA2');
 
