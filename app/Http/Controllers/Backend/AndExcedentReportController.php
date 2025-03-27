@@ -169,6 +169,7 @@ class AndExcedentReportController extends Controller
 			$stock_venta_5k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
 				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
 				->whereIn('articles.id', [9292, 9296, 9300, 9304, 9308])
+				->where('warehouse_movements.movement_type_id', '=', 12)
 				->where('warehouse_movements.created_at', '=', $fecha_anterior)
 				->select('warehouse_movement_details.digit_amount')
 				->sum('warehouse_movement_details.digit_amount');
@@ -180,6 +181,7 @@ class AndExcedentReportController extends Controller
 					4846
 				])
 				->where('warehouse_movements.created_at', '=', $fecha_anterior)
+				->where('warehouse_movements.movement_type_id', '=', 12)
 				->select('warehouse_movement_details.digit_amount')
 				->sum('warehouse_movement_details.digit_amount');
 
@@ -193,6 +195,7 @@ class AndExcedentReportController extends Controller
 					9310,
 					9975,
 				])
+				->where('warehouse_movements.movement_type_id', '=', 12)
 				->where('warehouse_movements.created_at', '=', $fecha_anterior)
 				->select('warehouse_movement_details.digit_amount')
 				->sum('warehouse_movement_details.digit_amount');
@@ -203,6 +206,7 @@ class AndExcedentReportController extends Controller
 					4844,
 					4848
 				])
+				->where('warehouse_movements.movement_type_id', '=', 12)
 				->where('warehouse_movements.created_at', '=', $fecha_anterior)
 				->select('warehouse_movement_details.digit_amount')
 				->sum('warehouse_movement_details.digit_amount');
