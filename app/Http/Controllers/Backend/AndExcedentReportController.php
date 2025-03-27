@@ -88,15 +88,10 @@ class AndExcedentReportController extends Controller
 			$fecha_anterior = date("Y-m-d", strtotime($inventory->creation_date . "-1 days"));
 			$stock_anterior = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->where('inventories.creation_date', $fecha_anterior)
-<<<<<<< HEAD
 				->whereIn('articles.id', [4791,4792])
 				->select('inventories.found_stock_good')
 				->sum('inventories.found_stock_good');
-=======
-				->whereIn('inventories.article_id', [4791, 4792])
-				->select('inventories.stock_good')
-				->sum('inventories.stock_good');
->>>>>>> 89a6e9c917220358f7ffe36217a4da5006870ea5
+
 			$inventory->stock_anterior = $stock_anterior;
 
 			$stock_piso_5k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
@@ -213,9 +208,7 @@ class AndExcedentReportController extends Controller
 				->sum('warehouse_movement_details.digit_amount');
 
 			$stock_venta = ($stock_venta_5k * 5) + ($stock_venta_10k * 10) + ($stock_venta_15k * 15) + ($stock_venta_45k * 45);
-<<<<<<< HEAD
 			
-
 			$stock_teorico= $inventory->stock_inicial+$inventory->ingresos_glp-$inventory->stock_tienda-$stock_venta;
 			$inventory->stock_teorico =$stock_teorico;
 
@@ -273,10 +266,6 @@ class AndExcedentReportController extends Controller
 
 
 
-
-
-=======
->>>>>>> 89a6e9c917220358f7ffe36217a4da5006870ea5
 
 			$inventory->stock_venta = $stock_venta;
 			$inventory->stock_venta_5k = $stock_venta_5k;
@@ -593,7 +582,7 @@ class AndExcedentReportController extends Controller
 				]
 			]);
 			$sheet->setCellValue('S3', 'Acumulado');
-<<<<<<< HEAD
+
 			$sheet->getStyle('S3')->applyFromArray([
 				'fill' => [
 					'fillType' => Fill::FILL_SOLID,
@@ -601,9 +590,7 @@ class AndExcedentReportController extends Controller
 				]
 			]);
 			
-=======
 
->>>>>>> 89a6e9c917220358f7ffe36217a4da5006870ea5
 			$sheet->getStyle('A3:AA3')->applyFromArray([
 				'font' => [
 					'bold' => true,
@@ -625,21 +612,12 @@ class AndExcedentReportController extends Controller
 				$sheet->setCellValue('K' . $row_number, $element->stock_venta_15k);
 				$sheet->setCellValue('L' . $row_number, $element->stock_venta_45k);
 				$sheet->setCellValue('M' . $row_number, $element->stock_venta);
-<<<<<<< HEAD
 				$sheet->setCellValue('N' . $row_number, $element->stock_teorico);
 				$sheet->setCellValue('O' . $row_number, $element->stock_tanque);
 				$sheet->setCellValue('P' . $row_number, $element->stock_planta);
 				$sheet->setCellValue('Q' . $row_number, $element->stock_fisico_final);
 				
-
-			
-				
-				
-=======
-
-
->>>>>>> 89a6e9c917220358f7ffe36217a4da5006870ea5
-
+	
 				//   $sheet->getStyle('N'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('O' . $row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('P' . $row_number)->getNumberFormat()->setFormatCode('0.00');
