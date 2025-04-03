@@ -22,6 +22,8 @@ class RemesasController extends Controller
 
 	public function validateForm() {
 		$messages = [
+			'operation_number.required' => 'Debe ingresar el nro de Operación.',
+			'detalle.required' => 'Debe Ingresar los números de recibo',
 			'amount.required' => 'Debe ingresar un monto valido.',
 			'date.required'   => 'Debe ingresar una fecha valida.',
 		];
@@ -29,6 +31,8 @@ class RemesasController extends Controller
 		$rules = [
 			'amount' => 'required',
 			'date'   => 'required',
+			'detalle' => 'required',
+			'operation_number' => 'required',
 		];
 
 		request()->validate($rules, $messages);
@@ -38,14 +42,18 @@ class RemesasController extends Controller
   public function store() {
 		$this->validateForm();
 
-		$user_id = Auth::user()->id;
+	$user_id = Auth::user()->id;
     $amount = request('amount');
     $date = request('date');
+	$detalle = request('detalle');
+	$operation_number = request('operation_number');
 
     $remesa = new Remesa();
     $remesa->amount = $amount;
     $remesa->date = $date;
     $remesa->user_id = $user_id;
+	$remesa->detalle = $detalle;
+	$remesa->operation_number = $operation_number;
     $remesa->save();
 
     return response()->json($remesa, 200);
