@@ -16,7 +16,7 @@
             <div class="col-lg-3">
               <div class="form-group">
                 <label class="form-control-label">Monto:</label>
-                <input type="number" class="form-control" name="amount" id="amount" v-model="model.amount" @focus="$parent.clearErrorMsg($event)">
+                <input type="decimal" class="form-control" name="amount" id="amount" v-model="model.amount" @focus="$parent.clearErrorMsg($event)">
                 <div id="amount-error" class="error invalid-feedback"></div>
               </div>
             </div>
@@ -44,7 +44,7 @@
             <div class="col-lg-3">
               <div class="form-group">
                 <label class="form-control-label">Nro de Operación:</label>
-                <input type="number" class="form-control" name="operation_number" id="operation_number" v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)">
+                <input type="text" class="form-control" name="operation_number" id="operation_number" v-model="model.operation_number" @focus="$parent.clearErrorMsg($event)">
                 <div id="operation_number-error" class="error invalid-feedback"></div>
               </div>
             </div>
@@ -52,7 +52,7 @@
             <div class="col-lg-3">
               <div class="form-group">
                 <label class="form-control-label">Nro Recibo Inicial - Final :</label>
-                <input type="number" class="form-control" name="detalle" id="detalle" v-model="model.detalle" @focus="$parent.clearErrorMsg($event)">
+                <input type="text" class="form-control" name="detalle" id="detalle" v-model="model.detalle" @focus="$parent.clearErrorMsg($event)">
                 <div id="detalle-error" class="error invalid-feedback"></div>
               </div>
             </div>
