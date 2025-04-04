@@ -6,6 +6,7 @@ use App\Client;
 use App\Company;
 use App\Article;
 use App\Remesa;
+use App\Liquidation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\VoucherDetail;
