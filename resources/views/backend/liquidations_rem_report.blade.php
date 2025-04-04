@@ -16,8 +16,7 @@
 	></liquidations-rem-report-table>
 
 	<liquidations-rem-report-modal
-        :url = "'{{ route('dashboard.report.liquidations_rem.validate_modal') }}'"
-		:url_update = "'{{ route('dashboard.report.liquidations_rem.update_voucher') }}'"
+		:url = "'{{ route('dashboard.report.liquidations_rem.update_voucher') }}'"
 	></liquidations-rem-report-modal>
 
 	<loading></loading>
