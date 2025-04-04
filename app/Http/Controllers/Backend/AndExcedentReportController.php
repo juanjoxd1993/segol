@@ -103,7 +103,9 @@ class AndExcedentReportController extends Controller
 			$stock_piso_10k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
 					4841,
-					4846
+					4846,
+					4954,
+					4956
 				])
 				->where('inventories.creation_date', $fecha_anterior)
 				->select('inventories.found_stock_good')
@@ -125,7 +127,9 @@ class AndExcedentReportController extends Controller
 			$stock_piso_45k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
 				->whereIn('articles.id', [
 					4844,
-					4848
+					4848,
+					4957,
+					4958
 				])
 				->where('inventories.creation_date', $fecha_anterior)
 				->select('inventories.found_stock_good')
