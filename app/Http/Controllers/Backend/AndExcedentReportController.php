@@ -166,50 +166,44 @@ class AndExcedentReportController extends Controller
 			$inventory->stock_tienda = $stock_tienda;
 
 
-			$stock_venta_5k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
-				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
-				->whereIn('articles.id', [9292, 9296, 9300, 9304, 9308])
-				->where('warehouse_movements.movement_type_id', '=', 12)
-				->where('warehouse_movements.created_at', '=', $fecha_anterior)
-				->select('warehouse_movement_details.digit_amount')
-				->sum('warehouse_movement_details.digit_amount');
+			$stock_venta_5k = Sale::leftjoin('sale_details', 'sales.id', 'sale_details.sale_id')
+				->leftjoin('articles', 'sale_details.article_id', 'articles.id')
+				->whereIn('sale_details.article_id', [9292, 9296, 9300, 9304, 9308])
+				->whereIn('sales.warehouse_document_type_id', [31,5])
+				->where('sales.sale_date', '=', $fecha_anterior)
+				->select('sale_details.quantity')
+				->sum('sale_details.quantity');
 
-			$stock_venta_10k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
-				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
-				->whereIn('articles.id', [
-					4841,
-					4846
+			$stock_venta_10k = Sale::leftjoin('sale_details', 'sales.id', 'sale_details.sale_id')
+				->leftjoin('articles', 'sale_details.article_id', 'articles.id')
+				->whereIn('sale_details.article_id', [
+					4773,
+					4777
 				])
-				->where('warehouse_movements.created_at', '=', $fecha_anterior)
-				->where('warehouse_movements.movement_type_id', '=', 12)
-				->select('warehouse_movement_details.digit_amount')
-				->sum('warehouse_movement_details.digit_amount');
+				->where('sales.sale_date', '=', $fecha_anterior)
+				->whereIn('sales.warehouse_document_type_id', [31,5])
+				->select('sale_details.quantity')
+				->sum('sale_details.quantity');
 
-			$stock_venta_15k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
-				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
-				->whereIn('articles.id', [
-					9294,
-					9298,
-					9302,
-					9306,
-					9310,
-					9975,
+			$stock_venta_15k = Sale::leftjoin('sale_details', 'sales.id', 'sale_details.sale_id')
+				->leftjoin('articles', 'sale_details.article_id', 'articles.id')
+				->whereIn('sale_details.article_id', [
+					4774
 				])
-				->where('warehouse_movements.movement_type_id', '=', 12)
-				->where('warehouse_movements.created_at', '=', $fecha_anterior)
-				->select('warehouse_movement_details.digit_amount')
-				->sum('warehouse_movement_details.digit_amount');
+				->whereIn('sales.warehouse_document_type_id', [31,5])
+				->where('sales.sale_date', '=', $fecha_anterior)
+				->select('sale_details.quantity')
+				->sum('sale_details.quantity');
 
-			$stock_venta_45k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
-				->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
-				->whereIn('articles.id', [
-					4844,
-					4848
+			$stock_venta_45k = Sale::leftjoin('sale_details', 'sales.id', 'sale_details.sale_id')
+				->leftjoin('articles', 'sale_details.article_id', 'articles.id')
+				->whereIn('sale_details.article_id', [
+					4775,4779
 				])
-				->where('warehouse_movements.movement_type_id', '=', 12)
-				->where('warehouse_movements.created_at', '=', $fecha_anterior)
-				->select('warehouse_movement_details.digit_amount')
-				->sum('warehouse_movement_details.digit_amount');
+				->whereIn('sales.warehouse_document_type_id', [31,5])
+				->where('sales.sale_date', '=', $fecha_anterior)
+				->select('sale_details.quantity')
+				->sum('sale_details.quantity');
 
 			$stock_venta = ($stock_venta_5k * 5) + ($stock_venta_10k * 10) + ($stock_venta_15k * 15) + ($stock_venta_45k * 45);
 
@@ -245,7 +239,7 @@ class AndExcedentReportController extends Controller
 					9302,
 					9306,
 					9310,
-					9975,
+					9975
 				])
 				->where('inventories.creation_date', $inventory->creation_date)
 				->select('inventories.found_stock_good')

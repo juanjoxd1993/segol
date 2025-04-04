@@ -94,6 +94,14 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::get('/facturacion/remesas', 'RemesasController@index')->name('dashboard.facturation.voucher.remesas');
 	Route::post('/facturacion/remesas/crear', 'RemesasController@store')->name('dashboard.facturation.voucher.remesas.store');
 
+
+	/** Reportes > Remesas emitidas */
+	Route::get('/facturacion/remesas-emitidas', 'LiquidationsRemReportController@index')->name('dashboard.report.liquidations_rem');
+	Route::post('/facturacion/remesas-emitidas/validar-formulario', 'LiquidationsRemReportController@validateForm')->name('dashboard.report.liquidations_rem.validate_form');
+	Route::post('/facturacion/remesas-emitidas/listar', 'LiquidationsRemReportController@list')->name('dashboard.report.liquidations_rem.list');
+	Route::post('/facturacion/remesas-emitidas/validar-modal', 'LiquidationsRemReportController@validateModal')->name('dashboard.report.liquidations_rem.validate_modal');
+	Route::post('/facturacion/remesas-emitidas/actualizar-voucher', 'LiquidationsRemReportController@updateVoucher')->name('dashboard.report.liquidations_rem.update_voucher');
+
 	/** Reportes > Cuentas Corrientes Clientes */
 	Route::get('/reporte/cuentas-corrientes-clientes', 'CheckingAccountReportController@index')->name('dashboard.report.checking_account_report');
 	Route::post('/reporte/cuentas-corrientes-clientes/obtener-clientes', 'CheckingAccountReportController@getClients')->name('dashboard.report.checking_account_report.get_clients');
