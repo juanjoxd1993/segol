@@ -91,9 +91,9 @@ class LiquidationsRemReportController extends Controller
 
 			$sheet->setCellValue('A3', 'Fecha de Cierre');
 			$sheet->setCellValue('B3', 'N° de Recibo Inicial');
-			$sheet->setCellValue('D3', 'N° de Recibo Final');
-			$sheet->setCellValue('E3', 'Recaudación'); 
-			$sheet->setCellValue('F3', 'Estado');
+			$sheet->setCellValue('C3', 'N° de Recibo Final');
+			$sheet->setCellValue('D3', 'Recaudación'); 
+			$sheet->setCellValue('E3', 'Estado');
 			
 			$sheet->getStyle('A3:F3')->applyFromArray([
 				'font' => [
@@ -119,11 +119,11 @@ class LiquidationsRemReportController extends Controller
 
 				$index++;
 				$sheet->setCellValue('A'.$row_number, $element->sale_date);
-				$sheet->setCellValue('C'.$row_number, $element->initial_voucher);
-				$sheet->setCellValue('D'.$row_number, $element->final_voucher);
-				$sheet->setCellValue('E'.$row_number, $element->sum_total);
-				$sheet->setCellValue('F'.$row_number, $element->state);	
-				$sheet->getStyle('E'.$row_number)->getNumberFormat()->setFormatCode('0.00');
+				$sheet->setCellValue('B'.$row_number, $element->initial_voucher);
+				$sheet->setCellValue('C'.$row_number, $element->final_voucher);
+				$sheet->setCellValue('D'.$row_number, $element->sum_total);
+				$sheet->setCellValue('E'.$row_number, $element->state);	
+				$sheet->getStyle('D'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				
 				$row_number++;
 			}
