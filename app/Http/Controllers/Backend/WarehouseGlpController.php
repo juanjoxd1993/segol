@@ -215,7 +215,7 @@ class WarehouseGlpController extends Controller
 			->join('classifications as subgroups', 'subgroups.id', '=', 'subgroup_id')
 			->select('articles.id', 'code as article_code', 'articles.name as article_name','articles.last_price as article_price', 'sale_units.name as sale_unit_name', 'warehouse_units.name as warehouse_unit_name', 'package_sale', 'package_warehouse', 'families.name as family_name', 'groups.name as group_name', 'subgroups.name as subgroup_name', 'stock_good', 
 			'warehouse_types.name as warehouse_name','stock_repair', 'stock_return', 'stock_damaged', 'ubication')
-			->whereIn('warehouse_type_id', [$warehouse_type])
+			->whereIn('warehouse_type_id', $warehouse_type)
 			->orderBy('id', 'desc')
 			->get();
 
