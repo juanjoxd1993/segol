@@ -52,7 +52,7 @@ class LiquidationsRemReportController extends Controller
 		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d H:i:s');
 
 		
-		$elements = liquidations::leftjoin('sales', 'liquidations.sales_id', '=', 'sales.id')
+		$elements = Liquidation::leftjoin('sales', 'liquidations.sales_id', '=', 'sales.id')
 									->where('sales.sale_date', '>=', $initial_date)
 									->where('sales.sale_date', '<=', $final_date)
 									->select('liquidations.id','liquidations.state', 'sales.sale_date as sale_date', DB::Raw('MIN(liquidations.operation_number) as initial_voucher'), DB::Raw('MAX(liquidations.operation_number) as final_voucher'), DB::Raw('SUM(liquidations.amount) as sum_total'))
