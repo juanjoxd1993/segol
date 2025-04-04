@@ -59,6 +59,9 @@ class LiquidationsRemReportController extends Controller
 		$elements = Liquidation::leftjoin('sales', 'liquidations.sale_id', '=', 'sales.id')
 			->where('sales.sale_date', '>=', $initial_date)
 			->where('sales.sale_date', '<=', $final_date)
+			->where('liquidations.payment_method_id', '=', 1)
+			->where('liquidations.state', 0)
+			->whereIn('sales.warehouse_document_type_id',[5,31])
 			->select(
 				'liquidations.id as id',
 				'liquidations.state',
@@ -67,7 +70,6 @@ class LiquidationsRemReportController extends Controller
 				DB::Raw('MAX(liquidations.operation_number) as final_voucher'),
 				DB::Raw('SUM(liquidations.amount) as sum_total')
 			)
-			->where('liquidations.state', 0)
 			->groupBy('sale_date')
 			->get();
 
