@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Client;
 use App\Company;
 use App\Article;
+use App\Remesa;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\VoucherDetail;
@@ -23,7 +24,7 @@ class LiquidationsRemReportController extends Controller
   public function index() {
 
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
-		return view('backend.liquidations_rem_report')->with(compact('companies', 'current_date'));
+		return view('backend.liquidations_rem_report')->with(compact('current_date'));
 	}
 
 	public function validateForm() {
@@ -41,20 +42,6 @@ class LiquidationsRemReportController extends Controller
 		return request()->all();
 	}
 
-	public function getClients() {
-		$company_id = request('company_id');
-		$q = request('q');
-
-		$clients = Client::select('id', 'business_name as text')
-			->when($company_id, function($query, $company_id) {
-				return $query->where('company_id', $company_id);
-			})
-			->where('business_name', 'like', '%'.$q.'%')
-			->withTrashed()
-			->get();
-
-		return $clients;
-	}
 
 	public function list() {
 
@@ -62,9 +49,7 @@ class LiquidationsRemReportController extends Controller
 
 		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d H:i:s');
 		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d H:i:s');
-		$company_id = request('model.company_id');
-		$business_unit_id = request('model.business_unit_id');
-		$client_id = request('model.client_id');
+
 		
 		$elements = liquidations::leftjoin('sales', 'liquidations.sales_id', '=', 'sales.id')
 									->where('sales.sale_date', '>=', $initial_date)
