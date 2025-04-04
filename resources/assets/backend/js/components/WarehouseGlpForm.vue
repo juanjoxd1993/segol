@@ -18,6 +18,7 @@
                             <label class="form-control-label">Almacén:</label>
                             <select class="form-control" name="warehouse_type_id" id="warehouse_type_id" v-model="model.warehouse_type_id" @focus="$parent.clearErrorMsg($event)">
                                 <option value="">Seleccionar</option>
+                                <option value="0">Todos</option>
                                 <option v-for="warehouse_type in warehouse_types" :value="warehouse_type.id" v-bind:key="warehouse_type.id">{{ warehouse_type.name }}</option>
                             </select>
                             <div id="warehouse_type_id-error" class="error invalid-feedback"></div>

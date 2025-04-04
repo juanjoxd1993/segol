@@ -43,7 +43,24 @@ class WarehouseGlpController extends Controller
 	public function list() {
 		$warehouse_type_id = request('warehouse_type_id');
 
-		$elements = Article::where('warehouse_type_id', $warehouse_type_id)->orderBy('id', 'desc')->get();
+	
+		if ($warehouse_type_id == 0){
+			$warehouse_type= [75,78,77,76,74];
+		}
+		else if($warehouse_type_id == 75){
+			$warehouse_type= [75];
+		}else if($warehouse_type_id == 78){
+			$warehouse_type= [78];
+		}else if($warehouse_type_id == 77){
+			$warehouse_type= [77];
+		}else if($warehouse_type_id == 76){
+			$warehouse_type= [76];
+		}else if($warehouse_type_id == 74){
+			$warehouse_type= [74];
+		}
+
+
+		$elements = Article::whereIn('warehouse_type_id', $warehouse_type)->orderBy('id', 'desc')->get();
 		$elements->map(function($item, $key) {
 			$item->sale_unit_name = $item->sale_unit->name;
 			$item->warehouse_unit_name = $item->warehouse_unit->name;
@@ -174,13 +191,31 @@ class WarehouseGlpController extends Controller
 	public function exportRecord() {
 		$warehouse_type_id = request('warehouse_type_id');
 
+		if ($warehouse_type_id == 0){
+			$warehouse_type= [75,78,77,76,74];
+			$warehouse_type_id = 1;
+		}
+		else if($warehouse_type_id == 75){
+			$warehouse_type= [75];
+		}else if($warehouse_type_id == 78){
+			$warehouse_type= [78];
+		}else if($warehouse_type_id == 77){
+			$warehouse_type= [77];
+		}else if($warehouse_type_id == 76){
+			$warehouse_type= [76];
+		}else if($warehouse_type_id == 74){
+			$warehouse_type= [74];
+		}
+
 		$elements = Article::join('units as sale_units', 'sale_units.id', '=', 'sale_unit_id')
 			->join('units as warehouse_units', 'warehouse_units.id', '=', 'warehouse_unit_id')
 			->join('classifications as families', 'families.id', '=', 'family_id')
 			->join('classifications as groups', 'groups.id', '=', 'group_id')
+			->leftjoin('warehouse_types', 'articles.warehouse_type_id', '=', 'warehouse_types.id')
 			->join('classifications as subgroups', 'subgroups.id', '=', 'subgroup_id')
-			->select('articles.id', 'code as article_code', 'articles.name as article_name','articles.last_price as article_price', 'sale_units.name as sale_unit_name', 'warehouse_units.name as warehouse_unit_name', 'package_sale', 'package_warehouse', 'families.name as family_name', 'groups.name as group_name', 'subgroups.name as subgroup_name', 'stock_good', 'stock_repair', 'stock_return', 'stock_damaged', 'ubication')
-			->where('warehouse_type_id', $warehouse_type_id)
+			->select('articles.id', 'code as article_code', 'articles.name as article_name','articles.last_price as article_price', 'sale_units.name as sale_unit_name', 'warehouse_units.name as warehouse_unit_name', 'package_sale', 'package_warehouse', 'families.name as family_name', 'groups.name as group_name', 'subgroups.name as subgroup_name', 'stock_good', 
+			'warehouse_types.name as warehouse_name','stock_repair', 'stock_return', 'stock_damaged', 'ubication')
+			->whereIn('warehouse_type_id', [$warehouse_type])
 			->orderBy('id', 'desc')
 			->get();
 
