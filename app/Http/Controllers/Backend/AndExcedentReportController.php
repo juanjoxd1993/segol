@@ -149,7 +149,8 @@ class AndExcedentReportController extends Controller
 
             $stock_tienda_10k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
                 ->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
-                ->whereIn('articles.id', [
+                ->where('warehouse_movements.movement_type_id', 31)
+				->whereIn('articles.id', [
                     4841,
                     4846
                 ])
@@ -159,7 +160,8 @@ class AndExcedentReportController extends Controller
 
             $stock_tienda_45k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
             ->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
-            ->whereIn('articles.id', [
+            ->where('warehouse_movements.movement_type_id', 31)
+			->whereIn('articles.id', [
                 4844,
                 4848
             ])
