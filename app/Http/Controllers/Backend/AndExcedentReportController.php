@@ -141,29 +141,32 @@ class AndExcedentReportController extends Controller
 			$stock_inicial = $inventory->stock_anterior + $inventory->stock_piso;
 			$inventory->stock_inicial = $stock_inicial;
 			$ingresos_glp = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
-				->where('warehouse_movements.movement_type_id', 31)
-				->where('warehouse_movements.created_at',  $inventory->creation_date)
-				->select('warehouse_movement_details.converted_amount')
-				->sum('warehouse_movement_details.converted_amount');
-			$inventory->ingresos_glp = $ingresos_glp;
+                ->where('warehouse_movements.movement_type_id', 30)
+                ->where('warehouse_movements.created_at',  $inventory->creation_date)
+                ->select('warehouse_movement_details.converted_amount')
+                ->sum('warehouse_movement_details.converted_amount');
+            $inventory->ingresos_glp = $ingresos_glp;
 
-			$stock_tienda_10k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
-				->whereIn('articles.id', [
-					4954,
-					4956
-				])
-				->where('inventories.creation_date', $fecha_anterior)
-				->select('inventories.found_stock_good')
-				->sum('inventories.found_stock_good');
+            $stock_tienda_10k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
+                ->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
+                ->whereIn('articles.id', [
+                    4841,
+                    4846
+                ])
+                ->where('warehouse_movements.created_at', $fecha_anterior)
+                ->select('warehouse_movement_details.converted_amount')
+                ->sum('warehouse_movement_details.converted_amount');
 
-			$stock_tienda_45k = Inventory::leftjoin('articles', 'inventories.article_id', 'articles.id')
-				->whereIn('articles.id', [
-					4957,
-					4958
-				])
-				->where('inventories.creation_date', $fecha_anterior)
-				->select('inventories.found_stock_good')
-				->sum('inventories.found_stock_good');
+            $stock_tienda_45k = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
+            ->leftjoin('articles', 'warehouse_movement_details.article_code', 'articles.id')
+            ->whereIn('articles.id', [
+                4844,
+                4848
+            ])
+            ->where('warehouse_movements.created_at', $fecha_anterior)
+            ->select('warehouse_movement_details.converted_amount')
+            ->sum('warehouse_movement_details.converted_amount');
+
 
 			$stock_tienda =  ($stock_tienda_10k * 10)  + ($stock_tienda_45k * 45);
 
