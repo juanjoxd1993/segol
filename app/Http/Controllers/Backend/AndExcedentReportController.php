@@ -179,7 +179,7 @@ class AndExcedentReportController extends Controller
 				->leftjoin('articles', 'sale_details.article_id', 'articles.id')
 				->whereIn('sale_details.article_id', [9292, 9296, 9300, 9304, 9308])
 				->whereIn('sales.warehouse_document_type_id', [31,5])
-				->where('sales.sale_date', '=', $fecha_anterior)
+				->where('sales.sale_date', '=',  $inventory->creation_date)
 				->select('sale_details.quantity')
 				->sum('sale_details.quantity');
 
@@ -189,7 +189,7 @@ class AndExcedentReportController extends Controller
 					4773,
 					4777
 				])
-				->where('sales.sale_date', '=', $fecha_anterior)
+				->where('sales.sale_date', '=',  $inventory->creation_date)
 				->whereIn('sales.warehouse_document_type_id', [31,5])
 				->select('sale_details.quantity')
 				->sum('sale_details.quantity');
@@ -200,7 +200,7 @@ class AndExcedentReportController extends Controller
 					4774
 				])
 				->whereIn('sales.warehouse_document_type_id', [31,5])
-				->where('sales.sale_date', '=', $fecha_anterior)
+				->where('sales.sale_date', '=',  $inventory->creation_date)
 				->select('sale_details.quantity')
 				->sum('sale_details.quantity');
 
@@ -210,7 +210,7 @@ class AndExcedentReportController extends Controller
 					4775,4779
 				])
 				->whereIn('sales.warehouse_document_type_id', [31,5])
-				->where('sales.sale_date', '=', $fecha_anterior)
+				->where('sales.sale_date', '=',  $inventory->creation_date)
 				->select('sale_details.quantity')
 				->sum('sale_details.quantity');
 
