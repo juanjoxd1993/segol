@@ -27,6 +27,7 @@ class LiquidationsRemReportController extends Controller
 	{
 
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
+
 		return view('backend.liquidations_rem_report')->with(compact('current_date'));
 	}
 
@@ -54,11 +55,12 @@ class LiquidationsRemReportController extends Controller
 
 		$initial_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->format('Y-m-d H:i:s');
 		$final_date = CarbonImmutable::createFromDate(request('model.final_date'))->endOfDay()->format('Y-m-d H:i:s');
-
+		$payment_sede= request('model.payment_sede');
 
 		$elements = Liquidation::leftjoin('sales', 'liquidations.sale_id', '=', 'sales.id')
 			->where('sales.sale_date', '>=', $initial_date)
 			->where('sales.sale_date', '<=', $final_date)
+			->where('sales.cede', $payment_sede)
 			->select(
 				'liquidations.id as id',
 				'liquidations.state',
@@ -67,7 +69,7 @@ class LiquidationsRemReportController extends Controller
 				DB::Raw('MAX(liquidations.operation_number) as final_voucher'),
 				DB::Raw('SUM(liquidations.amount) as sum_total')
 			)
-			->where('liquidations.state', 0)
+		//	->where('liquidations.state', 0)
 			->groupBy('sale_date')
 			->get();
 
@@ -132,7 +134,7 @@ class LiquidationsRemReportController extends Controller
 				$sheet->setCellValue('B' . $row_number, $element->initial_voucher);
 				$sheet->setCellValue('C' . $row_number, $element->final_voucher);
 				$sheet->setCellValue('D' . $row_number, $element->sum_total);
-				$sheet->setCellValue('E' . $row_number, $element->state);
+				$sheet->setCellValue('E' . $row_number, $state);
 				$sheet->getStyle('D' . $row_number)->getNumberFormat()->setFormatCode('0.00');
 
 				$row_number++;

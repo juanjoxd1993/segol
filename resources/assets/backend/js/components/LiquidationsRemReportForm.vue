@@ -36,6 +36,19 @@
                         </div>
                     </div>
 
+                <div class="col-lg-3">
+                    <div class="form-group">
+                    <label class="form-control-label">Sede:</label>
+                    <select class="form-control" name="payment_sede" id="payment_sede" v-model="model.payment_sede"
+                      @focus="$parent.clearErrorMsg($event)">
+                      <option value="75">PLANTA IQUITOS</option>
+                      <option value="1">TIENDA 1</option>
+                      
+                    </select>
+                    <div id="payment_sede-error" class="error invalid-feedback"></div>
+                  </div>
+                </div>
+
 
                 </div>
             </div>
@@ -81,6 +94,7 @@ export default {
                 company_id: '',
                 client_id: '',
                 business_unit_id: '',
+                payment_sede: '',
             },
         }
     },
