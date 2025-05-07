@@ -275,7 +275,9 @@ class AndExcedentReportController extends Controller
 			$stock_fisico_final=$inventory->stock_tanque+$inventory->stock_planta;
 			$inventory->stock_fisico_final = $stock_fisico_final;
 
+			$diferencial_final=$inventory->stock_fisico_final-$inventory->stock_teorico;
 
+			$inventory->diferencial_final = $diferencial_final;
 
 
 			$inventory->stock_venta = $stock_venta;
@@ -324,7 +326,7 @@ class AndExcedentReportController extends Controller
 			$sheet->mergeCells('H2:M2');
 			$sheet->mergeCells('O2:Q2');
 			$sheet->mergeCells('R2:U2');
-			$sheet->mergeCells('V2:AA2');
+			
 
 			$sheet->setCellValue('A1', 'EXCEDENTE DE GLP ' . CarbonImmutable::now()->format('d/m/Y H:m:s'));
 			$sheet->getStyle('A1')->applyFromArray([
@@ -404,8 +406,8 @@ class AndExcedentReportController extends Controller
 				]
 			]);
 
-			$sheet->setCellValue('V2', 'Cálculos');
-			$sheet->getStyle('V2')->applyFromArray([
+			$sheet->setCellValue('R2', 'Cálculos');
+			$sheet->getStyle('R2')->applyFromArray([
 				'font' => [
 					'Verdana' => true,
 					'size' => 16,
@@ -607,7 +609,7 @@ class AndExcedentReportController extends Controller
 				$sheet->setCellValue('O' . $row_number, $element->stock_tanque);
 				$sheet->setCellValue('P' . $row_number, $element->stock_planta);
 				$sheet->setCellValue('Q' . $row_number, $element->stock_fisico_final);
-				
+				$sheet->setCellValue('R' . $row_number, $element->diferencial_final);
 	
 				//   $sheet->getStyle('N'.$row_number)->getNumberFormat()->setFormatCode('0.00');
 				$sheet->getStyle('O' . $row_number)->getNumberFormat()->setFormatCode('0.00');
@@ -640,12 +642,7 @@ class AndExcedentReportController extends Controller
 			$sheet->getColumnDimension('U')->setAutoSize(true);
 			$sheet->getColumnDimension('V')->setAutoSize(true);
 			$sheet->getColumnDimension('W')->setAutoSize(true);
-			$sheet->getColumnDimension('X')->setAutoSize(true);
-			$sheet->getColumnDimension('Y')->setAutoSize(true);
-			$sheet->getColumnDimension('Z')->setAutoSize(true);
-			$sheet->getColumnDimension('AA')->setAutoSize(true);
-			$sheet->getColumnDimension('AB')->setAutoSize(true);
-			$sheet->getColumnDimension('AC')->setAutoSize(true);
+	
 
 			$writer = new Xls($spreadsheet);
 			return $writer->save('php://output');

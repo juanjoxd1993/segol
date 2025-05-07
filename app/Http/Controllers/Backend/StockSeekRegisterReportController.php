@@ -70,7 +70,7 @@ class StockSeekRegisterReportController extends Controller
 		// $license_plate = request('model.license_plate');
 
 		$movements = WarehouseMovement::select('id', 'company_id', 'movement_class_id', 'movement_type_id', 'movement_stock_type_id', 'movement_number', 'created_at', 'warehouse_account_type_id', 'account_id', 'account_document_number', 'account_name', 'referral_guide_series', 'referral_guide_number', 'referral_warehouse_document_type_id', 'referral_serie_number', 'referral_voucher_number', 'scop_number', 'license_plate', 'state','traslate_date','route_id')
-		->whereIn('warehouse_type_id', [4,13,75])	
+		->whereIn('warehouse_type_id', [4,13,75,78])	
 		->whereIn('movement_type_id', [11,12])
 			->when($company_id, function($query, $company_id) {
 				return $query->where('company_id', $company_id);
@@ -95,6 +95,8 @@ class StockSeekRegisterReportController extends Controller
 				$detail->movement_type = $item->movement_type->name;
 				$detail->date = date('d/m/Y', strtotime($item->created_at));
 				$detail->traslate_date = date('d/m/Y', strtotime($item->traslate_date));
+				$detail->account_document_number = $item->account_document_number;
+				$detail->account_name = $item->account_name;
 				$detail->route_id = $item->route_id;
 				$detail->article_code = $detail->article->convertion;
 				$detail->article_name = $detail->article->name;
@@ -118,7 +120,7 @@ class StockSeekRegisterReportController extends Controller
 
 		if ( $export ) {
 			$data = new StockSeekRegisterReportExport($movement_details);
-			$file = Excel::download($data, 'reporte-movimientos-de-almacen-'.time().'.xls');
+			$file = Excel::download($data, 'reporte-movimientos-de-guia-'.time().'.xls');
 
 			return $file;
 		} else {

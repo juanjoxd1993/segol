@@ -42,6 +42,8 @@ class StockSeekRegisterReportExport implements FromCollection, WithTitle, WithHe
                 'Compañía',
                 'Fecha de Emisión',
                 'Fecha de traslado',
+                'N° Documento',
+                'Razón Social',
                 'Serie',
                 'Guía Remisión',
                 'Ruta',
@@ -66,6 +68,8 @@ class StockSeekRegisterReportExport implements FromCollection, WithTitle, WithHe
 
                 $collection->date,
                 $collection->traslate_date,
+                $collection->account_document_number,
+                $collection->account_name,
                 $collection->referral_guide_serie,
                 $collection->referral_guide,
                 $collection->route_id,
