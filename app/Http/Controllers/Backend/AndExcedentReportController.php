@@ -314,6 +314,7 @@ class AndExcedentReportController extends Controller
 		$totals->stock_venta_15k = '';
 		$totals->stock_venta_45k = '';
 		$totals->stock_venta = '';
+		$totals->diferencial_final = '';
 
 		$response[] = $totals;
 
