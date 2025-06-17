@@ -124,7 +124,7 @@ class FinanzasDetailTotalReportController extends Controller
 			->whereIn('sales.cede', $warehouse_types)
 			->where('sales.sale_date', '=',  $initial_date)
 			->whereIn('liquidations.payment_method_id', [2, 3])
-			->whereIn('liquidations.collection', [0, 1])
+			->whereIn('liquidations.collection', [0])
 			->select('liquidations.amount')
 			->sum('liquidations.amount');
 
@@ -150,7 +150,7 @@ class FinanzasDetailTotalReportController extends Controller
 			->whereIn('sales.cede', $warehouse_types)
 			->where('sales.sale_date', '=',  $initial_date)
 			->whereIn('liquidations.payment_method_id', [11])
-			->whereIn('liquidations.collection', [0, 1])
+			->whereIn('liquidations.collection', [0])
 			->select('liquidations.amount')
 			->sum('liquidations.amount');
 
