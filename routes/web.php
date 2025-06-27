@@ -864,5 +864,15 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/beta/excedent-report/listar', 'AndExcedentReportController@list')->name('dashboard.report.excedent.list');
 
 
+	/** Control de Planta > Apertura de Caja */
+	Route::get('/facturacion/apertura-caja/registrar', 'RegisterOpeningCajaController@index')->name('dashboard.opening.caja');
+	Route::post('/facturacion/apertura-caja/registrar-voucher', 'RegisterOpeningCajaController@store')->name('dashboard.opening.caja_register');
+	Route::post('/facturacion/apertura-caja/listar', 'RegisterOpeningCajaController@list')->name('dashboard.opening.caja_list');
+
+	/** Control de Planta > Apertura de Planta */
+	Route::get('/facturacion/apertura-planta/registrar', 'RegisterOpeningPlantaController@index')->name('dashboard.opening.planta');
+	Route::post('/facturacion/apertura-planta/registrar-voucher', 'RegisterOpeningPlantaController@store')->name('dashboard.opening.planta_register');
+	Route::post('/facturacion/apertura-planta/listar', 'RegisterOpeningPlantaController@list')->name('dashboard.opening.planta_list');
+
 	
 });

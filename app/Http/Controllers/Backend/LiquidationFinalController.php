@@ -7,6 +7,7 @@ use App\SaleSeries;
 use App\Article;
 use App\Bank;
 use App\BankAccount;
+use App\CierreCaja;
 use App\Client;
 use App\ClientAddress;
 use App\Company;
@@ -42,7 +43,7 @@ class LiquidationFinalController extends Controller
 	public function index()
 	{
 
-		$companies = Company::select('id', 'name')->whereIn('id',[2])->get();
+		$companies = Company::select('id', 'name')->whereIn('id', [2])->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')
 			->where('name', 'Factura Electrónica')
 			->orWhere('name', 'Boleta de Venta Electrónica')
@@ -56,6 +57,24 @@ class LiquidationFinalController extends Controller
 		$payment_cash = Payment::CASH;
 		$payment_credit = Payment::CREDIT;
 
+		$fecha_actual =  Carbon::now();
+		$fecha_actual = CarbonImmutable::parse($fecha_actual)->format('Y-m-d');
+
+		$caja = CierreCaja::where('cierre_date', $fecha_actual)
+			->first();
+
+		if ($caja) {
+			if ($caja->state == 0) { //aperturado
+				$result = 0;
+			} else {
+				$result = 1;
+			}
+		} else {
+			$result = 2;
+		}
+
+
+		
 		return view('backend.liquidations_final')->with(
 			compact(
 				'companies',
@@ -64,9 +83,11 @@ class LiquidationFinalController extends Controller
 				'currencies',
 				'payments',
 				'payment_cash',
-				'payment_credit'
+				'payment_credit',
+				'result'
 			)
 		);
+		
 	}
 
 	public function validateForm()
@@ -104,10 +125,10 @@ class LiquidationFinalController extends Controller
 
 		$elements = WarehouseMovement::select('id', 'movement_number', 'referral_guide_series', 'referral_guide_number', 'license_plate', 'traslate_date', 'movement_type_id')
 			->where('company_id', $company_id)
-			->whereIn('movement_type_id', [11,12])
+			->whereIn('movement_type_id', [11, 12])
 			->where('warehouse_type_id', $warehouse_type_id)
 			->where('sale_id', null)
-			
+
 			->where('state', $guide_state->id)
 			->orderBy('movement_number', 'asc')
 			->get();

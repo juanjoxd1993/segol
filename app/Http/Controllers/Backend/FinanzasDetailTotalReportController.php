@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\CajaState;
 use App\CashClosing;
+use App\CierreCaja;
 use App\Client;
 use App\Company;
 use App\Http\Controllers\Controller;
@@ -424,20 +425,65 @@ class FinanzasDetailTotalReportController extends Controller
 			return $writer->save('php://output');
 		} else if ($export == 2) {
 
-			foreach ($response as $obj) {
-				$caja = new CashClosing();
-				$caja->issue_date = $initial_date;
-				$caja->concept = $obj['company_short_name'];
-				$caja->total = $obj['total'];
 
-				$caja->created_at_user =  Auth::user()->user;
-				$caja->save();
+			$yesterday_sale_date = CarbonImmutable::createFromDate(request('model.initial_date'))->startOfDay()->subDay()->format('Y-m-d');
+
+			$yes_cierre_caja = CierreCaja::where('cierre_date', $yesterday_sale_date)
+				->where('state', 1) // Cerrado
+				->where('company_id', 2)
+				->first();
+
+			if ($yes_cierre_caja) { //Cerrado
+
+
+				$cierre_caja = CierreCaja::where('cierre_date', $initial_date)
+					->where('company_id', 2)
+					->first();
+
+				if ($cierre_caja) {
+					$cierre_caja->state = 1; // Cerrado
+					$cierre_caja->save();
+
+					foreach ($response as $obj) {
+						$caja = new CashClosing();
+						$caja->issue_date = $initial_date;
+						$caja->concept = $obj['company_short_name'];
+						$caja->total = $obj['total'];
+
+						$caja->created_at_user =  Auth::user()->user;
+						$caja->save();
+					}
+					$caja_state = new CajaState();
+					$caja_state->issue_date = $initial_date;
+					$caja_state->state = 0; //CERRAR DIA CAJA
+					$caja_state->created_at_user =  Auth::user()->user;
+					$caja_state->save();
+
+
+					$type = 3;
+					$title = 'Éxito !';
+					$msg = 'El cierre de caja del día ' . $initial_date . ' se ha realizado correctamente.';
+					$url = route('dashboard.report.finanzas_detail_total');
+				} else {
+					$type = 2;
+					$title = 'Advertencia !';
+					$msg = 'Debe aperturar la caja del día actual antes de continuar con el cierre de caja.';
+					$url = '';
+				}
+			} else {
+				$type = 2;
+				$title = 'Advertencia !';
+				$msg = 'Debe cerrar la caja del día anterior antes de continuar con el cierre de caja del día actual.';
+				$url = '';
 			}
-			$caja_state = new CajaState();
-			$caja_state->issue_date = $initial_date;
-			$caja_state->state = 0; //CERRAR DIA CAJA
-			$caja_state->created_at_user =  Auth::user()->user;
-			$caja_state->save();
+
+
+			return response()->json([
+				'type'  => $type,
+				'title' => $title,
+				'msg'   => $msg,
+				'url'   => $url
+			], 200);
 		} else {
 			return response()->json([
 				'data' => $response,

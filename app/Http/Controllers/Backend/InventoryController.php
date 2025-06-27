@@ -3,27 +3,31 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Article;
+use App\CierrePlanta;
 use App\Company;
 use App\Exports\InventoryReportExport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Inventory;
 use App\WarehouseType;
+use Carbon\CarbonImmutable;
 use PDF;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class InventoryController extends Controller
 {
-	public function index() {
-		$companies = Company::select('id', 'name')->get();
+	public function index()
+	{
+		$companies = Company::select('id', 'name')->whereIn('id', [2])->get();
 		$warehouse_types = WarehouseType::select('id', 'name')->get();
 		$current_date = date(DATE_ATOM, mktime(0, 0, 0));
 
 		return view('backend.inventories')->with(compact('companies', 'warehouse_types', 'current_date'));
 	}
 
-	public function validateForm() {
+	public function validateForm()
+	{
 		$messages = [
 			'company_id.required'           => 'Debe seleccionar una Compañía.',
 			'warehouse_type_id.required'    => 'Debe seleccionar un Almacén.',
@@ -40,7 +44,8 @@ class InventoryController extends Controller
 		return request()->all();
 	}
 
-	public function list() {
+	public function list()
+	{
 		$company_id = request('model.company_id');
 		$warehouse_type_id = request('model.warehouse_type_id');
 		$creation_date = request('model.creation_date');
@@ -49,7 +54,7 @@ class InventoryController extends Controller
 		$p = request('pagination');
 		$q = request('query');
 		$page = (int)$p['page'];
-		$perpage = (int)( $p['perpage'] ? $p['perpage'] : 10 );
+		$perpage = (int)($p['perpage'] ? $p['perpage'] : 10);
 		$search = $q['generalSearch'];
 		request()->replace(['page' => $page]);
 
@@ -60,30 +65,31 @@ class InventoryController extends Controller
 			->orderBy('id', 'desc')
 			->paginate($perpage);
 
-		$elements->map(function($item, $index) {
+		$elements->map(function ($item, $index) {
 			$item->company_short_name = $item->company->short_name;
 			$item->article_code = $item->article->code;
-			$item->article_name = $item->article->name.' '.$item->article->warehouse_unit->name.' x '.$item->article->package_warehouse;
+			$item->article_name = $item->article->name . ' ' . $item->article->warehouse_unit->name . ' x ' . $item->article->package_warehouse;
 		});
-		
+
 		$meta = new \stdClass();
-        $meta->page = $page;
-        $meta->pages = $elements->lastPage();
-        $meta->perpage = $perpage;
-        $meta->total = $elements->total();
-        $meta->field = 'id';
-        for ($i = 1; $i <= $elements->total() ; $i++) {
-            $meta->rowIds[] = $i;
-        }
+		$meta->page = $page;
+		$meta->pages = $elements->lastPage();
+		$meta->perpage = $perpage;
+		$meta->total = $elements->total();
+		$meta->field = 'id';
+		for ($i = 1; $i <= $elements->total(); $i++) {
+			$meta->rowIds[] = $i;
+		}
 
 		return response()->json([
 			'meta'		=> $meta,
 			'data'		=> $elements->items(),
-			'state'		=> ( $elements->total() > 0 ? $elements[0]->state : '' ),
+			'state'		=> ($elements->total() > 0 ? $elements[0]->state : ''),
 		]);
 	}
 
-	public function createRecord() {
+	public function createRecord()
+	{
 		$company_id = request('model.company_id');
 		$warehouse_type_id = request('model.warehouse_type_id');
 		$creation_date = date('Y-m-d', strtotime(request('model.creation_date')));
@@ -125,49 +131,53 @@ class InventoryController extends Controller
 		]);
 	}
 
-	public function getArticles() {
+	public function getArticles()
+	{
 		$q = request('q');
 		$warehouse_type_id = request('warehouse_type_id');
-		
+
 		$articles = Article::select('id', 'code', 'name', 'package_warehouse', 'warehouse_unit_id')
 			->where('warehouse_type_id', $warehouse_type_id)
-			->when($q, function($query, $q) {
-				return $query->where('code', 'like', '%'.$q.'%')
-					->orWhere('name', 'like', '%'.$q.'%');
+			->when($q, function ($query, $q) {
+				return $query->where('code', 'like', '%' . $q . '%')
+					->orWhere('name', 'like', '%' . $q . '%');
 			})
 			->orderBy('code', 'asc')
 			->get();
 
-		$articles->map(function($item, $index) {
+		$articles->map(function ($item, $index) {
 			$item->text = $item->code . ' - ' . $item->name . ' ' . $item->warehouse_unit->name . ' x ' . $item->package_warehouse;
 		});
 
 		return $articles;
 	}
 
-	public function detail() {
+	public function detail()
+	{
 		$id = request('id');
 
 		$element = Inventory::select('id', 'article_id', 'found_stock_good', 'found_stock_damaged', 'observations')
 			->where('id', $id)
 			->first();
-		
+
 		return $element;
 	}
 
-	public function getSelect2() {
+	public function getSelect2()
+	{
 		$article_id = request('article_id');
 
 		$element = Article::select('id', 'code', 'name', 'package_warehouse', 'warehouse_unit_id')
 			->where('id', $article_id)
 			->first();
-		
+
 		$element->text = $element->code . ' - ' . $element->name . ' ' . $element->warehouse_unit->name . ' x ' . $element->package_warehouse;
 
 		return $element;
 	}
 
-	public function validateModalForm() {
+	public function validateModalForm()
+	{
 		$messages = [
 			'article_id.required'			=> 'Debe seleccionar un Artículo.',
 			'found_stock_good.required'		=> 'La Cantidad Buen estado es obligatoria.',
@@ -184,7 +194,8 @@ class InventoryController extends Controller
 		return request()->all();
 	}
 
-	public function store() {
+	public function store()
+	{
 		$this->validateModalForm();
 
 		$id = request('id');
@@ -200,7 +211,7 @@ class InventoryController extends Controller
 		$article->edit = 1;
 		$article->save();
 
-		if ( isset($id) ) {
+		if (isset($id)) {
 			$element = Inventory::findOrFail($id);
 			$element->found_stock_good = $found_stock_good;
 			$element->found_stock_damaged = $found_stock_damaged;
@@ -214,8 +225,8 @@ class InventoryController extends Controller
 				->where('article_id', $article_id)
 				->where('creation_date', $creation_date)
 				->first();
-			
-			if ( empty($element) ) {
+
+			if (empty($element)) {
 				$element = new Inventory();
 				$element->company_id = $company_id;
 				$element->warehouse_type_id = $warehouse_type_id;
@@ -227,7 +238,7 @@ class InventoryController extends Controller
 				$element->state = 0;
 				$element->created_at_user = Auth::user()->user;
 				$element->updated_at_user = Auth::user()->user;
-				
+
 				$msg = 'Registro creado exitosamente';
 			} else {
 				$element->found_stock_good = $found_stock_good;
@@ -238,7 +249,7 @@ class InventoryController extends Controller
 				$msg = 'Registro actualizado exitosamente';
 			}
 		}
-		
+
 		$element->save();
 
 		$type = 1;
@@ -251,33 +262,79 @@ class InventoryController extends Controller
 		]);
 	}
 
-	public function delete() {
+	public function delete()
+	{
 		$id = request('id');
 		$element = Inventory::findOrFail($id);
 		$element->delete();
 	}
 
-	public function closeRecord() {
+	public function closeRecord()
+	{
 		$company_id = request('company_id');
 		$warehouse_type_id = request('warehouse_type_id');
 		$creation_date = date('Y-m-d', strtotime(request('creation_date')));
-		$data_flag = 0;
 
-		$elements = Inventory::select('id', 'state')
+
+		$yesterday_sale_date = CarbonImmutable::createFromDate(request('creation_date'))->startOfDay()->subDay()->format('Y-m-d');
+
+		$yes_cierre_planta = CierrePlanta::where('cierre_date', $yesterday_sale_date)
+			->where('state', 1) // Cerrado
 			->where('company_id', $company_id)
-			->where('warehouse_type_id', $warehouse_type_id)
-			->where('creation_date', $creation_date)
-			->get();
-		
-		foreach ($elements as $element) {
-			$element->state = 1;
-			$element->save();
+			->first();
+
+		if ($yes_cierre_planta) { //Cerrado
+
+
+			$cierre_planta = CierrePlanta::where('cierre_date', $creation_date)
+				->where('company_id', $company_id)
+				->first();
+
+			if ($cierre_planta) {
+				$cierre_planta->state = 1; // Cerrado
+				$cierre_planta->save();
+
+
+				$elements = Inventory::select('id', 'state')
+					->where('company_id', $company_id)
+					->where('warehouse_type_id', $warehouse_type_id)
+					->where('creation_date', $creation_date)
+					->get();
+
+				foreach ($elements as $element) {
+					$element->state = 1;
+					$element->save();
+				}
+
+
+				$type = 3;
+				$title = 'Éxito !';
+				$msg = 'El cierre de planta e inventario del día ' . $creation_date . ' se ha realizado correctamente.';
+				$url = route('dashboard.logistics.inventories');
+			} else {
+				$type = 2;
+				$title = 'Advertencia !';
+				$msg = 'Debe aperturar la planta del día actual antes de continuar con el cierre de planta.';
+				$url = '';
+			}
+		} else {
+			$type = 2;
+			$title = 'Advertencia !';
+			$msg = 'Debe cerrar la planta del día anterior antes de continuar con el cierre de planta del día actual.';
+			$url = '';
 		}
 
-		return $data_flag;
+
+		return response()->json([
+			'type'  => $type,
+			'title' => $title,
+			'msg'   => $msg,
+			'url'   => $url
+		], 200);
 	}
 
-	public function formRecord() {
+	public function formRecord()
+	{
 		$company_id = request('company_id');
 		$warehouse_type_id = request('warehouse_type_id');
 		$creation_date = date('Y-m-d', strtotime(request('creation_date')));
@@ -288,7 +345,7 @@ class InventoryController extends Controller
 			->where('creation_date', $creation_date)
 			->get();
 
-		$elements->map(function($item, $index) {
+		$elements->map(function ($item, $index) {
 			$item->article_code = $item->article->code;
 			$item->article_name = $item->article->name;
 			$item->warehouse_unit_short_name = $item->article->warehouse_unit->short_name;
@@ -299,10 +356,11 @@ class InventoryController extends Controller
 		$warehouse_type = WarehouseType::select('id', 'name')->where('id', $company_id)->first();
 
 		$pdf = PDF::loadView('backend.inventories_pdf', compact('company', 'warehouse_type', 'elements', 'creation_date'));
-		return $pdf->download('formulario-inventario-'.$creation_date.'.pdf');
+		return $pdf->download('formulario-inventario-' . $creation_date . '.pdf');
 	}
 
-	public function exportRecord() {
+	public function exportRecord()
+	{
 		$company_id = request('company_id');
 		$warehouse_type_id = request('warehouse_type_id');
 		$creation_date = date('Y/m/d', strtotime(request('creation_date')));
@@ -313,7 +371,7 @@ class InventoryController extends Controller
 			->where('creation_date', $creation_date)
 			->get();
 
-		$elements->map(function($item, $index) {
+		$elements->map(function ($item, $index) {
 			$item->article_code = $item->article->code;
 			$item->article_name = $item->article->name;
 			$item->warehouse_unit_short_name = $item->article->warehouse_unit->short_name;
@@ -324,13 +382,14 @@ class InventoryController extends Controller
 
 		$company = Company::select('id', 'name')->where('id', $company_id)->first();
 		$warehouse_type = WarehouseType::select('id', 'name')->where('id', $company_id)->first();
-		$state = ( $elements->count() > 0 ? $elements[0]->state : '' );
+		$state = ($elements->count() > 0 ? $elements[0]->state : '');
 
 		$excel = new InventoryReportExport($elements, $company, $warehouse_type, $creation_date, $state);
 		return Excel::download($excel, 'inventario.xlsx');
 	}
 
-	public function test() {
+	public function test()
+	{
 		$warehouse_type_id = 3;
 		$inventories = Inventory::where('warehouse_type_id', $warehouse_type_id)
 			->get();

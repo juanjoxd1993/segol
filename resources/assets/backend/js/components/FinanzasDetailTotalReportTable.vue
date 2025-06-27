@@ -98,7 +98,7 @@ export default {
 
             }).then(response => {
                 if (response.data == 1) {
-                    this.title_button = 'Cerrar Día';
+                    this.title_button = 'Guardar Data y Cerrar el dia';
                     this.color = 'btn btn-success';
                 } else {
                     this.title_button = 'Día Cerrado';
@@ -134,13 +134,9 @@ export default {
                         // console.log(response);
                         EventBus.$emit('loading', false);
                         this.updateState();
-                        Swal.fire({
-                            title: 'Bien',
-                            text: 'Data guardado correctamente.',
-                            type: "success",
-                            // timer: 2000,
-                            heightAuto: false,
-                        })
+
+                        this.$parent.alertMsg(response.data);
+
 
                         this.export = '';
                     }).catch(error => {
