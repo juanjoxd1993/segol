@@ -540,6 +540,12 @@ Route::middleware(['auth'])->namespace('Backend')->group(function () {
 	Route::post('/creditos/relacion-de-documentos-pendientes/validar-formulario', 'PendingDocumentReportController@validateForm')->name('dashboard.report.pending_document_report.validate_form');
 	Route::post('/creditos/relacion-de-documentos-pendientes/listar', 'PendingDocumentReportController@list')->name('dashboard.report.pending_document_report.list');
 
+
+	/** Reportes > Crédito histórico */
+	Route::get('/reporte/credito-historico', 'CreditHistoryReportController@index')->name('dashboard.report.credit_history');
+	Route::post('/reporte/credito-historico/validar-formulario', 'CreditHistoryReportController@validateForm')->name('dashboard.report.credit_history.validate_form');
+	Route::post('/reporte/credito-historico/listar', 'CreditHistoryReportController@list')->name('dashboard.report.credit_history.list');
+
 	/** creditos > Relación de Cobranzas */
 	Route::get('/creditos/relacion-de-cobranzas', 'CollectionReportController@index')->name('dashboard.report.collection_report');
 	Route::post('/creditos/relacion-de-cobranzas/obtener-clientes', 'CollectionReportController@getClients')->name('dashboard.report.collection_report.get_clients');

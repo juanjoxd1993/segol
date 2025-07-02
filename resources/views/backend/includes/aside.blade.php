@@ -943,7 +943,16 @@
                                     </a>
                                 </li>
 
-
+                                <li class="kt-menu__item {{ Route::currentRouteName() === 'dashboard.report.credit_history' ? 'kt-menu__item--active' : '' }}"
+                                    aria-haspopup="true">
+                                    <a href="{{ route('dashboard.report.credit_history') }}"
+                                        class="kt-menu__link ">
+                                        <i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+                                            <span></span>
+                                        </i>
+                                        <span class="kt-menu__link-text">Reporte Crédito Histórico</span>
+                                    </a>
+                                </li>
 
 
                             </ul>
@@ -1500,7 +1509,8 @@
 
                                 <li class="kt-menu__item {{ Route::currentRouteName() === 'dashboard.report.planilla_total' ? 'kt-menu__item--active' : '' }}"
                                     aria-haspopup="true">
-                                    <a href="{{ route('dashboard.report.planilla_total') }}" class="kt-menu__link ">
+                                    <a href="{{ route('dashboard.report.planilla_total') }}"
+                                        class="kt-menu__link ">
                                         <i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
                                             <span></span>
                                         </i>

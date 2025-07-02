@@ -6,7 +6,6 @@ use App\Article;
 use App\CierrePlanta;
 use App\Company;
 use App\Exports\InventoryReportExport;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Inventory;
 use App\WarehouseType;
