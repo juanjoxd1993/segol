@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers\Backend;
 
-use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Auth;
-use App\Clients\EfactCordClient;
-use App\Company;
 
-use App\Guide;
-use App\GuidesDetail;
+use App\Company;
 use App\Http\Clients\EfactClient;
 use App\WarehouseMovement;
 use App\WarehouseMovementDetail;
-use Illuminate\Support\Facades\Log;
 
 class GuideEfactController extends Controller
 {
