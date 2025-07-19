@@ -1,19 +1,22 @@
 <?php
 
-namespace App\Http\Clients;
+namespace App\Clients;
 
+use App\Http\Clients\BaseClient;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Log;
 
 class EfactClient extends BaseClient
 {
-    public const EFACT_CLIENT_AUTH_TOKEN = 'efact_client_auth_token';
+    public const EFACT_CLIENT_AUTH_TOKEN = 'efact_client_auth_token_efact';
     public const EFACT_CLIENT_AUTH_TOKEN_TOKEN = 'token';
     public const EFACT_CLIENT_AUTH_TOKEN_EXPIRES_IN = 'expires_in';
     public const EFACT_CLIENT_AUTH_TOKEN_CREATED_AT_TS = 'created_at_ts';
     public const URL_CREATE_TOKEN = 'oauth/token';
     public const URL_SEND_XML = 'v1/document';
     public const URL_GET_XML_FROM_TICKET = 'v1/pdf/%s';
+    public const API_EFACT_BASE_URL = 'https://ose.efact.pe/api-efact-ose/';
+
     public function __construct()
     {
         parent::__construct(env('API_EFACT_BASE_URL'));
@@ -56,10 +59,7 @@ class EfactClient extends BaseClient
             ]);
             return $response;
         } catch (RequestException $e) {
-            // Registra el error utilizando el facade de logging de Laravel
             Log::error('Error al enviar el archivo XML', ['error' => $e->getMessage()]);
-
-            // Lanza una excepción personalizada o retorna un mensaje de error adecuado
             throw new \Exception('Error al enviar el archivo XML: ' . $e->getMessage());
         }
     }
@@ -83,28 +83,40 @@ class EfactClient extends BaseClient
             self::EFACT_CLIENT_AUTH_TOKEN_CREATED_AT_TS => now()->getTimestamp()
         ];
 
-        session([self::EFACT_CLIENT_AUTH_TOKEN =>  $data]);
+        cache()->put(self::EFACT_CLIENT_AUTH_TOKEN, $data, $response['expires_in']);
     }
 
     private function isTokenValid(): bool
     {
-        if (!session()->exists(self::EFACT_CLIENT_AUTH_TOKEN)) {
+        if (!cache()->has(self::EFACT_CLIENT_AUTH_TOKEN)) {
             return false;
         }
 
         $currentTs = now()->getTimestamp();
-        $tokenData = session(self::EFACT_CLIENT_AUTH_TOKEN);
+        $tokenData = cache(self::EFACT_CLIENT_AUTH_TOKEN);
         $expirationTs = $tokenData[self::EFACT_CLIENT_AUTH_TOKEN_CREATED_AT_TS] + $tokenData[self::EFACT_CLIENT_AUTH_TOKEN_EXPIRES_IN];
 
-        if ($expirationTs >= $currentTs) {
-            return false;
-        }
-
-        return true;
+        // Refrescar si faltan menos de 5 minutos
+        return ($expirationTs - $currentTs) > 300;
     }
 
     private function getTokenValueFromSession(): string
     {
-        return session(self::EFACT_CLIENT_AUTH_TOKEN)[self::EFACT_CLIENT_AUTH_TOKEN_TOKEN];
+        return cache(self::EFACT_CLIENT_AUTH_TOKEN)[self::EFACT_CLIENT_AUTH_TOKEN_TOKEN];
+    }
+
+    public function getTokenRemainingTime(): int
+    {
+        if (!cache()->has(self::EFACT_CLIENT_AUTH_TOKEN)) {
+            return 0;
+        }
+
+        $currentTs = now()->getTimestamp();
+        $tokenData = cache(self::EFACT_CLIENT_AUTH_TOKEN);
+        $expirationTs = $tokenData[self::EFACT_CLIENT_AUTH_TOKEN_CREATED_AT_TS] + $tokenData[self::EFACT_CLIENT_AUTH_TOKEN_EXPIRES_IN];
+
+        $remainingTime = $expirationTs - $currentTs;
+
+        return $remainingTime > 0 ? $remainingTime : 0;
     }
 }
