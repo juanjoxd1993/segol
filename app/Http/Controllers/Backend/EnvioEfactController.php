@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use Greenter\XMLSecLibs\Sunat\SignedXml;
+use App\Http\Clients\EfactClient;
 
 
 use Auth;
@@ -46,6 +47,14 @@ use stdClass;
 class EnvioEfactController extends Controller
 {
     private $env = 'production';
+
+
+    private $billingClientPunto;
+
+    public function __construct(EfactClient $billingClientPunto)
+    {
+        $this->billingClientPunto = $billingClientPunto;
+    }
   
 
 
