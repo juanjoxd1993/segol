@@ -124,6 +124,7 @@ class EnvioEfactController extends Controller
                 ->leftjoin('currencies', 'currencies.id', '=', 'currency_id')
                 ->where('vouchers.company_id', $company_id)
                 ->where('voucher_type_id', $voucher_type_id)
+                ->where('issue_date', $date_of_issue)
                 ->when($serie, function ($query) use ($serie_number) {
                     return $query->where('serie_number', '=', $serie_number);
                 })
@@ -155,6 +156,7 @@ class EnvioEfactController extends Controller
                 ->leftjoin('currencies', 'currencies.id', '=', 'currency_id')
                 ->where('vouchers.company_id', $company_id)
                 ->where('voucher_type_id', $voucher_type_id)
+                ->where('issue_date', $date_of_issue)
                 ->when($serie, function ($query) use ($serie_number) {
                     return $query->where('serie_number', '=', $serie_number);
                 })
