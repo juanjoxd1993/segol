@@ -20,13 +20,13 @@ class GuidesRegisterController extends Controller
 	public function index()
 	{
 
-		$max_electronic = WarehouseMovement::where('company_id', 2)
+		$first_electronic = WarehouseMovement::where('company_id', 2)
 			->where('warehouse_type_id', 75)
 			->where('movement_type_id', 12)
 			->where('electronic', 1)
 			->where('referral_serie_number', 'TC40')
 			->max('referral_voucher_number');
-		$max_electronic = $max_electronic ? $max_electronic + 1 : 1;
+		$max_electronic = $first_electronic ? $first_electronic + 1 : 1;
 
 		$warehouse_account_types = WarehouseAccountType::whereIn('id', [1, 3])->get();
 		$companies = Company::select('id', 'name')->whereIn('id', [2])->get();
