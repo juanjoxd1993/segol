@@ -108,6 +108,13 @@
                                 @endif
 
 
+                                @if (Auth::user()->id == 7 ||
+                                        Auth::user()->id == 1 ||
+                                        Auth::user()->id == 5 ||
+                                        Auth::user()->id == 34 ||
+                                        Auth::user()->id == 36)
+
+
                             <li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.api.send_efact' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
                                 <a href="{{ route('dashboard.api.send_efact') }}" class="kt-menu__link ">
                                     <i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
@@ -116,6 +123,8 @@
                                     <span class="kt-menu__link-text">EFACT - Fact. - Bol. - Comp. de Percep.</span>
                                 </a>
                             </li>
+
+                            @endif
 
                                 @if (Auth::user()->id == 7 ||
                                         Auth::user()->id == 1 ||
