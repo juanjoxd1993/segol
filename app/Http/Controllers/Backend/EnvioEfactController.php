@@ -556,19 +556,27 @@ class EnvioEfactController extends Controller
                 $response[] = $xml_render;
 
 
+                $res = $this->billingClientPunto->sendDocumentXML(base_path('html/' . $ruta));
+
+
                
 
                 if ($res !== null) {
 
-                  
 
+
+
+                    $this->billingClientPunto->getXmlFromTicket($res['description']);
+
+                  
+/*
                     if ($item->client_email != null) {
                         Mail::to($item->client_email)->queue(new VoucherMailOficial($item));
                     }
                     if ($item->manager_mail != null) {
                         Mail::to($item->manager_mail)->queue(new VoucherMailOficial($item));
                     }
-
+*/
                     //Mail::to('juan.olivas@puntodedistribucion.com')->queue(new VoucherMailOficial($item));
                     //Mail::to('desarrollopdd@puntodedistribucion.com')->queue(new VoucherMailOficial($item));
                 }
