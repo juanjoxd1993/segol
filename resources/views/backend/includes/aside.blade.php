@@ -125,7 +125,7 @@
                                     <li class="kt-menu__item {{ Route::currentRouteName() === 'dashboard.voucher.register_document_charge' ? 'kt-menu__item--active' : '' }}"
                                         aria-haspopup="true">
                                         <a href="{{ route('dashboard.voucher.register_document_charge') }}"
-                                            class="kt-menu__link ">
+                                            class="kt-menu__lsink ">
                                             <i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
                                                 <span></span>
                                             </i>
