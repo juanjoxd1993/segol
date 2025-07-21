@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use Greenter\XMLSecLibs\Sunat\SignedXml;
+use App\Clients\EfactClient;
+
 use Auth;
 use PDF;
 use App\ClientAddress;
 use App\Client;
-use App\Clients\EfactClient;
-use App\Clients\EfactCordClient;
 use App\Company;
 use App\CompanyAddress;
 use App\Currency;
@@ -46,14 +46,9 @@ use stdClass;
 class EnvioEfactController extends Controller
 {
     private $env = 'production';
-    private $billingClientPunto;
-    private $billingClientCordia;
+  
 
-    public function __construct(EfactClient $billingClientPunto, EfactCordClient $billingClientCordia)
-    {
-        $this->billingClientPunto = $billingClientPunto;
-        $this->billingClientCordia = $billingClientCordia;
-    }
+
 
     public function sendOse()
     {
@@ -550,20 +545,11 @@ class EnvioEfactController extends Controller
                 $response[] = $xml_render;
 
 
-                if ($item->company_id == 2) {
-                    $res = $this->billingClientPunto->sendDocumentXML(asset($item->nombre_ruta_xml));
-                } else {
-                    $res = $this->billingClientCordia->sendDocumentXML(asset($item->nombre_ruta_xml));
-                }
+               
 
                 if ($res !== null) {
 
-                    if ($item->company_id == 2) {
-                        $responseXml = $this->billingClientPunto->getXmlFromTicket($res['description']);
-                    } else {
-                        $responseXml = $this->billingClientCordia->getXmlFromTicket($res['description']);
-                    }
-
+                  
 
                     if ($item->client_email != null) {
                         Mail::to($item->client_email)->queue(new VoucherMailOficial($item));
