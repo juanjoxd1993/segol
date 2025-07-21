@@ -37,7 +37,7 @@
                             <div id="voucher_type-error" class="error invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-lg-2" v-if="model.voucher_type == 2">
+                    <div class="col-lg-2" >
                         <div class="form-group">
                             <label class="form-control-label">Fecha de Emisión:</label>
                             <datetime v-model="model.date_of_issue" placeholder="Selecciona una Fecha"
