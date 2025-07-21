@@ -107,6 +107,16 @@
                                     </li>
                                 @endif
 
+
+                                <li class="kt-menu__item {{ ( ( Route::currentRouteName() === 'dashboard.api.send_efact' ) ? 'kt-menu__item--active' : '' ) }}" aria-haspopup="true">
+                                <a href="{{ route('dashboard.api.send_efact') }}" class="kt-menu__link ">
+                                    <i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
+                                        <span></span>
+                                    </i>
+                                    <span class="kt-menu__link-text">EFACT - Fact. - Bol. - Comp. de Percep.</span>
+                                </a>
+                            </li>
+
                                 @if (Auth::user()->id == 7 ||
                                         Auth::user()->id == 1 ||
                                         Auth::user()->id == 5 ||
@@ -1545,7 +1555,7 @@
                 @endif
 
 
-                @if (Auth::user()->id == 7)
+               
                     <li class="kt-menu__item  kt-menu__item--submenu {{ strpos(url()->current(), '/beta/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' }}"
                         aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                         <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -1602,7 +1612,7 @@
                             </ul>
                         </div>
                     </li>
-                @endif
+                
 
                 <!-- cierre Menú de RRHH-->
 
