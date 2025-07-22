@@ -55,7 +55,7 @@ class EnvioEfactController extends Controller
     {
         $this->billingClientPunto = $billingClientPunto;
     }
-  
+
 
 
 
@@ -67,7 +67,7 @@ class EnvioEfactController extends Controller
             $voucher_types = VoucherType::select('id', 'name')->whereIn('id', [1, 2])->get();
         } else {
             $companies = Company::select('id', 'name')->whereIn('id', [2])->get();
-            $voucher_types = VoucherType::select('id', 'name')->whereIn('id', [1, 2,3, 14])->get();
+            $voucher_types = VoucherType::select('id', 'name')->whereIn('id', [1, 2, 3, 14])->get();
         }
 
 
@@ -556,19 +556,12 @@ class EnvioEfactController extends Controller
                 $response[] = $xml_render;
 
 
-                $res = $this->billingClientPunto->sendDocumentXML(public_path($item->nombre_ruta_xml));
+                $res = $this->billingClientPunto->sendDocumentXML(base_path('html/' . $item->nombre_ruta_xml));
 
-
-               
-
+                /*
                 if ($res !== null) {
 
-
-
-
                     $this->billingClientPunto->getXmlFromTicket($res['description']);
-
-                  
 
                     if ($item->client_email != null) {
                         Mail::to($item->client_email)->queue(new VoucherMailOficial($item));
@@ -580,6 +573,7 @@ class EnvioEfactController extends Controller
                     //Mail::to('juan.olivas@puntodedistribucion.com')->queue(new VoucherMailOficial($item));
                     //Mail::to('desarrollopdd@puntodedistribucion.com')->queue(new VoucherMailOficial($item));
                 }
+                    */
             }
         });
 

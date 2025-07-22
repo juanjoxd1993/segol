@@ -83,7 +83,7 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 </cac:RegistrationAddress>
 </cac:PartyLegalEntity>
 <cac:Contact>
-<cbc:ElectronicMail>enviofacturacion@puntodedistribucion.com</cbc:ElectronicMail>
+<cbc:ElectronicMail>J.olivasc@gmail.com</cbc:ElectronicMail>
 </cac:Contact>
 </cac:Party>
 </cac:AccountingCustomerParty>
