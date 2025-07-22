@@ -556,7 +556,7 @@ class EnvioEfactController extends Controller
                 $response[] = $xml_render;
 
 
-                $res = $this->billingClientPunto->sendDocumentXML(base_path('html/' . $nombre_ruta));
+                $res = $this->billingClientPunto->sendDocumentXML(asset($item->nombre_ruta_xml));
 
 
                
