@@ -234,9 +234,9 @@ class LiquidationChannelReportController extends Controller
 				$saledetail->int_name = $saledetail['int_name'];
 				$saledetail->credit_limit_days = $saledetail['credit_limit_days'];
 				$saledetail->expiry_date = $saledetail['expiry_date'];
-				$saledetail->sale_value = $saledetail->total/1.18;
+				$saledetail->sale_value = $saledetail->total;
 				$saledetail->quantity = $saledetail['quantity'];
-				$saledetail->igv =  $saledetail->total-$saledetail->sale_value;
+				$saledetail->igv =  0;
 				$saledetail->referential_convertion = $saledetail['referential_convertion'];
 				$saledetail->kgs = $saledetail->sum_total*1000;
 				if ($saledetail->business_unit_name == 'Granel' || $saledetail->business_unit_name == 'Grifo')
