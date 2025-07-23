@@ -541,7 +541,7 @@ class EnvioEfactController extends Controller
             }
 
             // Datos de Rutas
-            $nombre_xml = $item->company_document_number . '-' . 'F' . '-' . $item->serie_number . '-' . $item->voucher_number;
+            $nombre_xml = $item->company_document_number . '-' . $item->voucher_type_type . '-' . $item->serie_number . '-' . $item->voucher_number;
             $nombre_ruta = 'uploads/' . $item->company_short_name . '/' . $item->issue_year;
             $item->nombre_xml = $nombre_xml;
             $item->nombre_ruta = $nombre_ruta;
