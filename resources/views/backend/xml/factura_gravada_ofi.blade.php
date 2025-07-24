@@ -13,14 +13,33 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 <cbc:InvoiceTypeCode listID="{{ $obj->igv_perception > 0 ? '2001' : '0101' }}" listAgencyName="PE:SUNAT" listSchemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo51" name="Tipo de Operacion">01</cbc:InvoiceTypeCode>
 <cbc:Note languageLocaleID="1000">{{ $obj->total_text }}</cbc:Note>
 
+
+<cbc:Note languageID="A">{{ $obj->client_code }}</cbc:Note>
+<cbc:Note languageID="B">{{ $obj->scop }}</cbc:Note>
+<cbc:Note languageID="C">PLANTAIQ</cbc:Note>
+<cbc:Note languageID="D">PLANTAIQ</cbc:Note>
+<cbc:Note languageID="E">PLANTA</cbc:Note>
+<cbc:Note languageID="G">JORGE SUYON VALDIVIESO</cbc:Note>
+<cbc:Note languageID="H">Y05374292</cbc:Note>
 @if ($obj->payment_id == 1)
-    <cbc:Note languageLocaleID="2000">COMPROBANTE DE PERCEPCIÓN</cbc:Note>
-@endif
+<cbc:Note languageID="I">CONTADO</cbc:Note>
+ @else
+ <cbc:Note languageID="I">CREDITO</cbc:Note>
+ @endif
+
+ <cbc:Note languageID="M">PUNTO GAS SELVA SAC.</cbc:Note>
+ <cbc:Note languageID="O">20611148781</cbc:Note>
+
+ <cbc:Note languageID="P">P{{ $obj->total }}</cbc:Note>
+ <cbc:Note languageID="Q">0.00</cbc:Note>
+ <cbc:Note languageID="R">{{ $obj->total }}</cbc:Note>
+
+
 
 <cbc:DocumentCurrencyCode listAgencyName="United Nations Economic Commission for Europe" listID="ISO 4217 Alpha" listName="Currency">{{ $obj->currency_short_name }}</cbc:DocumentCurrencyCode>
 <cbc:LineCountNumeric>1</cbc:LineCountNumeric>
 <cac:Signature>
-<cbc:ID>IDSignKG</cbc:ID>
+<cbc:ID>sign20611148781</cbc:ID>
 <cac:SignatoryParty>
 <cac:PartyIdentification>
 <cbc:ID>{{ $obj->company_document_number }}</cbc:ID>
@@ -31,7 +50,7 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 </cac:SignatoryParty>
 <cac:DigitalSignatureAttachment>
 <cac:ExternalReference>
-<cbc:URI>#SignST</cbc:URI>
+<cbc:URI>#sign20602359981</cbc:URI>
 </cac:ExternalReference>
 </cac:DigitalSignatureAttachment>
 </cac:Signature>
@@ -92,16 +111,20 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 </cac:Party>
 </cac:AccountingCustomerParty>
 
+
+
 @if ($obj->payment_id == 1 && $obj->igv_perception > 0 && $obj->company_id == 1)
     <cac:PaymentTerms>
         <cbc:ID>Percepcion</cbc:ID>
         <cbc:Amount currencyID="{{ $obj->currency_short_name }}">{{ $obj->total_perception }}</cbc:Amount>
     </cac:PaymentTerms>
 
+
+
     <cac:AllowanceCharge>
             <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-            <cbc:AllowanceChargeReasonCode listAgencyName="PE:SUNAT" listName="Cargo/descuento"
-                listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo53">51</cbc:AllowanceChargeReasonCode>
+            <cbc:AllowanceChargeReasonCode listAgencyName="PE:SUNAT" listName="Cargo/descuento"    
+            listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo53">51</cbc:AllowanceChargeReasonCode>
             <cbc:MultiplierFactorNumeric>{{ $obj->igv_perception_percentage }}</cbc:MultiplierFactorNumeric>
             <cbc:Amount currencyID="{{ $obj->currency_short_name }}">{{ $obj->igv_perception }}</cbc:Amount>
             <cbc:BaseAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->total }}</cbc:BaseAmount>
@@ -127,6 +150,8 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
         <cbc:PaymentDueDate>{{ $obj->expiry_date }}</cbc:PaymentDueDate>
     </cac:PaymentTerms>
 @endif
+
+
 
 <cac:TaxTotal>
 <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->igv }}</cbc:TaxAmount>
