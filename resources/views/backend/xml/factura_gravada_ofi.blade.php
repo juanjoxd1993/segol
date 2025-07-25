@@ -197,7 +197,7 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
     </cbc:TaxExemptionReasonCode>
     <cac:TaxScheme>
 
-    <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">{{ $obj->total != $obj->taxed_operation ? '1000' : '9997' }}<</cbc:ID>
+    <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">{{ $obj->total != $obj->taxed_operation ? '1000' : '9997' }}</cbc:ID>
     <cbc:Name>{{ $obj->total != $obj->taxed_operation ? 'IGV' : 'EXO' }}</cbc:Name>
 
 
