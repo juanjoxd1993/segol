@@ -30,7 +30,7 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
  <cbc:Note languageID="M">PUNTO GAS SELVA SAC.</cbc:Note>
  <cbc:Note languageID="O">20611148781</cbc:Note>
 
- <cbc:Note languageID="P">P{{ $obj->total }}</cbc:Note>
+ <cbc:Note languageID="P">{{ $obj->total }}</cbc:Note>
  <cbc:Note languageID="Q">0.00</cbc:Note>
  <cbc:Note languageID="R">{{ $obj->total }}</cbc:Note>
 
@@ -196,8 +196,10 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
         {{ $obj->total != $obj->taxed_operation ? '10' : '20' }}
     </cbc:TaxExemptionReasonCode>
     <cac:TaxScheme>
-    <cbc:ID schemeAgencyName="PE:SUNAT" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">{{ $obj->total != $obj->taxed_operation ? '1000' : '9997' }}<</cbc:ID>
+
+    <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">{{ $obj->total != $obj->taxed_operation ? '1000' : '9997' }}<</cbc:ID>
     <cbc:Name>{{ $obj->total != $obj->taxed_operation ? 'IGV' : 'EXO' }}</cbc:Name>
+
     <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
     </cac:TaxScheme>
     </cac:TaxCategory>
