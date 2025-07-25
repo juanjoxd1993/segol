@@ -113,24 +113,6 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 
 
 
-@if ($obj->payment_id == 1 && $obj->igv_perception > 0 && $obj->company_id == 1)
-    <cac:PaymentTerms>
-        <cbc:ID>Percepcion</cbc:ID>
-        <cbc:Amount currencyID="{{ $obj->currency_short_name }}">{{ $obj->total_perception }}</cbc:Amount>
-    </cac:PaymentTerms>
-
-
-
-    <cac:AllowanceCharge>
-            <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-            <cbc:AllowanceChargeReasonCode listAgencyName="PE:SUNAT" listName="Cargo/descuento"    
-            listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo53">51</cbc:AllowanceChargeReasonCode>
-            <cbc:MultiplierFactorNumeric>{{ $obj->igv_perception_percentage }}</cbc:MultiplierFactorNumeric>
-            <cbc:Amount currencyID="{{ $obj->currency_short_name }}">{{ $obj->igv_perception }}</cbc:Amount>
-            <cbc:BaseAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->total }}</cbc:BaseAmount>
-    </cac:AllowanceCharge>
-@endif
-
 <cac:PaymentTerms>
     <cbc:ID>FormaPago</cbc:ID>
     @if ($obj->payment_id == 1)
@@ -151,24 +133,22 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
     </cac:PaymentTerms>
 @endif
 
-
-
 <cac:TaxTotal>
 <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->igv }}</cbc:TaxAmount>
 <cac:TaxSubtotal>
-<cbc:TaxableAmount currencyID="{{ $obj->currency_short_name }}">{{ number_format($obj->taxed_operation, 2, '.', '') }}</cbc:TaxableAmount>
+<cbc:TaxableAmount currencyID="{{ $obj->currency_short_name }}">{{ number_format($obj->total, 2, '.', '') }}</cbc:TaxableAmount>
 <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->igv }}</cbc:TaxAmount>
 <cac:TaxCategory>
 <cac:TaxScheme>
-<cbc:ID schemeAgencyID="6" schemeID="UN/ECE 5153">{{ $obj->total != $obj->taxed_operation ? '1000' : '9997' }}</cbc:ID>
-<cbc:Name>{{ $obj->total != $obj->taxed_operation ? 'IGV' : 'EXO' }}</cbc:Name>
+<cbc:ID schemeAgencyID="6" schemeID="UN/ECE 5153">{{ $obj->total != $obj->total ? '1000' : '9997' }}</cbc:ID>
+<cbc:Name>{{ $obj->total != $obj->total ? 'IGV' : 'EXO' }}</cbc:Name>
 <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
 </cac:TaxScheme>
 </cac:TaxCategory>
 </cac:TaxSubtotal>
 </cac:TaxTotal>
 <cac:LegalMonetaryTotal>
-<cbc:LineExtensionAmount currencyID="{{ $obj->currency_short_name }}">{{ number_format($obj->taxed_operation, 2, '.', '') }}</cbc:LineExtensionAmount>
+<cbc:LineExtensionAmount currencyID="{{ $obj->currency_short_name }}">{{ number_format($obj->total, 2, '.', '') }}</cbc:LineExtensionAmount>
 <cbc:TaxInclusiveAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->total }}</cbc:TaxInclusiveAmount>
 <cbc:PayableAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->total }}</cbc:PayableAmount>
 </cac:LegalMonetaryTotal>
