@@ -186,15 +186,22 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
     </cac:AlternativeConditionPrice>
     </cac:PricingReference>
     <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $detail->igv }}</cbc:TaxAmount>
     <cac:TaxSubtotal>
     <cbc:TaxableAmount currencyID="{{ $obj->currency_short_name }}">{{ $detail->subtotal }}</cbc:TaxableAmount>
     <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $detail->igv }}</cbc:TaxAmount>
     <cac:TaxCategory>
-    <cbc:ID schemeID="UN/ECE 5305" schemeName="Tax Category Identifier" 
-    schemeAgencyName="United Nations Economic Commission for Europe">E </cbc:ID>
+    <cbc:Percent>{{ $detail->igv_percentage }}</cbc:Percent>
+    <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">
+        {{ $obj->total != $obj->taxed_operation ? '20' : '20' }}
+    </cbc:TaxExemptionReasonCode>
     <cac:TaxScheme>
-    <cbc:ID schemeID="UN/ECE 5153"  schemeAgencyID="6">9997</cbc:ID>
-    <cbc:Name>EXONERADO</cbc:Name>
+
+    <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">{{ $obj->total != $obj->taxed_operation ? '1000' : '9997' }}</cbc:ID>
+    <cbc:Name>{{ $obj->total != $obj->taxed_operation ? 'IGV' : 'EXO' }}</cbc:Name>
+
+
+
     <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
     </cac:TaxScheme>
     </cac:TaxCategory>
