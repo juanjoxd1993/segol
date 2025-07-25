@@ -160,8 +160,8 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->igv }}</cbc:TaxAmount>
 <cac:TaxCategory>
 <cac:TaxScheme>
-<cbc:ID schemeAgencyID="6" schemeID="UN/ECE 5153">{{ $obj->total != $obj->taxed_operation ? '1000' : '9997' }}<</cbc:ID>
-<cbc:Name>{{ $obj->total != $obj->taxed_operation ? 'IGV' : 'EXO' }}<</cbc:Name>
+<cbc:ID schemeAgencyID="6" schemeID="UN/ECE 5153">{{ $obj->total != $obj->taxed_operation ? '1000' : '9997' }}</cbc:ID>
+<cbc:Name>{{ $obj->total != $obj->taxed_operation ? 'IGV' : 'EXO' }}</cbc:Name>
 <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
 </cac:TaxScheme>
 </cac:TaxCategory>
@@ -199,6 +199,8 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 
     <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">{{ $obj->total != $obj->taxed_operation ? '1000' : '9997' }}<</cbc:ID>
     <cbc:Name>{{ $obj->total != $obj->taxed_operation ? 'IGV' : 'EXO' }}</cbc:Name>
+
+
 
     <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
     </cac:TaxScheme>
