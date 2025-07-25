@@ -193,7 +193,7 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
     <cac:TaxCategory>
     <cbc:Percent>{{ $detail->igv_percentage }}</cbc:Percent>
     <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">
-        {{ $obj->total != $obj->taxed_operation ? '10' : '20' }}
+        {{ $obj->total != $obj->taxed_operation ? '20' : '20' }}
     </cbc:TaxExemptionReasonCode>
     <cac:TaxScheme>
 
