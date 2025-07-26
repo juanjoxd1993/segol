@@ -166,15 +166,16 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
     </cac:AlternativeConditionPrice>
     </cac:PricingReference>
     <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $detail->igv }}</cbc:TaxAmount>
     <cac:TaxSubtotal>
     <cbc:TaxableAmount currencyID="{{ $obj->currency_short_name }}">{{ $detail->subtotal }}</cbc:TaxableAmount>
     <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $detail->igv }}</cbc:TaxAmount>
     <cac:TaxCategory>
-    <cbc:ID schemeID="UN/ECE 5305" schemeName="Tax Category Identifier" 
-    schemeAgencyName="United Nations Economic Commission for Europe">E </cbc:ID>
+    <cbc:Percent>{{ $obj->igv_percentage }}</cbc:Percent>
+    <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">{{ $obj->total != $obj->total ? '10' : '20' }}</cbc:TaxExemptionReasonCode>
     <cac:TaxScheme>
     <cbc:ID schemeID="UN/ECE 5153"  schemeAgencyID="6">9997</cbc:ID>
-    <cbc:Name>EXONERADO</cbc:Name>
+    <cbc:Name>EXO</cbc:Name>
     <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
     </cac:TaxScheme>
     </cac:TaxCategory>
