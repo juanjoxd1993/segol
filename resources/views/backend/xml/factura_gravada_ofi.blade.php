@@ -14,7 +14,6 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 <cbc:Note languageLocaleID="1000">{{ $obj->total_text }}</cbc:Note>
 
 
-<cbc:Note languageID="A">{{ $obj->client_code }}</cbc:Note>
 <cbc:Note languageID="B">{{ $obj->scop }}</cbc:Note>
 <cbc:Note languageID="C">PLANTAIQ</cbc:Note>
 <cbc:Note languageID="D">PLANTAIQ</cbc:Note>
