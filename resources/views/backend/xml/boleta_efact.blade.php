@@ -91,7 +91,7 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">0.00</cbc:TaxAmount>
 <cac:TaxSubtotal>
 <cbc:TaxableAmount currencyID="{{ $obj->currency_short_name }}">{{ number_format($obj->taxed_operation, 2, '.', '') }}</cbc:TaxableAmount>
-<cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->igv }}</cbc:TaxAmount>
+<cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">0.00</cbc:TaxAmount>
 <cac:TaxCategory>
 <cac:TaxScheme>
 <cbc:ID schemeAgencyID="6" 9997 schemeID="UN/ECE 5153">1000</cbc:ID>
@@ -119,10 +119,10 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 </cac:AlternativeConditionPrice>
 </cac:PricingReference>
 <cac:TaxTotal>
-<cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ number_format($detail->sale_value, 2, '.', '') }}</cbc:TaxAmount>
+<cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">0.00</cbc:TaxAmount>
 <cac:TaxSubtotal>
 <cbc:TaxableAmount currencyID="{{ $obj->currency_short_name }}">{{ $detail->subtotal }}</cbc:TaxableAmount>
-<cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $detail->igv }}</cbc:TaxAmount>
+<cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">0.00</cbc:TaxAmount>
 <cac:TaxCategory>
 <cbc:Percent>{{ $detail->igv_percentage }}</cbc:Percent>
 <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">20</cbc:TaxExemptionReasonCode>
