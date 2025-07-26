@@ -16,7 +16,7 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 <cbc:DocumentCurrencyCode listAgencyName="United Nations Economic Commission for Europe" listID="ISO 4217 Alpha" listName="Currency">{{ $obj->currency_short_name }}</cbc:DocumentCurrencyCode>
 <cbc:LineCountNumeric>2</cbc:LineCountNumeric>
 <cac:Signature>
-<cbc:ID>IDSignKG</cbc:ID>
+<cbc:ID>sign20611148781</cbc:ID>
 <cac:SignatoryParty>
 <cac:PartyIdentification>
 <cbc:ID>{{ $obj->company_document_number }}</cbc:ID>
@@ -27,7 +27,7 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 </cac:SignatoryParty>
 <cac:DigitalSignatureAttachment>
 <cac:ExternalReference>
-<cbc:URI>#SignST</cbc:URI>
+<cbc:URI>#sign20602359981</cbc:URI>
 </cac:ExternalReference>
 </cac:DigitalSignatureAttachment>
 </cac:Signature>
@@ -61,13 +61,13 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 <cac:AccountingCustomerParty>
 <cac:Party>
 <cac:PartyIdentification>
-<cbc:ID schemeAgencyName="PE:SUNAT" schemeID="{{ $obj->client_document_type }}" schemeName="{{ $obj->client_document_name }}" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">{{ $obj->client_document_number }}</cbc:ID>
+<cbc:ID schemeAgencyName="PE:SUNAT" schemeID="{{ $obj->client_document_type }}" schemeName="{{ $obj->client_document_name }}" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">99999999</cbc:ID>
 </cac:PartyIdentification>
 <cac:PartyName>
-<cbc:Name>{{ $obj->client_name }}</cbc:Name>
+<cbc:Name>CLIENTES VARIOS</cbc:Name>
 </cac:PartyName>
 <cac:PartyLegalEntity>
-<cbc:RegistrationName>{{ $obj->client_name }}</cbc:RegistrationName>
+<cbc:RegistrationName>CLIENTES VARIOS</cbc:RegistrationName>
 <cac:RegistrationAddress>
 <cbc:ID schemeAgencyName="PE:INEI" schemeName="Ubigeos">{{ $obj->company_ubigeo }}</cbc:ID>
 <cbc:CitySubdivisionName>URBANIZACION</cbc:CitySubdivisionName>
@@ -88,14 +88,14 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 </cac:Party>
 </cac:AccountingCustomerParty>
 <cac:TaxTotal>
-<cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->igv }}</cbc:TaxAmount>
+<cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">0.00</cbc:TaxAmount>
 <cac:TaxSubtotal>
 <cbc:TaxableAmount currencyID="{{ $obj->currency_short_name }}">{{ number_format($obj->taxed_operation, 2, '.', '') }}</cbc:TaxableAmount>
 <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->igv }}</cbc:TaxAmount>
 <cac:TaxCategory>
 <cac:TaxScheme>
-<cbc:ID schemeAgencyID="6" schemeID="UN/ECE 5153">1000</cbc:ID>
-<cbc:Name>IGV</cbc:Name>
+<cbc:ID schemeAgencyID="6" 9997 schemeID="UN/ECE 5153">1000</cbc:ID>
+<cbc:Name>EXO</cbc:Name>
 <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
 </cac:TaxScheme>
 </cac:TaxCategory>
@@ -125,10 +125,10 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $detail->igv }}</cbc:TaxAmount>
 <cac:TaxCategory>
 <cbc:Percent>{{ $detail->igv_percentage }}</cbc:Percent>
-<cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">10</cbc:TaxExemptionReasonCode>
+<cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">20</cbc:TaxExemptionReasonCode>
 <cac:TaxScheme>
 <cbc:ID schemeAgencyName="PE:SUNAT" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">1000</cbc:ID>
-<cbc:Name>IGV</cbc:Name>
+<cbc:Name>EXO</cbc:Name>
 <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
 </cac:TaxScheme>
 </cac:TaxCategory>
