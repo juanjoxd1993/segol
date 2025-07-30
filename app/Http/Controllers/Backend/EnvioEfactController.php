@@ -402,6 +402,8 @@ class EnvioEfactController extends Controller
     public function send_voucher()
     {
 
+        set_time_limit(0); 
+
         $company_id = request('company_id');
         $ids = request('ids');
         $task = request('task');

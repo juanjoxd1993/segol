@@ -15,7 +15,6 @@ class EfactClient extends BaseClient
     public const URL_CREATE_TOKEN = 'oauth/token';
     public const URL_SEND_XML = 'v1/document';
     public const URL_GET_XML_FROM_TICKET = 'v1/pdf/%s';
-    public const API_EFACT_BASE_URL = 'https://ose.efact.pe/api-efact-ose/';
 
     public function __construct()
     {
