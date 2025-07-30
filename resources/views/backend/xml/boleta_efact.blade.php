@@ -61,7 +61,7 @@ xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponent
 <cac:AccountingCustomerParty>
 <cac:Party>
 <cac:PartyIdentification>
-<cbc:ID schemeAgencyName="PE:SUNAT" schemeID="{{ $obj->client_document_type }}" schemeName="{{ $obj->client_document_name }}" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">99999999</cbc:ID>
+<cbc:ID schemeAgencyName="PE:SUNAT" schemeID="1" schemeName="DNI" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">99999999</cbc:ID>
 </cac:PartyIdentification>
 <cac:PartyName>
 <cbc:Name>CLIENTES VARIOS</cbc:Name>
