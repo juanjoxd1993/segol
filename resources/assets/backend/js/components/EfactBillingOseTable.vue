@@ -159,7 +159,7 @@ export default {
                 // column sorting
                 sortable: true,
 
-                pagination: false,
+                pagination: true,
 
                 search: {
                     input: $('#generalSearch'),
