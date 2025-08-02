@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Backend;
 use App\GlpSeries;
 
 use App\Article;
-use App\Bank;
 use App\BankAccount;
 use App\Client;
 use App\ClientAddress;
@@ -24,7 +23,6 @@ use App\VoucherDetail;
 use App\VoucherType;
 use App\WarehouseDocumentType;
 use App\WarehouseMovement;
-use App\WarehouseMovementDetail;
 use Carbon\Carbon;
 use App\Payment;
 use App\WarehouseType;
@@ -32,8 +30,8 @@ use App\Employee;
 use App\SaleSeries;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
-use DB;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use stdClass;
 
 class LiquidacionGlpController extends Controller
@@ -372,6 +370,7 @@ class LiquidacionGlpController extends Controller
 		$current_date = date('Y-m-d', strtotime($today));
 		$model = request('model');
 		$sales = request('sales');
+		$boleteo = request('boleteo');
 
 		$rate = Rate::where('description', 'IGV')
 			->where('state', 1)
@@ -804,6 +803,107 @@ class LiquidacionGlpController extends Controller
 				$newSaleDetail->save();
 			}
 		}
+
+		Log::info("--------");
+		Log::info("entre al boleteo");
+
+
+		if ($boleteo != []) {
+			DB::beginTransaction();
+
+			try {
+
+				$serie = 'B100';
+				$company_id = 2;
+				$voucher_type_id = 2;
+
+				$date = Carbon::now()->format('Y-m-d');
+
+				$voucher_data = [];
+				$voucher_detail_data = [];
+
+				$max_number = Voucher::where('company_id', $company_id)
+					->where('voucher_type_id', $voucher_type_id)
+					->where('serie_number', $serie)
+					->max('voucher_number');
+				$voucher_number = $max_number ? $max_number + 1 : 1;
+
+
+				foreach ($boleteo as $bol) {
+
+					$article = Article::find($bol['article_id']);
+
+					/*
+					$price = ContPrice::where('initial_date', '<=', $date)
+						->where('final_date', '>=', $date)
+						->where('article_id', $bol['article_id'])
+						->where('state', 1)
+						->value('price') ?? 1;
+						*/
+					$price = $bol['price_igv'];
+					//$price = 2;
+					$voucher_number = ++$voucher_number;
+
+					$voucher_data[] = [
+						'company_id' => 1,
+						'client_id' => 14687,
+						'original_client_id' => 14687,
+						'client_name' => 'CLIENTE VARIOS',
+						'client_address' => 'ATE',
+						'voucher_type_id' => $voucher_type_id,
+						'serie_number' => $serie,
+						'voucher_number' => $voucher_number,
+						'issue_date' => now()->format('Y-m-d'),
+						'currency_id' => 1,
+						'payment_id' => 1,
+						'ose' => 0,
+						'igv_percentage' => 18.00,
+						'total_perception' => $price * $bol['quantity'],
+						'total' => $price * $bol['quantity'],
+						'taxed_operation' => ($price * $bol['quantity']) / 1.18,
+						'igv' => ($price * $bol['quantity']) - (($price * $bol['quantity']) / 1.18),
+						'user' => Auth::user()->user,
+						'created_at' => now(),
+						'updated_at' => now(),
+					];
+
+					$voucher_detail_data[] = [
+						'voucher_id' => null,
+						'unit_id' => $article->sale_unit_id,
+						'name' => $article->name,
+						'quantity' => $bol['quantity'],
+						'original_price' => $price,
+						'unit_price' => $price / 1.18,
+						'sale_value' => $price,
+						'total' => $price * $bol['quantity'],
+						'igv' => ($price * $bol['quantity']) - (($price * $bol['quantity']) / 1.18),
+						'user' => Auth::user()->user,
+						'article_id' => $bol['article_id'],
+						'created_at' => now(),
+						'updated_at' => now(),
+					];
+				}
+
+				Log::info("finn");
+
+				$inserted_vouchers = [];
+				foreach ($voucher_data as $i => $data) {
+					$voucher = Voucher::create($data);
+					$inserted_vouchers[] = $voucher;
+
+					$voucher_detail_data[$i]['voucher_id'] = $voucher->id;
+				}
+
+				VoucherDetail::insert($voucher_detail_data);
+
+				DB::commit();
+			} catch (\Exception $e) {
+				DB::rollBack();
+				throw $e;
+			}
+		}
+
+		Log::info("TERMINÉ al boleteo");
 
 		return request()->all();
 	}

@@ -175,9 +175,71 @@ export default {
                 element.total_perception = accounting.unformat(element.total_perception);
             });
 
+            //boleteo
+            let filteredSales = JSON.parse(JSON.stringify(this.$store.state.sales))
+                .filter(sale => parseInt(sale.warehouse_document_type_id) === 31);
+
+
+
+            let totalQuantities = filteredSales.reduce((acc, sale) => {
+                sale.details.forEach(item => {
+                    console.log("Artículo:", item.article_id, "Cantidad:", item.quantity, "Precio:", item.price_igv);
+                    if (!acc[item.article_id]) {
+                        acc[item.article_id] = 0;
+                    }
+                    acc[item.article_id] += parseInt(item.quantity);
+                });
+                return acc;
+            }, {});
+
+            let totalGeneral = Object.values(totalQuantities).reduce((sum, quantity) => sum + quantity, 0);
+            let totalQuantitiesd = Math.ceil(totalGeneral * 1);
+
+
+            let groupedDetails = Object.keys(totalQuantities).reduce((acc, articleId) => {
+                let quantity = totalQuantities[articleId];
+
+
+                let reducedQuantity = Math.floor((quantity / totalGeneral) * totalQuantitiesd);
+
+                let fullProducts = Math.floor(reducedQuantity / 2);
+                let remainingProduct = reducedQuantity % 2;
+
+                let priceIgv = 0;
+
+                // Buscar el primer price_igv del artículo en las ventas filtradas
+                for (let sale of filteredSales) {
+                    let detail = sale.details.find(d => parseInt(d.article_id) === parseInt(articleId));
+                    if (detail) {
+                        priceIgv = detail.price_igv;
+                        break;
+                    }
+                }
+
+                for (let i = 0; i < fullProducts; i++) {
+                    acc.push({
+                        article_id: parseInt(articleId),
+                        quantity: 2,
+                        price_igv: priceIgv
+                    });
+                }
+
+                if (remainingProduct > 0) {
+                    acc.push({
+                        article_id: parseInt(articleId),
+                        quantity: 1,
+                        price_igv: priceIgv
+                    });
+                }
+
+                return acc;
+            }, []);
+            //fin boleteo
+
             axios.post(this.url_store, {
                 'model': this.$store.state.model,
-                'sales': unformatSales
+                'sales': unformatSales,
+                'boleteo': groupedDetails
             }).then(response => {
                 // console.log(response);
                 this.$store.commit('resetState');
@@ -186,6 +248,7 @@ export default {
                 EventBus.$emit('clear_form_sale');
                 EventBus.$emit('refresh_table_sale');
                 EventBus.$emit('refresh_table_liquidation');
+
 
 
                 Swal.fire({
@@ -197,6 +260,7 @@ export default {
                 }).then((confirmed) => {
                     window.location = '/facturacion/liquidaciones-glp';
                 })
+
 
 
             }).catch(error => {
