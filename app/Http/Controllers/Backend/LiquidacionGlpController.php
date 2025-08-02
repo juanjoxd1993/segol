@@ -813,7 +813,7 @@ class LiquidacionGlpController extends Controller
 
 			try {
 
-				$serie = 'B100';
+				$serie = 'B003';
 				$company_id = 2;
 				$voucher_type_id = 2;
 
@@ -857,10 +857,10 @@ class LiquidacionGlpController extends Controller
 						'currency_id' => 1,
 						'payment_id' => 1,
 						'ose' => 0,
-						'igv_percentage' => 18.00,
+						'igv_percentage' => 0.00,
 						'total_perception' => $price * $bol['quantity'],
 						'total' => $price * $bol['quantity'],
-						'taxed_operation' => ($price * $bol['quantity']) / 1.18,
+						'taxed_operation' => $price * $bol['quantity'],
 						'igv' => ($price * $bol['quantity']) - (($price * $bol['quantity']) / 1.18),
 						'user' => Auth::user()->user,
 						'created_at' => now(),
@@ -873,10 +873,10 @@ class LiquidacionGlpController extends Controller
 						'name' => $article->name,
 						'quantity' => $bol['quantity'],
 						'original_price' => $price,
-						'unit_price' => $price / 1.18,
+						'unit_price' => $price,
 						'sale_value' => $price,
 						'total' => $price * $bol['quantity'],
-						'igv' => ($price * $bol['quantity']) - (($price * $bol['quantity']) / 1.18),
+						'igv' => ($price * $bol['quantity']) - (($price * $bol['quantity'])),
 						'user' => Auth::user()->user,
 						'article_id' => $bol['article_id'],
 						'created_at' => now(),
