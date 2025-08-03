@@ -20,7 +20,8 @@ class GuidesRegisterController extends Controller
 	public function index()
 	{
 
-		$first_electronic = WarehouseMovement::where('company_id', 2)
+		$first_electronic = WarehouseMovement::select('referral_voucher_number')
+			->where('company_id', 2)
 			->where('warehouse_type_id', 75)
 			->where('movement_type_id', 12)
 			->where('electronic', 1)
