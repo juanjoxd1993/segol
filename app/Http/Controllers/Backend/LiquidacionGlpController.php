@@ -813,7 +813,7 @@ class LiquidacionGlpController extends Controller
 
 			try {
 
-				$serie = 'B003';
+				$serie = 'B123';
 				$company_id = 2;
 				$voucher_type_id = 2;
 
@@ -831,6 +831,7 @@ class LiquidacionGlpController extends Controller
 
 				foreach ($boleteo as $bol) {
 
+					$client = Client::find($bol['client_id']);
 					$article = Article::find($bol['article_id']);
 
 					/*
@@ -845,10 +846,10 @@ class LiquidacionGlpController extends Controller
 					$voucher_number = ++$voucher_number;
 
 					$voucher_data[] = [
-						'company_id' => 1,
-						'client_id' => 14687,
-						'original_client_id' => 14687,
-						'client_name' => 'CLIENTE VARIOS',
+						'company_id' => $company_id,
+						'client_id' => $client->id,
+						'original_client_id' => $client->id,
+						'client_name' => $client->business_name,
 						'client_address' => 'ATE',
 						'voucher_type_id' => $voucher_type_id,
 						'serie_number' => $serie,
@@ -861,7 +862,7 @@ class LiquidacionGlpController extends Controller
 						'total_perception' => $price * $bol['quantity'],
 						'total' => $price * $bol['quantity'],
 						'taxed_operation' => $price * $bol['quantity'],
-						'igv' => ($price * $bol['quantity']) - (($price * $bol['quantity']) / 1.18),
+						'igv' => 0.00,
 						'user' => Auth::user()->user,
 						'created_at' => now(),
 						'updated_at' => now(),
@@ -876,13 +877,16 @@ class LiquidacionGlpController extends Controller
 						'unit_price' => $price,
 						'sale_value' => $price,
 						'total' => $price * $bol['quantity'],
-						'igv' => ($price * $bol['quantity']) - (($price * $bol['quantity'])),
+						'igv' => 0.00,
 						'user' => Auth::user()->user,
 						'article_id' => $bol['article_id'],
 						'created_at' => now(),
 						'updated_at' => now(),
 					];
 				}
+
+				//SALES
+
 
 				Log::info("finn");
 
@@ -895,6 +899,66 @@ class LiquidacionGlpController extends Controller
 				}
 
 				VoucherDetail::insert($voucher_detail_data);
+
+				foreach ($sales as $sale) {
+					foreach ($boleteo as $bol) {
+
+						$sale_date = date('Y-m-d', strtotime($sale['sale_date']));
+
+						$bol_sale = new Sale();
+						$bol_sale->company_id = $company_id;
+						$bol_sale->sale_date = $sale_date;
+						$bol_sale->expiry_date = $sale_date;
+						$bol_sale->client_id = $bol['client_id'];
+						$bol_sale->payment_id = 1;
+						$bol_sale->currency_id = 1;
+						$bol_sale->warehouse_document_type_id = 7; // BOLETA ELECTRONICA
+						$bol_sale->referral_serie_number = $sale['sale_serie_num'];
+						$bol_sale->referral_voucher_number = $sale['referral_voucher_number'];
+						$bol_sale->sale_value = $bol['price_igv'] * $bol['quantity'];
+						$bol_sale->total = $bol['price_igv'] * $bol['quantity'];
+						$bol_sale->total_perception = $bol['price_igv'] * $bol['quantity'];
+						$bol_sale->balance = 0;
+						$bol_sale->paid = $bol['price_igv'] * $bol['quantity'];
+						$bol_sale->cede = $model['warehouse_type_id'];
+						$bol_sale->created_at_user = Auth::user()->user;
+						$bol_sale->updated_at_user = Auth::user()->user;
+						$bol_sale->save();
+
+						$article = Article::find($bol['article_id']);
+						$detail = new SaleDetail();
+						$detail->sale_id = $bol_sale->id;
+						$detail->item_number = 1;
+						$detail->article_id = $article->id;
+						$detail->concept = $article->name;
+						$detail->quantity = $bol['quantity'];
+						$detail->price_igv = $bol['price_igv'];
+						$detail->sale_value = $bol['price_igv'] * $bol['quantity'];
+						$detail->total = $bol['price_igv'] * $bol['quantity'];
+						$detail->total_perception = $bol['price_igv'] * $bol['quantity'];
+						$detail->referential_convertion = $article->convertion;
+						$detail->kg = $bol['quantity'] * $article->convertion;
+						$detail->created_at_user = Auth::user()->user;
+						$detail->updated_at_user = Auth::user()->user;
+						$detail->save();
+
+						foreach ($bol['liquidation'] as $liquidat) {
+
+							$liq = new Liquidation();
+							$liq->sale_id = $bol_sale->id;
+							$liq->company_id = $company_id;
+							$liq->payment_method_id = $liquidat['payment_method']['id'];
+							$liq->currency_id = $liquidat['currency']['id'];
+							$liq->amount = $bol['price_igv'] * $bol['quantity'];
+							$liq->collection = 0;
+							$liq->cede = $model['warehouse_type_id'];;
+							$liq->created_at_user = Auth::user()->user;
+							$liq->updated_at_user = Auth::user()->user;
+							$liq->save();
+						}
+					}
+				}
+
 
 				DB::commit();
 			} catch (\Exception $e) {

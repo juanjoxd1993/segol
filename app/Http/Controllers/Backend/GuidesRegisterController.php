@@ -27,6 +27,7 @@ class GuidesRegisterController extends Controller
 			->where('electronic', 1)
 			->where('referral_serie_number', 'TC40')
 			->max('referral_voucher_number');
+
 		$max_electronic = $first_electronic ? $first_electronic + 1 : 1;
 
 		$warehouse_account_types = WarehouseAccountType::whereIn('id', [1, 3])->get();

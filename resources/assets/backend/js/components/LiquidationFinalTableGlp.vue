@@ -198,37 +198,44 @@ export default {
 
             let groupedDetails = Object.keys(totalQuantities).reduce((acc, articleId) => {
                 let quantity = totalQuantities[articleId];
-
-
                 let reducedQuantity = Math.floor((quantity / totalGeneral) * totalQuantitiesd);
-
                 let fullProducts = Math.floor(reducedQuantity / 2);
                 let remainingProduct = reducedQuantity % 2;
 
                 let priceIgv = 0;
+                let clientId = null;
+                let liquidation = null; // Aquí guardaremos la liquidación
 
-                // Buscar el primer price_igv del artículo en las ventas filtradas
+                // Buscar el primer detalle con ese article_id y obtener client_id y liquidación
                 for (let sale of filteredSales) {
                     let detail = sale.details.find(d => parseInt(d.article_id) === parseInt(articleId));
                     if (detail) {
                         priceIgv = detail.price_igv;
+                        clientId = sale.client_id;
+                        liquidation = sale.liquidations; // <-- Incluimos liquidaciones completas
                         break;
                     }
                 }
 
+                // Agregar productos completos
                 for (let i = 0; i < fullProducts; i++) {
                     acc.push({
                         article_id: parseInt(articleId),
                         quantity: 2,
-                        price_igv: priceIgv
+                        price_igv: priceIgv,
+                        client_id: clientId,
+                        liquidation: liquidation
                     });
                 }
 
+                // Agregar producto sobrante
                 if (remainingProduct > 0) {
                     acc.push({
                         article_id: parseInt(articleId),
                         quantity: 1,
-                        price_igv: priceIgv
+                        price_igv: priceIgv,
+                        client_id: clientId,
+                        liquidation: liquidation
                     });
                 }
 
@@ -242,25 +249,26 @@ export default {
                 'boleteo': groupedDetails
             }).then(response => {
                 // console.log(response);
-                this.$store.commit('resetState');
+                //this.$store.commit('resetState');
 
                 EventBus.$emit('loading', false);
-                EventBus.$emit('clear_form_sale');
-                EventBus.$emit('refresh_table_sale');
-                EventBus.$emit('refresh_table_liquidation');
+                ///EventBus.$emit('clear_form_sale');
+                //EventBus.$emit('refresh_table_sale');
+                //EventBus.$emit('refresh_table_liquidation');
 
 
 
-                Swal.fire({
-                    title: '¡Ok!',
-                    text: 'Se creo el registro correctamente.',
-                    type: "success",
-                    timer: 2000,
-                    heightAuto: false,
-                }).then((confirmed) => {
-                    window.location = '/facturacion/liquidaciones-glp';
-                })
-
+                /*
+                                Swal.fire({
+                                    title: '¡Ok!',
+                                    text: 'Se creo el registro correctamente.',
+                                    type: "success",
+                                    timer: 2000,
+                                    heightAuto: false,
+                                }).then((confirmed) => {
+                                    window.location = '/facturacion/liquidaciones-glp';
+                                })
+                */
 
 
             }).catch(error => {
