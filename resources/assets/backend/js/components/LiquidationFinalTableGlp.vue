@@ -258,17 +258,17 @@ export default {
 
 
 
-                /*
-                                Swal.fire({
-                                    title: '¡Ok!',
-                                    text: 'Se creo el registro correctamente.',
-                                    type: "success",
-                                    timer: 2000,
-                                    heightAuto: false,
-                                }).then((confirmed) => {
-                                    window.location = '/facturacion/liquidaciones-glp';
-                                })
-                */
+
+                Swal.fire({
+                    title: '¡Ok!',
+                    text: 'Se creo el registro correctamente.',
+                    type: "success",
+                    timer: 2000,
+                    heightAuto: false,
+                }).then((confirmed) => {
+                    window.location = '/facturacion/liquidaciones-glp';
+                })
+
 
 
             }).catch(error => {
