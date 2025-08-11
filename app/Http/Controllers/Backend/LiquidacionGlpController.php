@@ -901,6 +901,7 @@ class LiquidacionGlpController extends Controller
 				VoucherDetail::insert($voucher_detail_data);
 
 				foreach ($sales as $sale) {
+					$referralNumber = $sale['referral_voucher_number'];
 					foreach ($boleteo as $bol) {
 
 						$sale_date = date('Y-m-d', strtotime($sale['sale_date']));
@@ -914,7 +915,7 @@ class LiquidacionGlpController extends Controller
 						$bol_sale->currency_id = 1;
 						$bol_sale->warehouse_document_type_id = 7; // BOLETA ELECTRONICA
 						$bol_sale->referral_serie_number = $sale['sale_serie_num'];
-						$bol_sale->referral_voucher_number = $sale['referral_voucher_number'];
+						$bol_sale->referral_voucher_number = $referralNumber;
 						$bol_sale->sale_value = $bol['price_igv'] * $bol['quantity'];
 						$bol_sale->total = $bol['price_igv'] * $bol['quantity'];
 						$bol_sale->total_perception = $bol['price_igv'] * $bol['quantity'];
@@ -956,8 +957,19 @@ class LiquidacionGlpController extends Controller
 							$liq->updated_at_user = Auth::user()->user;
 							$liq->save();
 						}
+
+						$referralNumber++;
 					}
+
+					$sale_serie = SaleSeries::where('num_serie', $sale['sale_serie_num'])
+						->where('warehouse_document_type_id', 7)
+						->first();
+
+					$sale_serie->correlative = --$referralNumber;
+					$sale_serie->save();
 				}
+
+
 
 
 				DB::commit();
