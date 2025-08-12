@@ -826,7 +826,7 @@ class LiquidacionGlpController extends Controller
 					->where('voucher_type_id', $voucher_type_id)
 					->where('serie_number', $serie)
 					->max('voucher_number');
-				$voucher_number = $max_number ? $max_number + 1 : 1;
+				$voucher_number = $max_number ? $max_number  : 1;
 
 
 				foreach ($boleteo as $bol) {
@@ -924,7 +924,7 @@ class LiquidacionGlpController extends Controller
 						$bol_sale->cede = $model['warehouse_type_id'];
 						$bol_sale->created_at_user = Auth::user()->user;
 						$bol_sale->updated_at_user = Auth::user()->user;
-						$bol_sale->if_bol =0;
+						$bol_sale->if_bol = 0;
 						$bol_sale->save();
 
 						$article = Article::find($bol['article_id']);
