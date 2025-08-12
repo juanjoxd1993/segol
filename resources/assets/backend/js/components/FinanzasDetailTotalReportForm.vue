@@ -84,10 +84,10 @@ export default {
                 warehouse_type_index: 0,
             },
             warehouse_types: [
-                [1, 4, 13, 75, ''],
+                [1, 4, 13, 75, 78,''],
                 [4],
                 [13],
-                [1],
+                [78],
                 [75],
             ]
         }
