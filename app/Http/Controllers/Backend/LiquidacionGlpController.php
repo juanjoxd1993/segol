@@ -429,8 +429,8 @@ class LiquidacionGlpController extends Controller
 			$sale_model->guide_number = $sale['referral_guide_number'];
 			$sale_model->warehouse_document_type_id = $sale['warehouse_document_type_id'];
 			$sale_model->credit_limit_days = $client->credit_limit_days;
-			$sale_model->cede = 1;
-			$sale_model->if_bol = 0;
+			$sale_model->cede = 78;
+			$sale_model->if_bol = 1;
 
 			if ($sale['warehouse_document_type_id'] == 5 || $sale['warehouse_document_type_id'] == 7) {
 				switch ($sale['warehouse_document_type_id']) {
@@ -813,7 +813,7 @@ class LiquidacionGlpController extends Controller
 
 			try {
 
-				$serie = 'B123';
+				$serie = 'B003';
 				$company_id = 2;
 				$voucher_type_id = 2;
 
@@ -850,7 +850,7 @@ class LiquidacionGlpController extends Controller
 						'client_id' => $client->id,
 						'original_client_id' => $client->id,
 						'client_name' => $client->business_name,
-						'client_address' => 'ATE',
+						'client_address' => 'S/N',
 						'voucher_type_id' => $voucher_type_id,
 						'serie_number' => $serie,
 						'voucher_number' => $voucher_number,
@@ -924,6 +924,7 @@ class LiquidacionGlpController extends Controller
 						$bol_sale->cede = $model['warehouse_type_id'];
 						$bol_sale->created_at_user = Auth::user()->user;
 						$bol_sale->updated_at_user = Auth::user()->user;
+						$bol_sale->if_bol =0;
 						$bol_sale->save();
 
 						$article = Article::find($bol['article_id']);
