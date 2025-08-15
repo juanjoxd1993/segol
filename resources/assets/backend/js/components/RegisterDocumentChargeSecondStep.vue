@@ -146,7 +146,7 @@
                             <label class="form-control-label">Referencia:</label>
                             <select class="form-control" name="reference" id="reference" v-model="model.referencce" @focus="$parent.clearErrorMsg($event)">
                                 <option disabled value="">Seleccionar</option>
-								<option v-for="reference in references" :value="reference.id" v-bind:key="reference.id">{{ reference.created_at }} | {{ reference.referral_guide_series }} | {{ reference.referral_guide_number }} | {{ reference.account_name }}</option>
+								<option v-for="reference in references" :value="reference.id" v-bind:key="reference.id">{{ reference.fecha }} | {{ reference.referral_guide_series }} | {{ reference.referral_guide_number }} | {{ reference.account_name }}</option>
                             </select>
                             <div id="reference-error" class="error invalid-feedback"></div>
                         </div>
@@ -323,7 +323,8 @@
                 EventBus.$emit('loading', true);
 
                 axios.post(this.url_get_references, {
-                    referral_warehouse_document_type_id: value
+                    referral_warehouse_document_type_id: value,
+                    client_id: this.model.client_id
                 })
                     .then(res => {
                         EventBus.$emit('loading', false);

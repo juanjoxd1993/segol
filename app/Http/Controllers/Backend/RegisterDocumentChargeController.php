@@ -24,11 +24,13 @@ use App\WarehouseMovement;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use stdClass;
 
 class RegisterDocumentChargeController extends Controller
 {
-	public function index() {
+	public function index()
+	{
 		$companies = Company::select('id', 'name')->get();
 		$warehouse_document_types = WarehouseDocumentType::select('id', 'name')->where('id', 9)->orWhere('id', 28)->orWhere('id', 29)->get();
 		$min_sale_date = CarbonImmutable::now()->subWeek()->toAtomString();
@@ -45,7 +47,8 @@ class RegisterDocumentChargeController extends Controller
 		return view('backend.register_document_charge')->with(compact('companies', 'warehouse_document_types', 'min_sale_date', 'max_sale_date', 'payments', 'min_expiry_date', 'max_expiry_date', 'currencies', 'business_units', 'credit_note_reasons', 'units', 'value_types'));
 	}
 
-	public function validateFirstStep() {
+	public function validateFirstStep()
+	{
 		$messages = [
 			'company_id.required'					=> 'Debe seleccionar una Compañía.',
 			'warehouse_document_type_id.required'	=> 'Debe seleccionar un Tipo de Documento.',
@@ -62,7 +65,8 @@ class RegisterDocumentChargeController extends Controller
 		return request()->all();
 	}
 
-	public function getVoucher() {
+	public function getVoucher()
+	{
 		$this->validateFirstStep();
 
 		$company_id = request('company_id');
@@ -75,8 +79,8 @@ class RegisterDocumentChargeController extends Controller
 			->select('id', 'serie_type', 'type')
 			->first();
 
-		if ( $voucher_type && $voucher_type->type ) {
-			if ( $voucher_type->id == 3 || $voucher_type->id == 4 ) {
+		if ($voucher_type && $voucher_type->type) {
+			if ($voucher_type->id == 3 || $voucher_type->id == 4) {
 				$serie_number = $voucher_type->serie_type . sprintf('%02d', $serie_number);
 			} else {
 				$serie_number = $voucher_type->serie_type . sprintf('%03d', $serie_number);
@@ -90,11 +94,11 @@ class RegisterDocumentChargeController extends Controller
 				->orderBy('voucher_number', 'DESC')
 				->first();
 
-			if ( $voucher ) {
+			if ($voucher) {
 				$voucher_issue_date = CarbonImmutable::createFromDate($voucher->issue_date);
 				$min_sale_date = CarbonImmutable::now()->subWeek()->toAtomString();
 
-				if ( $voucher_issue_date < $min_sale_date ) {
+				if ($voucher_issue_date < $min_sale_date) {
 					$min_sale_date = $voucher_issue_date->toAtomString();
 					$min_expiry_date = $voucher_issue_date->toAtomString();
 
@@ -116,7 +120,8 @@ class RegisterDocumentChargeController extends Controller
 		return request()->all();
 	}
 
-	public function validateSecondStep() {
+	public function validateSecondStep()
+	{
 		$messages = [
 			'sale_date.required'								=> 'La Fecha de Emisión es obligatoria.',
 			'client_id.required'								=> 'Debe seleccionar un Cliente.',
@@ -163,14 +168,14 @@ class RegisterDocumentChargeController extends Controller
 			'igv_percentage' => $igv_percentage
 		]);
 
-		if ( $referral_warehouse_document_type_id != '3' ) {
+		if ($referral_warehouse_document_type_id != '3') {
 			$sale = Voucher::where('company_id', $company_id)
 				->where('voucher_type_id', $referral_warehouse_document_type_id)
 				->where('serie_number', $referral_serie_number)
 				->where('voucher_number', $referral_voucher_number)
 				->first();
 
-			if ( !$sale ) {
+			if (!$sale) {
 				$error = new stdClass();
 				$error->title = 'Error';
 				$error->msg = 'El Documento de Referencia no existe.';
@@ -178,7 +183,7 @@ class RegisterDocumentChargeController extends Controller
 				return response()->json(['error' => $error]);
 			}
 
-			if ( ( $voucher_type_id == 3 || $voucher_type_id == 4 || $voucher_type_id == 7 || $voucher_type_id == 8 || $voucher_type_id == 11 || $voucher_type_id == 12 ) && $sale->client_id != $client_id ) {
+			if (($voucher_type_id == 3 || $voucher_type_id == 4 || $voucher_type_id == 7 || $voucher_type_id == 8 || $voucher_type_id == 11 || $voucher_type_id == 12) && $sale->client_id != $client_id) {
 				$error = new stdClass();
 				$error->title = 'Error';
 				$error->msg = 'El Cliente no coincide.';
@@ -190,7 +195,8 @@ class RegisterDocumentChargeController extends Controller
 		return request()->all();
 	}
 
-	public function getClients() {
+	public function getClients()
+	{
 		$company_id = request('company_id');
 		$voucher_type_id = request('voucher_type_id');
 		$q = request('q');
@@ -198,31 +204,32 @@ class RegisterDocumentChargeController extends Controller
 		$document_type_id = '';
 		$document_type_ids = '';
 
-		if ( $voucher_type_id == 1 || $voucher_type_id == 5 || $voucher_type_id == 9 ) {
+		if ($voucher_type_id == 1 || $voucher_type_id == 5 || $voucher_type_id == 9) {
 			$document_type_id = 1;
-		} elseif ( $voucher_type_id == 2 || $voucher_type_id == 6 || $voucher_type_id == 10 ) {
+		} elseif ($voucher_type_id == 2 || $voucher_type_id == 6 || $voucher_type_id == 10) {
 			$document_type_id = 2;
-		} elseif ( $voucher_type_id == 3 || $voucher_type_id == 4 || $voucher_type_id == 7 || $voucher_type_id == 8 || $voucher_type_id == 11 || $voucher_type_id == 12 ) {
+		} elseif ($voucher_type_id == 3 || $voucher_type_id == 4 || $voucher_type_id == 7 || $voucher_type_id == 8 || $voucher_type_id == 11 || $voucher_type_id == 12) {
 			$document_type_ids = array(1, 2);
 		}
 
 		$clients = Client::select('id', 'business_name as text')
-			->when($company_id, function($query, $company_id) {
+			->when($company_id, function ($query, $company_id) {
 				return $query->where('company_id', $company_id);
 			})
-			->when($document_type_id, function($query, $document_type_id) {
+			->when($document_type_id, function ($query, $document_type_id) {
 				return $query->where('document_type_id', $document_type_id);
 			})
-			->when($document_type_ids, function($query, $document_type_ids) {
+			->when($document_type_ids, function ($query, $document_type_ids) {
 				return $query->whereIn('document_type_id', $document_type_ids);
 			})
-			->where('business_name', 'like', '%'.$q.'%')
+			->where('business_name', 'like', '%' . $q . '%')
 			->get();
 
 		return $clients;
 	}
 
-	public function validateThirdStep() {
+	public function validateThirdStep()
+	{
 		$messages = [
 			'concept.required'					=> 'El Concepto es obligatorio.',
 			'unit_id.required'					=> 'Debe seleccionar una Unidad de Medida.',
@@ -249,7 +256,8 @@ class RegisterDocumentChargeController extends Controller
 		return request()->all();
 	}
 
-	public function store() {
+	public function store()
+	{
 		$business_unit_id = request('model.business_unit_id');
 		$client_id = request('model.client_id');
 		$company_id = request('model.company_id');
@@ -273,14 +281,14 @@ class RegisterDocumentChargeController extends Controller
 		$items = request('items');
 
 		$client = Client::find($client_id, ['id', 'code', 'business_name', 'link_client_id', 'perception_percentage_id', 'credit_balance']);
-		if ( $expiry_date ) {
+		if ($expiry_date) {
 			$expiry_date = $sale_date;
 		}
 		$client_address = ClientAddress::where('client_id', $client_id)
 			->where('address_type_id', 1)
 			->first();
 		$perception = Rate::find($client->perception_percentage_id, ['id', 'value']);
-		$perception_percentage = $perception->value > 0 ? ( $perception->value / 100 ) + 1 : '';
+		$perception_percentage = $perception->value > 0 ? ($perception->value / 100) + 1 : '';
 
 		$sale_value = 0;
 		$inaccurate_value = 0;
@@ -294,9 +302,9 @@ class RegisterDocumentChargeController extends Controller
 		}
 		$total = $sale_value + $inaccurate_value + $exonerated_value + $igv;
 		$total_perception = $voucher_type_id == 1 && $perception_percentage ? $total * $perception_percentage : $total;
-		$detraction = $detraction_percentage > 0 ? $total * ( $detraction_percentage / 100 ) : 0;
+		$detraction = $detraction_percentage > 0 ? $total * ($detraction_percentage / 100) : 0;
 
-		if ( $warehouse_document_type_id == 8 || $warehouse_document_type_id == 9 || $warehouse_document_type_id == 14 || $warehouse_document_type_id == 15 || $warehouse_document_type_id == 20 ) {
+		if ($warehouse_document_type_id == 8 || $warehouse_document_type_id == 9 || $warehouse_document_type_id == 14 || $warehouse_document_type_id == 15 || $warehouse_document_type_id == 20) {
 			$sale_value = -abs($sale_value);
 			$exonerated_value = -abs($exonerated_value);
 			$inaccurate_value = -abs($inaccurate_value);
@@ -306,9 +314,9 @@ class RegisterDocumentChargeController extends Controller
 		}
 
 		$last_referral_voucher_number = Sale::where('company_id', $company_id)
-															->where('warehouse_document_type_id', $warehouse_document_type_id)
-															->where('referral_serie_number', $serie_number)
-															->max('referral_voucher_number');
+			->where('warehouse_document_type_id', $warehouse_document_type_id)
+			->where('referral_serie_number', $serie_number)
+			->max('referral_voucher_number');
 
 		if ($total_perception < 0) {
 			$total_perception = $total_perception * -1;
@@ -342,35 +350,35 @@ class RegisterDocumentChargeController extends Controller
 		$client->credit_balance += $total_perception;
 		$client->save();
 
-		if ( $voucher_type_id ) {
+		if ($voucher_type_id) {
 			$voucher_type = VoucherType::find($voucher_type_id, ['id', 'serie_type']);
-			if ( $voucher_type->id == 3 || $voucher_type->id == 4 ) {
+			if ($voucher_type->id == 3 || $voucher_type->id == 4) {
 				$voucher_serie_number = $voucher_type->serie_type . sprintf('%02d', $serie_number);
 			} else {
 				$voucher_serie_number = $voucher_type->serie_type . sprintf('%03d', $serie_number);
 			}
 
 			$last_voucher_number = Voucher::where('company_id', $company_id)
-					->where('voucher_type_id', $voucher_type->id)
-					->where('serie_number', $voucher_serie_number)
-					->max('voucher_number');
+				->where('voucher_type_id', $voucher_type->id)
+				->where('serie_number', $voucher_serie_number)
+				->max('voucher_number');
 
 			$credit_note_reference_serie = '';
 			$credit_note_reference_number = '';
-			if ( $voucher_type->id == 3 || $voucher_type->id == 4 ) {
-                $credit_note_reference_serie = $voucher_type->serie_type . sprintf('%02d', $referral_serie_number);
+			if ($voucher_type->id == 3 || $voucher_type->id == 4) {
+				$credit_note_reference_serie = $voucher_type->serie_type . sprintf('%02d', $referral_serie_number);
 				$credit_note_reference_number = $referral_voucher_number;
-			} else if ( $voucher_type->id == 7 ||$voucher_type->id == 8 || $voucher_type->id == 11 ||$voucher_type->id == 12 ) {
-                $credit_note_reference_serie = $voucher_type->serie_type . sprintf('%03d', $referral_serie_number);
+			} else if ($voucher_type->id == 7 || $voucher_type->id == 8 || $voucher_type->id == 11 || $voucher_type->id == 12) {
+				$credit_note_reference_serie = $voucher_type->serie_type . sprintf('%03d', $referral_serie_number);
 				$credit_note_reference_number = $referral_voucher_number;
-            }
+			}
 
 			$ose = 1;
-			if ( $voucher_type_id >= 1 && $voucher_type_id <= 4 ) {
+			if ($voucher_type_id >= 1 && $voucher_type_id <= 4) {
 				$ose = 0;
 			}
 
-            $sale_value = abs($sale_value);
+			$sale_value = abs($sale_value);
 			$exonerated_value = abs($exonerated_value);
 			$inaccurate_value = abs($inaccurate_value);
 			$igv = abs($igv);
@@ -413,15 +421,15 @@ class RegisterDocumentChargeController extends Controller
 		}
 
 		foreach ($items as $index => $item) {
-            if ( $warehouse_document_type_id == 8 || $warehouse_document_type_id == 9 || $warehouse_document_type_id == 14 || $warehouse_document_type_id == 15 || $warehouse_document_type_id == 20 || $warehouse_document_type_id == 22 || $warehouse_document_type_id == 29 ) {
-                $item['sale_value'] = -abs($item['sale_value']);
-                $item['referential_sale_value'] = -abs($item['referential_sale_value']);
-                $item['inaccurate_value'] = -abs($item['inaccurate_value']);
-                $item['exonerated_value'] = -abs($item['exonerated_value']);
-                $item['igv'] = -abs($item['igv']);
-                $item['total'] = -abs($item['total']);
-                $item['total_perception'] = -abs($perception_percentage ? $item['total'] * $perception_percentage : $item['total']);
-            }
+			if ($warehouse_document_type_id == 8 || $warehouse_document_type_id == 9 || $warehouse_document_type_id == 14 || $warehouse_document_type_id == 15 || $warehouse_document_type_id == 20 || $warehouse_document_type_id == 22 || $warehouse_document_type_id == 29) {
+				$item['sale_value'] = -abs($item['sale_value']);
+				$item['referential_sale_value'] = -abs($item['referential_sale_value']);
+				$item['inaccurate_value'] = -abs($item['inaccurate_value']);
+				$item['exonerated_value'] = -abs($item['exonerated_value']);
+				$item['igv'] = -abs($item['igv']);
+				$item['total'] = -abs($item['total']);
+				$item['total_perception'] = -abs($perception_percentage ? $item['total'] * $perception_percentage : $item['total']);
+			}
 
 			$saleDetail = new SaleDetail();
 			$saleDetail->sale_id = $sale->id;
@@ -451,8 +459,8 @@ class RegisterDocumentChargeController extends Controller
 			$saleDetail->updated_at_user = Auth::user()->user;
 			$saleDetail->save();
 
-			if ( $voucher_type_id ) {
-				$unit_price = $item['price_igv'] / ( ( $igv_percentage / 100 ) + 1 );
+			if ($voucher_type_id) {
+				$unit_price = $item['price_igv'] / (($igv_percentage / 100) + 1);
 
 				$voucherDetail = new VoucherDetail();
 				$voucherDetail->voucher_id = $voucher->id;
@@ -486,16 +494,30 @@ class RegisterDocumentChargeController extends Controller
 		return response()->json($response);
 	}
 
-	public function getReferences() {
+	public function getReferences()
+	{
 		$referral_warehouse_document_type_id = request('referral_warehouse_document_type_id');
+		$client_id = request('client_id');
 
 		if ($referral_warehouse_document_type_id == 3) {
-			$references = WarehouseMovement::select('id', 'referral_guide_series', 'referral_guide_number', 'account_name', 'created_at')->where('if_comodato', true)->get();
+			$references = WarehouseMovement::select('id', 'referral_guide_series', 'referral_guide_number', 'account_name', 'created_at as fecha')->where('if_comodato', true)->get();
 
 			return $references;
 		};
 
-		$references = Sale::select('id', 'referral_serie_number', 'referral_voucher_number')->where('balance', '>', 0)->where('warehouse_document_type_id', $referral_warehouse_document_type_id)->get();
+		$references = Sale::select(
+			'id',
+			DB::raw('DATE_FORMAT(sale_date, "%Y-%m-%d") as fecha'),
+			'referral_serie_number as referral_guide_series',
+			'referral_voucher_number as referral_guide_number',
+			'total_perception as account_name'
+		)
+			//->where('balance', '>', 0)
+			->where('warehouse_document_type_id', $referral_warehouse_document_type_id)
+			->when($client_id, function ($query, $client_id) {
+				return $query->where('client_id', $client_id);
+			})
+			->get();
 
 		return $references;
 	}
