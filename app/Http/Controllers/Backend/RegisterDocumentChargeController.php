@@ -129,11 +129,11 @@ class RegisterDocumentChargeController extends Controller
 			'expiry_date.required_if'							=> 'La Fecha de Vencimiento es obligatoria.',
 			'currency_id.required'								=> 'Debe seleccionar una Moneda.',
 			'exchange_rate.required_if'							=> 'El Tipo de Cambio es obligatorio.',
-			'business_unit_id.required'							=> 'Debe seleccionar una Unidad de Negocio.',
+		//	'business_unit_id.required'							=> 'Debe seleccionar una Unidad de Negocio.',
 			'credit_note_reason_id.required_if'					=> 'Debe sellecionar un Motivo.',
 			'referral_warehouse_document_type_id.required_if'	=> 'Debe seleccionar un Tipo de Referencia.',
-			'referral_serie_number.required_if'					=> 'La Serie de Referencia es obligatoria.',
-			'referral_voucher_number.required_if'				=> 'El Nº de Referencia es obligatorio.',
+	//		'referral_serie_number.required_if'					=> 'La Serie de Referencia es obligatoria.',
+	//		'referral_voucher_number.required_if'				=> 'El Nº de Referencia es obligatorio.',
 		];
 
 		$rules = [
@@ -143,11 +143,11 @@ class RegisterDocumentChargeController extends Controller
 			'expiry_date'							=> 'required_if:payment_id,2',
 			'currency_id'							=> 'required',
 			'exchange_rate'							=> 'required_if:currency_id,2,3',
-			'business_unit_id'						=> 'required',
+    //   	'business_unit_id'						=> 'required',
 			'credit_note_reason_id'					=> 'required_if:voucher_type_id,3,7,11',
-			'referral_warehouse_document_type_id'	=> 'required_if:voucher_type_id,3,4,7,8,11,12',
-			'referral_serie_number'					=> 'required_if:voucher_type_id,3,4,7,8,11,12',
-			'referral_voucher_number'				=> 'required_if:voucher_type_id,3,4,7,8,11,12',
+	//		'referral_warehouse_document_type_id'	=> 'required_if:voucher_type_id,3,4,7,8,11,12',
+	//		'referral_serie_number'					=> 'required_if:voucher_type_id,3,4,7,8,11,12',
+	//		'referral_voucher_number'				=> 'required_if:voucher_type_id,3,4,7,8,11,12',
 		];
 
 		request()->validate($rules, $messages);
@@ -233,23 +233,23 @@ class RegisterDocumentChargeController extends Controller
 		$messages = [
 			'concept.required'					=> 'El Concepto es obligatorio.',
 			'unit_id.required'					=> 'Debe seleccionar una Unidad de Medida.',
-			'value_type_id.required'			=> 'El Tipo de Venta es obligatorio.',
-			'referral_guide_series.required_if'	=> 'La Serie Guía de Remisión es obligatoria.',
-			'referral_guide_number.required_if'	=> 'El Nº Guía de Remisión es obligatorio.',
-			'carrier_series.required_if'		=> 'La Serie Guía de Transportista es obligatoria.',
-			'carrier_number.required_if'		=> 'El Nº Guía de Transportista es obligatorio.',
-			'license_plate.required_if'			=> 'La Placa es obligatoria.',
+	//		'value_type_id.required'			=> 'El Tipo de Venta es obligatorio.',
+	//		'referral_guide_series.required_if'	=> 'La Serie Guía de Remisión es obligatoria.',
+	//		'referral_guide_number.required_if'	=> 'El Nº Guía de Remisión es obligatorio.',
+	//		'carrier_series.required_if'		=> 'La Serie Guía de Transportista es obligatoria.',
+	//		'carrier_number.required_if'		=> 'El Nº Guía de Transportista es obligatorio.',
+	//		'license_plate.required_if'			=> 'La Placa es obligatoria.',
 		];
 
 		$rules = [
 			'concept'				=> 'required',
 			'unit_id'				=> 'required',
 			'value_type_id'			=> 'required',
-			'referral_guide_series'	=> 'required_if:business_unit_id,5',
-			'referral_guide_number'	=> 'required_if:business_unit_id,5',
-			'carrier_series'		=> 'required_if:business_unit_id,5',
-			'carrier_number'		=> 'required_if:business_unit_id,5',
-			'license_plate'			=> 'required_if:business_unit_id,5',
+	//		'referral_guide_series'	=> 'required_if:business_unit_id,5',
+	//		'referral_guide_number'	=> 'required_if:business_unit_id,5',
+	//		'carrier_series'		=> 'required_if:business_unit_id,5',
+	//		'carrier_number'		=> 'required_if:business_unit_id,5',
+	//		'license_plate'			=> 'required_if:business_unit_id,5',
 		];
 
 		request()->validate($rules, $messages);
