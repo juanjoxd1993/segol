@@ -98,8 +98,8 @@
 <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ $obj->igv }}</cbc:TaxAmount>
 <cac:TaxCategory>
 <cac:TaxScheme>
-<cbc:ID schemeAgencyID="6" schemeID="UN/ECE 5153">1000</cbc:ID>
-<cbc:Name>IGV</cbc:Name>
+<cbc:ID schemeAgencyID="6" schemeID="UN/ECE 5153">9997</cbc:ID>
+<cbc:Name>EXO</cbc:Name>
 <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
 </cac:TaxScheme>
 </cac:TaxCategory>
@@ -128,10 +128,10 @@
         <cbc:TaxAmount currencyID="{{ $obj->currency_short_name }}">{{ number_format($detail->igv,2,'.','') }}</cbc:TaxAmount>
         <cac:TaxCategory>
         <cbc:Percent>{{ number_format($obj->igv_percentage, 2, '.', '') }}</cbc:Percent>
-        <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">10</cbc:TaxExemptionReasonCode>
+        <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">20</cbc:TaxExemptionReasonCode>
         <cac:TaxScheme>
-        <cbc:ID schemeAgencyName="PE:SUNAT" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">1000</cbc:ID>
-        <cbc:Name>IGV</cbc:Name>
+        <cbc:ID schemeAgencyName="PE:SUNAT" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">9997</cbc:ID>
+        <cbc:Name>EXO</cbc:Name>
         <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
         </cac:TaxScheme>
         </cac:TaxCategory>
