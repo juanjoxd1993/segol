@@ -517,15 +517,25 @@ class RegisterDocumentChargeController extends Controller
 			return $references;
 		};
 
-		$references = Sale::select(
+		if ($referral_warehouse_document_type_id == 5) {
+			$voucher_type = 1;
+		};
+
+		if ($referral_warehouse_document_type_id == 7) {
+			$voucher_type = 2;
+		};
+
+
+
+		$references = Voucher::select(
 			'id',
-			DB::raw('DATE_FORMAT(sale_date, "%Y-%m-%d") as fecha'),
-			'referral_serie_number as referral_guide_series',
-			'referral_voucher_number as referral_guide_number',
+			DB::raw('DATE_FORMAT(issue_date, "%Y-%m-%d") as fecha'),
+			'serie_number as referral_guide_series',
+			'voucher_number as referral_guide_number',
 			'total_perception as account_name'
 		)
 			//->where('balance', '>', 0)
-			->where('warehouse_document_type_id', $referral_warehouse_document_type_id)
+			->where('voucher_type_id', $voucher_type)
 			->when($client_id, function ($query, $client_id) {
 				return $query->where('client_id', $client_id);
 			})
