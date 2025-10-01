@@ -178,13 +178,13 @@ class RegisterDocumentChargeController extends Controller
 				$voucher_type_id = 2; //BOLETA DE VENTA ELECTRONICA
 			}
 
-			$sale = Sale::where('id', $reference_id)
+			$sale = Voucher::where('id', $reference_id)
 				->first();
 
 				$sale = Voucher::where('company_id', $company_id)
 				->where('voucher_type_id', $voucher_type_id)
-				->where('serie_number', $sale->referral_serie_number)
-				->where('voucher_number', $sale->referral_voucher_number)
+				->where('serie_number', $sale->serie_number)
+				->where('voucher_number', $sale->voucher_number)
 				->first();
 
 			if (!$sale) {
