@@ -541,7 +541,10 @@ class EnvioEfactController extends Controller
             $item->payment_due_date = CarbonImmutable::createFromDate(request($item->issue_date))->addDays($item->client_credit_limite_days)->format('Y-m-d');
 
             if ($item->voucher_type_id == 3 && $item->efact_serie == '03') {
-                $item->serie_number = 'BA90';
+                $item->serie_number = 'BC01';
+            }
+            if ($item->voucher_type_id == 3 && $item->efact_serie == '01') {
+                $item->serie_number = 'FC01';
             }
 
             // Datos de Rutas

@@ -425,6 +425,7 @@ class RegisterDocumentChargeController extends Controller
 			$voucher->igv_perception_percentage = $perception_percentage ? $perception_percentage - 1 : 0;
 			$voucher->ose = $ose;
 			$voucher->user = Auth::user()->user;
+			$voucher->warehouse_document_type_id = $warehouse_document_type_id;
 			$voucher->save();
 
 			$sale->referral_serie_number = $serie_number;

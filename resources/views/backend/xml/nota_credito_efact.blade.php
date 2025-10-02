@@ -13,11 +13,15 @@
 <cbc:Description>{{ $obj->credit_note_reason_name }}</cbc:Description>
 </cac:DiscrepancyResponse>
 <cac:BillingReference>
+
+
 <cac:InvoiceDocumentReference>
 <cbc:ID>{{ $obj->credit_note_reference_serie }}-{{ $obj->credit_note_reference_number }}</cbc:ID>
 <cbc:IssueDate>{{ $obj->issue_date }}</cbc:IssueDate>
 <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="{{ $obj->warehouse_document_types_name }}" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">{{ $obj->efact_serie }}</cbc:DocumentTypeCode>
 </cac:InvoiceDocumentReference>
+
+
 </cac:BillingReference>
 <cac:Signature>
 <cbc:ID>IDSignKG</cbc:ID>
