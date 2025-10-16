@@ -142,6 +142,7 @@ class AndExcedentReportController extends Controller
 			$inventory->stock_inicial = $stock_inicial;
 			$ingresos_glp = WarehouseMovement::leftjoin('warehouse_movement_details', 'warehouse_movements.id', 'warehouse_movement_details.warehouse_movement_id')
                 ->where('warehouse_movements.movement_type_id', 30)
+				->where('warehouse_movements.warehouse_type_id', 75)
                 ->where('warehouse_movements.created_at',  $inventory->creation_date)
                 ->select('warehouse_movement_details.converted_amount')
                 ->sum('warehouse_movement_details.converted_amount');
