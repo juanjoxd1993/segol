@@ -129,11 +129,11 @@ class RegisterDocumentChargeController extends Controller
 			'expiry_date.required_if'							=> 'La Fecha de Vencimiento es obligatoria.',
 			'currency_id.required'								=> 'Debe seleccionar una Moneda.',
 			'exchange_rate.required_if'							=> 'El Tipo de Cambio es obligatorio.',
-		//	'business_unit_id.required'							=> 'Debe seleccionar una Unidad de Negocio.',
+			//	'business_unit_id.required'							=> 'Debe seleccionar una Unidad de Negocio.',
 			'credit_note_reason_id.required_if'					=> 'Debe sellecionar un Motivo.',
 			'referral_warehouse_document_type_id.required_if'	=> 'Debe seleccionar un Tipo de Referencia.',
-	//		'referral_serie_number.required_if'					=> 'La Serie de Referencia es obligatoria.',
-	//		'referral_voucher_number.required_if'				=> 'El Nº de Referencia es obligatorio.',
+			//		'referral_serie_number.required_if'					=> 'La Serie de Referencia es obligatoria.',
+			//		'referral_voucher_number.required_if'				=> 'El Nº de Referencia es obligatorio.',
 		];
 
 		$rules = [
@@ -143,11 +143,11 @@ class RegisterDocumentChargeController extends Controller
 			'expiry_date'							=> 'required_if:payment_id,2',
 			'currency_id'							=> 'required',
 			'exchange_rate'							=> 'required_if:currency_id,2,3',
-    //   	'business_unit_id'						=> 'required',
+			//   	'business_unit_id'						=> 'required',
 			'credit_note_reason_id'					=> 'required_if:voucher_type_id,3,7,11',
-	//		'referral_warehouse_document_type_id'	=> 'required_if:voucher_type_id,3,4,7,8,11,12',
-	//		'referral_serie_number'					=> 'required_if:voucher_type_id,3,4,7,8,11,12',
-	//		'referral_voucher_number'				=> 'required_if:voucher_type_id,3,4,7,8,11,12',
+			//		'referral_warehouse_document_type_id'	=> 'required_if:voucher_type_id,3,4,7,8,11,12',
+			//		'referral_serie_number'					=> 'required_if:voucher_type_id,3,4,7,8,11,12',
+			//		'referral_voucher_number'				=> 'required_if:voucher_type_id,3,4,7,8,11,12',
 		];
 
 		request()->validate($rules, $messages);
@@ -158,6 +158,7 @@ class RegisterDocumentChargeController extends Controller
 		$referral_warehouse_document_type_id = request('referral_warehouse_document_type_id');
 		$referral_serie_number = request('referral_serie_number');
 		$referral_voucher_number = request('referral_voucher_number');
+		$reference_id = request('reference');
 
 		$igv_percentage = Rate::where('description', 'IGV')
 			->select('value')
@@ -169,10 +170,21 @@ class RegisterDocumentChargeController extends Controller
 		]);
 
 		if ($referral_warehouse_document_type_id != '3') {
-			$sale = Voucher::where('company_id', $company_id)
-				->where('voucher_type_id', $referral_warehouse_document_type_id)
-				->where('serie_number', $referral_serie_number)
-				->where('voucher_number', $referral_voucher_number)
+			
+			if($referral_warehouse_document_type_id == '5'){// FACTURA ELECTRONICA
+				$voucher_type_id = 1; //FACTURA ELECTRONICA
+			}
+			if($referral_warehouse_document_type_id == '7'){// BOLETA ELECTRONICA
+				$voucher_type_id = 2; //BOLETA DE VENTA ELECTRONICA
+			}
+
+			$sale = Voucher::where('id', $reference_id)
+				->first();
+
+				$sale = Voucher::where('company_id', $company_id)
+				->where('voucher_type_id', $voucher_type_id)
+				->where('serie_number', $sale->serie_number)
+				->where('voucher_number', $sale->voucher_number)
 				->first();
 
 			if (!$sale) {
@@ -233,23 +245,23 @@ class RegisterDocumentChargeController extends Controller
 		$messages = [
 			'concept.required'					=> 'El Concepto es obligatorio.',
 			'unit_id.required'					=> 'Debe seleccionar una Unidad de Medida.',
-	//		'value_type_id.required'			=> 'El Tipo de Venta es obligatorio.',
-	//		'referral_guide_series.required_if'	=> 'La Serie Guía de Remisión es obligatoria.',
-	//		'referral_guide_number.required_if'	=> 'El Nº Guía de Remisión es obligatorio.',
-	//		'carrier_series.required_if'		=> 'La Serie Guía de Transportista es obligatoria.',
-	//		'carrier_number.required_if'		=> 'El Nº Guía de Transportista es obligatorio.',
-	//		'license_plate.required_if'			=> 'La Placa es obligatoria.',
+			//		'value_type_id.required'			=> 'El Tipo de Venta es obligatorio.',
+			//		'referral_guide_series.required_if'	=> 'La Serie Guía de Remisión es obligatoria.',
+			//		'referral_guide_number.required_if'	=> 'El Nº Guía de Remisión es obligatorio.',
+			//		'carrier_series.required_if'		=> 'La Serie Guía de Transportista es obligatoria.',
+			//		'carrier_number.required_if'		=> 'El Nº Guía de Transportista es obligatorio.',
+			//		'license_plate.required_if'			=> 'La Placa es obligatoria.',
 		];
 
 		$rules = [
 			'concept'				=> 'required',
 			'unit_id'				=> 'required',
 			'value_type_id'			=> 'required',
-	//		'referral_guide_series'	=> 'required_if:business_unit_id,5',
-	//		'referral_guide_number'	=> 'required_if:business_unit_id,5',
-	//		'carrier_series'		=> 'required_if:business_unit_id,5',
-	//		'carrier_number'		=> 'required_if:business_unit_id,5',
-	//		'license_plate'			=> 'required_if:business_unit_id,5',
+			//		'referral_guide_series'	=> 'required_if:business_unit_id,5',
+			//		'referral_guide_number'	=> 'required_if:business_unit_id,5',
+			//		'carrier_series'		=> 'required_if:business_unit_id,5',
+			//		'carrier_number'		=> 'required_if:business_unit_id,5',
+			//		'license_plate'			=> 'required_if:business_unit_id,5',
 		];
 
 		request()->validate($rules, $messages);
@@ -413,6 +425,7 @@ class RegisterDocumentChargeController extends Controller
 			$voucher->igv_perception_percentage = $perception_percentage ? $perception_percentage - 1 : 0;
 			$voucher->ose = $ose;
 			$voucher->user = Auth::user()->user;
+			$voucher->warehouse_document_type_id = $warehouse_document_type_id;
 			$voucher->save();
 
 			$sale->referral_serie_number = $serie_number;
@@ -505,15 +518,25 @@ class RegisterDocumentChargeController extends Controller
 			return $references;
 		};
 
-		$references = Sale::select(
+		if ($referral_warehouse_document_type_id == 5) {
+			$voucher_type = 1;
+		};
+
+		if ($referral_warehouse_document_type_id == 7) {
+			$voucher_type = 2;
+		};
+
+
+
+		$references = Voucher::select(
 			'id',
-			DB::raw('DATE_FORMAT(sale_date, "%Y-%m-%d") as fecha'),
-			'referral_serie_number as referral_guide_series',
-			'referral_voucher_number as referral_guide_number',
+			DB::raw('DATE_FORMAT(issue_date, "%Y-%m-%d") as fecha'),
+			'serie_number as referral_guide_series',
+			'voucher_number as referral_guide_number',
 			'total_perception as account_name'
 		)
 			//->where('balance', '>', 0)
-			->where('warehouse_document_type_id', $referral_warehouse_document_type_id)
+			->where('voucher_type_id', $voucher_type)
 			->when($client_id, function ($query, $client_id) {
 				return $query->where('client_id', $client_id);
 			})

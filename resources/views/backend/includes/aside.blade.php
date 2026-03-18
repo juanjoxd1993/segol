@@ -54,6 +54,7 @@
 
 
                 @if (Auth::user()->id == 7 ||
+                 Auth::user()->id == 4 ||
                         Auth::user()->id == 1 ||
                         Auth::user()->id == 5 ||
                         Auth::user()->id == 34 ||
@@ -93,6 +94,7 @@
 
                                 @if (Auth::user()->id == 7 ||
                                         Auth::user()->id == 1 ||
+                                        Auth::user()->id == 4 ||
                                         Auth::user()->id == 5 ||
                                         Auth::user()->id == 34 ||
                                         Auth::user()->id == 36)
@@ -110,6 +112,7 @@
 
                                 @if (Auth::user()->id == 7 ||
                                         Auth::user()->id == 1 ||
+                                        Auth::user()->id == 4 ||
                                         Auth::user()->id == 5 ||
                                         Auth::user()->id == 34 ||
                                         Auth::user()->id == 36)
@@ -128,13 +131,14 @@
 
                                 @if (Auth::user()->id == 7 ||
                                         Auth::user()->id == 1 ||
+                                        Auth::user()->id == 4 ||
                                         Auth::user()->id == 5 ||
                                         Auth::user()->id == 34 ||
                                         Auth::user()->id == 36)
                                     <li class="kt-menu__item {{ Route::currentRouteName() === 'dashboard.voucher.register_document_charge' ? 'kt-menu__item--active' : '' }}"
                                         aria-haspopup="true">
                                         <a href="{{ route('dashboard.voucher.register_document_charge') }}"
-                                            class="kt-menu__lsink ">
+                                            class="kt-menu__link ">
                                             <i class="kt-menu__link-bullet kt-menu__link-bullet--dot">
                                                 <span></span>
                                             </i>
@@ -214,6 +218,7 @@
 
                                 @if (Auth::user()->id == 7 ||
                                         Auth::user()->id == 1 ||
+                                        Auth::user()->id == 4 ||
                                         Auth::user()->id == 5 ||
                                         Auth::user()->id == 34 ||
                                         Auth::user()->id == 36)
@@ -239,6 +244,7 @@
                 @if (Auth::user()->id == 7 ||
                         Auth::user()->id == 1 ||
                         Auth::user()->id == 5 ||
+                        Auth::user()->id == 4 ||
                         Auth::user()->id == 34 ||
                         Auth::user()->id == 36)
                     <li class="kt-menu__item  kt-menu__item--submenu {{ strpos(url()->current(), '/reporte/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' }}"
@@ -414,6 +420,7 @@
                 @if (Auth::user()->id == 7 ||
                         Auth::user()->id == 1 ||
                         Auth::user()->id == 5 ||
+                        Auth::user()->id == 4 ||
                         Auth::user()->id == 34 ||
                         Auth::user()->id == 24)
                     <li class="kt-menu__item  kt-menu__item--submenu {{ strpos(url()->current(), '/logistica/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' }}"
@@ -708,6 +715,7 @@
                 @if (Auth::user()->id == 7 ||
                         Auth::user()->id == 1 ||
                         Auth::user()->id == 5 ||
+                        Auth::user()->id == 4 ||
                         Auth::user()->id == 34 ||
                         Auth::user()->id == 24 ||
                         Auth::user()->id == 36)
@@ -863,6 +871,7 @@
 
                 @if (Auth::user()->id == 7 ||
                         Auth::user()->id == 1 ||
+                        Auth::user()->id == 4 ||
                         Auth::user()->id == 5 ||
                         Auth::user()->id == 34 ||
                         Auth::user()->id == 36)
@@ -980,7 +989,7 @@
                 @endif
 
 
-                @if (Auth::user()->id == 7 || Auth::user()->id == 1 || Auth::user()->id == 5 || Auth::user()->id == 34)
+                @if (Auth::user()->id == 7 || Auth::user()->id == 4 || Auth::user()->id == 1 || Auth::user()->id == 5 || Auth::user()->id == 34 )
                     <li class="kt-menu__item  kt-menu__item--submenu {{ strpos(url()->current(), '/contabilidad/') !== false ? 'kt-menu__item--open kt-menu__item--here' : '' }}"
                         aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                         <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
@@ -1084,6 +1093,7 @@
 
                 @if (Auth::user()->id == 7 ||
                         Auth::user()->id == 1 ||
+                        Auth::user()->id == 4 ||
                         Auth::user()->id == 5 ||
                         Auth::user()->id == 34 ||
                         Auth::user()->id == 24)
@@ -1233,6 +1243,7 @@
 
                 @if (Auth::user()->id == 7 ||
                         Auth::user()->id == 1 ||
+                        Auth::user()->id == 4 ||
                         Auth::user()->id == 5 ||
                         Auth::user()->id == 34 ||
                         Auth::user()->id == 24 ||
