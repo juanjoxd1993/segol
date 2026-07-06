@@ -169,6 +169,7 @@ class FinanzasDetailTotalReportController extends Controller
 		$cobranza_efective = Liquidation::leftjoin('sales', 'liquidations.sale_id', '=', 'sales.id')
 			->leftjoin('clients', 'sales.client_id', '=', 'clients.id')
 			->where(DB::Raw('DATE_FORMAT(liquidations.created_at, "%Y-%m-%d") '), '=', $initial_date)
+			->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 			->whereIn('liquidations.cede', $warehouse_types)
 			//		->whereNotIn('sales.client_id', $client_ids)	 
 			->whereIn('liquidations.payment_method_id', [1])
@@ -191,6 +192,7 @@ class FinanzasDetailTotalReportController extends Controller
 				DB::raw("DATE(CASE WHEN liquidations.collection = 1 THEN liquidations.rem_date ELSE liquidations.created_at END)"),
 				$initial_date
 			)
+			->whereIn('sales.warehouse_document_type_id', $warehouse_document_type_ids)
 			->whereIn('liquidations.cede', $warehouse_types)
 			//		->whereNotIn('sales.client_id', $client_ids)	 
 			->whereIn('liquidations.payment_method_id', [2, 3])
